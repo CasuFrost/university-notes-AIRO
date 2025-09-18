@@ -7,7 +7,7 @@ Below is a list of the courses and links to the corresponding notes.
   
 | Course | CFU | Year | Semester |
 | ----- | ----- |  ----- | ----- | 
-| [Artificial Intelligence](https://github.com/CasuFrost/university-notes-AIRO/blob/main/Artificial%20Intelligence/LatexSourceFile/ArtificialIntelligence.pdf) | 6 | 1 | 1 |
+| [Artificial Intelligence](https://github.com/CasuFrost/university-notes-AIRO/blob/main/Artificial%20intelligence/LatexSourceFile/ArtificialIntelligence.pdf) | 6 | 1 | 1 |
 | [Machine Learning](https://github.com/CasuFrost/university-notes-AIRO/blob/main/Machine%20Learning/LatexSourceFile/MachineLearning.pdf) | 6 |  1 | 1 |
 | [Robot Programming]() | 3 | 1 | 1 |
 | [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/blob/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | 6 | 1 | 1 |
