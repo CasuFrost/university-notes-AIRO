@@ -1,0 +1,64 @@
+\documentclass[10pt, letterpaper]{report}
+% !TeX program = xelatex
+%==================PREAMBOLO=======================%
+\input{../../preamble/preamble.tex}
+\newcommand{\titolo}{Artificial intelligence }
+
+ %TOGLI COMMENTO SE USI XELATEX
+%\usepackage{fontspec}
+\title{\titolo} %========TITOLO========%
+\author{Marco Casu}
+\date{\vspace{-5ex}}
+\begin{document}
+
+%==================COPERTINA=======================%
+\begin{titlepage}
+    
+\begin{center}
+    %TOGLI COMMENTO SE USI XELATEX
+   %\setmainfont{Palace Script MT}
+   \HUGE Marco Casu\acc
+\end{center}
+\thispagestyle{empty}
+\begin{figure}[h]
+    \centering{
+        %l'immagine deve avere una risoluzione 2048x2048
+        \includegraphics[width=1\textwidth ]{images/Copertina.png}
+    }
+\end{figure}
+\vfill 
+\centering \includegraphics[width=0.4\textwidth ]{../../preamble/Stemma_sapienza.png} \acc
+\centering \Large \color{sapienza}Faculty of Information Engineering, Computer Science and Statistics\\
+Department of Computer, Control and Management Engineering\\
+Master's degree in Artificial Intelligence and Robotics
+\end{titlepage}
+
+%===================FINE COPERTINA======================%
+\newpage
+%\pagecolor{cartaRiciclata}%\setmainfont{Algerian}
+\Large
+This document summarizes and presents the topics for the \titolo course for the Master's degree in Artificial Intelligence and Robotics at Sapienza University of Rome. The document is free for any use. If the reader notices any typos, they are kindly requested to report them to the author.
+\vfill
+\begin{figure}[h!]
+    \raggedright
+    \includegraphics[width=0.4\textwidth,right ]{../../preamble/tomodachi.pdf} 
+\end{figure}
+\newpage %\setmainfont{Times New Roman}
+\normalsize
+
+\tableofcontents 
+\newpage
+
+%==================FOOTER e HEADER=======================%
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{Sezione \thesection}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\titolo}
+\fancyfoot[R]{ Marco Casu}
+%\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
+%==================FOOTER e HEADER=======================%
+
+%==================INIZIO======================%
+
+\end{document}
