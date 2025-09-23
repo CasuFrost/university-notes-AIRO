@@ -1,0 +1,166 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" version="28.0.6">
+  <diagram name="Pagina-1" id="KZ9M0GyY91vRXv7BMgVX">
+    <mxGraphModel dx="1209" dy="644" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-1" value="Determine Type of&amp;nbsp;&lt;div&gt;Training Experience&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+          <mxGeometry x="340" y="80" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-3" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.92;exitY=1.001;exitDx=0;exitDy=0;exitPerimeter=0;fontFamily=Times New Roman;" edge="1" parent="1" source="85KY1dY8MjEQadsCG-AZ-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="500" y="200" as="sourcePoint" />
+            <mxPoint x="540" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-9" value="table of&amp;nbsp;&lt;div&gt;correct moves&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-3">
+          <mxGeometry x="-0.1626" y="1" relative="1" as="geometry">
+            <mxPoint x="12" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-4" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.92;exitY=1.001;exitDx=0;exitDy=0;exitPerimeter=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="130" as="sourcePoint" />
+            <mxPoint x="490" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-10" value="..." style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-4">
+          <mxGeometry x="0.0639" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.92;exitY=1.001;exitDx=0;exitDy=0;exitPerimeter=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="354" y="130" as="sourcePoint" />
+            <mxPoint x="270" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-7" value="games againts&lt;div&gt;experts&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-5">
+          <mxGeometry x="0.0503" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-6" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1" source="85KY1dY8MjEQadsCG-AZ-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="444" y="150" as="sourcePoint" />
+            <mxPoint x="390" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-8" value="games&amp;nbsp;&lt;div&gt;againts itself&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-6">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-11" value="Determine&lt;br&gt;Target Function" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+          <mxGeometry x="340" y="190" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-12" value="" style="endArrow=classic;html=1;rounded=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="430" y="230" as="sourcePoint" />
+            <mxPoint x="460" y="265" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="460" y="265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-14" value="..." style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-12">
+          <mxGeometry x="-0.2936" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-17" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="340" y="230" as="sourcePoint" />
+            <mxPoint x="300" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-18" value="board&amp;nbsp;&lt;br&gt;\(\hat V\) move" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-17">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-21" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1" source="85KY1dY8MjEQadsCG-AZ-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="350" y="260" as="sourcePoint" />
+            <mxPoint x="390" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-22" value="board&amp;nbsp;&lt;br&gt;\(\hat V\) value" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-21">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-25" value="Determine Representetion&lt;br&gt;of Learned Function" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+          <mxGeometry x="310" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-26" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="310" as="sourcePoint" />
+            <mxPoint x="270" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-27" value="polynomial" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-26">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-29" value="" style="endArrow=classic;html=1;rounded=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="320" as="sourcePoint" />
+            <mxPoint x="490" y="355" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="490" y="355" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-30" value="neural network" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-29">
+          <mxGeometry x="-0.2936" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-32" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="320" as="sourcePoint" />
+            <mxPoint x="410" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-33" value="lienar function&amp;nbsp;&lt;div&gt;of six features&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-32">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-34" value="Determine&lt;br&gt;Learning Algorithm" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+          <mxGeometry x="364" y="380" width="116" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-35" value="" style="endArrow=classic;html=1;rounded=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="420" as="sourcePoint" />
+            <mxPoint x="490" y="455" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="490" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-36" value="linear programming" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-35">
+          <mxGeometry x="-0.2936" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-37" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Times New Roman;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="420" as="sourcePoint" />
+            <mxPoint x="370" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-38" value="gradient descent" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=7;fontFamily=Times New Roman;" vertex="1" connectable="0" parent="85KY1dY8MjEQadsCG-AZ-37">
+          <mxGeometry x="-0.1756" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="85KY1dY8MjEQadsCG-AZ-39" value="Completed Design" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Times New Roman;" vertex="1" parent="1">
+          <mxGeometry x="310" y="480" width="120" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

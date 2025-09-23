@@ -2,6 +2,8 @@
 % !TeX program = xelatex
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \newcommand{\titolo}{Machine Learning }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -59,6 +61,147 @@ This document summarizes and presents the topics for the \titolo course for the 
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
 
-%==================INIZIO======================%
+\newtheorem{definition}{Definition}
 
+%==================INIZIO======================%
+\chapter{Introduction}
+\section{Basic Definition of a ML Problem}
+In this chapter we will introduce the basics of what is a machine learning problem, giving a mathematical definition. informally, with machine learning we define the use of knowledge (data) to improve the performance of a given program, using past experiences.\bigskip
+
+Generally, we use machine learning to solve problems with no deterministic solutions, trying to find an approximate one (such as recognizing what animal is represented in a given photo).\bigskip 
+
+Usually, a machine learning problem consists in three main component:\begin{itemize}
+    \item $T$ : the given task
+    \item $P$ : a performance metric
+    \item $E$ : the past experiences (the data)
+\end{itemize}
+Let's see an example, we want to model a program capable of playing \textit{Checkers}.
+\begin{center}
+    \includegraphics[width=0.35\textwidth]{images/Checkers.jpg}
+\end{center}
+The task $T$ is to play the game, the performance metric $P$ measure the ratio of win in a tournament, and the experiences is given by the past match. We can create this matches by letting the computer play against himself, or by making it play against a human. We can consider two types of target functions that models the behavior of the model:\begin{itemize}
+    \item $ChooseMove : Board\rightarrow Move$
+    \item $V : Board\rightarrow\R$
+\end{itemize}
+$Board$ is the set of the possible board configurations, move is the set of feasible moves. The image of the function $V$ should represents the validity of a board in the following sense:\begin{itemize}
+    \item if $b\in Boards$ is a configuration that represents the win of the player, then $V(b)=1$
+    \item else if $b\in Boards$ is a configuration that represents the win of the opponent, then $V(b)=-1$
+    \item else if $b\in Boards$ is a configuration that represents a draw, then $V(b)=0$
+    \item else, $V(b)=V(b')$ where $b'$ is
+the best final board state that can be achieved starting from $b$ and
+playing optimally until the end of the game.
+\end{itemize}
+The function $V$ can be used to predict the next move by considering all possible boards that can be obtained from the feasible moves.
+We focus on the function $V$, this should be an optimal model, but is not computable, because we cannot tell if a play is ''optimal'' (this is the goal of the model), so we want to consider a function that approximate the behavior of $V$.\bigskip
+
+We consider a function $\hat V: Board\rightarrow\R$ defined as follows:\begin{equation}
+    \hat V(b)=\sum_{i=0}^6w_if_i(b)
+\end{equation}
+where $\mathbf w = (w_i)$ is real coefficients, and the functions $f_i$ represents some features of the given board:\begin{itemize}
+    \item $f_1(b)$ : number of black pieces on $b$
+    \item $f_2(b)$ : number of red pieces on $b$
+    \item ecc...
+\end{itemize}
+We don't know if some features are useful to predict which move is optimal, is important that this features model the knowledge of the \textit{domain} (in this case, the game of Checkers). \bigskip
+
+with \textit{learning the function} $\hat V$, we intend to finds the coefficients $\mathbf w$ which make the function $\hat V$ more similar to $V$ as possible. There are various method to find these coefficients.\bigskip
+
+Let's introduce some notation:\begin{itemize}
+    \item with $V$ we  define the \textbf{target function} (always unknown and uncomputable).
+    \item with $\hat V$ we  define the \textbf{learned function}, the approximation of $V$ that we want to find.
+    \item with $V_{train}(b)$ we define the value of $V$ obtained at $b$, where $b$ is a part of a data set that is given. We will use the values of $V_{train}$ on the data set to synthesize $\hat V$.
+    \item with $D$ we define the given data set:\begin{equation}
+        D=\bigcup_{i=1}^n\{b_i,V_{train}(b_i)\}
+    \end{equation}
+    $n$ is the number of the available data.
+\end{itemize}
+The iterative method given in the Algorithm \ref{alg:LMS} is an informal example of how we can find the values for $\mathbf w$.
+\begin{algorithm}
+    \caption{LMS weight update rule}\label{alg:LMS}
+    \begin{algorithmic}
+    \Require $D$, $V_{train}$, $k$
+    \State initialize $\mathbf w$ with small random values 
+    \For{$k$ times}  
+    \State select a sample $b$ from $D$
+    \State $error(b)=V_{train}(b)-\hat V(b)$
+    \For{each feature $i$} 
+    \State $w_i\leftarrow w_i+c\cdot f_i(b)\cdot error(b)$
+    \EndFor
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+In this case $c$ is a small constant, usually in $(0,1]$, to moderate the rate of learning.\bigskip
+
+The function $error(b)$ is computable only on the sample $b$ given in the dataset $B$, the goal of the method is to converge to a local minimum for the function  \begin{equation}
+    \sum_{b_i\in D}error(b_i).
+\end{equation}
+Once we synthesize $\hat V$ with this method, we can make the model play against human and track the result to use it as an additional dataset. The diagram in image \ref{img:DesignChoice} represents the process of designing an artificial intelligence agent.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.35\textwidth]{images/DesignChoice.pdf}
+    \caption{Design Choices}
+    \label{img:DesignChoice}
+\end{figure}
+\section{Types of Machine Learning Problems}
+There are different types of machine learning problems:\begin{itemize}
+    \item Supervised Learning\begin{itemize}
+        \item Classification
+        \item Regression
+    \end{itemize}
+    \item Unsupervised Learning
+    \item Reinforcement Learning
+\end{itemize}
+
+\begin{definition}
+    Given a function $f:X\rightarrow Y$, and a training set $X_D\subset X$ containing information about $f$, \textbf{learning} the function $f$ means computing an approximated function $\hat f$ such that is much close as possible to $f$ on $X$\begin{equation}
+        \hat f(x)\simeq f(x), \ \ x\in X
+    \end{equation}
+    more formally, we want to find $\hat f$ that minimize the following integral:\begin{equation}
+        \int_{X}|\hat f(x)-f(x)|dx
+    \end{equation}
+    if $X\subseteq \R^n$ and is uncountable, and 
+    \begin{equation}
+        \sum_{x\in X}|\hat f(x)-f(x)|
+    \end{equation}
+    if $X$ is countable.
+\end{definition}
+This is not a simple problem, $f$ is not computable, so the difference $f-\hat f$, and $X$ is usually uncountable ora big set, way bigger than the training set $X_D$. \bigskip
+
+Machine learning problems can be classified in terms of the input data set $D$, given a target function $f:X\rightarrow Y$ a problem is\begin{itemize}
+    \item a \textbf{supervised learning} problem if $D=\bigcup_{i=1}^n\{(x_i,y_i)\}\subset X\times Y$ .
+    \item an \textbf{unsupervised learning} problem if $D=\bigcup_{i=1}^n\{(x_i)\}\subset X$.
+    \item a \textbf{reinforcement learning} problem, the condition on the input dataset will be discussed later.
+\end{itemize}
+The problems can also be classified in terms of the target function $f:X\rightarrow Y$
+\begin{align*}
+   & X=\begin{cases}
+        A_1\times \dots \times A_m, \ A_i \text{ finite set} \ \ \textbf{(Finite Discrete Problem)}\\ 
+        \R^n \ \ \textbf{(Continuous)}
+    \end{cases}\\ 
+    & Y=\begin{cases}
+         \R^k \ \ \textbf{(Regression)}\\ 
+        \{C_1,C_2\times C_k\} \ \ \textbf{(Classification)}
+    \end{cases}
+\end{align*}
+special case (\textbf{Concept Learning}):\begin{align*}
+    & X = A_1\times \dots \times A_m, \ A_i \text{ finite set}\\ 
+    & Y = \{0,1\}
+\end{align*}
+Classification problems is also known as \textit{Pattern Recognition Problems}, the goal is to return the class to which a specific instance belong.\begin{center}
+     \includegraphics[width=0.6\textwidth]{images/classifier.png}
+\end{center}
+Some examples are:\begin{itemize}
+    \item face/object/character recognition
+    \item speech/sound recognition
+    \item medical diagnosis
+    \item document classification.
+\end{itemize}
+Regression problems consists in approximating real valued functions.
+\begin{center}
+     \includegraphics[width=0.35\textwidth]{images/regression.eps}
+\end{center}
+Unsupervised learning discovers data patterns without a specific output. The main goal is to understand what's normal in a dataset. \textit{Clustering} is a key technique that groups similar data points. Applications include customer segmentation, image compression, and bioinformatics motif learning.\bigskip
+
+Reinforcement learning consists in
 \end{document}
