@@ -4,6 +4,7 @@
 \input{../../preamble/preamble.tex}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{booktabs}
 \newcommand{\titolo}{Machine Learning }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -203,5 +204,42 @@ Regression problems consists in approximating real valued functions.
 \end{center}
 Unsupervised learning discovers data patterns without a specific output. The main goal is to understand what's normal in a dataset. \textit{Clustering} is a key technique that groups similar data points. Applications include customer segmentation, image compression, and bioinformatics motif learning.\bigskip
 
-Reinforcement learning consists in
+Reinforcement learning consists in learning a policy, which is a strategy that tells the agent what action to take in any given situation (or state) to maximize its long-term reward. This is often represented as a function that maps a state to an action. Unlike supervised learning, where the model is trained with labeled examples, in reinforcement learning agents learn through a process of trial and error.\bigskip
+
+They don't have a correct answer to guide them. Instead, they receive sparse and time-delayed rewards. This means the feedback (the reward) for a good action might not come immediately, and it might be a simple, numerical value (like +1 for winning a game or -1 for losing). Some examples are:\begin{itemize}
+    \item Game playing: Think of programs that have learned to play chess, Go, or video games better than humans.
+    \item Robotic tasks: A robot learning to navigate a room, pick up an object, or perform a specific manufacturing task.
+    \item Any dynamical system with an unknown or partially known model: This is a broad category that includes things like optimizing traffic flow, managing a power grid, or controlling financial trading strategies.
+\end{itemize}
+\begin{center}
+     \includegraphics[width=0.35\textwidth]{images/RL_diagram.png}
+\end{center}
+In concept learning, the output consists in only two classes, the target function $c:X\rightarrow\{0,1\}$ maps  any kind of input in one of two distinct values. The following example model a program that predict if is a good day to play Tennis, the input set is $$ 
+X=Day\times Outlook \times Temperature \times Humidity \times Wind 
+$$
+the output set is $PlayTennis=\{\text{Yes, No}\}$. An example of data samples:\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+$Day$ & $Outlook$ & $Temperature$ & $Humidity$ & $Wind$ & $PlayTennis$ \\
+\midrule
+D1 & Sunny & Hot & High & Weak & No \\
+D2 & Sunny & Hot & High & Strong & No \\
+D3 & Overcast & Hot & High & Weak & Yes \\
+D4 & Rain & Mild & High & Weak & Yes \\
+D5 & Rain & Cool & Normal & Weak & Yes \\
+D6 & Rain & Cool & Normal & Strong & No \\
+D7 & Overcast & Cool & Normal & Strong & Yes \\
+D8 & Sunny & Mild & High & Weak & No \\
+D9 & Sunny & Cool & Normal & Weak & Yes \\
+D10 & Rain & Mild & Normal & Weak & Yes \\
+D11 & Sunny & Mild & Normal & Strong & Yes \\
+D12 & Overcast & Mild & High & Strong & Yes \\
+D13 & Overcast & Hot & Normal & Weak & Yes \\
+D14 & Rain & Mild & High & Strong & No \\
+\bottomrule
+\end{tabular}
+\end{center}
+Usually, we call \textbf{Hypothesis} a possible learned function $h$, and we define $H$ as the \textbf{Hypothesis space}, such space contains all possible function that can be learnt (all possible approximation of the target function). In this terms, a learning problem is described as a search in the hypothesis space using the given dataset $D$, that aims to find the best possible approximation $h^*$:\begin{equation}
+    h^*=\arg \max_{h\in H} Performance(h,D)
+\end{equation} 
 \end{document}
