@@ -239,7 +239,58 @@ D14 & Rain & Mild & High & Strong & No \\
 \bottomrule
 \end{tabular}
 \end{center}
-Usually, we call \textbf{Hypothesis} a possible learned function $h$, and we define $H$ as the \textbf{Hypothesis space}, such space contains all possible function that can be learnt (all possible approximation of the target function). In this terms, a learning problem is described as a search in the hypothesis space using the given dataset $D$, that aims to find the best possible approximation $h^*$:\begin{equation}
+\section{Performance Evaluation}
+Usually, we call \textbf{Hypothesis} a possible learned function $h$, and we define $H$ as the \textbf{Hypothesis space}, such space contains all possible function that can be learnt (all possible approximation of the target function). In this terms, a learning problem is described as a search in the hypothesis space using the given dataset $D$, that aims to find the best possible approximation $h^*$:\begin{equation}\label{sol_hypothesis}
     h^*=\arg \max_{h\in H} Performance(h,D)
 \end{equation} 
+\subsection{Concept Learning}
+We focus now on the concept learning (binary classification), let's consider a target function\begin{equation}
+    c:X\rightarrow \{X,Y\}
+\end{equation}
+let $D\subset X\rightarrow\{0,1\}$ to be the sample set\begin{equation}
+    D=\bigcup_{i=1}^n\{(x_i,c(x_i))\}
+\end{equation}
+we denote $X_D$ the point of $X$ in the sample set. For now, we assume that the sample set does not have noise:\begin{itemize}
+    \item noise dataset $D=\bigcup_{i=1}^n\{(x_i,c(x_i)+\varepsilon_i)\}, \ \ \varepsilon_i\in\R$
+    \item perfect dataset $D=\bigcup_{i=1}^n\{(x_i,c(x_i))\}$
+\end{itemize}
+in general, the dataset is noisy. We want to find a function $\hat f$ that approximate $c$, as we just said, the hypothesis space $H$ is the set of all hypothesis $h$.\bigskip
+Each hypothesis is a possible solution to the problem \eqref{sol_hypothesis},  it is possible to compare an hypothesis  $h$ with $c$ on a sample in $X_D$.
+\begin{definition}
+    Given a target function $c$ and a set of sample point $X_D$, an hypothesis $h$ is \textbf{consistent} if\begin{equation}
+        h(x)=c(x), \ \ \forall x\in X_D.
+    \end{equation}
+\end{definition}
+The \textbf{Version Space} $VS_{H,D}$ is the set of all consistent hypothesis:\begin{equation}
+    VS_{H,D}=\{h \ : \ h(x)=c(x), \ \ \forall x\in X_D\}\subset H.
+\end{equation}
+A solution that does not lie in the version space is probably not a good solution.\bigskip 
+
+Let's consider an example, let $c$ to be the following target function\begin{equation}
+    c:\N\rightarrow\{-,+\}
+\end{equation}
+the dataset is\begin{equation}
+    D=\{(1,+),(3,+),(5,+),(6,-),
+    (8,-),(10,-)\}
+\end{equation}
+given the hypothesis space $H$, we consider four different hypothesis\begin{align*}
+    &h_1(n)=+\iff n\text{ is odd}\\
+    &h_2(n)=+\iff n\le 5\\
+    &h_3(n)=+\iff n\text{ is prime}\\
+    &h_4(n)=+\iff n\in\{1,3,5\}
+\end{align*}
+if $n=11$ we have\begin{align*}
+    &h_1(n)=+\\
+    &h_2(n)=-\\
+    &h_3(n)=+\\
+    &h_4(n)=-
+\end{align*}
+we can't tell which of the four hypothesis is better than the others. Let's now consider a new hypothesis space $H'$, defined as the power set of $H$\begin{equation}
+    H'=\mathcal P(H)=\{I \ : \ I\subseteq H\}
+\end{equation}
+The set $H'$ contains more information than $H$, let $\theta\in H'$, we define the value of $\theta$ on $x$ in a different way\begin{align}
+    &\theta = \bigcup_i\{h_i\}\\
+    &\theta(x)=\text{maj}\bigcup_i\{h_i(x)\}
+\end{align}
+where the function maj returns the element that is more frequent in a set. It's important to know that, if you have a set where two different items appear the exact same number of times, and no other item appears more often than either of them, then the majority element can't be identified, and the value of the function maj is undefined.
 \end{document}
