@@ -245,9 +245,9 @@ Usually, we call \textbf{Hypothesis} a possible learned function $h$, and we def
 \end{equation} 
 \subsection{Concept Learning}
 We focus now on the concept learning (binary classification), let's consider a target function\begin{equation}
-    c:X\rightarrow \{X,Y\}
+    c:X\rightarrow \{0,1\}
 \end{equation}
-let $D\subset X\rightarrow\{0,1\}$ to be the sample set\begin{equation}
+let $D\subset \{X,Y\}$ to be the sample set\begin{equation}
     D=\bigcup_{i=1}^n\{(x_i,c(x_i))\}
 \end{equation}
 we denote $X_D$ the point of $X$ in the sample set. For now, we assume that the sample set does not have noise:\begin{itemize}
