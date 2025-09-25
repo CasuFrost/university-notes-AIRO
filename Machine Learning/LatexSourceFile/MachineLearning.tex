@@ -280,10 +280,10 @@ given the hypothesis space $H$, we consider four different hypothesis\begin{alig
     &h_4(n)=+\iff n\in\{1,3,5\}
 \end{align*}
 if $n=11$ we have\begin{align*}
-    &h_1(n)=+\\
-    &h_2(n)=-\\
-    &h_3(n)=+\\
-    &h_4(n)=-
+    &h_1(11)=+\\
+    &h_2(11)=-\\
+    &h_3(11)=+\\
+    &h_4(11)=-
 \end{align*}
 we can't tell which of the four hypothesis is better than the others. Let's now consider a new hypothesis space $H'$, defined as the power set of $H$\begin{equation}
     H'=\mathcal P(H)=\{I \ : \ I\subseteq H\}
@@ -292,5 +292,207 @@ The set $H'$ contains more information than $H$, let $\theta\in H'$, we define t
     &\theta = \bigcup_i\{h_i\}\\
     &\theta(x)=\text{maj}\bigcup_i\{h_i(x)\}
 \end{align}
-where the function maj returns the element that is more frequent in a set. It's important to know that, if you have a set where two different items appear the exact same number of times, and no other item appears more often than either of them, then the majority element can't be identified, and the value of the function maj is undefined.
+where the function maj returns the element that is more frequent in a set. It's important to know that, if you have a set where two different items appear the exact same number of times, and no other item appears more often than either of them, then the majority element can't be identified, and the value of the function maj is undefined.\bigskip
+
+With the hypothesis space $H'$, the point $n=11$ can't be classified\begin{equation}
+    \theta(11)=\text{maj}\{h_1(11),h_2(11),h_3(11),h_4(11)\}=\text{maj}\{+,-,+,-\}.
+\end{equation}
+Even if $H'$ is more powerful than $H$, this hypothesis space can't classify an element that can be classified in $H$, this problem is called overfitting.\bigskip
+
+Now let's consider the following target function\begin{equation}
+    c:\N^2\rightarrow\{+,-\}
+\end{equation}
+with the following dataset $D$ that can be plotted on a 2D plane:\begin{center}
+    \includegraphics[width=0.25\textwidth]{images/N2_hypothesis_1.eps} 
+\end{center}
+We consider $H$ as the set of the functions that, assigns at all the points in a specific rectangle the $+$ value, and the $-$ value for all the points outside.
+\begin{eqnarray*}
+    h\in H \iff\Big( \exists R:=\{(x,y) \ : \ a\le x\le b\land c\le y\le d\} : h(x,y)=+\iff (x,y)\in R\Big )
+\end{eqnarray*}
+For that data samples, does not exists a consistent hypothesis, because does not exists a rectangle that contains all the $+$ value point, letting outside the $-$ value points.
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{images/N2_hypothesis_2.eps} 
+\end{center}
+If we consider the hypothesis space $H'=\mathcal P(H)$, geometrically, we can represent a function by a finite number of rectangles, in this case consistent hypothesis are allowed, but no $-$ value points can be predicted.
+\begin{center}
+    \includegraphics[width=0.25\textwidth]{images/N2_hypothesis_3.eps} 
+\end{center}
+Even in this example, a powerful representation of the hypothesis space lead to less generalization. This is known (as previously said) as \textbf{overfitting}, when the hypothesis space is not powerful enough, the problem could not be represented well, this is known as \textbf{underfitting}.\bigskip
+
+If $n$ is a number that determines how big an hypothesis space, we can observe the following trend about the performance of a model.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.65\textwidth]{images/fitting.eps}
+    \caption{overfitting and underfitting trend}
+    \label{img:fitting_trend}
+\end{figure}
+
+\subsection{Error Estimation and Performance Metric}
+We want to define a metric for the performance of a model, to estimate how a given hypothesis $h$ is good respect to the others. We have to introduce some statistical methods, let's consider a target function\begin{equation}
+    f:X\rightarrow Y
+\end{equation}
+where $Y$ is countable (classification problem). Let $\mathcal D$ to be a probability distribution over $X$.
+\begin{definition}
+    If $X$ is a set, $\mathcal D$ is a probability distribution on $X$ if\begin{eqnarray}
+        \forall x\in X, \ \ \mathcal D(x)\in [0,1]
+    \end{eqnarray}
+    and \begin{align*}
+        &\sum_{x\in X}\mathcal D(x)=1 \ \text{if $X$ is countable}\\
+        &\int_X\mathcal D(x)dx=1 \ \text{if $X$ is uncountable}
+    \end{align*}
+\end{definition}
+\begin{definition}
+    Given a target function $f:X\rightarrow Y$, an hypothesis $h$ and a probability distribution $\mathcal D$ on $X$, the \textbf{true error} is the probability that $h$ will misclassify an instance $x\in X$ drawn according to the distribution $\mathcal D$:
+    \end{definition}
+    \begin{equation}
+        \text{error}_{\mathcal D}(h)=
+        \Prob_{x\sim \mathcal D}
+        (f(x)\ne h(x)) 
+    \end{equation}
+\textbf{Note}: With $x\sim \mathcal D$, we mean that $x$ was extracted from $X$ according to the probability distribution $\mathcal D$. We remind that, if $\mathcal D(x)=p$, then, the probability of extracting $x$ from $X$ by taking a random element is $p$.\bigskip
+
+Since we can't compute $f$ for all $x\in X$, the true error can't be computed. We need to define an estimation of the error given by the sample set extracted from $X$.
+\begin{definition}
+    Given a target function $f:X\rightarrow Y$, an hypothesis $h$ and a sample (finite) set $\mathcal S\subset X$, the  \textbf{sample error} is defined as follows:
+\end{definition}\begin{equation}
+        \text{error}_{\mathcal S}(h)=
+        \frac{1}{|\mathcal S|}\sum_{x\in\mathcal S}\delta(f(x)\ne h(x))
+\end{equation}
+where\begin{itemize}
+    \item $\delta(\phi)=1$ if $\phi$ is true
+    \item $\delta(\phi)=0$ if $\phi$ is false.
+\end{itemize}
+The sample error can be computed since, for each $x\in\mathcal S$, we know the value of $f(x)$. Is an approximation of the true error that depends from the sample set $\mathcal S$.\bigskip
+
+Since $\text{error}_{\mathcal S}(h)$ depends from the choice of $\mathcal S$, is not fixed, but we can model it as a random process, by extracting $n$ random values from $X$ according to the distribution $\mathcal D$ to construct $\mathcal S$, and we can evaluate the expected value of $\text{error}_{\mathcal S}(h)$ denoted \begin{equation}
+    \VA(\text{error}_{\mathcal S}(h)).
+\end{equation}
+We want to formalize this expected value, in this case the sample error is a random variable that assign to each subset $\mathcal S$ of $X$ of size $n$ a number between 0 and $1$:
+\begin{align}
+    &\text{error}_{\mathcal S}(h) : \Omega \rightarrow [0,1]\\
+    &\Omega =\{\mathcal S \ : \ \mathcal S \subset X \land |\mathcal S|=n\}
+\end{align}
+in this context, $n$ is fixed. The probability of getting a certain value $\gamma$ from this random variable, is the probability to extract from $X$ a subset $\mathcal S$ of $n$ items such that, the sample error is $\gamma$, and this depends from the probability distribution $\mathcal D$ on $X$. The expected value $\VA(\text{error}_{\mathcal S}(h))$ is now well defined.
+\subsection{Unbiased Estimation}
+\begin{definition}
+    The \textbf{bias} is defined as the expected value of the difference between the sample error and the true error:
+\end{definition}
+    \begin{equation}
+        \VA(\text{error}_{\mathcal S}(h)-\text{error}_{\mathcal D}(h)).
+    \end{equation}
+We want to find an unbiased sample error, in such case:\begin{equation}
+    \text{bias = 0} \implies \VA(\text{error}_{\mathcal S}(h))=\text{error}_{\mathcal D}(h)
+\end{equation}
+To compute an unbiased estimation, we need to train an evaluate an hypothesis $h$ on different set, let $D$ to be the dataset, we have to split $D$ in two disjoint set\begin{align}
+    &D=T\cup S\\
+    &T\cap S = \emptyset
+\end{align}
+Usually, $\frac{|T|}{|D|}\simeq \frac{2}{3}$.
+We use $T$ to train our learning function to get $h$, and then, we calculate the sample error on $S$\begin{equation}
+     \text{error}_{ S}(h)=
+        \frac{1}{| S|}\sum_{x\in S}\delta(f(x)\ne h(x))
+\end{equation}
+is ideal to choose $T$ and $S$ such that they have similar probability distribution over the features, in this case the random variable $\text{error}_{ S}$ is an unbiased estimator for the true error $\text{error}_{ \mathcal D}$. 
+\subsection{The Cross Validation Algorithm and others Performance Metrics}
+There exists an algorithm to estimate the expected value of the sample error, more the dataset $D$ is large, more the estimation will be precise.
+The algorithm \ref{alg:CrossVal} estimate the expected value of the error, with $L$ is denoted a fixed learning algorithm:\begin{itemize}
+    \item $h=L(T)$, is the result of the learning algorithm $L$ applied on the training set $T$
+\end{itemize}
+\begin{algorithm}
+    \caption{K-Fold Cross Validation}\label{alg:CrossVal}
+    \begin{algorithmic}
+    \Require $D$, $k$, $h$, $L$
+    \State partition $D$ in $k$ disjoint sets $S_1,S_2\dots, S_k$
+    \For{$i=1,2\dots,k$}
+    \State $T_i\leftarrow  D\backslash S_i$
+    \State $h_i\leftarrow L(T_i) $
+    \State $\delta_i = \text{error}_{S_i}(h_i)$
+    \EndFor
+    \State\Return $\text{error}_{L,D}=\displaystyle\frac{1}{k}\sum_{i=1}^k\delta_i$
+    \end{algorithmic}
+\end{algorithm}
+We define the accuracy of a learning algorithm $L$ as \begin{equation}
+    \text{accuracy}=1-\text{error}_{L,D}.
+\end{equation}
+The cross-validation algorithm can be used to compare the accuracy of two different learning methods $L_a$ and $L_b$, as shown in algorithm \ref{alg:CrossVal_compare}.
+
+\begin{algorithm}
+    \caption{Accuracy Comparator}\label{alg:CrossVal_compare}
+    \begin{algorithmic}
+    \Require $D$, $k$, $h$, $L$
+    \State partition $D$ in $k$ disjoint sets $S_1,S_2\dots, S_k$
+    \For{$i=1,2\dots,k$}
+    \State $T_i\leftarrow  D\backslash S_i$
+    \State $h_a\leftarrow L_a(T_i) $
+    \State $h_b\leftarrow L_b(T_i) $
+    \State $\delta_i = \text{error}_{S_i}(h_a)-\text{error}_{S_i}(h_b)$
+    \EndFor
+    \State\Return $\bar\delta=\displaystyle\frac{1}{k}\sum_{i=1}^k\delta_i$
+    \end{algorithmic}
+\end{algorithm}
+
+Now that we defined the sample error, we can give a formal definition of overfitting. Let $h$  to be an hypothesis for a model, $h$ is overfitting is exists an hypothesis $h'$ such that\begin{align}
+    &\text{error}_{S}(h)<\text{error}_{S}(h') \\ &\land\\
+    &\text{error}_{\mathcal D}(h)>\text{error}_{\mathcal D}
+\end{align}
+
+Let's consider other performance metrics in binary classification. Let $f:X\rightarrow\{-,+\}$ to be the target function ad let $D$ to be a sample set such that, $90\%$ of elements in $D$ is of class $+$. An hypothesis that always returns $+$ will have an accuracy of $90\%$, in this scenario the dataset is unbalanced, so the accuracy is not a good performance metric for the model. We can consider a table that counts the number of points in the sample set that are well classified or misclassified by an hypothesis:\begin{center}
+    \begin{tabular}{c|cc|}
+\cline{2-3}
+                                 & \multicolumn{2}{c|}{predicted class}                 \\ \hline
+\multicolumn{1}{|c|}{true class} & \multicolumn{1}{c|}{+}              & -              \\ \hline
+\multicolumn{1}{|c|}{+}          & \multicolumn{1}{c|}{true positive}  & false negative \\ \hline
+\multicolumn{1}{|c|}{-}          & \multicolumn{1}{c|}{false positive} & true negative  \\ \hline
+\end{tabular}
+\end{center}
+we can define two additional metrics that is useful when we deal with binary classification:\begin{itemize}
+    \item the \textbf{recall} is the ability of the hypothesis to avoid false negatives and is defined as follows\begin{equation}
+        \frac{\text{true positive}}{\text{true positive}+\text{false negative}}
+    \end{equation}
+    \item the \textbf{precision} is the ability of the hypothesis to avoid false positives and is defined as follows\begin{equation}
+        \frac{\text{true positive}}{\text{true positive}+\text{false positive}}
+    \end{equation}
+\end{itemize}
+the importance of these metrics depend on the application.
+\bigskip
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/conf_matrix.png}
+    \caption{an example of a confusion matrix}
+    \label{img:conf_matrix}
+\end{figure}\bigskip
+
+For the classification problems we can define an extension of the previous table, called \textbf{confusion matrix}, and report how many instances of class $C_i$ are classified in class $C_j$, the main diagonal contains the accuracy for each class. An example is shown in figure \ref{img:conf_matrix}.\bigskip
+
+We consider now some performance metrics for the regression problems. Let $f:X\rightarrow\R^d$ to be the target function, and let $\hat f$ to be the learned function, for each sample $(x_i,f(x_i))$ in the dataset, we can compute the euclidian distance\begin{equation}
+    |\hat f(x_i)-f(x_i)|.
+\end{equation}
+Let $n$ to be the number of samples, the three main metrics are the following:\begin{itemize}
+    \item Mean Absolute Error\begin{equation}
+        MAE=\frac{1}{n}\sum_{i=1}^n|\hat f(x_i)-f(x_i)|
+    \end{equation}
+    \item Mean Squared Error\begin{equation}
+        MSE=\frac{1}{n}\sum_{i=1}^n(\hat f(x_i)-f(x_i))^2
+    \end{equation}
+    \item Root Mean Squared Error\begin{equation}
+        RMSE=\sqrt{MSE}
+    \end{equation}
+\end{itemize}
+
+The cross validation algorithm can be extended for the regression problems as shown in algorithm \ref{alg:CrossVal_regression}.
+
+\begin{algorithm}
+    \caption{K-Fold Cross Validation for Regression}\label{alg:CrossVal_regression}
+    \begin{algorithmic}
+    \Require $D$, $k$, $h$, $L$
+    \State partition $D$ in $k$ disjoint sets $S_1,S_2\dots, S_k$
+    \For{$i=1,2\dots,k$}
+    \State $T_i\leftarrow  D\backslash S_i$
+    \State $h_i\leftarrow L(T_i) $
+    \State $\delta_i = MAE_{S_i}(h_i)$
+    \EndFor
+    \State\Return $\text{error}_{L,D}=\displaystyle\frac{1}{k}\sum_{i=1}^k\delta_i$
+    \end{algorithmic}
+\end{algorithm}
 \end{document}
