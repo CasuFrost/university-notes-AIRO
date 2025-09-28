@@ -95,14 +95,15 @@ everything is defined respect to the base frame, usually denoted as $\Sigma_0$.
 \end{figure}
 \bigskip
 
-The robot shown in figure \ref{img:spatialR4} is an \textit{R4 robot} (4 revolut joints) with three links. With ${}^0\mathbf p_e$ and $\Sigma_e$ we denote the position and the reference frame of the \textbf{end effector}, if there are a 0 subscript to a vector, we mean that is expressed in the base reference frame.\bigskip
+The robot shown in figure \ref{img:spatialR4} is an \textit{R4 robot} (4 revolut joints) with three links. With ${}^0\mathbf p_e$ and $\Sigma_e$ we denote the position and the reference frame of the \textbf{end effector}, if there are a 0 supscript to a vector, we mean that is expressed in the base reference frame.\bigskip
 
 With \textbf{Direct Kinematics}, we define the problem to find what are the \textbf{pose} (position and orientation) of the end effector, in function of the joint's angles. \begin{align}
-    &{}^0\mathbf p_e=Kin_p(\boldsymbol{\theta})\\&\boldsymbol{\theta}=\begin{pmatrix}
+    &Kin_p(\boldsymbol{\theta}):\Sigma_0\rightarrow\Sigma_e\\
+    &\boldsymbol{\theta}=\begin{pmatrix}
         \theta_1&\theta_2&\theta_3&\theta_4
     \end{pmatrix}^T
 \end{align}
-How can we compute $Kin_p(\boldsymbol{\theta})$? This is given by an homogeneous $4\times 4$ matrix defined as follows:\begin{equation}
+With $\Sigma_e$ is denoted the reference frame of the end effector. How can we compute $Kin_p(\boldsymbol{\theta})$? This is given by an homogeneous $4\times 4$ matrix defined as follows:\begin{equation}
     {}^0T_e=\begin{pmatrix}
         & & & \\
         & {}^0R_e & &{}^0\mathbf p_e \\
@@ -117,9 +118,11 @@ where\begin{itemize}
 
 \noindent\textbf{Recall}: $SO(3)$ is the group of all the orthogonal $3\times 3$ matrices with determinant equals to 1.\bigskip
 
-The matrix ${}^0T_e$ is obtained by multiplying $n$ matrix (where $n$ is the number of joints), each matrix represent the position of the $i$-th joints frame in function of the $i-1$-th joint's angle\begin{align}
+\noindent The matrix ${}^0T_e$ is obtained by multiplying $n$ matrix (where $n$ is the number of joints)\begin{align}
      &{}^0T_e= {}^0A_1(\theta_1) {}^1A_2(\theta_2)\dots {}^{n-1}A_n(\theta_n)=\\&\prod_{i=0}^{n-1}{}^iA_{i+1}(\theta_{i+1}).
 \end{align}
+Each \textit{homogeneous matrix} $^{i-1}A_i$ describe the pose of the $i$-th joint's frame respect to the previous joint's frame, and depends from $\theta_i$ (the $i$-th joint's angle). A more detailed description of the matrix describing the direct kinematics will be given later.\bigskip
+
 
 If there are another frame $\Sigma_w$, the new matrix can be computed as follows\begin{equation}
     {}^w T_e={}^w T_0{}^0 T_e.
@@ -130,7 +133,7 @@ If there are another frame $\Sigma_w$, the new matrix can be computed as follows
 The \textbf{Inverse Kinematics} is the opposite problem, given a position ${}^0\mathbf p_e$ for the end effector, we want to find the values of $\boldsymbol\theta$ such that\begin{equation}
     {}^0\mathbf p_e=Kin_p(\btheta)
 \end{equation}
-to find $\btheta$, we have to solve a non-linear system of equations, this is generally an undecidable problem, but for some specific cases, there exists a closed form, that can be found analytically, there are also numerical methods. Clearly, for the positions out of the work space, the system does not admit solutions (also his can be checked analytically).
+to find $\btheta$, we have to solve a non-linear system of equations, this is generally an undecidable problem, but for some specific cases, there exists a closed form, that can be found analytically, there are also numerical methods. Clearly, for the positions out of the work space, the system does not admit solutions (also this can be checked analytically).
 \section{About the End Effector Velocity}
 Let's now consider \textbf{Differential Kinematics}, that is the problem to find the end effector velocity in the workspace given the velocity of the joint's angles. 
 Since the superposition principle is valid, the components resulting from the movement of each individual joint, which constitute the final velocity of the end effector, can be considered separately. It is important to know that the velocity component of the end effector given by a joint, is always orthogonal to the rotation axis of that joint.\bigskip
@@ -189,7 +192,7 @@ the matrix\begin{equation}
 it's called \textbf{basic Jacobian}.\bigskip
 
 The Jacobian matrix is a mapping from the joint velocity space to the end effector velocity space. Let's ignore the angular velocity for now, suppose that we want to impose to the end effector a desired linear velocity (in a specific time instant)\begin{equation}
-    \mathbf v=\mathbf v_d\in\R^2
+    \mathbf v=\mathbf v_d\in\R^3
 \end{equation}
 we need to find the values for the vector $\dot\btheta$ such that \begin{equation}\label{eq:diff_inv_kin}
     \mathbf v_d=J_L(\btheta)\dot\btheta
@@ -204,7 +207,7 @@ but this is not the general case, if $n>3$, the system of equations given in \eq
 if the determinant of $J_L^{-1}$ is zero, the system admit infinite solutions if and only if the desired velocity vector $\mathbf v_d$ is in the range space of $J_L^{-1}$\begin{equation}
     \det J_L^{-1}=0\implies \exists \text{ inf. sol. }\iff   \mathbf v_d\in \text{Range}(J_L^{-1})
 \end{equation}
-we remind that the range space of a matrix, is the set of all the linear combinations of the matrix's columns. If this isn't true, the system does not admit any solution, it means that any combination of velocity $\dot\btheta$ could realize the desired end effector velocity. 
+we remind that the range space of a matrix, is the set of all the linear combinations of the matrix's columns. If this isn't true, the system does not admit any solution, it means that no possible combination of velocity $\dot\btheta$ could realize the desired end effector velocity. 
 \subsection{Singularity}
 Let's talk about \textbf{singularities} in the joint velocity space, we will give a geometric example. Let's consider a 2R planar robot, with a fixed joints configuration $\btheta$, the Jacobian is a $2\times 2$ matrix. Let $\mathbf v_d$ to be the desired velocity, the system is the following\begin{equation}
     \begin{pmatrix}

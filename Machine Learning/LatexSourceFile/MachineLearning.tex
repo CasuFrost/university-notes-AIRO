@@ -112,7 +112,7 @@ Let's introduce some notation:\begin{itemize}
     \item with $\hat V$ we  define the \textbf{learned function}, the approximation of $V$ that we want to find.
     \item with $V_{train}(b)$ we define the value of $V$ obtained at $b$, where $b$ is a part of a data set that is given. We will use the values of $V_{train}$ on the data set to synthesize $\hat V$.
     \item with $D$ we define the given data set:\begin{equation}
-        D=\bigcup_{i=1}^n\{b_i,V_{train}(b_i)\}
+        D=\bigcup_{i=1}^n\{(b_i,V_{train}(b_i))\}
     \end{equation}
     $n$ is the number of the available data.
 \end{itemize}
@@ -156,16 +156,8 @@ There are different types of machine learning problems:\begin{itemize}
 
 \begin{definition}
     Given a function $f:X\rightarrow Y$, and a training set $X_D\subset X$ containing information about $f$, \textbf{learning} the function $f$ means computing an approximated function $\hat f$ such that is much close as possible to $f$ on $X$\begin{equation}
-        \hat f(x)\simeq f(x), \ \ x\in X
+        \hat f(x)\simeq f(x), \ \ x\in X.
     \end{equation}
-    more formally, we want to find $\hat f$ that minimize the following integral:\begin{equation}
-        \int_{X}|\hat f(x)-f(x)|dx
-    \end{equation}
-    if $X\subseteq \R^n$ and is uncountable, and 
-    \begin{equation}
-        \sum_{x\in X}|\hat f(x)-f(x)|
-    \end{equation}
-    if $X$ is countable.
 \end{definition}
 This is not a simple problem, $f$ is not computable, so the difference $f-\hat f$, and $X$ is usually uncountable ora big set, way bigger than the training set $X_D$. \bigskip
 
@@ -276,7 +268,7 @@ the dataset is\begin{equation}
 given the hypothesis space $H$, we consider four different hypothesis\begin{align*}
     &h_1(n)=+\iff n\text{ is odd}\\
     &h_2(n)=+\iff n\le 5\\
-    &h_3(n)=+\iff n\text{ is prime}\\
+    &h_3(n)=+\iff n\text{ is either 1 or prime}\\
     &h_4(n)=+\iff n\in\{1,3,5\}
 \end{align*}
 if $n=11$ we have\begin{align*}
@@ -334,12 +326,17 @@ We want to define a metric for the performance of a model, to estimate how a giv
 \end{equation}
 where $Y$ is countable (classification problem). Let $\mathcal D$ to be a probability distribution over $X$.
 \begin{definition}
-    If $X$ is a set, $\mathcal D$ is a probability distribution on $X$ if\begin{eqnarray}
+    If $X$ is a countable subset of $\R^n$, $\mathcal D$ is a probability distribution on $X$ if\begin{eqnarray}
         \forall x\in X, \ \ \mathcal D(x)\in [0,1]
     \end{eqnarray}
     and \begin{align*}
-        &\sum_{x\in X}\mathcal D(x)=1 \ \text{if $X$ is countable}\\
-        &\int_X\mathcal D(x)dx=1 \ \text{if $X$ is uncountable}
+        &\sum_{x\in X}\mathcal D(x)=1 
+    \end{align*}
+    if $X$ is an uncountable subset of $\R^n$,  $\mathcal D$ is a probability distribution on $X$ if \begin{eqnarray}
+        \forall x\in X, \ \ \mathcal D(x)\ge 0
+    \end{eqnarray}
+    \begin{align*}
+        &\int_X\mathcal D(x)dx=1
     \end{align*}
 \end{definition}
 \begin{definition}
@@ -379,7 +376,7 @@ in this context, $n$ is fixed. The probability of getting a certain value $\gamm
     The \textbf{bias} is defined as the expected value of the difference between the sample error and the true error:
 \end{definition}
     \begin{equation}
-        \VA(\text{error}_{\mathcal S}(h)-\text{error}_{\mathcal D}(h)).
+        \VA(\text{error}_{\mathcal S}(h))-\text{error}_{\mathcal D}(h).
     \end{equation}
 We want to find an unbiased sample error, in such case:\begin{equation}
     \text{bias = 0} \implies \VA(\text{error}_{\mathcal S}(h))=\text{error}_{\mathcal D}(h)
