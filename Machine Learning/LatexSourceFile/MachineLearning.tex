@@ -325,7 +325,7 @@ We want to define a metric for the performance of a model, to estimate how a giv
     f:X\rightarrow Y
 \end{equation}
 where $Y$ is countable (classification problem). Let $\mathcal D$ to be a probability distribution over $X$.
-\begin{definition}
+\begin{definition}\label{def:prob_distr}
     If $X$ is a countable subset of $\R^n$, $\mathcal D$ is a probability distribution on $X$ if\begin{eqnarray}
         \forall x\in X, \ \ \mathcal D(x)\in [0,1]
     \end{eqnarray}
@@ -492,4 +492,105 @@ The cross validation algorithm can be extended for the regression problems as sh
     \State\Return $\text{error}_{L,D}=\displaystyle\frac{1}{k}\sum_{i=1}^k\delta_i$
     \end{algorithmic}
 \end{algorithm}
+\section{Probability Recap}
+Consider the following action\begin{equation}
+    A_t=\text{ leave the house $t$ minutes before the flight}
+\end{equation}
+If we apply this action, what will be the answer to the question\begin{quote}
+    The action $A_t$ will it get me there on time?
+\end{quote}
+The answer can't be a simple \textit{Yes} or \textit{No}, because depends from a series of casual factors that are unpredictable (such as the traffic reports, or a possible flat tire). The probability is needed to represents the uncertainties:\begin{itemize}
+\item Given the available evidence, $A_{25}$ will get me at the airport on time with
+probability 0.04
+ \item Given the available evidence, $A_{60}$ will get me at the airport on time with
+probability 0.84
+ \item Given the available evidence, $A_{1440}$ will get me at the airport on time with
+probability 0.999.
+\end{itemize}
+In this context, the set of \textit{all possible elementary events} that can occurs is called \textbf{Sample Space}, and is usually denoted $\Omega$.
+\begin{definition}
+    A \textbf{Discrete Probability Space} is a tuple $(\Omega,\mathcal A,\Prob)$ where\begin{itemize}
+        \item $\Omega$ is the sample set of the elementary events.
+        \item $\mathcal A\subseteq\mathcal P(\Omega)$ is a $\sigma$-algebra, and contains all the events that can occurs, for which we can calculate a probability. $\mathcal A$ satisfies the following properties:\begin{itemize}
+            \item $\Omega\in\mathcal A$
+            \item $A\in\mathcal A\implies A^C=\Omega\backslash A\in \mathcal A$
+            \item if $\{A_i\}\subset\mathcal A$ is a countable sequence of events, then $\bigcup_i\{A_i\}\in\mathcal A$.
+        \end{itemize}
+        \item $\Prob$ is the \textbf{probability measure}, is a function $\Prob:\mathcal A\rightarrow[0,1]$ that assigns a probability to each event in $\mathcal A$ and satisfies the following properties:\begin{itemize}
+            \item $\Prob(\Omega)=\displaystyle\sum_{\omega\in\Omega}\Prob(\{\omega\})=1$
+            \item if $\{A_i\}$ is a countable collection of disjoint sets in $\mathcal A$, then\begin{equation}
+                \Prob\left(\bigcup_{i}A_i\right)=\sum_i\Prob(A_i).
+            \end{equation}
+        \end{itemize}
+    \end{itemize}
+\end{definition}
+\begin{definition}
+    Given a probability space $(\Omega,\mathcal A,\Prob)$, a \textbf{random variable} is a function $X:\Omega\rightarrow Y$.
+\end{definition}
+The probability $\Prob$ induces a \textit{probability distribution} on a random variable $X$:\begin{equation}
+    \Prob(X=x_i)=\sum_{\omega\in\Omega \ : \ X(\omega)=x_i}\Prob(\omega).
+\end{equation}
+\begin{definition}
+    Given a probability space $(\Omega,\mathcal A,\Prob)$ a \textbf{proposition} $a$ is an event in $\mathcal A$, associated with a random variable $A:\Omega\rightarrow\{True,False\} $ such that\begin{equation}
+        a := A \text{ is } True := \{\omega\in\Omega \ : \ A(\omega)=True\}.
+    \end{equation}
+\end{definition}
+We can use the first order logic to combine and operates on propositions\begin{align}
+    &\lnot a := A \text{ is } False := \{\omega\in\Omega \ : \ A(\omega)=False\}\\
+    &a\land b := A \text{ and } B \text{ is } True :=\{\omega\in\Omega \ : \ A(\omega)=B(\omega)=True\}\\
+    &\lnot a\lor b := A \text{ is }False\text{ or } B \text{ is } True :=\{\omega\in\Omega \ : \ A(\omega)=False\lor B(\omega)=True\}
+\end{align}
+Since a proposition is an element of $\mathcal A$, we can calculate the probability:\begin{equation}
+    \Prob(\lnot a\lor b)=\sum_{\omega\in\Omega \ : \ A(\omega)=False\lor B(\omega)=True}\Prob(\omega)
+\end{equation}
+The Definition \ref{def:prob_distr} refers to a probability distribution, if $X:\Omega\rightarrow Y$ is a random variable, the probability distribution $\mathcal D$ assigns a probability to each element in $\mathcal P(Y)$.\bigskip
+
+We will give now an example of a probability space. Let's consider the rolling of a dice, in this case we have\begin{itemize}
+    \item the sample set $\Omega=\{1,2,3,4,5,6\}$
+    \item the $\sigma$-algebra $\mathcal A = \{\{1\},\{1,2\}\dots\}$
+    \item the probability $\Prob$ defined as follows\begin{equation}
+        \forall\omega\in \Omega, \ \Prob(\{\omega\})=\frac{1}{6}.
+    \end{equation}
+\end{itemize}
+The probability of getting an odd number is\begin{equation}
+    \Prob(\{1,3,5\})=\Prob(\{1\})+\Prob(\{3\})+\Prob(\{5\})=\frac{1}{2}
+\end{equation}
+Let's consider the following random variable\begin{align}
+    &X:\Omega\rightarrow\{-20,30\}\\
+    &X(\omega)=30\iff\omega\in\{1,2\} 
+\end{align}
+$X$ represents a gamble on the dice, if the result is less than 3, the player wins 30 euros, else, he loses 20 euros. The probability of winning is\begin{equation}
+    \Prob(\{1,2\})=\frac{1}{3}.
+\end{equation}
+If we have $n$ random variables $\{X_i\}$, it is possible to consider the \textbf{joint probability distribution}, inducted by the joint probability function.
+
+Let $X_1,X_2$ to be two distinct random variables on two distinct probability spaces\begin{align}
+    &X_1:\Omega_1\rightarrow Y_1 \text{ for the space }(\Omega_1,\mathcal A_1,\Prob_1)\\
+    &X_2:\Omega_2\rightarrow Y_2 \text{ for the space }(\Omega_2,\mathcal A_2,\Prob_2)
+\end{align}
+where $\mathcal D_1$ is the distribution on $X_1$ and $\mathcal D_2$ is the distribution on $X_2$, the joint distribution $\mathcal D$ is defined as follows:\begin{align}
+    &\text{let }x_1\in Y_1, \ \ x_2\in Y_2\\
+    &\mathcal D(X_1=x_1, \ X_2=x_2)=\Prob(\{(\omega_1,\omega_2)\in\Omega_1\times\Omega_2 \ : \ X_1(\omega_1)=x_1\land X_2(\omega_2)=x_2\})
+\end{align}
+where $\Prob:\mathcal A_1\times\mathcal A_2\rightarrow[0,1]$ is the joint probability and defines the probability that two events from the different probability space occurs.\bigskip
+
+If $a$ and $b$ are two events/propositions, we define the \textbf{conditional probability} as follows:\begin{equation}
+    \Prob(a|b)=\frac{\Prob(a\land b)}{\Prob(b)}, \ \ \text{if }\Prob(b)\ne0
+\end{equation}
+it represents the probability that $a$ occurs knowing that $b$ is true. The \textbf{product rule} holds:\begin{equation}
+    \Prob(a,b)=\Prob(a\land b)=\Prob(a|b)\Prob(b)=\Prob(b|a)\Prob(a)
+\end{equation}
+The following equality is called \textbf{chain rule} and is needed to calculate the probability that multiple events $A_1,A_2\dots A_n$ occurs:\begin{align}
+    &\Prob(A_1,A_2\dots A_n)=\prod_{i=1}^n\Prob(A_i|A_1,\dots A_{i-1})=
+    \\ &\prod_{i=1}^n\left( A_i|\bigcap_{j=1}^{i-1} A_j \right).
+\end{align}
+\textbf{Note}: We will use the following abuse of notation, if $\Prob$ is the probability function for a probability space $(\Omega,\mathcal A,\Prob)$, and $X$ is a random variable on $\Omega$, we use the same symbol $\Prob$ to denote a probability distribution on $X$\begin{align}
+    &\Prob(A\in\mathcal A) \ \ \text{in this context $\Prob$ is the probability function}\\
+    &\Prob(X=x_i) \ \ \text{in this context $\Prob$ is the probability distribution.}
+\end{align}
+\begin{definition}
+    Given a probability space $(\Omega,\mathcal A,\Prob)$, and two events $A,B\in\mathcal A$, we say that $A$ and $A$ are \textbf{independent} if and only if\begin{equation}
+        \Prob(A, B)=\Prob(A\land B)=\Prob(A)\Prob(B).
+    \end{equation}
+\end{definition}
 \end{document}
