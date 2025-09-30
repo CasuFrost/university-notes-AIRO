@@ -492,6 +492,333 @@ The cross validation algorithm can be extended for the regression problems as sh
     \State\Return $\text{error}_{L,D}=\displaystyle\frac{1}{k}\sum_{i=1}^k\delta_i$
     \end{algorithmic}
 \end{algorithm}
+\chapter{Decision Trees}
+Let's consider the following classification problem, we have a target function\begin{equation}
+    c:X\rightarrow C
+\end{equation}
+and a data set \begin{equation}
+    D=\bigcup_{i=1}^n\{(x_i,y_i)\}\subset X\times C
+\end{equation}
+our approach is to define the hypothesis space $H$ and search among all the possible solutions. Clearly we would like to find a solution $h^*\in D$ such that\begin{equation}
+    h^*(x')\simeq f(x'), \ \ \forall x'\notin D.
+\end{equation}
+\textbf{Recall}: About the notation abuse, we say that $x'\in D$ if $\exists (x_i,y_i)\in D $ such that $x'=x_i$.\bigskip 
+
+In this chapter we will see how to define the hypothesis space $H$ with \textit{decision trees}, let's assume that we are dealing with a finite problem, where \begin{equation}
+    X=A_1\times \dots \times A_m \text{ with }A_i \text{ finite}
+\end{equation}
+and clearly $C$ is a finite set of classes.
+\begin{definition}
+    In the context of classification problems, a \textbf{decision tree} is a tree such that, each node is labeled with an attribute $A_i$, each edge is labeled with a value of an attribute $a_{i,j}\in A_i$, and each leaf assigns a classification value $c\in C$.
+\end{definition}
+A decision tree decides the class for each input $x\in X$, so we define the hypothesis space $H$ as the set of all possible decision trees.
+The tree $h'$ showed in figure \ref{img:dec_tree}, defines the following value\begin{align}
+    &h'(a_{1,4},a_{2,2},a_{3,2})=c_1
+\end{align}
+Let's consider the following example about tennis, the input space $X$ is\begin{align}
+    &X = Outlook\times Temperature\times Humidity\times Wind\\
+    &Outlook=\{sunny,overcast,rain\}\\
+    &Temperature=\{hot,mild,cold\}\\
+    &Humidity=\{normal,high\}\\
+    &Wind=\{weak,strong\}
+\end{align}
+the target function $PlayTennis:X\rightarrow\{Yes,No\}$ should decides if the conditions are feasible to play tennis outside. The dataset is the onw shown in table \ref{tab:tennis_data_big}.
+\begin{table}[h]
+    \centering
+    \caption{Dataset for the tennis problem}
+    \label{tab:tennis_data_big}
+\begin{tabular}{cccccc}
+\toprule
+$Day$ & $Outlook$ & $Temperature$ & $Humidity$ & $Wind$ & $PlayTennis$ \\
+\midrule
+D1 & Sunny & Hot & High & Weak & No \\
+D2 & Sunny & Hot & High & Strong & No \\
+D3 & Overcast & Hot & High & Weak & Yes \\
+D4 & Rain & Mild & High & Weak & Yes \\
+D5 & Rain & Cool & Normal & Weak & Yes \\
+D6 & Rain & Cool & Normal & Strong & No \\
+D7 & Overcast & Cool & Normal & Strong & Yes \\
+D8 & Sunny & Mild & High & Weak & No \\
+D9 & Sunny & Cool & Normal & Weak & Yes \\
+D10 & Rain & Mild & Normal & Weak & Yes \\
+D11 & Sunny & Mild & Normal & Strong & Yes \\
+D12 & Overcast & Mild & High & Strong & Yes \\
+D13 & Overcast & Hot & Normal & Weak & Yes \\
+D14 & Rain & Mild & High & Strong & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth]{images/decision_tree.eps}
+    \caption{Example of a decision tree}
+    \label{img:dec_tree}
+\end{figure}
+
+\begin{center}
+	\begin{tabular}{>{\centering\arraybackslash}m{3in}>{\arraybackslash}m{3in}}
+        \includegraphics[width=0.3\textwidth ]{images/tennis_tree.eps} & Here's an example of a decision tree for the tennis problem. This representation is easy to classify a new instance that are not in the dataset, this tree defines rules such as: If the outlook is $overcast$, the output is $Yes$. The policy and the decisions are \textit{explicit}, and provides an explanation for the outcomes.
+		\\
+	\end{tabular}
+\end{center}
+
+In the hypothesis space $H$ we have all possible decision trees, that are finite for this kind of problems. Decision trees represent a disjunction of conjunctions of constraints, that can be easily described by looking at the tree, traveling the traces of the tree backward starting from the outcomes. An example is shown in figure \ref{img:conj_tree}. The recursive algorithm \ref{alg:dec_tree} works to compute one decision tree given the dataset $D$.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{images/conj_tree.eps}
+    \caption{How paths in the tree transform into a logical formula}
+    \label{img:conj_tree}
+\end{figure}
+
+\begin{algorithm}
+    \caption{Computing Decision Tree for Binary Classification}\label{alg:dec_tree}
+    \begin{algorithmic}
+    \Require $D=\{(x_i,c_i)_i\}$, $Att=\{A_1\dots,A_m\}$
+    \If{$\forall (x_i,c_i)\in D, \ \ c_i=+$}
+    \State\Return $N(+)$
+    \EndIf
+    \If{$\forall (x_i,c_i)\in D, \ \ c_i=-$}
+    \State\Return $N(-)$
+    \EndIf
+    \If{$Att=\emptyset$}
+    \State $D_+=\{(x_i,c_i)\in D \ : \ c_i=+\}$
+    \State $D_-=D\backslash D_+$
+    \If{$|D_+|>|D_-|$}
+    \State\Return  $N(+)$
+    \EndIf
+    \If{$|D_-|>|D_+|$}
+    \State\Return  $N(-)$
+    \EndIf
+    \State\Return a random choice between $N(+)$ and $N(-)$
+    \EndIf
+    \State $A_i = \texttt{criteria}(Att)\in Att$
+    \State we create a node $N(A_i)$
+    \For{each $a_{i,j}\in A_i$}
+    \State create an edge $N(A_i)\longrightarrow_{a_{i,j}} N(\ )$
+    \State $D'=\{(x_i,c_i)\in D \ : \ x_i(A_i)=a_{i,j} \}$
+    \State $N(\ )=$RecursiveCall($D',Att\backslash\{A_i\}$)
+    \EndFor
+    \State\Return the tree with root $N(A_i)$
+    \end{algorithmic}
+\end{algorithm}
+
+We denote $N(+)$ a leaf node with the positive value, and $N(-)$ a leaf node with the negative value. If $A_i$ is an attribute, we denote $N(A_i)$ an intermediate node with the attribute $A_i$. We denote $N(\ )$ a node for which a value has not yet been assigned.
+
+\section{The Information Gain}
+The function \texttt{criteria}$(Att)$ choose one attribute from the remaining ones in the set $Att$, and defines decision policy. What is the best attribute to choose during the algorithm? That procedure defines the behavior of the algorithm. Let's consider the following example for a reduced version of the tennis problem, with the dataset shown in table \ref{tab:tennis_data}.
+
+\begin{table}[h]
+    \centering
+    \caption{Dataset for the reduced tennis problem}
+    \label{tab:tennis_data}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        {$Day$} & {$Outlook$} & {$Temperature$} & {$PlayTennis$} \\
+        \hline
+        D1 & Sunny & Hot & Yes \\
+        \hline
+        D2 & Sunny & Cold & Yes \\
+        \hline
+        D3 & Rain & Hot & No \\
+        \hline
+        D4 & Rain & Cold & No \\
+        \hline
+    \end{tabular}
+\end{table}
+
+If we apply the algorithm on this sample, there will be two possible solutions, one for the case where we choose $Outlook$ as the first choice for an attribute, one if we choose $Temperature$, the resulting trees as shown in figure \ref{img:tennis_criteria}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/tennis_criteria.eps}
+    \caption{Different decision trees}
+    \label{img:tennis_criteria}
+\end{figure}
+
+In general, not making the correct choice in the attributes can lead to a tree that incapsulate less information.  \begin{definition}
+    Given an example dataset $S$, let $p_\oplus$ to be the proportion of positive examples in $S$, and $p_\ominus=1-p_\oplus$  the proportion of negative examples in $S$, the \textbf{entropy} of $S$ is the following value\begin{equation}
+        Entropy(S)=-p_\oplus\log_2p_\oplus-p_\ominus\log_2p_\ominus.
+    \end{equation}
+\end{definition}
+The curve of the $Entropy$ function is shown in figure \ref{fig:entropia_binaria}.
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            % Impostazioni del grafico
+            xlabel={$p_\oplus$},
+            ylabel={$Entropy$},
+            xmin=0, xmax=1, % Dominio della funzione
+            ymin=0, ymax=1.1, % Imposta un intervallo comodo per l'asse Y
+            grid=both, % Mostra la griglia
+            axis lines=middle, % Assi centrati
+            xtick={0, 0.25, 0.5, 0.75, 1},
+            ytick={0, 0.5, 1},
+            domain=0.001:0.999, % Evita x=0 e x=1, dove log è indefinito
+            samples=100, % Numero di punti per una curva più liscia
+        ]
+        \addplot[
+            blue, 
+            thick, 
+            smooth
+        ] 
+        {
+            -(x * (ln(x) / ln(2))) 
+            - ((1-x) * (ln(1-x) / ln(2)))
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The curve of the $Entropy$ function}
+    \label{fig:entropia_binaria}
+\end{figure}
+
+The entropy is minimum if we have all positive samples or all negative samples. The goal is to reduce the entropy of a dataset. We can partition the dataset in function of the different attributes, and then calculate the entropy for all the partitions. \bigskip
+
+Given the table \ref{tab:tennis_data}, we can create two partitions, one by selecting $Outlook$, and one by selecting $Temperature$, as shown in figure \ref{img:partitions}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/partitions.png}
+    \caption{Partitions of the dataset}
+    \label{img:partitions}
+\end{figure}
+
+Splitting the dataset with outlook will generate two subsets with all positive/negative examples, so this two subsets will have an entropy of zero. In the other case, with temperature, the entropy will be 1.\bigskip
+
+\noindent In the case of multi-valued target function (classification problem that is not binary), we can define the proportion of each class, denoted $p_i$, with $n$ classes, the entropy is\begin{equation}
+    Entropy(S)=\sum_{i=1}^n-p_i\log_2p_i.
+\end{equation}
+\textbf{Note}: We define $0\log_20=0$.
+\begin{definition}
+    Given an example set $S$ and an attribute $A$, we define the \textbf{information gain} as the expected reduction in entropy of $S$ caused by knowing the value of the attribute $A$\begin{equation}
+        Gain(S,A)=Entropy(S)-\sum_{v\in A}\frac{|S_v|}{|S|}Entropy(S_v)
+    \end{equation}
+    where\begin{equation}
+        S_v=\{s\in S \ : \ s(A)=v\}
+    \end{equation}
+\end{definition}
+
+If we take in example the dataset in the table \ref{tab:tennis_data_big}, we see that it have 9 positive samples and 5 negative samples, the entropy of the set is \begin{equation}
+    -\frac{9}{14}\log_2\left(\frac{9}{14}\right)-\frac{5}{14}\log_2\left(\frac{5}{14}\right)=0.94   
+\end{equation}
+We want to calculate the information gain for the attribute $Wind$, that can be $Weak$ or $Strong$. If we partition the sub-dataset for this attribute, we get one dataset with 6 positive values and 2 negative values, and a sub-dataset with 3 positive values and 3 negative values.
+
+\begin{table}[h]
+    \centering
+    \caption{Split Dataset for the tennis problem}
+    \label{tab:tennis_data_big_split}
+\begin{tabular}{cccccc}
+\toprule
+ $Outlook$ & $Temperature$ & $Humidity$ & \textbf{Wind} & $PlayTennis$ \\
+\midrule
+ Sunny & Hot & High & Weak & No \\
+Overcast & Hot & High & Weak & Yes \\
+ Rain & Mild & High & Weak & Yes \\
+ Rain & Cool & Normal & Weak & Yes \\
+ Sunny & Mild & High & Weak & No \\
+ Sunny & Cool & Normal & Weak & Yes \\
+ Rain & Mild & Normal & Weak & Yes \\
+ Overcast & Hot & Normal & Weak & Yes \\
+
+\bottomrule
+\end{tabular}
+\begin{tabular}{cccccc}
+\toprule
+ $Outlook$ & $Temperature$ & $Humidity$ & \textbf{Wind} & $PlayTennis$ \\
+\midrule
+Sunny & Hot & High & Strong & No \\
+ Rain & Cool & Normal & Strong & No \\
+ Overcast & Cool & Normal & Strong & Yes \\
+ Sunny & Mild & Normal & Strong & Yes \\
+ Overcast & Mild & High & Strong & Yes \\
+Rain & Mild & High & Strong & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+we have that\begin{align}
+    &|S_{weak}|=8\\
+     &|S_{strong}|=6\\
+     &|S|=14\\
+     &Entropy(S_{weak})=0.811\\
+     &Entropy(S_{strong})=1
+\end{align}
+The information gain is\begin{align}
+    &Gain(S,Wind)=Entropy(S)-\frac{8}{14}Entropy(S_{weak})-\frac{6}{14}Entropy(S_{strong})\\
+    &=0.94-\frac{8}{14}0.811-\frac{6}{14}=0.048.
+\end{align}
+
+This is a little information gain. A possible criteria for the choice of the next attribute in the algorithm \ref{alg:dec_tree}, is to select the attribute with the highest information gain, in the case of the dataset \ref{tab:tennis_data_big}, we have that\begin{align}
+    &Gain(S,Outlook)=0.245\\
+     &Gain(S,Humidity)=0.151\\
+      &Gain(S,Wind)=0.048\\
+       &Gain(S,Temperature)=0.029
+\end{align}
+
+\noindent We call \texttt{ID3} the decision tree algorithm \ref{alg:dec_tree} with the information gain criteria. This algorithm can be seen as an algorithm that makes a search in the space of all possible hypothesis/decision trees.
+
+The hypothesis space of decision trees is \textit{complete}, and we can represent all possible subsets of the input space. The algorithm returns one single hypothesis that is consistent with the dataset, this algorithm cannot find the global optimum function but a local minima.
+
+This algorithm is not incremental and uses all the training set at each step.
+\section{Issues in Decision Trees}
+We have to consider the following problems:\begin{itemize}
+    \item determining how deeply to grow the decision tree
+    \item handling continuous attributes
+    \item choosing appropriate attribute selection rule 
+    \item handling training data with missing attribute values 
+    \item handling attribute with different ''cost''.
+\end{itemize}
+
+\noindent Let $D$ to be the dataset shown in table \ref{tab:tennis_data_big}, we consider \begin{equation}
+    D'=D\cup \left\langle  sunny,hot,normal,strong, PlayTennis=No\right\rangle
+\end{equation}
+
+\noindent\texttt{ID3} will generate two different decision trees $T,T'$ for the different dataset $D,D'$. The question is:\begin{quote}
+    is $T'$ in general a better solution for this learning problem?
+\end{quote}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Probabilistic Models}
 \section{Probability Recap}
 Consider the following action\begin{equation}
     A_t=\text{ leave the house $t$ minutes before the flight}
@@ -585,11 +912,11 @@ The following equality is called \textbf{chain rule} and is needed to calculate 
     \\ &\prod_{i=1}^n\left( A_i|\bigcap_{j=1}^{i-1} A_j \right).
 \end{align}
 \textbf{Note}: We will use the following abuse of notation, if $\Prob$ is the probability function for a probability space $(\Omega,\mathcal A,\Prob)$, and $X$ is a random variable on $\Omega$, we use the same symbol $\Prob$ to denote a probability distribution on $X$\begin{align}
-    &\Prob(A\in\mathcal A) \ \ \text{in this context $\Prob$ is the probability function}\\
+    &\Prob(A), \ A\in\mathcal A \ \ \text{in this context $\Prob$ is the probability function}\\
     &\Prob(X=x_i) \ \ \text{in this context $\Prob$ is the probability distribution.}
 \end{align}
 \begin{definition}
-    Given a probability space $(\Omega,\mathcal A,\Prob)$, and two events $A,B\in\mathcal A$, we say that $A$ and $A$ are \textbf{independent} if and only if\begin{equation}
+    Given a probability space $(\Omega,\mathcal A,\Prob)$, and two events $A,B\in\mathcal A$, we say that $A$ and $B$ are \textbf{independent} if and only if\begin{equation}
         \Prob(A, B)=\Prob(A\land B)=\Prob(A)\Prob(B).
     \end{equation}
 \end{definition}
