@@ -2,6 +2,8 @@
 % !TeX program = xelatex
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \newcommand{\titolo}{Artificial intelligence }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -61,9 +63,165 @@ This document summarizes and presents the topics for the \titolo course for the 
 
 %==================INIZIO======================%
 \chapter{Introduzione}
+\section{Basic Definitions}
 In the context of the artificial intelligence, an \textbf{agent} is an entity that can\begin{itemize}
     \item Perceive the environment through \textit{sensors} (percepts)
     \item Act upon the environment through \textit{actuators} (actions).
 \end{itemize}
-We say that an agent is \textbf{rational} if he selects the action that maximize a given \textit{performance measure}, informally, he attempts to do ''the right thing''. The best case is hypothetical and often unattainable, because the agent usually can't perform all the actions needed, and can't perceive all the information about the environment.
+We say that an agent is \textbf{rational} if he selects the action that maximize a given \textit{performance measure}, informally, he attempts to do ''the right thing''. The best case is hypothetical and often unattainable, because the agent usually can't perform all the actions needed, and can't perceive all the information about the environment.\bigskip
+
+An agent has a performance measure $M$ and a set $A$ of all possible actions, given percept a sequence $A$ and knowledge $K$ (data), he has to select the next action $a\in A$, is a map\begin{equation}
+    M\times P\times K \longrightarrow A.
+\end{equation} 
+An action $a$ is optimal if it maximize the expected value of $M$, given the sequence $P$ and the knowledge $K$. An agent is rational if he always chooses the optimal action. More specifically, an agent consists in two components:\begin{itemize}
+    \item an architecture which provides an interface to the environment
+    \item a program executed on that architecture.
+\end{itemize}
+There are some limitation that we aren't considering, such as the fact that determining the optimal choice could take too much time or memory on the architecture.
+
+\subsection{Types of Agents}
+There are different kinds of agents, a \textbf{Table Driven Agent} is the simplest form of agent architecture. It's essentially a look-up table that maps every possible sequence of percepts (what the agent has sensed so far) to a corresponding action the agent should take. His behavior can be resumed in the algorithm \ref{alg:table_agent}.
+
+\begin{algorithm}
+    \caption{Table Driven Agent}\label{alg:table_agent}
+    \begin{algorithmic}
+    \Require \textit{percepts}
+    \State \textbf{persistent}: \textit{percepts}, a sequence, initially empty
+    \State\hphantom{persistent: .} \textit{table}, a table of actions, indexed by percept sequences, initially fully specified
+    \State append \textit{percept} to the end of \textit{percepts} 
+    \State \textit{action}$\leftarrow$\texttt{LookUp}(\textit{percepts,table})
+    \State\Return \textit{action}
+    \end{algorithmic}
+\end{algorithm}
+\bigskip
+
+
+A \textbf{Reflex Agent} consists in three components:\begin{itemize}
+    \item sensors to get information from the environment
+    \item a decision making process, in form of a \textit{condition-action rules}, typically looks like \texttt{IF (condition) THEN (action)}.
+    \item actuators, the outputs that allow the agent to affect or change the environment.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/reflexAgent.png}
+    \caption{Reflex agent diagram}
+\end{figure}\bigskip
+
+A \textbf{Model-Based Reflex Agent} is an enhanced version of the previous one, the key enhancement here is the inclusion of an \textit{Internal State} and a \textit{Model of the World} to make up for the agent's limited view of the environment. The internal state cannot simply be the last thing the agent saw; it needs to be updated to reflect reality. This is done using a Model of the World, which contains two key pieces of knowledge:\begin{itemize}
+    \item 
+    How the world evolves independently of the agent, his accounts for changes in the environment that occur regardless of the agent's actions (e.g., a clock ticking, an external event).
+    \item
+    How the agent's own actions affect the world, this is the effect of the agent's previous action (e.g., if the agent drove forward, its position changed).
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/ModelreflexAgent.png}
+    \caption{Model Based Reflex agent diagram}
+\end{figure}\bigskip
+
+If a model based reflex agent consider the future prospective, is a \textbf{Goal Based Agent}, as shown in figure \ref{img:goal_agent}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/goal.png}
+    \caption{Goal Based agent diagram}
+    \label{img:goal_agent}
+    \includegraphics[width=0.4\textwidth ]{images/utility.png}
+    \caption{Utility Based agent diagram}
+\end{figure}\bigskip
+
+A \textbf{Utility Based Agent} is equipped with a \textit{utility function} that maps a state to a number which represents how
+desirable the state is. Agent’s utility function is an internalization of the performance function.\bigskip
+
+A \textbf{Learning Agent} is an architecture designed to improve its efficiency over time by separating four functions:\begin{itemize}
+    \item  the performance element selects actions\item  
+     the critic provides feedback on those actions against a standard\item   the learning element uses this feedback to update the agent's internal knowledge\item   the problem generator suggests exploratory actions to gain new knowledge. This structure enables the agent to continuously adapt and improve its decision-making.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/learn_agent.png}
+    \caption{Learning agent diagram}
+\end{figure}\bigskip
+
+An agent can be classified in one of the following groups:\begin{itemize}
+    \item a \textbf{domain specific agent }  is a solver specific to a particular problem (such as playing chess), is usually more efficient.
+    \item a \textbf{general agent} is a solver for general problems, such as learning the rule of any board game, is usually more intelligent but less efficient.
+\end{itemize}
+\subsection{The Environment}
+An environment can be classified in terms of different attributes:\begin{itemize}
+    \item An environment can be \textbf{fully observable} if all the relevant information are accessible to the sensors, otherwise is \textbf{partially observable}.
+    \item If there are no uncertainty, the environment is \textbf{deterministic}. An environment is \textbf{stochastic} if uncertainty is quantified by using probabilities, otherwise is \textbf{non deterministic} if uncertainty is managed as actions with multiple outcomes.
+    \item An environment is \textbf{episodic} if the correctness of an action can be evaluated instantly, otherwise if are evaluated in the future developments, is \textbf{sequential}. 
+    \item An environment can be \textbf{static} or \textbf{dynamic}, if itdoes not change, but the agent's performance
+score changes, the environment is called \textbf{semi-dynamic}.
+    \item An environment can be perceived as \textbf{discrete} or \textbf{continuous}.
+    \item In a single environment there may be multiple agent, that can be \textbf{competitive} or \textbf{cooperative}.
+\end{itemize}
+Many sub-areas of AI can be classified by:\begin{itemize}
+    \item Domain-specific vs. general.
+    \item The environment.
+    \item Particular agent architectures sometimes also play a role, especially
+    in Robotics.
+\end{itemize}
+It follows a classification of some areas in terms of the attributes we discussed:\begin{itemize}
+    \item \textbf{Classical Search}, the environment is\begin{itemize}
+        \item fully observable
+        \item deterministic
+        \item static 
+        \item sequential
+        \item discrete
+        \item single-agent
+    \end{itemize}
+    and the approach is \textit{domain specific}.
+    \item \textbf{Planning}, the environment is\begin{itemize}
+        \item fully observable
+        \item deterministic
+        \item static
+        \item sequential 
+        \item discrete
+        \item single-agent
+    \end{itemize}
+    and the approach is \textit{general}.
+    \item \textbf{Adversarial Search}, the environment is\begin{itemize}
+        \item fully observable
+        \item deterministic
+        \item static 
+        \item sequential    
+        \item discrete
+        \item multi-agent
+    \end{itemize}
+    and the approach is \textit{domain specific}.
+    \item \textbf{General Game Playing}, the environment is\begin{itemize}
+        \item fully observable
+        \item deterministic
+        \item static 
+        \item sequential    
+        \item discrete
+        \item multi-agent
+    \end{itemize}
+    and the approach is \textit{general}.
+    \item \textbf{Constraint Satisfaction \& Reasoning}, the environment is\begin{itemize}
+        \item fully observable
+        \item deterministic
+        \item static 
+        \item episodic    
+        \item discrete
+        \item single-agent
+    \end{itemize}
+    and the approach is \textit{general}.
+    \item \textbf{Probabilistic Reasoning}, the environment is\begin{itemize}
+        \item partially observable
+        \item stochastic
+        \item static 
+        \item episodic    
+        \item discrete
+        \item single-agent
+    \end{itemize}
+    and the approach is \textit{general}.
+\end{itemize}
+\chapter{Search Problems}
+\section{Classical Search}
 \end{document}
