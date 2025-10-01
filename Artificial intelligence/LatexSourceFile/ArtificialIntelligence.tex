@@ -60,7 +60,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \fancyfoot[R]{ Marco Casu}
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
-
+\newtheorem{definition}{Definition}
 %==================INIZIO======================%
 \chapter{Introduzione}
 \section{Basic Definitions}
@@ -224,4 +224,59 @@ It follows a classification of some areas in terms of the attributes we discusse
 \end{itemize}
 \chapter{Search Problems}
 \section{Classical Search}
+Let's consider two basic example of classical search problems, the first one is the following:\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/map_search.png}
+\end{center}
+Starting from Zurigo, we would like to find a route to Zagabria. We have an initial state (Zurigo), and we have to apply actions (drive) to reach the goal state (Zagabria). Another example is the following, we want to solve the tiles-puzzle game, shown in figure \ref{img:tiles}, to reach the left state, starting from the right one, the actions to perform is the move of the tiles. A performance measure could be to minimize the summed-up action costs.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/tile.png}
+    \caption{The tile game}
+    \label{img:tiles}
+\end{figure}
+
+In the classical search context, we restrict the agent's environment to a very simple setting, with a finite number of states and actions, a single agent, a fully observable stati environment that doesn't evolve, given that assumption, the classical search problems are the simplest one, despite that, are very important problems in practice.\bigskip
+
+\noindent Every problem specifies a state space.
+
+\begin{definition}
+    A \textbf{State Space} is a 6-tuple $\Theta=(S,A,c,T,I,S^G)$ where:\begin{itemize}
+        \item $S$ is a finite set of the \textit{states}.
+        \item $A$ is a finite set of \textit{actions}.
+        \item $c:A\rightarrow\R^+$ is the \textit{cost function}.
+        \item $T\subseteq S\times A\times S $ is the \textit{transition relation}, that describes how an action on a given state make the agent evolve to the next state. We assume that the problem is deterministic, so for all $s\in S$, $a\in A$, if $(s,a,s')\in T$ and $(s,a,s'')\in T$ then $s'=s''$.
+        \item $I\in S$ is the \textit{initial state}
+        \item $S^G\subseteq S$ is the set of the \textit{goal states}, where we want to end.
+    \end{itemize}
+\end{definition}
+A transition $(s,a,s')$ can be denoted $s \xrightarrow{a} s'$, we say that $s\rightarrow s'$ if $\exists a$ such that $(s,a,s')\in T$ . We say that $\Theta$ has \textit{unit costs} if $\forall a\in A, \ \ c(a)=1$. A state space can be illustrated as a directed labeled graph. \begin{definition}
+    Let $\Theta=(S,A,c,T,I,S^G)$ to be a state space, we say that\begin{itemize}
+        \item $s'$ is a \textbf{successor} of $s$ if $s\rightarrow s'$
+        \item $s'$ is a \textbf{predecessor} of $s$ if $s'\rightarrow sT$
+        \item we say that $s'$ is \textbf{reachable from} $s$ if\begin{align}
+            &\exists (a_1\dots, a_n)\subseteq A\\
+            &\exists (s_2\dots, s_{n-1})\subseteq S\\
+            &(s,a_1,s_2)\in T\\
+            &(s_2,a_2,s_3)\in T\\
+            \vdots \\
+            &(s_{n-1},a_n,s')\in T 
+        \end{align}
+        we can write the sequence as follows\begin{equation}
+            s\xrightarrow{a_1}s_2,\dots, s_{n-1}\xrightarrow{a_n}s'.
+        \end{equation}
+        \item We say that $s$ is \textbf{reachable} (without reference state) if is reachable from $I$.
+        \item $s$ is \textbf{solvable} if there exists $s'\in S^G$ such that $s'$ is reachable from $s$, otherwise $s$ is \textbf{dead end}.
+    \end{itemize}
+\end{definition}
+\begin{definition}
+    Let $\Theta=(S,A,c,T,I,S^G)$ to be a state space, and let $s\in S$. A \textbf{solution} for $s$ is a path from $s$ to some goal state $s'\in S^G$. The solution is \textbf{optimal} if it's cost is minimal, let $H$ to be the set of all possible solution (sequence of states) for $s$\begin{equation}
+        H=\{\text{paths from }s\text{ to }s'\in S^G\}=\{(s_{i0},s_{i1},s_{i1},\dots s_{in})  : s_{in}\in S^G, \ s_{i0}=s\}
+    \end{equation}
+    where $n^i$ is the length of the $i$-th solution.
+    The optimal solution is\begin{equation}
+        \arg \min_{(s,s_{i1},\dots s_{in})\in H}\sum_{j=0}^{n^i} c(s_{ij}).
+    \end{equation}
+\end{definition}
+A solution for $I$ is called \textbf{solution for $\Theta$}, if such that solution exists, $\Theta$ is \textbf{solvable}.
 \end{document}
