@@ -63,7 +63,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================FOOTER e HEADER=======================%
 
 \newtheorem{definition}{Definition}
-
+\newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduction}
 \section{Basic Definition of a ML Problem}
@@ -779,44 +779,70 @@ We have to consider the following problems:\begin{itemize}
     is $T'$ in general a better solution for this learning problem?
 \end{quote}
 
+In the general case, we have a dataset $D$ containing noisy data, and two decision trees $T$ and $T'$ obtained with different configurations of an \texttt{ID3}-like algorithm, where\begin{equation}
+    accuracy_D(T')>accuracy_D(T)
+\end{equation}
+we don't know if $T'$ is a better solution, we should check the condition on a test set $S$\begin{equation}
+    accuracy_S(T')>accuracy_S(T).
+\end{equation}
+Generally, the trend in figure \ref{img:trees_overfitting} is observed.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/trees_overfitting.eps}
+    \caption{Decision trees overfitting}
+    \label{img:trees_overfitting}
+\end{figure}
 
 
+To avoid overfitting, we should stop to grow the tree when the data split is not statistically significant, or could grow a full tree and then apply the \textit{post-prune}. With \textbf{pruning} we define the replacement of a sub-tree with a leaf node labelled as the most common class among samples filtered to the node.\bigskip
 
+\begin{algorithm}
+    \caption{Post Pruning}\label{alg:pruning}
+    \begin{algorithmic}
+    \Require a dataset $D$
+    \State split data set in training $D_T$ and validation $D_V$
+    \State generate a tree $T$ using the data set $D_T$
+    \While{accuracy is not decreasing}
+    \State  Evaluate the impact of pruning each node on the validation set 
+    \State Greedily remove the one that most improves validation on accuracy
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
 
+If the dataset is limited, reducing the set of training examples (used
+as validation examples) can give bad results.\bigskip
 
+Decision trees can be expanded to \textit{continuous values}, for example, if temperature is expressed in degrees, we could introduce a variation of the tree that will generate some ''test'' in terms of intervals\begin{itemize}
+    \item $Temperature=82.5$
+    \item $(Temperature > 72.3) = True,False$
+\end{itemize}
+So this decision trees will have tests on equalities and tests on real values. There are also several other ways of defining the criteria for selecting the best attributes to include as a node, there are other measures than the information gain. We cannot say that one is always better, it depends on the problem.\bigskip 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+A dataset may have some samples with \textit{missing} attributes, for example:\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        {$Day$} & {$Outlook$} & {$Temperature$} & {$PlayTennis$} \\
+        \hline
+        D1 & Sunny & UNKNOWN & Yes \\
+        \hline
+        D2 & Sunny & UNKNOWN & Yes \\
+        \hline
+        D3 & UNKNOWN & Hot & No \\
+        \hline
+        D4 & Rain & Cold & No \\
+        \hline
+    \end{tabular}
+\end{center}
+in such case, with decision trees we can use the samples by adding some information to replace the missing values\begin{itemize}
+    \item If a node $n$ tests an attribute $A$, we assign the most common value of $A$ among other examples sorted to node $n$.
+    \item We can assign the most common value for $A$ among the other examples with the same target value.
+\end{itemize}
+There are other algorithms based on decision trees:\begin{itemize}
+    \item we can generate a set of decision trees (called \textbf{forest}) with some random criteria and integrates their values into a final result.
+    \item that integration of result could occur as a majority vote (most common class returned by all the trees)
+    \item random forest are less sensitive to overfitting.
+\end{itemize}
 
 \chapter{Probabilistic Models}
 \section{Probability Recap}
@@ -915,9 +941,162 @@ The following equality is called \textbf{chain rule} and is needed to calculate 
     &\Prob(A), \ A\in\mathcal A \ \ \text{in this context $\Prob$ is the probability function}\\
     &\Prob(X=x_i) \ \ \text{in this context $\Prob$ is the probability distribution.}
 \end{align}
+\begin{theorem}
+    Let's consider a probability space $(\Omega,\mathcal A, \Prob)$, let $A\in \Omega$ and let $\{B_1,B_2\dots B_n\}$ to be a partition of $\Omega$. The \textbf{Total Probability} formula states that:\begin{equation}
+        \Prob(A)=\sum_{i=1}^n\Prob(A\cap B_i)
+    \end{equation}
+    since $\Prob(A\cap B_i)=\Prob(A|B_i)\Prob(B_i)$ we have\begin{equation}
+         \Prob(A)=\sum_{i=1}^n\Prob(A|B_i)\Prob(B_i)
+    \end{equation}
+\end{theorem}
+Let $X=\{X_1,X_2\dots X_n\}$ a finite set of random variables, and let $\omega$ be an assignment of all the variables\begin{align}
+    &\omega=(x_1,x_2\dots x_n)\\
+    &\omega\in\Omega=X_1\times X_2\dots \times X_n\\
+    &x_1\in X_1\\ 
+    &x_2\in X_2\\
+    &\vdots \\ 
+    &x_n\in X_n.
+\end{align}
+There exists a joint probability distribution $\Prob$ on $\Omega$. Let $\phi$ to be a proposition defined in terms of $X_1\dots X_n$, for example\begin{equation}
+    \phi=x_1\lor x_2 \land \lnot x_3
+\end{equation}
+$\phi$ is satisfied by all the events $\Omega_\phi$:\begin{equation}
+    \Omega_\phi=\{\omega\in \Omega \ : \ \omega \text{ makes } \phi \text{ true }\}
+\end{equation}
+the \textbf{Inference by Enumeration} formula states that, the probability that $\phi$ is satisfied is \begin{equation}
+    \Prob(\phi)=\sum_{\omega\in  \Omega_\phi}\Prob(\omega)
+\end{equation}
 \begin{definition}
     Given a probability space $(\Omega,\mathcal A,\Prob)$, and two events $A,B\in\mathcal A$, we say that $A$ and $B$ are \textbf{independent} if and only if\begin{equation}
         \Prob(A, B)=\Prob(A\land B)=\Prob(A)\Prob(B).
     \end{equation}
 \end{definition}
+\begin{theorem}
+    Given a probability space $(\Omega,\mathcal A,\Prob)$ and two events $A,B\in\mathcal A$, the \textbf{Bayes' Theorem} states that\begin{equation}
+        \Prob(A|B)=\frac{\Prob(B|A)\Prob(A)}{\Prob(B)}
+    \end{equation}
+\end{theorem}
+Let's now consider the \textit{maximum likelihood problem}, given two random variabile $X,Y$, we want to know what is the most likely value of $X$ knowing that $Y=y_i$\begin{equation}
+    \arg\max_{x}\Prob(X=x|Y=y_i)=\arg\max_{x}\frac{\Prob(Y=y_i|X=x)}{\Prob(Y=y_i)}
+\end{equation}
+for the properties of the arg max function:\begin{equation}
+    \arg\max_{x}\frac{\Prob(Y=y_i|X=x)}{\Prob(Y=y_i)}=\arg\max_{x}{\Prob(Y=y_i|X=x)}
+\end{equation}
+because $\Prob(Y=y_i)$ is constant.
+\section{Bayesian Learning}
+We want to use a probabilistic approach to model a machine learning problem, the methods presented in this section are surprisingly precise. Let's consider a target function for a classification problem\begin{equation}
+    f:X\rightarrow V 
+\end{equation}
+where $V$ is a finite set of classes, we define \begin{align}
+    &\Prob(v|x,D)\\ &\in X, v\in V
+\end{align}
+the probability that $v$ is equal to $f(x)$ given the dataset $D$. Our goal is to define the learned function as follows\begin{equation}
+    \hat f(x)=\arg\max_{v\in V}\Prob(v|x,D)=v^*\in V
+\end{equation}
+In general, we would like to compute the whole distribution on $V$\begin{equation}
+   \Prob(v|x,D), \ \ \forall v\in V.
+\end{equation}
+We define\begin{equation}
+    \Prob(h|D)
+\end{equation}
+the probability that an hypothesis $h\in H$ is the optimal solution for the problem knowing that $D$ is the dataset. Applying the Bayes rule we get\begin{equation}
+    \Prob(h|D)=\frac{\Prob(D|h)\Prob(h)}{\Prob(D)}
+\end{equation}
+$\Prob(h)$ is the probability that an hypothesis $h\in H$ is the optimal solution without knowing anything about the dataset, if the hypothesis space  $H$ is finite, $\Prob(h)=\frac{1}{|H|}$. We define the \textbf{Maximum a Posteriori Hypothesis} as follows:\begin{equation}
+    h_{MAP}=\arg\max_{h\in H}\Prob(h|D)= h_{MAP}=\arg\max_{h\in H}\frac{\Prob(D|h)\Prob(h)}{\Prob(D)}= h_{MAP}=\arg\max_{h\in H}\Prob(D|h)\Prob(h)
+\end{equation}
+the denominator $\Prob(D)$ can be removed since doesn't affect the output of the arg max function (since it is constant). Since at priori all hypothesis have the same probability, the value can be written as\begin{equation}
+    h_{MAP}=\arg\max_{h\in H}\Prob(D|h).
+\end{equation}
+We can make a brute force approach by computing $\Prob(D|h)$ for each $h\in H$ (if $h$ is finite).
+\subsection{Bayes Optimal Classifier}
+$h_{MAP}$ is not necessary the optimal solution, let's consider $v_j\in V$, we can apply the total probability formula:\begin{equation}
+    \Prob(v_j|x,D)=\sum_{h_i\in H}\Prob(v_j|x,h_i,D)\Prob(h_i|x,D)
+\end{equation}
+where \begin{itemize}
+    \item $\Prob(v_j|x,h_i,D)$ is the probability that $h_i(x)=v_j$ given $D$.
+    \item The probability that  $h_i(x)=v_j$ is independent from $D$ (if $h_i$ is given), so $\Prob(v_j|x,h_i,D)=\Prob(v_j|x,h_i)$
+    \item $\Prob(h_i|x,D)$ is the probability that $h_i$ is an optimal solution given $x$ and $D$, since $h_i$ does not depend on $x$, we have $\Prob(h_i|x,D)=\Prob(h_i|D)$ 
+\end{itemize}
+the formula can be rewritten as\begin{equation}
+    \Prob(v_j|x,D)=\sum_{h_i\in H}\Prob(v_j|x,h_i)\Prob(h_i|D)
+\end{equation}
+we define the \textbf{Bayes optimal classifier} as the following function\begin{equation}
+    v_{OB}(x)=\arg\max_{v_j\in V}\sum_{h_i\in H}\Prob(v_j|x,h_i)\Prob(h_i|D)
+\end{equation}
+usually, this is impracticable because we may can't enumerate all the possible hypothesis, or the hypothesis space could be too big. There is an example, Le'ts say that we have three possible hypothesis $h_1,h_2,h_3$ such that
+\begin{align*}
+\Prob(h_1|D) &= 0.4, & \Prob(\ominus|x, h_1) &= 0, & \Prob(\oplus|x, h_1) &= 1 \\
+\Prob(h_2|D) &= 0.3, & \Prob(\ominus|x, h_2) &= 1, & \Prob(\oplus|x, h_2) &= 0 \\
+\Prob(h_3|D) &= 0.3, & \Prob(\ominus|x, h_3) &= 1, & \Prob(\oplus|x, h_3) &= 0
+\end{align*}
+therefore\begin{align*}
+    &\sum_{i=1}^3\Prob(\oplus|x,h_i)\Prob(h_i|D)=0.4\\
+    &\sum_{i=1}^3\Prob(\ominus|x,h_i)\Prob(h_i|D)=0.6
+\end{align*}
+so\begin{equation}
+    v_{OB}(x)=\arg\max_{v_j\in\{\oplus,\ominus\}}\sum_{i=1}^3\Prob(v_j|x,h_i)\Prob(h_i|D)=\ominus
+\end{equation}
+The Bayes optimal classifier is the best possible learner given the same hypothesis space and the same knowledge. Is very powerful but impracticable because requires iteration on $H$.\bigskip
+
+Let's consider the example where the hypothesis space $H$ consists in the following bag containing candies\begin{center}
+    \includegraphics[width=0.7\textwidth]{images/candies.eps}
+\end{center}
+with the following probability distribution\begin{itemize}
+    \item $\Prob(h_1)=10\%$, $h_1$ is the bag with $100\%$ cherry candies.
+    \item $\Prob(h_2)=20\%$, $h_2$ is the bag with $75\%$ cherry candies.
+    \item $\Prob(h_3)=40\%$, $h_3$ is the bag with $50\%$ cherry candies.
+    \item $\Prob(h_4)=20\%$, $h_4$ is the bag with $25\%$ cherry candies.
+    \item $\Prob(h_5)=10\%$, $h_5$ is the bag with $0\%$ cherry candies.
+\end{itemize}
+We choose a random bag and we want to estimate what kind of bag is it, and what is the probability of extracting a candy of a specific flavor next. We define $\Prob(c)$ the probability of extract a cherry candy, $\Prob(l)$ the probability of extract a lime candy,  the likelihood probability for lime candy is\begin{align*}
+    &\Prob(l,h_1)=0\\
+    &\Prob(l,h_2)=0.25\\
+    &\Prob(l,h_3)=0.5\\
+    &\Prob(l,h_4)=0.75\\
+    &\Prob(l,h_5)=1
+\end{align*}
+the probability of extracting a lime candy without having any data is\begin{equation}
+    \sum_{i=1}^5\Prob(l|h_i)\Prob(h_i)=\frac{1}{2}.
+\end{equation}
+We consider now the following data set $D_1=\{l\}=\{\text{first candy is lime}\}$, for the Bayes rule we know that\begin{equation}
+    \Prob(h_i|D_1)=\frac{\Prob(D_1|h_i)\Prob(h_i)}{\Prob(D_1)}
+\end{equation}
+we set $\Prob(D_1)^{-1}=\alpha$, that is a normalization factor, we have that\begin{align*}
+    &\Prob(h_1|D_1)=\alpha\Prob(D_1|h_1)\Prob(h_1)=\alpha(0\cdot 0.1)=0\\
+    &\Prob(h_2|D_1)=\alpha\Prob(D_1|h_2)\Prob(h_2)=\alpha(0.25\cdot 0.2)=\alpha0.05=0.1\\
+    &\vdots 
+\end{align*}
+the final distribution is
+\begin{center}
+    \includegraphics[width=0.7\textwidth]{images/distr_candy.eps}
+\end{center}
+So, let's extract another candy, the dataset is now $D_2=\{l,l\}$, the distribution become\begin{equation}
+    \Prob(H|D_2) = \begin{pmatrix}
+        0&0.038&0.308&0.346&0.308
+    \end{pmatrix}
+\end{equation}
+if $D_3=\{l,l,l\}$ the distribution become\begin{equation}
+    \Prob(H|D_3) = \begin{pmatrix}
+        0&0.013&0.211&0.355&0.421
+    \end{pmatrix}
+\end{equation}
+we want to calculate the probability of extracting another lime candy\begin{align*}
+    &\Prob(l|D_3)=\sum_{i=1}^5\Prob(l|h_i)\Prob(h_i|D_3)\\
+    &= 0 \cdot 0 + 0.25 \cdot 0.013 + 0.5 \cdot 0.211 + 0.75 \cdot 0.355 + 1 \cdot 0.421\\
+    &=0.8
+\end{align*}
+if we use $h_{MAP}$, the answer will be $h_5\implies \Prob(l|h_5)=1$, which is not correct.\bigskip
+
+The graph shown in figure \ref{img:candy_graph} shows how the probability that the solution is a given hypothesis $h_i$ change with the number of lime candy extracted (with 0 cherry candy extracted).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/candy_graph.pdf}
+    \caption{probability of each hypothesis}
+    \label{img:candy_graph}
+\end{figure}
+
+\redText{continua da slide 26}
+
 \end{document}

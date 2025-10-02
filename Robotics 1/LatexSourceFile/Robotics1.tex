@@ -58,7 +58,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \fancyfoot[R]{ Marco Casu}
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
-
+\newtheorem{definition}{Definition}
 %==================INIZIO======================%
 \chapter{Introduction}
 In this chapter we will see a brief introduction to the mathematical tools used in the main topics of the course. The topics presented in this section may seem somewhat unclear, as many concepts and definitions are only briefly introduced and deliberately not elaborated upon. They will be discussed in detail in their respective chapters.\bigskip
@@ -276,4 +276,157 @@ this is true if the vector $\begin{pmatrix}
         \dot\theta_1\\0\\0
     \end{pmatrix}\in \ker J_L(\btheta).
     \end{equation}
+
+Therefore, the vectors contained in the kernel of the Jacobian matrix for the linear (or angular) velocity represent all possible combinations of individual joint velocities that would not change the position (or orientation) of the end effector.
+\section{Brief Overview of Planning and Control}
+When we want to control the end effector of a robotic arm, we want to know how to move the joints to get a specific position for the end effector, and also how to control the joints over the time to get a particular \textit{trajectory} in the working space. 
+
+Consider a 2R planar robot, as shown in figure \ref{img:2R_planar}, where $\btheta$ is the angular position of the joints, and $\mathbf p_e=f(\btheta)$ is the position of the end effector for some $f_\R^2\rightarrow\R^2$.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/2R_planar.eps} 
+    \caption{a 2R planar robot}
+    \label{img:2R_planar}
+\end{figure}
+
+We would like to move the end effector from a certain starting point $\mathbf p_a\in \R^2$ to an another point $\mathbf p_b\in\R^2$. We could consider the segment line from $\mathbf p_a$ to $\mathbf p_b$ defined as follows:\begin{equation}
+    \mathbf p(s)=s\mathbf p_b+(1-s)\mathbf p_a \ \ \ \ \ s\in[0,1].
+\end{equation}
+Such a trajectory can be represented by a time-dependent function that starts from an initial time $t_0=0$ until a final time $T$, making $s$ a monotonically increasing function of $t\in[0,T]$:\begin{align}
+    &s:[0,1]\longmapsto [0,T]\\
+    &s(0)=0\\
+    &s(1)=T\\
+    &\mathbf p(s)=\mathbf p(s(t))
+\end{align}
+We say that a trajectory is rest-to-rest if the velocity of the end effector at the start and at the end of that trajectory is zero:\begin{equation}
+    \dot{\mathbf p}(s(0))=\dot{\mathbf p}(s(T))=\mathbf 0
+\end{equation}
+ we need to include boundary conditions. Considering the chain rule, the derivative of $\mathbf p$ respect to the time $t$ is\begin{equation}
+    \dot{\mathbf p}=\frac{d\mathbf p}{dt}=\frac{d\mathbf p}{ds}\frac{ds}{dt}=\frac{d\mathbf p}{ds}\dot s
+\end{equation}
+since\begin{equation}
+    \frac{d\mathbf p}{ds}=\frac{d}{ds}\left(s\mathbf p_b+(1-s)\mathbf p_a\right)=\mathbf p_b-\mathbf p_a
+\end{equation}
+we have
+\begin{equation}
+    \dot{\mathbf p}=\frac{d\mathbf p}{ds}\dot s=\dot s(\mathbf p_b-\mathbf p_a)
+\end{equation}
+the acceleration is\begin{equation}
+    \ddot{\mathbf p}=\ddot s(\mathbf p_b-\mathbf p_a)+\dot s\cdot \mathbf 0=\ddot s(\mathbf p_b-\mathbf p_a)
+\end{equation}
+we have that\begin{align}
+    &\dot{\mathbf p}(s(0))=0\iff \dot s(0)(\mathbf p_b-\mathbf p_a)\iff \dot s(0)=0\\
+    &\dot{\mathbf p}(s(T))=0\iff \dot s(T)(\mathbf p_b-\mathbf p_a)\iff \dot s(T)=0
+\end{align}
+The starting velocity and the final velocity is zero, so the variation of the velocity is zero, this can be seen by the integral of the acceleration\begin{equation}
+    \int_0^T\ddot{\mathbf p}dt=\int_0^T\ddot s(\mathbf p_b-\mathbf p_a)dt=(\mathbf p_b-\mathbf p_a)\int_0^T\ddot sdt=(\mathbf p_b-\mathbf p_a)(\dot s(T)-\dot s(0))=0.
+\end{equation}
+Now we consider the \textit{control aspects} of the problem, we denote $\mathbf p_e(t)$ the position of the end effector at the time $t$, and $\mathbf p_d(t)$ the \textbf{desired position} at time $t$.\begin{equation}
+    \mathbf p_d(0)=\mathbf p_a.
+\end{equation}
+We define the \textbf{error} such as the difference between the current position and the desired position:\begin{eqnarray}
+    \mathbf e(t)=\mathbf p_d(t)-\mathbf p_e(t)
+\end{eqnarray}
+The aim of the \textit{control system} of the robot is to maintain $\mathbf e$ as close to zero as possible. This can be done by computing the initial error, and by giving to the system a new command $\dot\btheta(t)$ to correct it such that $\mathbf e(t)\rightarrow\mathbf 0$. Let's denotate the error as follows\begin{equation}
+    \mathbf e(t)=\begin{pmatrix}
+        e_x(t)\\ e_y(t)
+    \end{pmatrix}
+\end{equation}
+For now, we will not discuss in detail how to control the error through the control of joint velocities $\dot\btheta$; it is sufficient to know that the following condition is required:\begin{equation}
+    \dot{\mathbf e}(t)=-K\mathbf e(t)=\begin{pmatrix}
+        -k_x&0\\
+        0&-k_y
+    \end{pmatrix}\begin{pmatrix}
+        e_x(t)\\ e_y(t)
+    \end{pmatrix}
+\end{equation}
+with $k_x,k_y>0$.
+Why this conditions is required?\begin{itemize}
+    \item if $e_x(t)$ is greater than zero, the condition $\dot e_x(t)=-k_xe_x(t)$ describes a decrease in error, making it approach zero 
+    \item if $e_x(t)$ is smaller than zero, the condition $\dot e_x(t)=-k_xe_x(t)$ describes an increase in error, making it approach zero 
+    \item same for $e_y$.
+\end{itemize}
+The system of equations\begin{equation}
+    \dot{\mathbf e}(t)=\begin{pmatrix}
+        -k_x&0\\
+        0&-k_y
+    \end{pmatrix}\begin{pmatrix}
+        e_x(t)\\ e_y(t)
+    \end{pmatrix}\implies \begin{cases}
+        \dot e_x(t)=-k_xe_x(t)\\
+        \dot e_y(t)=-k_ye_y(t)
+    \end{cases}
+\end{equation}
+admits exponential functions as a solution\begin{align}
+    &e_x(t)=e_x(0)e^{-k_xt}\\
+    &e_y(t)=e_y(0)e^{-k_yt}
+\end{align}
+if the initial error $\mathbf e(0)$ is not zero, then the error will approaches zero, without never reaching it. For practical applications it goes sufficiently
+fast to values very close to zero.\bigskip
+
+\noindent We introduce now an important concept in linear differential equations systems.\begin{definition}
+    Let $A\in M_{n,n}(\R)$ to be a squared real-valued matrix. The \textbf{matrix exponential}, denoted $e^A$, is the $n\times n$ matrix defined as follows:\begin{equation}
+        e^A=\sum_{k=0}^\infty\frac{A^k}{k!}
+    \end{equation}
+\end{definition}
+Given a linear system\begin{equation}
+    \dot{\mathbf x}=A\mathbf x
+\end{equation}
+the solution is\begin{equation}
+    \mathbf x(t)=e^{At}\mathbf x(0)
+\end{equation}
+In some cases the exponential matrix can be computed easily, let's assume that $A$ is diagonal\begin{equation}
+    A=\begin{pmatrix}
+a_1 & 0 & \cdots & 0 \\
+0 & a_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_n
+\end{pmatrix}
+\end{equation}
+in this case we have that\begin{equation}
+    A^k=\begin{pmatrix}
+a_1 & 0 & \cdots & 0 \\
+0 & a_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_n
+\end{pmatrix}\times  \dots \times \begin{pmatrix}
+a_1 & 0 & \cdots & 0 \\
+0 & a_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_n
+\end{pmatrix} = \begin{pmatrix}
+a_1^k & 0 & \cdots & 0 \\
+0 & a_2^k & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_n^k
+\end{pmatrix}
+\end{equation}
+so\begin{align}
+    &e^A=\sum_{k=0}^\infty\frac{1}{k!}\begin{pmatrix}
+a_1^k & 0 & \cdots & 0 \\
+0 & a_2^k & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & a_n^k
+\end{pmatrix}=
+\begin{pmatrix}
+\sum_{k=0}^\infty\frac{a_1^k}{k!} & 0 & \cdots & 0 \\
+0 & \sum_{k=0}^\infty\frac{a_2^k}{k!} & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & \sum_{k=0}^\infty\frac{a_n^k}{k!}
+\end{pmatrix}\\& =
+\begin{pmatrix}
+e^{a_1} & 0 & \cdots & 0 \\
+0 & e^{a_2} & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & e^{a_n}
+\end{pmatrix}.
+\end{align}
+So, if a system is described by a diagonalizable matrix $A$ there exists a diagonal matrix 
+$\Lambda$ and an invertible matrix $T$ such that\begin{equation}
+    A=T\Lambda T^{-1}
+\end{equation}
+in this case we can easily calculate the exponential matrix\begin{equation}
+    e^{At}=T^{-1}e^{\Lambda t} T.
+\end{equation}
 \end{document}
