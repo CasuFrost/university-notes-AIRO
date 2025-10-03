@@ -1096,7 +1096,175 @@ The graph shown in figure \ref{img:candy_graph} shows how the probability that t
     \caption{probability of each hypothesis}
     \label{img:candy_graph}
 \end{figure}
+\noindent
+Let's now consider an example with a continuous hypothesis space\begin{align}
+    &h_\theta\in H, \ \theta\in[0,1]\\
+    &\Prob(c|h_\theta)=\theta\\
+    &\Prob(l|h_\theta)=1-\theta
+\end{align}
+the maximum likelihood hypothesis is\begin{equation}
+    h_{ML}=\arg\max_{\theta\in[0,1]}\Prob(D|h_\theta)
+\end{equation}
+for the properties of the arg max function, this value is equal to
+\begin{equation}
+    h_{ML}=\arg\max_{\theta\in[0,1]}L(D,h_\theta)
+\end{equation}
+if \begin{equation}
+    L(D,h_\theta)=\log\Prob(D|h_\theta)
+\end{equation}
+we have that\begin{equation}
+    \Prob(D|h_{\theta})=\prod_{j=1}^{|D|}\Prob(d_j|h_\theta)=\theta^c(1-\theta)^l
+\end{equation}
+where\begin{align*}
+    &d_j\in D\\
+    &l = \text{ number of lime candies in }D\\
+    &c = \text{ number of cherry candies in }D.
+\end{align*}
+So\begin{equation}
+    L(D,h_\theta)=\log(\theta^c(1-\theta)^l)=c\log\theta+l\log(1-\theta)
+\end{equation}
+to find the value of $\theta$ that maximize $\Prob(D|h_\theta)$ we can find the maximum value of $ L(D,h_\theta)$ by considering the derivative:\begin{align*}
+    &\frac{dL}{d\theta}=\frac{c}{\theta}-\frac{l}{1-\theta}
+\end{align*}
+we find the maximum value by imposing $\frac{dL}{d\theta}=0$\begin{equation}
+    \frac{c}{\theta}-\frac{l}{1-\theta}=0\iff \theta=\frac{c}{c+l}=\frac{c}{|D|}=\theta^*
+\end{equation}
+so $h_{\theta^*}$ is the maximum likelihood hypothesis, this is trivial.\bigskip
 
-\redText{continua da slide 26}
+In the general case, we have a dataset $D=\bigcup_i d_i$, we assume a probability distribution $\Prob(d_i|h)$ and we find the Maximum likelihood estimation\begin{equation}
+    h_{ML}=\arg\max_{h\in H}\log\Prob(D|h)
+\end{equation}
+this can't be solved analytically for some distributions.
+\subsection{Naive Bayes Classifier}
+\begin{itemize}
+    \item with a discrete problem we can apply the Bayes Optimal Classifier, provides the best result but is not practical if the hypothesis space is large.
+    \item with a continuous model we consider the maximum likelihood estimation when analytical solutions are available.
+\end{itemize}
+What happens if we can't apply the previous methods? We use the assumption of conditional independence.\begin{definition}
+    $X$ is conditionally independent of $Y$ given $Z$ if\begin{equation}
+        \Prob(X, Y|Z)= \Prob(X|Y,Z)\Prob(Y|Z)=\Prob(X|Z)\Prob(Y|Z).
+    \end{equation}
+\end{definition}
+This assumption in practice is usually not true, so the solution will be approximated.
+Let's consider a target function $$f:X\rightarrow V $$ where each instance $x\in X$ is described by different attributes $$x=(a_1,a_2\dots, a_n)$$
+we compute\begin{equation}
+    \arg\max_{v\in V}\Prob(v|x,D)
+\end{equation}
+we express $x$ in terms of the attributes\begin{align}
+    &\arg\max_{v\in V}\Prob(v|a_1,a_2\dots, a_n,D)\\
+    &=\arg\max_{v\in V}\Prob(a_1,a_2\dots, a_n|v,D)\Prob(v|D)
+\end{align}
+then we assume that the attributes are conditionally independent\begin{equation}
+    \Prob(a_1,a_2\dots, a_n|v,D)=\prod_{i=1}^{n} \Prob(a_i|v,D)
+\end{equation}
+so the \textbf{Naive Bayes Classifier} is the learned function:\begin{equation}
+    v_{NB}(x)=v_{NB}(a_1\dots, a_n)=\arg\max_{v\in V}\Prob(v|D)\prod_{i=1}^{n} \Prob(a_i|v,D)
+\end{equation}
+Clearly the assumption that the attributes are independent ins wrong, consider the tennis example \ref{tab:tennis_data_big}, if the outlook is $Rain$, the probability that the temperature is $hot$ is lower than the probability that is $cool$.\bigskip
+
+The algorithm \ref{alg:naive_bayes} show the procedure of the naive Bayes classifier estimation in the case of a classification problem.\bigskip
+
+\begin{algorithm}
+    \caption{Naive Bayes Classifier}\label{alg:naive_bayes}
+    \begin{algorithmic}
+    \Require a dataset $D$, target function $f:X\rightarrow V$,$X=A_1\times \dots \times A_n$, a new instance $x=(a_1\dots,a_n)$
+    \For{each $v_j\in V$}
+    \State $\hat \Prob(v_j|D)\longleftarrow$\texttt{estimate}$(\Prob(v_j|D))$
+    \For{each attribute $A_k$}
+    \For{each $a_i^k\in A_k$}
+    \State $\hat \Prob(a_i^k|v_j,D)\longleftarrow$\texttt{estimate}$(\Prob(a_i^k|v_j,D))$
+    \EndFor
+    \EndFor
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+After the probability $\hat\Prob$ are estimated, the new instance is classified\begin{equation}
+    v_{NB}=\arg\max_{v\in V}\hat\Prob(v|D)\prod_{i=1}^{n}\hat\Prob(a_i^k|v,D).
+\end{equation}
+How the probabilities are estimated? For $v_j\in V$ is considered the set the samples with $v_j$ as label\begin{equation}
+    D_{v_j}=\{(x,v)\in D \ : \ v=v_j\}
+\end{equation}
+then the estimated probability is \begin{equation}
+    \hat\Prob(v_j|D)=\frac{|D_{v_j}|}{|D|}
+\end{equation}
+given $a_i^k\in A_k$, for $\hat \Prob(a_i|v_j,D)$, we consider the set of all samples such that, their $A_k$ attribute have $a_i^k$ as a value\begin{align}
+    &D_{a_i^k}=\{(a^1,a^2\dots a^k \dots , a^n,v)\in D \ : \ a^k=a^k_i\}\\
+    &\hat \Prob(a_i^k|v_j,D)=\frac{|D_{a_i^k}|}{|D_{v_j|}}
+\end{align}
+usually, in the estimation are included two real number $p,m$ such that\begin{equation}
+    \hat \Prob(a_i^k|v_j,D)=\frac{|D_{a_i^k}|+mp}{|D_{v_j|}+m}
+\end{equation}
+where\begin{itemize}
+    \item $p$ is a prior estimation for $\Prob(a_i^k|v_j,D)$
+    \item $m$ is a weight given to that prior estimation.
+\end{itemize}
+Even if the conditional independence assumption is often violated the naive Bayes classifier works surprisingly well, to make that the method works correctly, we don't need that the posteriori estimation $\hat\Prob(v_j|x,D)$ to be correct, but we need that\begin{equation}
+    \arg\max_{v\in V}\hat\Prob(v|D)\prod_{i=1}^{n}\hat\Prob(a_i^k|v,D)=\arg\max_{v\in V}\Prob(v|D)\Prob(a_1\dots, a_n|v,D).
+\end{equation}
+\subsection{Text Classification}
+In this section we explain how to model a simple document classifier using the naive Bayes approach, the target function, given a document, returns the the class of that document (e.g. Scientific Article, Recipe, Poem, ecc...). This classifier have multiple application, in example:\begin{itemize}
+    \item Spam classification for e-mail
+    \item Sentiment analysis
+\end{itemize}
+Let $f$ to be the target function, $C=\{c_1,\dots c_k\}$ the set of the classes, and $Docs$ the set of documents. $D=\bigcup_{i=1}^n\{(doc_i,c_i)\}$ is the dataset. We want to compute\begin{equation}
+    c_{NB}(doc)=\arg\max_{c_j\in C}\Prob(c_j|D)\Prob(doc|c_j,D).
+\end{equation}
+We want to express each document $doc$ as a ordered list of words, we define a vocabulary\begin{equation}
+    V=\{w_1,w_2\dots w_n\}
+\end{equation}
+that contains all possible words $w_i$ that can appear in any document. Any document $doc_i\in Docs$ have a length (number of words) denoted $m_i$\begin{equation}
+    doc_i=w_1w_2\dots w_{m_i}
+\end{equation}
+The probability that a document $doc_i$ is in class $c_j\in C$ given $D$ is\begin{equation}
+    \Prob(doc_i|c_j,D)=\prod_{k=1}^{m_i}\Prob(p_k=w_k|c_j,D)
+\end{equation}
+where $\Prob(p_k=w_k|c_j|D)$ is the probability that, in a document $doc_i$ of class $c_j$, the word $p_k$ at position $k$ is $w_k$. We assume that the order of the words does not affect the probability\begin{equation}
+    \forall,k,k' \ \ \ \Prob(p_k=w_k|c_j,D)=\Prob(p_{k'}=w_{k'}|c_j,D)
+\end{equation}
+so we consider only \begin{equation}
+    \Prob(w_k|c_j,D)=\text{ probability that $w_k$ occurs in a document of class $c_j$ given $D$}.
+\end{equation}
+Each document can be represented as a $n$-dimensional vector, where the coordinate $i$ is equal to $k$ if in the document there are $k$ words $w_i\in V$. This representation looses the information about the order of the words. In this context, we denote a vector \begin{align}
+    &\mathbf d = (d_1,d_2\dots d_n)\\ &d_i = \text{ number of times words $w_i$ appear in $\mathbf d$}
+\end{align}
+we recall that $n=|V|$ is the number of distinct words in the vocabulary, the probability of classifying $\mathbf d$ as $c_j\in C$ given $D$ is\begin{equation}
+    \Prob(\mathbf d|c_j,D)=\frac{n!}{d_1!\dots d_n!}\prod_{i=1}^{n}\Prob(w_i|c_j,D)^{d_i}
+\end{equation}
+we recall that $\Prob(w_i|c_j,D)$ is the probability of observing the word $w_i$ given that the document $\mathbf d$ belongs to the class $c_j$.  This probability is estimated with the maximum likelihood value:\begin{equation}
+    \hat\Prob(\mathbf d|c_j,D)=\frac{\displaystyle  
+    \sum_{\mathbf d \in D}tf_{i,j}+\alpha
+    }{\displaystyle  
+    \sum_{\mathbf d \in D}tf_{j}+\alpha n
+    }
+\end{equation}
+where\begin{itemize}
+    \item $tf_{i,j}$ is the all-term frequency that $w_i$ occurs in the document $\mathbf d$ given that $\mathbf d$ is of class $c_j$ within the document dataset $D$.
+    \item $tf_{j}$ is the total number of words in all document of $D$ that belongs to the class $c_j$.
+    \item $\alpha$ is a smoothing parameter.
+\end{itemize}
+The algorithm \ref{alg:text_classifier} describes the methods that estimate the probabilities to classify new documents.\bigskip
+
+\begin{algorithm}
+    \caption{Text Classifier}\label{alg:text_classifier}
+    \begin{algorithmic}
+    \Require a dataset of documents $D$, a set of classes $C$
+    \State $V\longleftarrow$ all distinct words in $D$
+    \For{each $c_j\in C$}
+    \State $docs_j\longleftarrow$ subset of $D$ of document of class $c_j$
+    \State $t_j\longleftarrow |docs_j|$
+    \State $\hat\Prob(c_j)\longleftarrow \frac{t_j}{|D|}$
+    \State $TF_j\longleftarrow$ total number of words in $docs_j$ (counting duplicates)
+    \For{$w_i\in V$}
+    \State $TF_{i,j}\longleftarrow$ total number of times that $w_i$ occurs in $docs_j$
+    \State $\hat\Prob(w_i|c_j)\longleftarrow \frac{TF_{i,j}+1}{TF_j+|V|}$
+    \EndFor
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+After we got the probabilities $\hat\Prob$, we classify a new document $doc=w_1\dots w_{m}$ as follows\begin{equation}
+    v_{NB}(doc)=\arg\max_{c_j\in C}\hat\Prob(c_j)\prod_{i=1}^{m}\hat\Prob(w_i|c_j)
+\end{equation}
 
 \end{document}
