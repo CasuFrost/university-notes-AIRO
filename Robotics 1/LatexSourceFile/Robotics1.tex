@@ -429,4 +429,155 @@ $\Lambda$ and an invertible matrix $T$ such that\begin{equation}
 in this case we can easily calculate the exponential matrix\begin{equation}
     e^{At}=T^{-1}e^{\Lambda t} T.
 \end{equation}
+
+\noindent\textbf{Note}: The Sections  \ref{gemini:def}, \ref{gemini:ethical}, \ref{gemini:ev}, \ref{gemini:examples}, \ref{gemini:statistics} are written with the aid of Gemini, by having the model process the information taken from the professor's slides and the lecture notes.
+
+\section{Defining Robots}\label{gemini:def}
+The concept of a robot is formalized through several key definitions, spanning from strict industrial standards to more encompassing theoretical perspectives.
+
+\subsection{Standardized Definitions}
+
+\subsubsection*{1. Industrial Definition (Robotic Institute of America - RIA)}
+The RIA defines a robot as a \textbf{re-programmable, multi-functional manipulator} designed to move material, parts, tools, or specialized devices through variable programmed motions for the performance of a variety of tasks. A crucial element of this definition is the requirement that the robot must \textbf{acquire information from the environment} and move intelligently in response, setting it apart from simpler automated machinery.
+
+\subsubsection*{2. ISO 8373:2012 Definition}
+The International Organization for Standardization (ISO) provides a formal, international standard: an industrial robot is an \textbf{automatically controlled, re-programmable, multi-purpose manipulator} programmable in \textbf{three or more axes}. The manipulator may be either \textbf{fixed in place or mobile} and is intended for use in industrial automation applications. This specific definition helps to delineate complex, versatile machines from basic mechanical devices.
+
+\subsection{The Visionary Definition: Perception and Action}
+A broader, more "visionary" definition emphasizes the cognitive and functional aspects of robotic systems: the \textbf{intelligent connection between perception and action}.
+
+\begin{itemize}
+    \item \textbf{Perception:} This is the process of acquiring and processing sensing information from the environment.
+    \item \textbf{Action:} This involves not just controlling the robot's current state, but actively \textbf{making some changes in the physical world} to achieve a goal.
+\end{itemize}
+
+This relationship forms a continuous feedback loop that governs autonomous behavior:
+$$\text{percept} \longrightarrow \text{action} \longrightarrow \text{percept}$$
+The robot's understanding of its environment (\textit{percept}) drives its movement or operation (\textit{action}), which modifies the environment, leading to a new cycle of perception.
+
+\section{Notable Robot Examples}\label{gemini:examples}
+Throughout history, various robots have exemplified different facets of the definition of robotics, from pure industrial work to exploration and human interaction.
+
+\begin{itemize}
+    \item \textbf{Comau H4 (1995):} Representing the industrial segment, these manipulators were widely used in \textbf{automotive industries} (e.g., owned by Fiat at the time). They are a classic example of fixed, multi-functional, re-programmable automation.
+    
+    \item \textbf{Waseda WAM-8 (1984):} This famous \textbf{humanoid robot} from a Japanese university demonstrated early cognitive abilities. It was capable of complex tasks such as playing an organ and reading music from a sheet, combining perception (reading) and fine manipulation.
+    
+    \item \textbf{Spirit Rover (2002):} An excellent example of \textbf{autonomous mobile robotics and exploration}.
+    \begin{itemize}
+        \item It was landed on Mars, featuring articulated wheels and solar panels.
+        \item Its mission was to move, analyze material, and send gathered information back to Earth.
+        \item While the \textbf{global target} is \textbf{specified remotely}, the rover must operate with significant \textbf{local autonomy} because of the approximately 8-minute communication delay required to receive instructions from Earth. This necessity highlights the critical role of the onboard perception-action loop for mission success.
+    \end{itemize}
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/rover.jpg} 
+    \caption{Spirit Rover (2002)}
+\end{figure}
+
+According to the rigorous \textbf{ISO 8373:2012} definition, certain devices and systems are \textbf{not considered robots}. These exclusions are typically applied to specific devices with only \textbf{one or two degrees of freedom (DOF)} and complex software systems lacking the physical manipulator required by the standard.
+Systems that are not classified as robots under the ISO 2012 standard include:
+\begin{itemize}
+    \item Software ''bots'', Artificial Intelligence (AI), and Robotic Process Automation (RPA).
+    \item Voice assistants.
+    \item Automatic Teller Machines (ATMs).
+    \item Cooking machines, smart washing machines, and similar appliances.
+\end{itemize}
+Furthermore, advanced mobile systems like drones and autonomous cars are generally not classified as robots under this definition. However, in a \textbf{2021 revision}, the term \textbf{robotic device} was introduced to encompass these increasingly sophisticated, automated machines that fall outside the strict definition of an industrial robot.\bigskip
+
+
+The word ''robot'' has an historical and literary origin that is foundational to the field:
+\begin{itemize}
+    \item The term derives from the Slavic word \textbf{Robota}, meaning ''work'' or ''forced labor.''
+    \item The first recorded use of the word ''Robot'' in a theatrical context was in \textbf{1920} by Czech writer \textbf{Karel Čapek} in his science-fiction play, \textit{Rossum's Universal Robots (R.U.R.)}. In the play, ''robots'' are artificial, human-like creatures created to be inexpensive workers.
+\end{itemize}
+
+\section{The Ethical Framework: Asimov's Three Laws of Robotics}\label{gemini:ethical}
+The science fiction author Isaac Asimov defined a set of foundational ethical rules for robotics in his short stories.
+
+\begin{enumerate}
+    \item \textbf{First Law:} A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+    \begin{itemize}
+        \item This law is fundamental to modern \textbf{collaborative robotics} (cobots), ensuring human safety is prioritized as robots and humans work in close proximity.
+    \end{itemize}
+    \item \textbf{Second Law:} A robot must obey orders given to it by human beings, except where such orders would conflict with the First Law.
+    \begin{itemize}
+        \item This establishes the robot's subordination to human command. Situations like robots used in war or faulty programming clearly violate this rule.
+    \end{itemize}
+    \item \textbf{Third Law:} A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+    \begin{itemize}
+        \item The robot's self-preservation is conditional, being secondary to human safety and commands.
+    \end{itemize}
+\end{enumerate}
+
+\section{Evolution and Characteristics of Robot Manipulators}\label{gemini:ev}
+
+The journey toward the industrial robot began around the 1950s with the convergence of \textbf{Computerized Numerically Controlled (CNC) machines} and \textbf{mechanical telemanipulators}. This synthesis led to the development of the first \textbf{robot manipulators}, with the \textbf{Unimation PUMA (1970)} being a key early example.\bigskip
+
+
+Unlike the early mechanical telemanipulators, which often required continuous human control, true robot manipulators offered several distinct advantages:
+\begin{itemize}
+    \item \textbf{Absence of Position Memory:} The robot operates based on its programmed coordinates, not needing to remember past states.
+    \item \textbf{Adaptivity} to conditions previously unknown.
+    \item High \textbf{Accuracy} in positioning.
+    \item Superior \textbf{Repeatability} of operation (the ability to return consistently to a programmed point).
+\end{itemize}
+For an industrial manipulator, it is often noted that \textbf{repeatability} and \textbf{compliance} (adaptivity to variations) are more fundamental for task success than absolute accuracy.\bigskip
+
+The history of industrial robotics is marked by key patented designs and technological firsts:
+\textbf{The First Industrial Robot}
+The very first industrial robot was installed at a General Motors plant in \textbf{1961}. It was developed by \textbf{George Devol and Joseph Engelberger} of Unimation.
+\begin{itemize}
+    \item \textbf{Kinematics:} This design featured a total of \textbf{6 Degrees of Freedom (DOF)}, comprising five revolute (rotational) joints and one prismatic (linear) joint. This combination was considered the optimal solution at the time to achieve \textbf{full control over the end effector's pose} (position and orientation).
+\end{itemize}
+
+\textbf{Key Successor Robot Manipulators}
+Following the first installation, several robots introduced foundational innovations:
+\begin{itemize}
+    \item \textbf{ASEA IRB-6 (1973):} The first robot where all axes were driven by \textbf{electric motors} (all-electric drives), featuring 5 DOF.
+    \item \textbf{Cincinnati Milacron T3 (1974):} Recognized as the first industrial robot to be controlled by a \textbf{micro-computer}.
+    \item \textbf{Hirata AR-300 (1978):} Introduced the first \textbf{SCARA (Selective Compliance Assembly Robot Arm)} robot, which has a distinct cylindrical workspace, prioritizing speed and rigidity in the vertical axis.
+    \item \textbf{Unimation PUMA 560 (1979):} Characterized by its 6 revolute joints, this was the first truly \textbf{'anthropomorphic'} robot, offering human-like dexterity.
+\end{itemize}\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/unimation.jpg} 
+    \caption{Unimation PUMA 560 (1979)}
+\end{figure}
+
+Actuators power the robot and sustain its payload. \textbf{Electric motors} are the most common choice, converting electrical energy to torque. However, when required to sustain a \textbf{heavy payload}, a \textbf{hydraulic actuator} generally works better due to its higher power-to-weight ratio.
+\section{Global Industrial Robotics Market Statistics}\label{gemini:statistics}
+
+The following statistics are sourced from the \textbf{International Federation of Robotics (IFR)} World Robotics documents (Executive Summary for 2025 statistics). These figures illustrate the rapid global expansion of industrial automation.
+
+\subsection{Operational Stock and Growth Rates}
+The total worldwide operational stock of industrial robots reached \textbf{4.6 million units} at the end of 2024. This represents a substantial growth of \textbf{+9\%} compared to 2023. Over the five-year period from 2019 to 2024, the market demonstrated a robust Compound Annual Growth Rate (\textbf{CAGR}) of \textbf{+11\%}.
+
+The Compound Annual Growth Rate is calculated as:
+$$\text{CAGR} = \left(\frac{V_{\text{end}}}{V_{\text{begin}}}\right)^{1/\text{years}} - 1$$
+
+New robot sales in 2024 reached \textbf{542,000 units}, maintaining stability ($\pm 0\%$) compared to 2023, and demonstrating a $+7\%$ CAGR from 2019–2024. This marks the \textbf{fourth consecutive year} that annual new installations have surpassed 500,000 units. The estimated average service life of an industrial robot is between \textbf{12 and 15 years}.
+
+Regarding market size, the value of the robot market (excluding software and peripherals) was \textbf{\$15.7 billion} in 2022. The value of the total robotic systems market, which includes surrounding equipment and services, is estimated to be approximately \textbf{four times} this core market value.
+
+\subsection{Sectoral and Geographic Distribution}
+The market growth is primarily driven by the \textbf{electronics} and \textbf{automotive} industries, with collaborative robots (cobots) also contributing significantly to market expansion.
+
+The global distribution of installations is highly concentrated:
+\begin{itemize}
+    \item \textbf{China} is the world's largest market for new installations, a position it has held since 2013. China installs \textbf{every other robot} globally, accounting for \textbf{54\%} of all new annual installations.
+    \item A vast majority—\textbf{80\%} of all new robot installations—occur in just five countries: \textbf{China, Japan, USA, Korea, and Germany}.
+    \item Within Europe, \textbf{Italy} stands out as the second-largest European country for new installations.
+\end{itemize}
+
+The scale of growth is highlighted by the historical operational stock data: starting from a modest 3,000 units in 1973, stock grew to 66K in 1983, 575K in 1993, and 800K in 2003, culminating in the 4.6 million units recorded in 2024.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth ]{images/op_stocks.png} 
+\end{figure}
+
+
 \end{document}
