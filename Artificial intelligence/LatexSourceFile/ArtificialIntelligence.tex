@@ -279,4 +279,178 @@ A transition $(s,a,s')$ can be denoted $s \xrightarrow{a} s'$, we say that $s\ri
     \end{equation}
 \end{definition}
 A solution for $I$ is called \textbf{solution for $\Theta$}, if such that solution exists, $\Theta$ is \textbf{solvable}.
+\subsection{Vacuum Cleaner Example}
+Let's consider a vacuum cleaner, that is the agent of our problem, the goal is to clean a room, the vacuum cleaner can be in two possible points (left and right), this points can be clean or dirty. The agent can perform the following actions\begin{itemize}
+    \item move right 
+    \item move left 
+    \item suck the dust on the floor
+\end{itemize}
+there are 8 possible states\begin{itemize}
+    \item left point clean, right point clean, vacuum cleaner is on right point
+    \item left point dirty, right point clean, vacuum cleaner is on right point
+    \item left point clean, right point dirty, vacuum cleaner is on right point
+    \item left point dirty, right point dirty, vacuum cleaner is on right point
+    \item left point clean, right point clean, vacuum cleaner is on left point
+    \item left point dirty, right point clean, vacuum cleaner is on left point
+    \item left point clean, right point dirty, vacuum cleaner is on left point
+    \item left point dirty, right point dirty, vacuum cleaner is on left point
+\end{itemize}
+the initial state is the one with the left point dirty, right point dirty, and the vacuum cleaner on the left point, we denote the actions $R$ (move right), $L$ (move left), $S$ suck. The state space of the problem is show in figure \ref{img:vacuum_cleaner}. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/vacuum.png}
+    \caption{The vacuum cleaner state space}
+    \label{img:vacuum_cleaner}
+\end{figure}
+Some example of set of actions that can lead from the initial state to a goal state are\begin{align*}
+    &S\longrightarrow R\longrightarrow S\\
+    &S\longrightarrow R\longrightarrow R\longrightarrow S\\
+    &R\longrightarrow S\longrightarrow L\longrightarrow S
+\end{align*}
+
+Typically, the state space is exponentially large in the size of its specification, search problems are typically computationally hard and/or $\mathsf{NP}$-complete. We say that we can give an \textit{explicit description} of a search problem if we can define his state space as a graph.
+\section{Problem Descriptions}
+\begin{definition}
+    We have a \textbf{black box description} of the problem if we can't describe the state space explicitly but we can\begin{itemize}
+        \item Know which is the initial state
+        \item Check if a given state is a goal state
+        \item Check the cost of a given action $a$
+        \item Given a state $s$, check all the actions that are applicable to state $s$
+        \item Given a state $s$ and an applicable action $a$, we can get the successor state.
+    \end{itemize}
+\end{definition}
+We can think about it in a programming-way, given a problem described by $\Theta=(S,A,c,T,I,S^G)$, we can't check directly $\Theta$, but we have an \textit{API} of the problem that provide the following functions \begin{itemize}
+    \item \texttt{InitialState()} : return the initial state of the problem
+    \item \texttt{GoalTest($s$)} : return true if and only if $s\in S^G$
+    \item \texttt{Cost}($a$ : return $c(a)$)
+    \item \texttt{Actions}($s$) : return the set $\{ a \ : \ \exists  s\xrightarrow{a} s'\in T \text{ for some }s'\in S\}$
+    \item \texttt{ChildState}($s,a$) : return $s'$ if $s\xrightarrow{a} s'\in T$.
+\end{itemize}
+We \textbf{specify} a search problem if we can program/access to such an \textit{API}. There are a declarative description too.
+\begin{definition}
+\end{definition}
+We have a \textbf{declarative description} of the problem if is described by the following sets:\begin{itemize}
+    \item $P$ is a set of boolean variables (\textit{propositions})
+    \item $I\subseteq P$ is the subset of $P$ indicating which propositions are true in the initial states.
+    \item $G\subset P$ is the subset of $P$ describing the goal states in the following way\begin{itemize}
+        \item a state $s$ is a set of propositions 
+        \item $s\subseteq G \iff s$ is a goal state
+    \end{itemize}
+    \item $A$ is a set of actions, each action $a$ is described by\begin{itemize}
+        \item a set $pre_a\subseteq P$ of \textit{precondition}, $a$ can be performed if and only if the conditions in $pre_a$ are true.
+        \item a set of propositions $add_a$
+        \item a set of propositions $del_a$
+        \item the outcome of each action is the state $(\{s\}\cup add_a )\backslash del_a$
+        \item $c:A\rightarrow\R$ is the cost function.
+    \end{itemize}
+\end{itemize}
+Declarative descriptions are strictly more powerful than black box ones. In this section we assume the black box description. In principle, the search strategies we will discuss can be used with any
+problem description that allows to implement the black box \textit{API}.
+\subsection{Missionaries and Cannibals Example}
+The problem is the following\begin{itemize}
+    \item there are a river and a boat that can carry the people from the left bank to the right 
+    \item there are 6 people, 3 missionaries and 3 cannibals 
+    \item the boat can carry 0, 1 or 2 people at the same time, not 3 
+    \item the goal is to get  everybody to the left bank
+    \item if at any time, there are more cannibals than missionaries in one bank, the missionaries get killed and the game is lost. 
+\end{itemize}
+We can model the problem as follows\begin{itemize}
+    \item the state space $S$ is \begin{equation}
+        S=\{(M,C,B) \ : \ M+C=6, \ 0\le M \le 3, \ 0\le C \le 3, \  B\in\{0,1\}\}
+    \end{equation}
+    $M$ represents the current number of missionaries on the right bank, $S$ represents the current number of cannibals on the right bank, $B=1$ if the boat is on the right bank, otherwise is on the left.
+    \item the initial state is $(3,3,1)$
+    \item the goal states are $S^G={(0,0,0),(0,0,1)}$
+    \item each actions have the same cost, is negligible
+    \item the action that can be performed are the following\begin{itemize}
+        \item if $B=1$, we can subtract (in total) 1 or 2 from $M$ or $C$ (or both), and set $B=0$.
+        \item if $B=0$, we can add (in total) 1 or 2 from $M$ or $C$ (or both), and set $B=1$.
+    \end{itemize}
+    an action is applicable if and only if the following condition are satisfied after\begin{itemize}
+        \item $M\ge C$ if $M>0$, this decode the facts that the cannibals can't be more or equals than the missionaries on the right bank if there are missionaries on the left bank
+        \item if $M<3$ (some missionaries are on the left bank) then $(3-M)>(3-C)$ the missionaries on the left bank must be greater then the cannibals on the left bank.
+    \end{itemize}
+\end{itemize}
+To search a solution we can start from the initial state and expand the tree of possible solutions accordingly to the applicable actions.\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/missionaries.eps}
+\end{center}
+\subsection{Tree and Graph Search}
+In the search context the following terminology is used
+\begin{itemize}
+    \item Search node $n$: Contains a state reached by the search, plus information about how it was reached.
+    \item Path cost $g(n)$: The cost of the path reaching $n$.
+    \item Optimal cost $g^*$: The cost of an optimal solution path. For a state $s$, $g^*(s)$ is the cost of a cheapest path reaching $s$.
+    \item Node expansion: Generating all successors of a node, by applying all actions applicable to the node's state $s$. Afterwards, the state $s$ itself is also said to be expanded.
+    \item Search strategy: Method for deciding which node is expanded next.
+    \item Open list: Set of all nodes that currently are candidates for expansion. Also called frontier.
+    \item Closed list: Set of all states that were already expanded. Used only in graph search, not in tree search (up next). Also called explored set.
+\end{itemize}
+When we explore the state space of a problem we can maintain a closed list of all the node that has been already searched, to check for each generated new node if is already in the list (if so, we discard it). If such list is used, the search is called \textbf{graph search}, else, if the same state may appear in many search nodes, is called \textbf{tree search}. The tree search doesn't use a list so require less memory.\bigskip
+
+When we analyze a search algorithm, we are interested in various properties\begin{itemize}
+    \item \textbf{Completeness}: the algorithm is guaranteed to find a solution (it there are one).
+    \item \textbf{Optimality}: the returned solution is guaranteed to be optimal. 
+    \item \textbf{Time Complexity}: How long does it take to find a solution? (Measured
+in generated states).
+    \item \textbf{Space Complexity}: How much memory does the search require?
+(Measured in states).
+    \item \textbf{Branching Factor}: The number $b$ of how many successor a state may have.
+    \item \textbf{Gal depth}: the number $d$ of action required to reach the shallowest (nearest to the initial state) goal state.
+\end{itemize}
+\section{Blind Search}
+We talk about \textit{blind search} if the problem does not require any input beyond the problem API. Does not require any additional work from the programmer. For each node $n$ in the search context, we define the following data structure:\begin{itemize}
+    \item $n$.State is the state which te node contains 
+    \item $n$.Parent is node in the search tree that generated this node
+    \item $n$.Action is the action that was applied to the parent to generate the node
+    \item $n$.PathCost, also denoted $g(n)$, is the cost of the path from the initial state to the node (as indicated by the parent pointers).
+\end{itemize}
+On a node we can perform the following operations\begin{itemize}
+    \item Solution($n$) returns the path from the initials state to $n$
+    \item ChildNode($n,a$) returns the node $n$ corresponding to the application of action $a$ in state $n$.State. 
+\end{itemize}
+We also have the open list (called frontier) where we can perform the following actions:\begin{itemize}
+    \item Empty?(frontier) returns true if and only if there are no more elements in the
+open list.
+    \item Pop(frontier) returns the first element of the open list, and
+removes that element from the list.
+    \item Insert(element,frontier) inserts an element into the open list.
+\end{itemize}
+The insert function can put the element in front, in the last positions, or in other positions, it depends from the implementation (different implementations yield different search strategies).
+\subsection{Breadth-First Search}
+The strategy is to expand nodes in the order they were produced, as a FIFO queue, we expand the shallowest unexpanded node.
+\begin{center}
+    \includegraphics[width=1\textwidth ]{images/bfs.png}
+\end{center}
+This algorithm \ref{alg:BFS} is complete and optimal. We are using the black box \textit{API}.
+
+\begin{algorithm}
+    \caption{Breadth-First Search}\label{alg:BFS}
+    \begin{algorithmic}
+    \Require $problem$
+    \State $node\leftarrow$\texttt{InitialState()}
+    \If{\texttt{GoalTest($node$.State)}}
+    \State\Return Solution($node$)
+    \EndIf
+    \State $frontier\leftarrow$ a FIFO queue with $node$ in it
+    \State $explored\leftarrow$ an empty set
+    \While{true}
+    \If{Empty?($frontier$)}
+    \State\Return Failure
+    \EndIf
+    \State $node\leftarrow$pop($frontier$)
+    \State add $node$.State in $explored$
+    \For{each $action$ in \texttt{Actions($node$.State)}}
+    \State $child\leftarrow$ChildNode($node,action$)
+    \If{$child$.State is not in $explored$ or $frontier$}
+    \If{\texttt{GoalTest($child$.State)}}
+    \State\Return Solution($child$)
+    \EndIf
+    \State $frontier\leftarrow$Insert($child$,$frontier$)
+    \EndIf
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
 \end{document}
