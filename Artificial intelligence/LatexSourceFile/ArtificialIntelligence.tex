@@ -61,6 +61,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
 \newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduzione}
 \section{Basic Definitions}
@@ -422,7 +423,7 @@ The strategy is to expand nodes in the order they were produced, as a FIFO queue
 \begin{center}
     \includegraphics[width=1\textwidth ]{images/bfs.png}
 \end{center}
-This algorithm \ref{alg:BFS} is complete and optimal. We are using the black box \textit{API}.
+This algorithm \ref{alg:BFS} is complete and optimal (in case of unit cost function). We are using the black box \textit{API}.
 
 \begin{algorithm}
     \caption{Breadth-First Search}\label{alg:BFS}
@@ -452,5 +453,106 @@ This algorithm \ref{alg:BFS} is complete and optimal. We are using the black box
     \EndWhile
     \end{algorithmic}
 \end{algorithm}
+Let $b$ to be the maximum branching factor and $d$ the depth of the shallowest goal state, an upper bound (in the worst case) for the number of nodes generated (time complexity) is\begin{equation}
+    b+b^2+b^3\dots +b^d\in O(b^d)
+\end{equation}
+the same for the space complexity since  all generated nodes are kept in memory. Let's see an example, assume that $b=10$, the agent can generate $10^4$ nodes per second, and each node has a size of $1$ kilobyte, we have the following data:\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Depth} & \textbf{Nodes} & \textbf{Time} & \textbf{Memory} \\
+        \hline
+        2 & 110 & 0.11 milliseconds & 107 kilobytes \\
+        \hline
+        4 & 11,110 & 11 milliseconds & 10.6 megabytes \\
+        \hline
+        6 & $10^6$ & 1.1 seconds & 1 gigabyte \\
+        \hline
+        8 & $10^8$ & 2 minutes & 103 gigabytes \\
+        \hline
+        10 & $10^{10}$ & 3 hours & 10 terabytes \\
+        \hline
+        12 & $10^{12}$ & 13 days & 1 petabyte \\
+        \hline
+        14 & $10^{14}$ & 3.5 years & 99 petabytes \\
+        \hline
+    \end{tabular}
+\end{center}
+The critical resource for this method is the memory.
+\subsection{Depth-First Search}
+The strategy is to expand the most recent explored node, as a LIFO queue, we expand the deepest unexpanded node. 
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/dfs.png}
+\end{center}
+The algorithm is not complete since it may take infinite time, since there is no check for cycles along the branches. It's not optimal since he chooses a direction and looks for a path to a goal state. Is typically implemented as a recursive function, as in algorithm \ref{alg:DFS}.\bigskip
 
+\begin{algorithm}
+    \caption{Depth-First Search}\label{alg:DFS}
+    \begin{algorithmic}
+    \Require $problem$, a node $n$
+    \If{\texttt{GoalTest}($n$.\texttt{State})}
+    \State\Return empty action sequence
+    \EndIf
+    \For{each $action$ in \texttt{Actions}($node$.\texttt{State})}
+    \State $n'\leftarrow$ChildNode($node$,$action$)
+    \State result$\leftarrow$Depth-First Search($problem$,$n'$)
+    \If{result$\ne$ failure}
+    \State\Return $action \ \circ$ result
+    \EndIf
+    \EndFor
+    \State\Return failure
+    \end{algorithmic}
+\end{algorithm}
+
+\noindent With $action \ \circ$ result is denoted the concatenation of actions. 
+About the space complexity, this methods stores only a single path of actions, from the root to a leaf node, since once a
+ node has been expanded, it can be removed from memory as soon as all its
+ descendants have been fully explored.
+
+ If $m$ is the maximal depth reached, the space occupied is in $O(bm)$. About the time complexity, in the worst case the nodes generated is in $O(b^m)$.
+ \subsection{Uniform-Cost Search}
+ This methods is equivalent to the well known Dijkstra's algorithm. We expand the node with the lowest path cost $g(n)$, the frontier is ordered by the path cost, with the lowest first. It differs from the BFS since a test is added to check if a better path is found to a node currently
+ on the frontier.
+
+ \begin{algorithm}
+    \caption{Uniform-Cost Search}\label{alg:DFS}
+    \begin{algorithmic}
+    \Require $problem$
+    \State $node\leftarrow$\texttt{InitialState()}
+    \State $frontier\leftarrow$ priority queue ordered by ascending $g$
+    \State $explored\leftarrow$ empty set of states
+    \While{true}
+    \If{Empty?($frontier$)}
+    \State\Return failure 
+    \EndIf
+    \State $n\leftarrow$Pop($frontier$)
+    \If{\texttt{GoalTest}($n$.State)}
+    \State\Return Solution($n$)
+    \EndIf
+    $explored\leftarrow explored\cup n$.State
+    \For{each $action$ in \texttt{Actions}($node$.\texttt{State})}
+    \State $n'\leftarrow${ChildNode}($n$,$a$)
+    \If{$n'$.State$\notin explored\cup$States($frontier$)}
+    \State $frontier\leftarrow$insert($n'$,$frontier$)
+    \Else{ \textbf{if} $\exists n''\in frontier \ : \ n''.$State=$n'$.State$ \land \ g(n')<g(n'')$}
+    \State replace $n''$ with $n'$ in $frontier$
+    \EndIf
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+\begin{theorem}
+    The Uniform-Cost search algorithm is optimal, since the Dijkstra's algorithm is optimal, and Uniform-cost search is equivalent to Dijkstra's algorithm on the state space graph.and 
+\end{theorem}
+
+The algorithm is complete if we assume that, the costs are strictly positive and the state space is finite. The time and space complexity are\begin{equation}
+    O(b^{1+\lfloor\nicefrac{g^*}{*}\rfloor})
+\end{equation}where\begin{itemize}
+    \item $g^*$ is the cost of an optimal solution 
+    \item $\epsilon=\min c$ is the positive cost of the cheapest action, the minimum of the function $c$.
+\end{itemize}
+\subsection{Iterative Deepening Search}
+This is an altered version of the Depth-First Search algorithm, where we define a predetermined depth limit, and apply the DFS in function of that limit, iteratively applying this by increasing the depth limit each time.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/iterative_deep.png}
+\end{center}
 \end{document}
