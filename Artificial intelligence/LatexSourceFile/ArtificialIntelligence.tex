@@ -555,4 +555,79 @@ This is an altered version of the Depth-First Search algorithm, where we define 
 \begin{center}
     \includegraphics[width=0.7\textwidth ]{images/iterative_deep.png}
 \end{center}
+We split the algorithm in three different function.
+
+ \begin{algorithm}
+    \caption{Iterative Deepening Search}\label{alg:IDS}
+    \begin{algorithmic}
+    \Require $problem$
+    \For{$depth=0,1\dots\infty$}
+    \State $result\leftarrow$Depth Limited Search($problem$,$depth$)
+    \If{$result\ne$cutoff} 
+    \State\Return $result$
+    \EndIf
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+ \begin{algorithm}
+    \caption{Depth Limited Search}\label{alg:DLS}
+    \begin{algorithmic}
+    \Require $problem,limit$
+    \State $node\leftarrow$ \texttt{InitialState()}
+    \State\Return Recursive DLS($node$,$problem$,$limit$)
+    \end{algorithmic}
+\end{algorithm}
+
+The algorithm is complete since we are keep searching until a solution is found, is also optimal if all the cost are unitary, the space complexity is $O(bd)$. The time complexity is in $O(b^d)$, this methods combines the advantages of breadth-first and depth-first search. It is the preferred blind search method in large state spaces with unknown solution depth.\bigskip
+
+ \begin{algorithm}
+    \caption{Recursive DLS}\label{alg:EDLS}
+    \begin{algorithmic}
+    \Require $n,problem,limit$
+    \If{\texttt{GoalTest($n$.State)}}
+    \State\Return empty action sequence
+    \EndIf
+    \If{$limit$==0}
+    \State\Return cutoff
+    \EndIf
+    \State $cutoffOccurred\leftarrow $false
+    \For{each $action$ in \texttt{Actions}($node$.\texttt{State})}
+    \State $n'\leftarrow$ChildNode($node$,$action$)
+    \State result$\leftarrow$Recursive DLS($problem$,$n'$)
+    \If{$result$==cutoff}
+    \State $cutoffOccurred\leftarrow $true
+    \Else
+    \If{result$\ne$ failure}
+    \State\Return $action \ \circ$ result
+    \EndIf
+    \EndIf
+    \EndFor
+    \If{$cutoffOccurred$}
+    \State\Return cutoff 
+    \EndIf
+    \State\Return failure
+    \end{algorithmic}
+\end{algorithm}
+
+The following table is a summary of the methods that we considered in this section, confronting the time and space complexity.\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Criterion                                                  & BFS                                                                 & \begin{tabular}[c]{@{}c@{}}Uniform\\ Cost\end{tabular}                                             & DFS      & \begin{tabular}[c]{@{}c@{}}Depth\\ Limited\end{tabular} & \begin{tabular}[c]{@{}c@{}}Iterative\\ Deeping\end{tabular}         \\ \hline
+Completness                                                & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\end{tabular}    & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\\ and action costs \\ is positive\end{tabular} & No       & No                                                      & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\end{tabular}    \\ \hline
+Optimality                                                 & \begin{tabular}[c]{@{}c@{}}Yes if action\\ costs are 1\end{tabular} & Yes                                                                                                & No       & No                                                      & \begin{tabular}[c]{@{}c@{}}Yes if action\\ costs are 1\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}Time\\ Complexity\end{tabular}  & $O(b^d)$                                                            & $O(b^{1+\lfloor \nicefrac{g^*}{\epsilon} \rfloor})$                                                & $O(b^m)$ & $O(b^l)$                                                & $O(b^d)$                                                            \\ \hline
+\begin{tabular}[c]{@{}c@{}}Space\\ Complexity\end{tabular} & $O(b^d)$                                                            & $O(b^{1+\lfloor \nicefrac{g^*}{\epsilon} \rfloor})$                                                & $O(bm)$  & $O(bl)$                                                 & $O(bd)$                                                             \\ \hline
+\end{tabular}
+\end{center}
+where
+\begin{itemize}
+\item $b$: finite branching factor
+\item $d$: goal depth
+\item $m$: maximum depth of the search tree
+\item $l$: depth limit
+\item $g^*$ : optimal solution cost
+\item $\epsilon>0$: minimal action cost.
+\end{itemize}
+\section{Informed Search}
 \end{document}
