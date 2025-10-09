@@ -11,7 +11,7 @@ struct MatD
     MatD &operator-(const MatD &other) const;
     MatD operator*(double s) const;
     VecD operator*(const VecD &v) const;
-    MatD &operator*(const MatD &other) const;
+    MatD operator*(const MatD &other) const;
     double &at(int r, int c);
     double &at(int r, int c) const;
     void printMeBadly(std::ostream &os) const;

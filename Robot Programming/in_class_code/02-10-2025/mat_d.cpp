@@ -101,7 +101,7 @@ VecD MatD::operator*(const VecD &v) const
     return ret;
 }
 
-MatD &MatD::operator*(const MatD &other) const
+MatD MatD::operator*(const MatD &other) const
 {
     assert(other._rows == _cols && "matrices  isn't compatible");
     MatD ret(_rows, other._cols);

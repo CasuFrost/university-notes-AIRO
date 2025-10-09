@@ -4,17 +4,20 @@ using namespace std;
 
 int main()
 {
-    MatD m(3, 6);
-    MatD m2(6, 3);
-    for (int i = 0; i < 3; ++i)
+    int rows = 3;
+    int cols = 3;
+    MatD m(rows, cols);
+    MatD m2(cols, rows);
+    for (int i = 0; i < rows; ++i)
     {
-        for (int j = 0; j < 6; ++j)
+        for (int j = 0; j < cols; ++j)
         {
-            m.at(i, j) = 0.5;
-            m2.at(j, i) = 2;
+            m.at(i, j) = sin(i * j);
+            m2.at(j, i) = cos(i * j);
         }
     }
     m.printMeBadly(cout);
     m2.printMeBadly(cout);
     MatD m3 = m * m2;
+    m3.printMeBadly(cout);
 }

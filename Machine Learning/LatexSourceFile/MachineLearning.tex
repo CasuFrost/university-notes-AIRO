@@ -1266,5 +1266,22 @@ The algorithm \ref{alg:text_classifier} describes the methods that estimate the 
 After we got the probabilities $\hat\Prob$, we classify a new document $doc=w_1\dots w_{m}$ as follows\begin{equation}
     v_{NB}(doc)=\arg\max_{c_j\in C}\hat\Prob(c_j)\prod_{i=1}^{m}\hat\Prob(w_i|c_j)
 \end{equation}
+\section{Parametrized Hypothesis Space}
+Given a target function
+$$ f:X\rightarrow C $$
+we have a parametrized hypothesis space if, the set of all possible solutions $H$, contains functions of the type
+\begin{equation}
+    y(x,\btheta)
+\end{equation}
+where $x\in X$ and $\btheta$ is the parameters of the function, an example is\begin{equation}
+    y(x,\mathbf w)=y(x,(w_1,w_2,w_3,w_4))=\sum_{i=1}^4x^iw_i
+\end{equation}
+in this kinds of problem, the search of a solution, is the determination of the parameters $\btheta$. If the we have a high number of parameters, the model will be more powerful and the training will be more expensive (in computational terms).
 
+A model could also be hyperparametrized, if the set of possible solution is parameterized by some fixed values that can't change during the training. An example of hyper parameter could be the grade of the polynomials functions in the hypothesis space $H$.
+\begin{align*}
+    &H=\left\{\sum_{i=1}^nw_ix^i\right\}\\
+    &n\text{ is an hyperparameter}\\
+    &w_1,\dots w_n\text{ are the parameters}
+\end{align*}
 \end{document}
