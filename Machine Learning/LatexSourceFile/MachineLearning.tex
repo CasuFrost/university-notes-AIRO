@@ -1266,7 +1266,8 @@ The algorithm \ref{alg:text_classifier} describes the methods that estimate the 
 After we got the probabilities $\hat\Prob$, we classify a new document $doc=w_1\dots w_{m}$ as follows\begin{equation}
     v_{NB}(doc)=\arg\max_{c_j\in C}\hat\Prob(c_j)\prod_{i=1}^{m}\hat\Prob(w_i|c_j)
 \end{equation}
-\section{Parametrized Hypothesis Space}
+\section{Probabilistic Generative Models}
+\subsection{Parametrized Hypothesis Space}
 Given a target function
 $$ f:X\rightarrow C $$
 we have a parametrized hypothesis space if, the set of all possible solutions $H$, contains functions of the type
@@ -1284,4 +1285,211 @@ A model could also be hyperparametrized, if the set of possible solution is para
     &n\text{ is an hyperparameter}\\
     &w_1,\dots w_n\text{ are the parameters}
 \end{align*}
+Let's consider a classification problem, the function to learn is\begin{equation}
+    f:X\rightarrow\{c_1,c_2\dots c_K\}
+\end{equation}
+where the input space is continuous: $X\subseteq\R^d$. We need to evaluate the probability that a given point is in a given class\begin{equation}
+    \Prob(c_k|c,D) \ \ \ x\notin D 
+\end{equation}
+since the dataset is fixed in this context, we can write directly \begin{equation}
+    \Prob(c_k|c) \ \ \ x\notin D 
+\end{equation}
+is implicit that the probability depends on the dataset. The \textit{main assumption} of this section is that there is a \textbf{Gaussian Distribution} over $x$, for each class $c_k$\begin{equation}
+    \Prob(x|c_k)=\mathcal N(x,\mu_k,\Sigma_k)
+\end{equation}
+where $\mu_k$ is the mean vector and $\Sigma_k$ is the covariance matrix. To emphasize and reiterate that certain quantities are vectors, bold letters will be used in the notation.
+\begin{equation}
+    \Prob(\mathbf x|c_k)=\mathcal N(\mathbf  x,\bmu_k,\Sigma_k)
+\end{equation}
+\subsection{Models for 2 Classes}
+Let's consider the case with two classes
+$$ 
+f:X\rightarrow\{c_1,c_2\}
+$$
+In this case, assuming that the distributions are gaussian, we have that\begin{align}
+    &\Prob(\mathbf x|c_1)=\mathcal N(\mathbf x,\bmu_1,\Sigma_1)\\
+    &\Prob(\mathbf x|c_2)=\mathcal N(\mathbf x,\bmu_2,\Sigma_2)
+\end{align}
+we recall that\begin{align}
+    &X\subset \R^d\\ 
+    &\bmu_i,\mathbf x\in\R^d\\
+    &\Sigma_i\in Mat(d\times d)
+\end{align}
+we also have\begin{equation}
+    \Prob(c_1)=p,  \ \ \ \ \Prob(c_2)=1-p
+\end{equation}
+now, we have to estimate the parameters $\bmu_1,\Sigma_2,\bmu_1,\Sigma_2,p$ to use $\Prob(\mathbf x|c_i)$ and make predictions on samples that are not in the dataset, since for the Bayes theorem:\begin{align}
+    &\Prob(c_1|\mathbf x)=\frac{\Prob(\mathbf x|c_1)\Prob(c_1)}{\Prob(\mathbf x)}\\
+    &\Prob(c_2|\mathbf x)=\frac{\Prob(\mathbf x|c_2)\Prob(c_2)}{\Prob(\mathbf x)}
+\end{align}
+we get:\begin{align}
+    &\Prob(c_i|\mathbf x)=\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x)}=\\
+    &\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x|c_1)\Prob(c_1)+\Prob(\mathbf x|c_2)\Prob(c_2)}
+\end{align}
+setting
+\begin{equation}
+    a(\mathbf x)=\ln\left(\frac{\Prob(\mathbf x|c_1)\Prob(c_1)}{\Prob(\mathbf x|c_2)\Prob(c_2)}\right)
+\end{equation}
+we get\begin{align}
+    &\Prob(c_i|\mathbf x)=\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x|c_1)\Prob(c_1)+\Prob(\mathbf x|c_2)\Prob(c_2)}=\\
+    &\frac{1}{1+\exp(-a(\mathbf x))}=\sigma(a(\mathbf x))
+\end{align}
+we call  $\sigma$ the \textbf{sigmoid function}. This function ''squeeze'' the values from $\R$ to $[0,1]$. By the assumption about the distribution, we now that\begin{equation}
+    a(\mathbf x)=\ln\left(\frac{\Prob(\mathbf x|c_1)\Prob(c_1)}{\Prob(\mathbf x|c_2)\Prob(c_2)}\right)=
+\ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma_1)p}{\mathcal N(\mathbf x,\bmu_2,\Sigma_2)(1-p)}\right)
+\end{equation}
+We do an ulterior assumption, the covariance matrices are equals: $\Sigma_1=\Sigma_2$.
+\begin{equation}
+    a(\mathbf x)=
+\ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma)p}{\mathcal N(\mathbf x,\bmu_2,\Sigma)(1-p)}\right)
+\end{equation}
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[
+        % Definisci la funzione sigmoide per poterla riutilizzare facilmente
+        declare function={sigmoid(\x)=1/(1+exp(-\x));}
+    ]
+    \begin{axis}[
+        % Impostazioni dell'asse
+        title={$\sigma(x) = \frac{1}{1 + \exp(-x)}$},
+        xlabel={$x$},
+        ylabel={$\sigma(x)$},
+        axis lines=middle, % Assi centrati all'origine
+        xmin=-6, xmax=6, % Range sull'asse x
+        ymin=0, ymax=1.1, % Range sull'asse y (un po' sopra 1 per chiarezza)
+        xtick={-6,-4,-2,0,2,4,6}, % Tick specifici per x
+        ytick={0, 0.5, 1}, % Tick specifici per y
+        grid=major, % Aggiunge una griglia per riferimento
+        domain=-6:6, % Dominio di campionamento della funzione
+        samples=30, % Aumenta i campioni per una curva più liscia
+    ]
+    \addplot[
+        blue, 
+        ultra thick, % Spessore della linea
+        smooth % Rende la curva più smussata (anche se con 100 campioni è già liscia)
+    ] {sigmoid(x)};
+    \end{axis}
+    \end{tikzpicture}
+    \caption{Sigmoid function curve}
+\end{figure}
+At this point, we know that
+\begin{equation}
+    \Prob(c_i|\mathbf x)=\sigma(a(\mathbf x))
+\end{equation}
+so, given the parameters $\bmu_1,\bmu_2,p,\Sigma$, we can make prediction by the following decision rule:\begin{itemize}
+    \item Given $\mathbf x\notin D$
+    \item if $\Prob(c_1|\mathbf x)>0.5$ the point $\mathbf x$ is in class $c_1$
+    \item else, if $\Prob(c_1|\mathbf x)\le0.5$ the point $\mathbf x$ is in class $c_2$
+\end{itemize}
+The parameters can be found with the maximum likelihood function, we have to introduce some notation to simplify the understanding process, the dataset is denoted:\begin{equation}
+D=\{(\mathbf x_n,t_n)_{n=1}^N\}
+\end{equation}
+where $t_n=1$ if $\mathbf x_n$ is in class $c_1$, else $t_n=0$. This encoding is useful to write the likelihood function. We denote $\mathbf t=(t_n)_{n=1}^N$ the binary vector of the dataset's labels. The likelihood function is the probability that, given the parameters, the labels $\mathbf t$ are correct predictions:
+\begin{equation}
+    \Prob(\mathbf t|p,\bmu_1,\bmu_2,\Sigma,D)=\prod_{n=1}^{N}
+    \left(
+    p\mathcal N(\mathbf x_n,\bmu_1,\Sigma)
+    \right)^{t_n}
+    \left(
+    (1-p)\mathcal N(\mathbf x_n,\bmu_2,\Sigma)
+    \right)^{(1-t_n)}
+\end{equation}
+The ML solution is given by the parameters that maximize that function (we use the natural logarithm):\begin{equation}
+    \hat p,\hat\bmu_1,\hat\bmu_2,\hat\Sigma=\arg\max_{p,\bmu_1,\bmu_2,\Sigma}\ln\Prob(\mathbf t|p,\bmu_1,\bmu_2,\Sigma,D)
+\end{equation}
+In this context the function is analytical and we have a closed form solution, the parameters that maximize that function are\begin{align}
+    &\hat p=\frac{N_1}{N}, \ \ \ \text{ where } N_1=|\{(\mathbf x,t)\in D \ : \ t=1\}|\\
+    &\hat\bmu_1=\frac{1}{N_1}\sum_{n=1}^Nt_n\mathbf x_n\\
+    &\hat\bmu_2=\frac{1}{N_2}\sum_{n=1}^N(1-t_n)\mathbf x_n\\
+\end{align}
+The matrix $\Sigma$ needs the definition of the two matrices\begin{align}
+    &S_1=\frac{1}{N_1}\sum_{(\mathbf x_n,t_n)\in D \ : \ t_n=1}(\mathbf x_n-\hat \bmu_1)(\mathbf x_n-\hat \bmu_1)^T\\
+    &S_2=\frac{1}{N_1}\sum_{(\mathbf x_n,t_n)\in D \ : \ t_n=0}(\mathbf x_n-\hat \bmu_2)(\mathbf x_n-\hat \bmu_2)^T
+\end{align}
+then\begin{align}
+    &\hat \Sigma = \frac{N_1}{N}S_1+\frac{N_2}{N}S_2
+\end{align}
+note that the with $(\mathbf x_n-\hat \bmu_i)(\mathbf x_n-\hat \bmu_i)^T$ is denoted the matrix multiplication between a $d\times 1$ matrix and a $1\times d$ matrix.\bigskip
+
+The function $a(\mathbf x)$ includes non linear terms, since it includes the Gaussian distribution, apparently, is a non linear function. The following statement is crucial.
+\begin{theorem}
+    the function $a(\mathbf x)$ is linear in $\mathbf x$.
+\end{theorem}
+\textit{Proof}: We have to show that, there exists $\mathbf w\in \R^d$ and $w_0\in \R$ such that\begin{equation}
+a(\mathbf x)=
+\ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma)p}{\mathcal N(\mathbf x,\bmu_2,\Sigma)(1-p)}\right)=\mathbf w^T\mathbf x+w_0
+\end{equation}
+For the logarithms properties we have:\begin{align}
+    &a(\mathbf x)=
+\ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma)p}{\mathcal N(\mathbf x,\bmu_2,\Sigma)(1-p)}\right)=\\
+&\ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma)}{\mathcal N(\mathbf x,\bmu_2,\Sigma)}\right)-\ln\left(\frac{p}{1-p}\right)
+\end{align}
+we expand the Gaussian distribution form:\begin{align}
+    &\ln\left(\frac{ \frac{1}{\sqrt{(2\pi)^d}\det\Sigma}\exp(-\frac{1}{2}(\mathbf x-\bmu_1)^T\Sigma^{-1}(\mathbf x-\bmu_1))}{
+        \frac{1}{\sqrt{(2\pi)^d}\det\Sigma}\exp(-\frac{1}{2}(\mathbf x-\bmu_2)^T\Sigma^{-1}(\mathbf x-\bmu_2))
+    }\right)-\ln\left(\frac{p}{1-p}\right)
+\end{align}
+since the covariance matrices are equals, the term $\frac{1}{\sqrt{(2\pi)^d}\det\Sigma}$ get cancelled\begin{align}
+    &\ln\left(\frac{\exp(-\frac{1}{2}(\mathbf x-\bmu_1)^T\Sigma^{-1}(\mathbf x-\bmu_1))}{
+        \exp(-\frac{1}{2}(\mathbf x-\bmu_2)^T\Sigma^{-1}(\mathbf x-\bmu_2))
+    }\right)-\ln\left(\frac{p}{1-p}\right)
+\end{align}
+Due to the properties of exponentials and logarithms, the logarithm of a ratio is the difference of the logarithms:\begin{align}
+    &-\frac{1}{2}(\mathbf x-\bmu_1)^T\Sigma^{-1}(\mathbf x-\bmu_1)-
+    (-\frac{1}{2}(\mathbf x-\bmu_2)^T\Sigma^{-1}(\mathbf x-\bmu_2))
+    -
+    \ln\left(\frac{p}{1-p}\right)
+\end{align}
+we multiply by $-2$ and we get\begin{align}
+    &(\mathbf x-\bmu_1)^T\Sigma^{-1}(\mathbf x-\bmu_1)-
+    (\mathbf x-\bmu_2)^T\Sigma^{-1}(\mathbf x-\bmu_2)
+    +
+    2\ln\left(\frac{p}{1-p}\right)
+\end{align}
+$(\mathbf x-\bmu_i)^T\Sigma^{-1}(\mathbf x-\bmu_i)$ are quadratic forms and can be expanded (remember that $\Sigma$ is symmetric):
+\begin{align}
+    &\mathbf x^T\Sigma^{-1}\mathbf x-2\bmu_1^T\Sigma^{-1}\mathbf x+\bmu_1^T\Sigma^{-1}\bmu_1
+    -
+    \mathbf x^T\Sigma^{-1}\mathbf x-2\bmu_2^T\Sigma^{-1}\mathbf x+\bmu_2^T\Sigma^{-1}\bmu_2
+    +
+    2\ln\left(\frac{p}{1-p}\right)=\\
+    &-2\bmu_1^T\Sigma^{-1}\mathbf x+\bmu_1^T\Sigma^{-1}\bmu_1
+    -2\bmu_2^T\Sigma^{-1}\mathbf x+\bmu_2^T\Sigma^{-1}\bmu_2
+    +
+    2\ln\left(\frac{p}{1-p}\right)
+\end{align}
+reordering we get:\begin{equation}
+    2(\bmu_2-\bmu_1)^T\Sigma^{-1}\mathbf x+(\bmu_1^T\Sigma^{-1}\bmu_1-\bmu_2^T\Sigma^{-1}\bmu_2)+
+    2\ln\left(\frac{p}{1-p}\right)
+\end{equation}
+we call $r$ the constant $(\bmu_1^T\Sigma^{-1}\bmu_1-\bmu_2^T\Sigma^{-1}\bmu_2)+
+    2\ln\left(\frac{p}{1-p}\right)$
+    \begin{equation}
+    2(\bmu_2-\bmu_1)^T\Sigma^{-1}\mathbf x+r
+\end{equation}
+remember that we have to re-multiply by $-\frac{1}{2}$:
+\begin{equation}
+    -(\bmu_2-\bmu_1)^T\Sigma^{-1}\mathbf x-\frac{1}{2}r
+\end{equation}
+we define\begin{align}
+    &\mathbf w=(-(\bmu_2-\bmu_1)^T\Sigma^{-1})^T\\ 
+    &w_0=-\frac{1}{2}r=-\frac{1}{2} (\bmu_1^T\Sigma^{-1}\bmu_1-\bmu_2^T\Sigma^{-1}\bmu_2)+
+    \ln\left(\frac{p}{1-p}\right)
+\end{align}
+in the end we have:\begin{equation}
+    a(\mathbf x)=\mathbf w^T\mathbf x+w_0
+\end{equation}
+\hfill$\blacksquare$
+\subsection{Models for $k$ Classes}
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
