@@ -322,6 +322,28 @@ we have that\begin{align}
 The starting velocity and the final velocity is zero, so the variation of the velocity is zero, this can be seen by the integral of the acceleration\begin{equation}
     \int_0^T\ddot{\mathbf p}dt=\int_0^T\ddot s(\mathbf p_b-\mathbf p_a)dt=(\mathbf p_b-\mathbf p_a)\int_0^T\ddot sdt=(\mathbf p_b-\mathbf p_a)(\dot s(T)-\dot s(0))=0.
 \end{equation}
+Let's see an example, let's say that the linear position of the end effector along 1 axis is given by the law\begin{equation}
+    s(t)
+\end{equation}\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/lin_pos.eps} 
+\end{center}
+we have the following profile for the acceleration:
+\begin{equation}
+    \ddot s(t)=\begin{cases}
+        1\text{ if }t\in[0,1]\cup [\frac{3}{8},4]\cup [\frac{5}{8},\frac{7}{8}]\\
+        -1\text{ if }t\in[1,\frac{3}{8}]\cup [4,\frac{5}{8}]\cup [\frac{7}{8},8]
+    \end{cases}
+\end{equation}
+Let's assume that\begin{equation}
+    \dot s(0)=s(0)=0
+\end{equation}
+\begin{itemize}
+    \item Question: What will be the speed of the end effector at $t=8$? We can easily see that the integral of $\ddot s$ over $t\in [0,8]$ is 0, so $\Delta\dot s =0\implies \dot s(8)=0$.
+    \item Question: What will be the position of the end effector at $t=8$? We can easily see that the integral of $\dot s$ over $t\in [0,8]$ is 0, so $\Delta s =0\implies  s(8)=0$.
+\end{itemize}
+The acceleration, speed and position profiles are the following:\begin{center}
+    \includegraphics[width=1\textwidth ]{images/profiles.eps} 
+\end{center}
 Now we consider the \textit{control aspects} of the problem, we denote $\mathbf p_e(t)$ the position of the end effector at the time $t$, and $\mathbf p_d(t)$ the \textbf{desired position} at time $t$.\begin{equation}
     \mathbf p_d(0)=\mathbf p_a.
 \end{equation}
@@ -579,5 +601,227 @@ The scale of growth is highlighted by the historical operational stock data: sta
     \includegraphics[width=0.9\textwidth ]{images/op_stocks.png} 
 \end{figure}
 
+\chapter{Sensors and Actuators}
+From an high level prospective, a robot is a system composed by different units, that takes commands and responds with actions in a working environment, as shown in figure \ref{fig:system}.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/robosystem.png} 
+    \caption{Robot as a system}
+    \label{fig:system}
+\end{figure}
 
+The functional units are the following:\begin{itemize}
+    \item mechanical units (robot arms): We see the links as rigid bodies, connected by rotational or prismatic joints, with an end effector attached at the end of the serial structure.
+    \item actuation units: we have motors for the joints, that can be electrical, hydraulic or pneumatic, and eventually transmissions (i.g. a belt). We also consider the motion control algorithm as a part of that unit.
+    \item sensor units: proprioceptive sensors that measure the internal state of the robot (position and velocity of the joints) and exteroceptive that measure the external environment.
+    \item supervision units: AI and reasoning, task planning and control.
+\end{itemize}
+Let's focus on the actuation system, we can consider the scheme in figure \ref{fig:Actuationsystem}. We see how the power is measured in different units in different stage of the actuation process:\begin{itemize}
+    \item Electrical : power = voltage $\times$ current
+    \item Hydraulic : power = pressure $\times$ flow rate 
+    \item Linear Mechanics : power = force $\times$ speed 
+    \item Rotational Mechanics : power = torque $\times$ angular speed
+\end{itemize}
+{fig:system}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/actuation_system.png} 
+    \caption{Actuation system}
+    \label{fig:Actuationsystem}
+\end{figure}
+
+
+We define the efficiency as the ratio between the output and input power:\begin{equation}
+    \text{efficiency}=\frac{P_u}{P_c}.
+\end{equation}
+\section{Electrical Motors}
+Since pneumatic system have difficulties to guarantee  high levels of precision, and the hydraulic actuation systems are expensive and needs hydraulic supply, in most of the cases electrical servo motors are mounted on the robots.\begin{itemize}
+    \item advantages of electrical motors:\begin{itemize}
+        \item power supply available everywhere
+        \item low cost
+        \item large variety of products
+\item high power conversion efficiency
+\item easy maintenance
+\item no pollution in working environment
+    \end{itemize}
+    \item disadvantages\begin{itemize}
+        \item overheating in static conditions (in the presence of gravity)
+\item need special protection in flammable environments
+\item some advanced models require more complex control laws
+    \end{itemize}
+\end{itemize}\begin{center}
+    \includegraphics[width=0.25\textwidth ]{images/overheating.eps} 
+\end{center}
+If a robot should keep an object in a still position, the force of gravity tends to rotate the arms, so torque from the motors must be applied to keep that positions (this does not happen with hydraulic motors).
+\begin{definition}
+    A \textbf{servomotor} is a type of electric motor (AC or DC) specifically designed for the precision control of position, speed, and acceleration. It uses a closed-loop system with a feedback component (such as an encoder) that continuously monitors the motor's current position and compares it to the desired position. If there is a difference (an error signal), the controller corrects it, ensuring extremely accurate and dynamic motion.
+\end{definition}
+Desired characteristics for a servomotor mounted on a robot are:\begin{itemize}
+    \item low inertia and high power-to-weight ratio
+    \item high acceleration capabilities and large  range of operational velocities (1 to 2000 round per minute)
+    \item low torque ripple\footnote{Torque ripple is an issue that arises in motors due to their construction, and it will be explained later.} and high accuracy in positioning
+    \item power: 10 W to 10 kW.
+\end{itemize}
+There are two types of electrical motors\begin{itemize}
+    \item Brushed DC: Has windings on the rotor (rotating part) and permanent magnets on the stator (stationary part). It uses physical brushes rubbing against a commutator to mechanically switch the current direction and maintain rotation.
+    \item Brushless DC (BLDC): Has permanent magnets on the rotor and windings on the stator. It uses an electronic controller (instead of brushes/commutator) to electrically switch the current to the windings for rotation.
+\end{itemize}\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/brush_brushless.png} 
+\end{center}
+
+
+The DC motor has a complex construction, but the mathematical model that describes it is simple. The rotor (the rotating part) includes copper windings (coils) through which current circulates in a determined direction; power is supplied thanks to the contact of brushes that rub against the motor. The entire assembly is immersed in a magnetic field provided by permanent magnets, as shown in figure \ref{fig:motor}.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/motore2.eps}
+    \caption{brush DC motor}
+    \label{fig:motor}
+\end{figure}
+
+The electrons will move in the direction of the vector  
+$\bar i$
+(current density), with intensity I, and due to the presence of a magnetic field  
+$\bar B$, they will be subjected to the \textbf{Lorentz force}
+\begin{equation}
+     \bar F = I(\bar l \times \bar B)
+\end{equation}
+where $\bar l$ represents the section of wire.
+In this way, a torque will be generated, causing the circuit to rotate. The brushes, colored yellow in figure \ref{fig:motor}, by making contact, ensure that the current circulates. Note how the slip ring is divided into two parts; it acts as a \textit{commutator}. This construction allows the current to reverse direction with every half-turn. If this were not the case, the Lorentz force would alternate, causing the rotor to oscillate until it stopped, without rotating, as shown in figure \ref{fig:commutazione}.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[scale=0.7, transform shape]
+        \begin{axis}[
+        ymin=-2,
+        ymax = 2,
+        xmin=0,
+        xmax = 7,
+        axis lines = left,
+        xtick distance=1, ytick distance=1,
+        grid style=dashed,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        xlabel = \(t\),
+        ylabel = {\(\tau\)},
+        ]
+        %Below the red parabola is defined
+        \addplot [
+        domain=0:7,
+        samples=20,
+        color=blue,
+        ]
+        {cos(deg(x))};
+        \addlegendentry{without commutator}
+        \end{axis}
+        \end{tikzpicture}
+        \begin{tikzpicture}[scale=0.7, transform shape]
+        \begin{axis}[
+        ymin=-2,
+        ymax = 2,
+        xmin=0,
+        xmax = 7,
+        axis lines = left,
+        xtick distance=1, ytick distance=1,
+        grid style=dashed,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        xlabel = \(t\),
+        ylabel = {\(\tau\)},
+        ]
+        %Below the red parabola is defined
+        \addplot [
+        domain=0:7,
+        samples=50,
+        color=red,
+        ]
+        {abs(cos(deg(x)))};
+        \addlegendentry{with commutator}
+        \end{axis}
+        \end{tikzpicture}
+        \caption{Torque profile $\tau$}
+        \label{fig:commutazione}
+\end{figure}
+
+\noindent The \textbf{torque} is equal to
+\begin{equation}
+    \bar T = (\bar r_1 \times  \bar F_1 + \bar r_2 \times  \bar F_2)
+\end{equation}
+We denote $\tau = \pm|\bar T|$ the \textit{scalar torque}.
+\begin{center}
+    \includegraphics[width=0.25\textwidth ]{images/momento.eps}
+\end{center}
+The force $\bar F$  depends on the angle $\theta$ of the motor's rotation, because the change in the direction of the current  
+$\bar i$
+  can cause the force to attenuate. The torque becomes zero every time the angle between the generated force and the lever arm of rotation is $k\pi$, where $k\in\N$.
+
+\begin{center}
+    \includegraphics[width=1\textwidth ]{images/variazioneCoppia.eps}
+\end{center}
+\begin{center}
+	\begin{tabular}{>{\centering\arraybackslash}m{3in}>{\arraybackslash}m{3in}}
+        \includegraphics[width=0.33\textwidth ]{images/variazioneCoppia2.eps} & Because of this, the torque has an oscillatory behavior and is not constant; this phenomenon is called \textbf{torque ripple}. To limit this (and increase the torque), multiple coils can be added so that, at the instant one coil produces zero torque, another coil produces maximum torque.
+		\\
+	\end{tabular}
+\end{center}
+\begin{center}
+    \begin{figure}[h!]
+       \centering
+       \begin{tikzpicture}[scale=1, transform shape]
+           \begin{axis}[
+           ymin=0,
+           ymax = 3,
+           xmin=0,
+           xmax = 7,
+           axis lines = left,
+           xtick distance=1, ytick distance=1,
+           grid style=dashed,
+           ymajorgrids=true,
+           xmajorgrids=true,
+           xlabel = \(t\),
+           ylabel = {\(\tau\)},
+           ]
+           %Below the red parabola is defined
+           \addplot [
+           domain=0:7,
+           samples=120,
+           color=blue,
+           ]
+           {abs(cos(deg(x)))};
+           \addlegendentry{$\tau_1$}
+           \addplot [
+            domain=0:7,
+            samples=120,
+            color=red,
+            ]
+            {abs(cos((deg(x+((3/4)*pi)))))};
+            \addlegendentry{$\tau_2$}
+            \addplot [
+            domain=0:7,
+            samples=120,
+            color=green,
+            ]
+            {abs(cos(deg(x+(pi/4))))};
+            \addlegendentry{$\tau_3$}
+            \addplot [
+            domain=0:7,
+            samples=120,
+            color=magenta,
+            ]
+            {abs(cos(deg(x+(pi/2))))};
+            \addlegendentry{$\tau_4$}
+            \addplot [
+            domain=0:7,
+            samples=120,
+            color=black,
+            ]
+            {abs(cos(deg(x+(pi/2))))+abs(cos(deg(x+(pi/4))))+abs(cos(deg(x+((3/4)*pi))))+abs(cos(deg(x)))};
+            \addlegendentry{$\tau$}
+           \end{axis}
+           \end{tikzpicture}
+           \caption{torque generated by multiple coils.}
+        \end{figure}
+    \end{center}
+The greater the number of coils included, the more the torque ''flattens out'', tending towards a constant behavior.
 \end{document}
