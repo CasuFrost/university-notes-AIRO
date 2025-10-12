@@ -59,6 +59,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
 \newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
 %==================INIZIO======================%
 \chapter{Introduction}
 In this chapter we will see a brief introduction to the mathematical tools used in the main topics of the course. The topics presented in this section may seem somewhat unclear, as many concepts and definitions are only briefly introduced and deliberately not elaborated upon. They will be discussed in detail in their respective chapters.\bigskip
@@ -825,4 +826,123 @@ $\bar i$
     \end{center}
 The greater the number of coils included, the more the torque ''flattens out'', tending towards a constant behavior.
 \subsection{Dynamical Model of the Motor}
+Now let's model an electric motor as a dynamical system. The motor is composed by two main sub-model\begin{itemize}
+    \item An electromagnetic model 
+    \item A mechanical model 
+\end{itemize}
+The commutator circuit have in series a resistor and an inductor, the model is shown in figure \ref{fig:model_motor}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/motor_scheme.drawio.pdf}
+    \caption{Dynamical Model}
+    \label{fig:model_motor}
+\end{figure}
+
+in the electromagnetic sub model, the voltage $v_a$ is given by the Kirchhoff laws\begin{equation}
+    v_a(t)=R_ai_a(t)+L_a\frac{d i_a}{dt}+v_{emf}(t)
+\end{equation}
+where\begin{itemize}
+    \item $R_a$ is the resistance coefficient 
+    \item $L_a$ is the inductance. 
+\end{itemize}
+The term $v_{emf}(t)$ is called \textbf{Back Electromotive Force} and is a voltage generated within the rotating armature of an electric motor,  based on Faraday's Law of Induction, when the motor's armature coils $\omega(t)$ rotate and cut across the magnetic field (produced by the field coils or permanent magnets), a voltage is induced across the armature windings. Since a motor in motion is essentially acting as a generator, this is often called generator action. This voltage is proportional to the angular speed of the motor\begin{equation}\label{eq:model_balance_2}
+    v_{emf}(t)=k_v\omega(t)
+\end{equation}
+Let's consider the mechanical sub model, we apply the newton law on torques, the scalar torque $\tau_m(t)$ of the rotating body is given by\begin{equation}
+    \tau_m(t)=I_m\frac{d\omega}{dt}+F_m\omega(t)+\tau_{load}(t)
+\end{equation}
+where\begin{itemize}
+    \item $I_m$ is the moment of inertia of the motor, a larger moment of inertia means the motor will take more torque and time to accelerate or decelerate to a given speed.
+    \item $F_m$ is the viscous friction coefficient (since the motor never rotate in the void), and is proportional to the angular speed. It has a damping action on the rotational speed
+    \item $\tau_{load}(t)$ is the external mechanical torque load given by the weight of the object that the motor is trying to rotate, and it opposes to the input torque.
+\end{itemize}
+The two sub models are related by an equation, it states that the torque $\tau_m$ of the motor is proportional to the applied current $i_a$ on the circuit:\begin{equation}\label{eq:model_balance}
+    \tau_m(t)=k_ti_a(t)
+\end{equation}
+Let's define the state variables of our model, we can apply a voltage $v_a(t)$, and we are interested in the resulting angular position $\theta$ and speed $\dot\theta=\omega$.  \begin{align}
+    &\begin{cases}
+        \displaystyle v_a(t)=R_ai_a(t)+L_a\frac{d i_a}{dt}+v_{emf}(t)\\
+        \displaystyle \tau_m(t)=I_m\frac{d\omega}{dt}+F_m\omega(t)+\tau_{load}(t)\\
+    \end{cases}
+\end{align}
+by using the equations \eqref{eq:model_balance} and \eqref{eq:model_balance_2} we get
+\begin{align}
+    &\begin{cases}
+        \displaystyle v_a(t)=R_ai_a(t)+L_a\frac{d i_a}{dt}+v_{emf}(t)\\
+        \displaystyle k_ti_a(t)=I_m\frac{d\omega}{dt}+F_m\omega(t)+\tau_{load}(t)\\
+    \end{cases}\implies \\ 
+    &\begin{cases}
+        \displaystyle L_a\frac{d i_a}{dt}=v_a(t)-R_ai_a(t)-k_v\omega(t)\\ 
+        \displaystyle I_m\frac{d\omega}{dt}=k_ti_a(t)-F_m\omega(t)-\tau_{load}(t)\\
+        \displaystyle \frac{d\theta}{dt}=\omega(t)
+    \end{cases}
+\end{align}
+in the dot notation for derivatives:\begin{align}
+   &\begin{cases}
+        \displaystyle L_a\dot{i_a}=v_a(t)-R_ai_a(t)-k_v\omega(t)\\
+        \displaystyle I_m\ddot\theta=k_ti_a(t)-F_m\omega(t)-\tau_{load}(t)\\
+        \displaystyle \dot\theta=\omega(t)
+    \end{cases}
+\end{align}
+the state variables are\begin{equation}
+    \mathbf x  =\begin{pmatrix}
+        \dot{i_a} \\ 
+        \ddot \theta\\ 
+        \dot \theta
+    \end{pmatrix}
+\end{equation}
+the position $\theta$ can be found by integrating $\omega$. The motor is a system that given a input voltage over time $v_a(t)$, returns the electric current (more precisely, it's derivative, $i_a$ can be found by integrating over time), the angular speed  and the acceleration of the motor.\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/motor_abstract.eps}
+\end{center}
+\begin{quote}
+    \textbf{About the notation}: if $f(t)$ is a function in the time domain, we denote $\mathcal L[f](s)=f(s)$ it's Laplace transform in the complex variable $s$. For example: \begin{equation}
+        \mathcal L[i_a](s)=i_a(s)
+    \end{equation}
+\end{quote}
+Let's analyze the model in the Laplace domain by considering the Laplace transform, and then draw the block diagram of the system. For the electrical model we have\begin{align}
+    &\mathcal L\left[ \displaystyle L_a\dot{i_a}=v_a(t)-R_ai_a(t)-k_v\omega(t) \right]\implies\\ 
+    &sL_a i_a(s)=v_a(s)-R_ai_a(s)-k_v\omega(s)\implies\\
+    &sL_a i_a(s)+R_ai_a(s)=v_a(s)-k_v\omega(s) \implies \\
+    &(sL_a+R_a)i_a(s)=v_a(s)-k_v\omega(s) \implies\\
+    &i_a(s)=\frac{v_a(s)-k_v\omega(s)}{sL_a+R_a}
+\end{align}
+for the equation \eqref{eq:model_balance_2}:\begin{equation}
+    i_a(s)=\frac{v_a(s)-k_vk_t v_{emf}(s)}{sL_a+R_a}
+\end{equation}
+$v_a$ and $v_{emf}$ are external input to the model, so the transfer function for the electromagnetic sub model is\begin{equation}
+    \frac{1}{sL_a+R_a}
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/EM_model.drawio.pdf}
+\end{center}
+By analogous steps, we find that the transfer function for the mechanical sub model is\begin{equation}
+    \frac{1}{sI_m+F_m}
+\end{equation}
+where the input is the torque $\tau_m$ from which we subtract the torque load $\tau_{load}$.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/Mech_model.drawio.pdf}
+\end{center}
+We can chain the models since $\tau_m=k_ti_a$\begin{center}
+    \includegraphics[width=1\textwidth ]{images/full_model.drawio.pdf}
+\end{center}\begin{proposition}
+    The two constants $k_v$ and $k_t$ are equals\begin{equation}
+        k_v=k_t.
+    \end{equation}
+\end{proposition}
+\textit{Proof}: This is trivially true. The electric power generated by the EM sub model is\begin{equation}
+    v_{emf}i_a
+\end{equation}
+the mechanical power is\begin{equation}
+    \tau_m\omega 
+\end{equation}
+since the conservation of power holds in energy transformations:\begin{equation}
+    v_{emf}i_a= \tau_m\omega
+\end{equation}
+applying equations \eqref{eq:model_balance_2},\eqref{eq:model_balance} we get\begin{align}
+    &v_{emf}i_a= \tau_m\omega\implies\\ 
+    &k_v\omega i_a= k_ti_a\omega\implies \\ 
+    &k_v=k_t. 
+\end{align}
+\hfill$\blacksquare$\bigskip
 \end{document}
