@@ -1481,6 +1481,103 @@ in the end we have:\begin{equation}
 \end{equation}
 \hfill$\blacksquare$
 \subsection{Models for $k$ Classes}
+In this case we have a target function\begin{equation}
+    f:X\rightarrow\{c_1,c_2\dots,c_K\}
+\end{equation}
+we encode the dataset as follows\begin{equation}
+    D=\{(\mathbf x_n,\mathbf t_n)\}_{n=1}^N
+\end{equation}
+where $\mathbf t_n=(t_{n1},\dots t_{nK})$ and $t_{nk}=1\iff$ the $n$-th sample is labeled as class $c_k$.\begin{equation}
+     t_{nk}=1\iff f(\mathbf x_n)=c_k
+\end{equation}
+we estimate $\Prob(c_k|\mathbf x)$ as follows:\begin{equation}
+    \Prob(c_k|\mathbf x)=\frac{\Prob(\mathbf x|c_k)\Prob(c_k)}{\sum_{j=1}^K\Prob(\mathbf x|c_j)\Prob(c_j)}=\frac{\exp(a_k)}{\sum_{j=1}^K\exp(a_j)}
+\end{equation}
+where\begin{equation}
+    a_j=\ln\left(\Prob(\mathbf x|c_j)\Prob(c_j)\right)
+\end{equation}
+we assume that $\Prob(\mathbf x|c_k)$ is Gaussian\begin{equation}
+    \Prob(\mathbf x|c_k)=\mathcal N(\mathbf x,\bmu_k,\Sigma)
+\end{equation}
+and for each class $c_k$, we have that\begin{equation}
+    \Prob(c_k)=p_k 
+\end{equation}
+where \begin{equation}
+    \sum_{j=1}^Kp_j=1
+\end{equation}
+so the parameters of the model are\begin{align}
+    &p_1,p_2,\dots p_K\in \R\\
+    &\bmu_1,\bmu_2\dots \bmu_K\in\R^d\\ 
+    &\Sigma\in Mat(d\times d)
+\end{align}
+denoting $\mathbf t$ the set of labels in $D$\begin{equation}
+    \mathbf t = \begin{pmatrix}
+        \mathbf t_1 & \dots & \mathbf t_N
+    \end{pmatrix}
+\end{equation}
+the maximum likelihood solution is given by:\begin{equation}
+    \hat p_1,\dots \hat p_k,\hat \bmu_1,\dots \hat \bmu_k,\hat \Sigma=\arg\max_{p_k,\bmu_k,\Sigma}\ln\left(
+    \Prob(\mathbf t|p_1,\dots p_k,\bmu_1,\dots \bmu_k,\Sigma)
+    \right)
+\end{equation}
+the solution can be found analytically and is\begin{align}
+    &\hat p_k=\frac{N_k}{N}\text{ where }N_k=|\{(\mathbf x_n,\mathbf t_n)\in D \ : \ t_{nk}=1\}|\\
+    &\hat\bmu_k=\frac{1}{N_k}\sum_{n=1}^Nt_{nk}\mathbf x_n\\ 
+    &S_k=\frac{1}{N_k}\sum_{n=1}^Nt_{nk}(\mathbf x_n-\hat\bmu_k)(\mathbf x_n-\hat\bmu_k)^T\\
+    &\hat \Sigma = \sum_{k=1}^{K}\frac{N_k}{N}S_k
+\end{align}
+a new sample $\mathbf x'\notin D$ can be predicted as follows:\begin{equation}
+    h^*(\mathbf x')=\arg\max_k\frac{\exp(a_k)}{\sum_j\exp(a_j)}
+\end{equation}
+where $a_k=\ln\left(\hat p_k\mathcal N(\mathbf x',\hat\bmu_k,\hat\Sigma)\right)$.
+\subsection{Naive Bayes Assumption}
+We can consider an ulterior assumption, that the features of the samples are conditional independent, given a sample $\mathbf x_n\in \R^d$:\begin{equation}
+    \Prob(\mathbf x_n|c_k)=\prod_{j=1}^d\Prob(x_{nj}|c_k)
+\end{equation}
+in this case, for each class $c_k$, we don't have a multivariate Gaussian distribution $\mathcal N(\mathbf x_n,\bmu_k,\Sigma)$, but we have $d$ one-dimensional Gaussian distribution\begin{equation}
+    \Prob(x_{nj}|c_k)=\mathcal N(x_{nj},\mu_{jk},\sigma_{jk})
+\end{equation}so the parameters of the model are
+\begin{equation}
+    \begin{matrix}
+        p_k\in\R\\ 
+        \mu_{jk}\in \R\\ 
+        \sigma_{jk}\in \R
+    \end{matrix} \ \text{ where } \ 
+    \begin{matrix}
+        j=1,\dots d\\ k=1,\dots K
+    \end{matrix}
+\end{equation}
+the maximum likelihood solution can be found analytically:\begin{align}
+    &\hat p_k=\frac{N_k}{N}\\ 
+    &\hat\mu_{jk}=\frac{1}{N_k}\sum_{n=1}^Nt_{nk}x_{nj}\\
+    &\hat\sigma_{jk}=\sum_{n=1}^Nt_{nk}(x_{nj}-\hat\mu_{jk})^2
+\end{align}
+\subsubsection{About the Number of Parameters}
+Given a classification problem$$f:\R^d\rightarrow\{c_1\dots c_K\}$$
+what are the size (number of parameters) of the generative model? We have the probabilities$$\Prob(c_k)=p_k $$ this counts as $K-1$ parameters, since the first $K-1$ can be used to calculate $p_K$\begin{equation}
+    p_K=1-\sum_{k=1}^{K-1}p_k
+\end{equation}
+then we have $K$ vectors $\bmu_K$, of each $k$-th Gaussian distribution, since each vector have $d$ real components, we have a total of $kd$ parameter. In the end, we have 
+\section{Discriminative Models}
+\chapter{Linear Models}
+A linear function on $\mathbf x$ is represented as follows\begin{equation}
+    \mathbf w^T\mathbf x+w_0
+\end{equation}
+we want to use a compact notation, adding a component to the vector $\mathbf x$:\begin{align}
+    &\mathbf x \in \R^d\longrightarrow \tilde{\mathbf x}\in \R^{d+1}\\
+    &\mathbf x=\begin{pmatrix}
+        x_1&\dots x_d
+    \end{pmatrix}^T\\
+    &\tilde{\mathbf x}=\begin{pmatrix}
+        1&x_1&\dots x_d
+    \end{pmatrix}^T\\
+    &\tilde{\mathbf w}=\begin{pmatrix}
+        w_0&w_1&\dots w_d
+    \end{pmatrix}^T
+\end{align}
+so\begin{equation}
+    \mathbf w^T\mathbf x +w_0=\tilde{\mathbf w}^T\tilde{\mathbf x}=w_0+w_1x_1\dots w_dx_d.
+\end{equation}
 \end{document}
 
 

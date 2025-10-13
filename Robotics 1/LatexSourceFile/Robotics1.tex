@@ -907,8 +907,8 @@ Let's analyze the model in the Laplace domain by considering the Laplace transfo
     &(sL_a+R_a)i_a(s)=v_a(s)-k_v\omega(s) \implies\\
     &i_a(s)=\frac{v_a(s)-k_v\omega(s)}{sL_a+R_a}
 \end{align}
-for the equation \eqref{eq:model_balance_2}:\begin{equation}
-    i_a(s)=\frac{v_a(s)-k_vk_t v_{emf}(s)}{sL_a+R_a}
+assuming that the quantities are null in $t=0$. In the end, we get:\begin{equation}
+    i_a(s)=\frac{v_a(s)-k_v\omega(s)}{sL_a+R_a}
 \end{equation}
 $v_a$ and $v_{emf}$ are external input to the model, so the transfer function for the electromagnetic sub model is\begin{equation}
     \frac{1}{sL_a+R_a}
