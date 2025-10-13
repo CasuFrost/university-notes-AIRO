@@ -1322,7 +1322,7 @@ now, we have to estimate the parameters $\bmu_1,\Sigma_2,\bmu_1,\Sigma_2,p$ to u
     &\Prob(c_1|\mathbf x)=\frac{\Prob(\mathbf x|c_1)\Prob(c_1)}{\Prob(\mathbf x)}\\
     &\Prob(c_2|\mathbf x)=\frac{\Prob(\mathbf x|c_2)\Prob(c_2)}{\Prob(\mathbf x)}
 \end{align}
-we get:\begin{align}
+we get (for $i=1,2$):\begin{align}
     &\Prob(c_i|\mathbf x)=\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x)}=\\
     &\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x|c_1)\Prob(c_1)+\Prob(\mathbf x|c_2)\Prob(c_2)}
 \end{align}
@@ -1334,7 +1334,7 @@ we get\begin{align}
     &\Prob(c_i|\mathbf x)=\frac{\Prob(\mathbf x|c_i)\Prob(c_i)}{\Prob(\mathbf x|c_1)\Prob(c_1)+\Prob(\mathbf x|c_2)\Prob(c_2)}=\\
     &\frac{1}{1+\exp(-a(\mathbf x))}=\sigma(a(\mathbf x))
 \end{align}
-we call  $\sigma$ the \textbf{sigmoid function}. This function ''squeeze'' the values from $\R$ to $[0,1]$. By the assumption about the distribution, we now that\begin{equation}
+we call  $\sigma$ the \textbf{sigmoid function}. This function ''squeeze'' the values from $\R$ to $[0,1]$. By the assumption about the distribution, we know that\begin{equation}
     a(\mathbf x)=\ln\left(\frac{\Prob(\mathbf x|c_1)\Prob(c_1)}{\Prob(\mathbf x|c_2)\Prob(c_2)}\right)=
 \ln\left(\frac{\mathcal N(\mathbf x,\bmu_1,\Sigma_1)p}{\mathcal N(\mathbf x,\bmu_2,\Sigma_2)(1-p)}\right)
 \end{equation}
