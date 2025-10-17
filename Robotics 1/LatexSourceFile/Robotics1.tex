@@ -944,5 +944,113 @@ applying equations \eqref{eq:model_balance_2},\eqref{eq:model_balance} we get\be
     &k_v\omega i_a= k_ti_a\omega\implies \\ 
     &k_v=k_t. 
 \end{align}
-\hfill$\blacksquare$\bigskip
+\hfill$\blacksquare$
+\section{Transmissions}
+\redText{TODO}
+\section{Sensors}
+\redText{TODO}
+\chapter{Direct Kinematics}
+\section{Position and Orientation of a Rigid Body}
+We have a base reference frame $RF_A=(\mathbf x_A,\mathbf y_A,\mathbf z_A)$, and a rigid body $B$ in the space, let's say that there is a fixed reference frame $RF_B=(\mathbf x_B,\mathbf y_B,\mathbf z_B)$ attached to a point of $B$, a vector ${}^A\mathbf p\in\R^3$ can describe the position of the whole body respect to the frame $RF_A$, and a $3\times3$ matrix is sufficient to describe the orientation of that body.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/rigid_body_pose.eps}
+\end{center}
+The orientation of the reference frame $RF_B$ respect to $RF_A$ is described by a matrix $R$ of the following type\begin{itemize}
+    \item $R$ is orthonormal, the columns vector are orthogonal from each other and have unitary length. 
+    \item $R^T=R^{-1}\implies RR^T=I$
+    \item $\det R=1$
+\end{itemize}
+These are the matrices in the orthogonal group $SO(3)$. More precisely, we denote ${}^AR_B$ the matrix that describe the orientation of $RF_B$ respect to $RF_A$. \begin{equation}
+    {}^AR_B=\begin{pmatrix}
+        &&\\
+        {}^A\mathbf x_B&{}^A\mathbf y_B&{}^A\mathbf z_B\\
+        &&
+    \end{pmatrix}
+\end{equation}
+the components of ${}^AR_B$ are the direction cosines of the axes of $RF_B$ with respect to $RF_A$. In general, let's say the reference vector of two different frames are\begin{align}
+    (\mathbf x_A,\mathbf y_A,\mathbf z_A)\\
+    (\mathbf x_B,\mathbf y_B,\mathbf z_B)
+\end{align}
+the matrix ${}^AR_B$ are the following\begin{equation}
+    {}^AR_B=\begin{pmatrix}
+        \mathbf x^T_A\mathbf x_B&\mathbf x^T_A\mathbf y_B&\mathbf x^T_A\mathbf z_B\\ \\
+        \mathbf y^T_A\mathbf x_B&\mathbf y^T_A\mathbf y_B&\mathbf y^T_A\mathbf z_B\\ \\
+        \mathbf z^T_A\mathbf x_B&\mathbf z^T_A\mathbf y_B&\mathbf z^T_A\mathbf z_B
+    \end{pmatrix}
+\end{equation}
+since all the basis vectors are unitary, and\begin{equation}
+    \mathbf u^T\mathbf v=\|\mathbf u\|\cdot\|\mathbf v\|\cdot\cos\alpha
+\end{equation}
+we have that each component represent the angle between the two considered axis.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/orientation_reference.eps}
+\end{center}
+for three different reference frame $RF_i,RF_j,RF_k$, the \textbf{chain rule} holds:\begin{equation}
+    {}^kRF_i{}^iRF_j={}^kRF_j
+\end{equation}
+so, if ${}^A\mathbf p$ is a vector in the frame reference $RF_A$, the same vector in the reference frame $RF_B$ is\begin{equation}
+    {}^B\mathbf p={}^BRF_A{}^A\mathbf p
+\end{equation}
+so the matrix is used for the \textbf{change of coordinates} between the two frames with different orientation.\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/coordinate_change.eps}
+\end{center}
+The position of a rigid body can be expressed in cartesian, cylindrical or spherical coordinates. A point in $\R^3$ in cylindrical coordinates is described by\begin{equation}
+    r,\theta,h 
+\end{equation}
+where the transformation from cylindrical to cartesian is\begin{align}
+    &x=r\cos\theta\\
+    &y=r\sin\theta\\
+    &z=h 
+\end{align}
+the inverse transformation (assuming $r\ge 0$) is\begin{align}
+    &r=\sqrt{x^2+y^2}\\ 
+    &\theta =\text{atan2}(y,x)\\
+    &h=z
+\end{align}
+The atan2$(y, x)$ function is a two-argument arctangent that returns the angle $\theta$ in standard position whose terminal side passes through the point $(x, y)$, correctly placing the angle in the correct quadrant ($\pi$ to $\pi$ or $0$ to $2\pi$). Is defined as follows;\begin{equation}
+    \text{atan2}(y, x) =
+\begin{cases}
+\text{atan}\left(\frac{y}{x}\right) & x > 0 \\
+\pi + \text{atan}\left(\frac{y}{x}\right) & y \geq 0, x < 0 \\
+-\pi + \text{atan}\left(\frac{y}{x}\right) & y < 0, x < 0 \\
+\frac{\pi}{2} & y > 0, x = 0 \\
+-\frac{\pi}{2} & y < 0, x = 0 \\
+\text{undefined} & y = 0, x = 0
+\end{cases}
+\end{equation}
+We saw that the rotation matrices can describes the change of coordinates between two frames, and the orientation of a given frame with respect to another. These matrices can also describes the rotation of a vector in $\R^3$, let's consider a rotation around the $z$ axis. We have a vector $\mathbf v$ that lies in the $xy$ plane, with coordinates $$\mathbf v=\begin{pmatrix}
+    x\\ 
+   y\\z
+\end{pmatrix}=\begin{pmatrix}
+    \|\mathbf v\|\cos\alpha\\ 
+    \|\mathbf v\|\sin\alpha\\z
+\end{pmatrix}$$
+where $\alpha$ is the angle between $\mathbf v$ and the $x$ axis. We rotate $\mathbf v$ by $\theta$ radiant around the $z$ axis, obtaining a new vector $\mathbf v'$ with coordinates$$
+\mathbf v'=\begin{pmatrix}
+    \|\mathbf v\|\cos(\alpha+\theta)\\ 
+    \|\mathbf v\|\sin(\alpha+\theta)\\z
+\end{pmatrix}=\begin{pmatrix}
+    x\cos\theta-y\sin\alpha\\ 
+    x\sin\theta+y\cos\alpha\\z
+\end{pmatrix}
+$$\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/rotation_around_z.eps}
+\end{center}
+Notice how the relation between $\mathbf v$ and $\mathbf v'$ is given by a matrix $ \mathbf v'=R_z(\theta)\mathbf v$ called the \textbf{elementary rotation around $z$} by $\theta$ radiant.\begin{equation}
+    R_z(\theta) =\begin{pmatrix}
+        \cos\theta & -\sin\theta&0\\
+        \sin\theta&\cos\theta&0\\
+        0&0&1
+    \end{pmatrix} 
+\end{equation}
+similarly, are defined elementary rotation around $x$ and $y$ too:\begin{equation}
+     R_x(\theta) =\begin{pmatrix}
+        1&0&0\\
+        0&\cos\theta & -\sin\theta\\
+        0&\sin\theta&\cos\theta
+    \end{pmatrix}  \ \ \ \ \  
+    R_y(\theta) =\begin{pmatrix}
+        \cos\theta&0&\sin\theta\\ 0&1&0\\ -\sin\theta&0&\cos\theta
+    \end{pmatrix} 
+\end{equation}
 \end{document}
