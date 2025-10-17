@@ -1053,4 +1053,36 @@ similarly, are defined elementary rotation around $x$ and $y$ too:\begin{equatio
         \cos\theta&0&\sin\theta\\ 0&1&0\\ -\sin\theta&0&\cos\theta
     \end{pmatrix} 
 \end{equation}
+So an orthonormal matrix have 3 possible interpretations:\begin{itemize}
+    \item it can describe the orientation of a rigid body with respect to a reference frame
+    \item it can describe the change of coordinates between two different frames one rotated respect to the other
+    \item it can describe the rotation operator on a vector.
+\end{itemize}
+\subsubsection{Example}
+Let's consider a sphere of radius $1$ as a rigid body, we have a reference frame $RF_S$ for the sphere fixed in the center, clearly the top pole in that frame is in position ${}^S\mathbf p=\begin{pmatrix}
+    0&1&0
+\end{pmatrix}^T$.\begin{center}
+    \includegraphics[width=0.1\textwidth ]{images/sphere.eps}
+\end{center}
+We have a base frame $RF_0$ with the canonical base
+$\mathbf e_x,\mathbf e_y,\mathbf e_z$, the sphere is placed in position $\begin{pmatrix}
+    3&3&0
+\end{pmatrix}^T$, we denote ${}^0\mathbf s$ the position of the frame $RF_S$ respect to $RF_0$. The sphere, is also rotated by 90 degrees clock wise around the $z$ axis.\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/sphere_2.eps}
+\end{center}
+to find the position of the north pole $\mathbf p$ respect to $RF_0$, we have to apply the rotation matrix $R_z(-\nicefrac{\pi}{2})$ to ${}^S\mathbf p$ and consider the translation.
+\begin{align}
+    &{}^0\mathbf p=R_z(-\nicefrac{\pi}{2}){}^S\mathbf p+{}^0\mathbf s=\\
+&\begin{pmatrix}
+        0 & 1&0\\
+        -1&0&0\\
+        0&0&1
+    \end{pmatrix} \begin{pmatrix}
+    0\\1\\0
+\end{pmatrix}+\begin{pmatrix}
+    3\\3\\0
+\end{pmatrix}=\begin{pmatrix}
+    4\\3\\0
+\end{pmatrix}.
+\end{align}
 \end{document}
