@@ -205,8 +205,8 @@ but this is not the general case, if $n>3$, the system of equations given in \eq
     \item have zero solutions
     \item have infinite solutions
 \end{itemize}
-if the determinant of $J_L^{-1}$ is zero, the system admit infinite solutions if and only if the desired velocity vector $\mathbf v_d$ is in the range space of $J_L^{-1}$\begin{equation}
-    \det J_L^{-1}=0\implies \exists \text{ inf. sol. }\iff   \mathbf v_d\in \text{Range}(J_L^{-1})
+if the determinant of $J_L$ is zero, the system admit infinite solutions if and only if the desired velocity vector $\mathbf v_d$ is in the range space of $J_L$\begin{equation}
+    \det J_L=0\implies \exists \text{ inf. sol. }\iff   \mathbf v_d\in \text{Range}(J_L)
 \end{equation}
 we remind that the range space of a matrix, is the set of all the linear combinations of the matrix's columns. If this isn't true, the system does not admit any solution, it means that no possible combination of velocity $\dot\btheta$ could realize the desired end effector velocity. 
 \subsection{Singularity}
@@ -295,9 +295,9 @@ We would like to move the end effector from a certain starting point $\mathbf p_
     \mathbf p(s)=s\mathbf p_b+(1-s)\mathbf p_a \ \ \ \ \ s\in[0,1].
 \end{equation}
 Such a trajectory can be represented by a time-dependent function that starts from an initial time $t_0=0$ until a final time $T$, making $s$ a monotonically increasing function of $t\in[0,T]$:\begin{align}
-    &s:[0,1]\longmapsto [0,T]\\
+    &s:[0,T]\longmapsto [0,1]\\
     &s(0)=0\\
-    &s(1)=T\\
+    &s(T)=1\\
     &\mathbf p(s)=\mathbf p(s(t))
 \end{align}
 We say that a trajectory is rest-to-rest if the velocity of the end effector at the start and at the end of that trajectory is zero:\begin{equation}
