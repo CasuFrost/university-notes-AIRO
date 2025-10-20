@@ -62,6 +62,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================FOOTER e HEADER=======================%
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
 %==================INIZIO======================%
 \chapter{Introduzione}
 \section{Basic Definitions}
@@ -630,4 +631,259 @@ where
 \item $\epsilon>0$: minimal action cost.
 \end{itemize}
 \section{Informed Search}
+\redText{TODO}
+\section{Local Search}
+\redText{TODO}
+\section{Adversarial Search}
+One of the oldest sub-areas of AI is \textit{Game Planning}, we model games as search problems that takes in account the competition between two opponents (such as chess). We consider simple games that satisfies the following restrictions:\begin{itemize}
+    \item the set of game states is discrete 
+    \item the number of possible moves at each step is finite 
+    \item the game state is fully observable and each move's outcome is deterministic
+    \item there are only two players
+    \item the players playing in alternating turns 
+    \item the utility function $u$ must be maximized from one player and minimized from the other 
+    \item there are no infinite runs of the game, after a finite number of steps, the game must end.
+\end{itemize}
+We consider only zero-sum games, where the two players play with the same conditions, without favor. We denote $Max$ and $Min$ the two players.\begin{definition}
+    A \textbf{game state space} is a 6-tuple $\Theta=(S,A,T,I,S^T,u)$ where\end{definition}\begin{itemize}
+        \item $S$ is the set of states, can be partitioned in $S=S^{Max}\cup S^{Min}\cup S^T$, denoting the state where $Max$ or $Min$ plays.
+        \item $A$ is the set of actions, can be partitioned in $A=A^{Max}\cup A^{Min}$\begin{itemize}
+        \item $A^{Max}$ is the set of actions that $Max$ can take, $A^{Min}$ is the set of actions that $Min$ can take. 
+            \item for $a\in A^{Max}$, if $s\xrightarrow{a} s'$ then $s\in S^{Max}$ and $s'\in S^{Min}\cup S^T$
+            \item for $a\in A^{Min}$, if $s\xrightarrow{a} s'$ then $s\in S^{Min}$ and $s'\in S^{Max}\cup S^T$
+        \end{itemize}
+        \item $T$ is the set of deterministic transition relation
+        \item $I$ is the initial state 
+        \item $S^T$ are the set of terminal states
+        \item $u:S^T\rightarrow\R$ is the utility function
+    \end{itemize}
+\begin{definition}
+    A \textbf{strategy} for $Max$ is a function $\sigma^{Max}:S^{Max}\rightarrow A^{Max}$ such that, $a$ is applicable to $s$ if $\sigma^{Max}(s)=a$. Analogous for $Min$ with $\sigma^{Min}$.
+\end{definition}
+$\sigma^{Max}$ (or $\sigma^{Min}$) is defined for all states in $S^{Max}$ (or $S^{Min}$), since the agent don't know how the opponent will react he needs to prepare for all
+possibilities. A strategy is optimal if it yields the best possible utility assuming
+perfect opponent play. For an adversarial search problem there are three types of solutions:\begin{itemize}
+    \item \textbf{ultra weak}: Prove whether the first player will win, lose or draw from the
+initial position, given perfect play on both sides.
+\item \textbf{weak}: Provide a strategy that is optimal from the beginning of the game
+for one player against any possible play by the opponent.
+\item\textbf{strong}: Provide a strategy that is optimal from any valid state, even if
+imperfect play has already occurred on one or both sides.
+\end{itemize}
+Computing a strategy is often unfeasible, the number of reachable states are big, in chess, there are $10^{40}$ possibile board states. We will consider a \textit{Black Box} description of the games.
+\subsection{Minimax Search}
+This is the canonical algorithm to solving games, by computing an optimal strategy. Remember that the player $Max$ attempts to maximize the utility function $u(s)$ of the terminal state that will be reached during play, when $Min$ attempts to minimize it.\bigskip 
+
+We describe the algorithm playing as $Max$, and we assume that the opponents will play by trying always to minimize the utility function. Starting from the actual state, the algorithm explores all the possible outcomes from all possible feasible sequences of moves, expanding a tree.
+
+ \begin{algorithm}
+    \caption{Minimax}\label{alg:minimax}
+    \begin{algorithmic}
+    \Require $s$
+    \State $v\leftarrow$MaxValue($s$)
+    \State\Return an action $a\in $\texttt{Actions}($s$) yielding value $v$
+    \end{algorithmic}
+\end{algorithm}
+ \begin{algorithm}
+    \caption{MaxValue}\label{alg:MaxValue}
+    \begin{algorithmic}
+    \Require $s$
+    \If{TerminalTest($s$)}
+    \State\Return $u(s)$
+    \EndIf
+    \State$v\leftarrow -\infty$
+    \For{each $a\in $\texttt{Actions}($s$)}
+    \State $v\leftarrow$ max($v$,MinValue(ChildState($s$,$a$)))
+    \EndFor 
+    \end{algorithmic}
+\end{algorithm}
+ \begin{algorithm}
+    \caption{MinValue}\label{alg:MinValue}
+    \begin{algorithmic}
+    \Require $s$
+    \If{TerminalTest($s$)}
+    \State\Return $u(s)$
+    \EndIf
+    \State$v\leftarrow +\infty$
+    \For{each $a\in $\texttt{Actions}($s$)}
+    \State $v\leftarrow$ min($v$,MaxValue(ChildState($s$,$a$)))
+    \EndFor 
+    \end{algorithmic}
+\end{algorithm}
+
+Consider the tree in figure \ref{fig:minmax}, starting from the root, the player consider all possible outcomes, the leaf are terminating states, assuming that the opponents will always tries to minimize $u$:\begin{itemize}
+    \item if $Max$ choose the left branch, $Min$ will choose the action that leads to the terminal state with $u(s)=3$
+    \item if $Max$ choose the middle branch, $Min$ will choose the action that leads to the terminal state with $u(s)=2$
+    \item if $Max$ choose the right branch, $Min$ will choose the action that leads to the terminal state with $u(s)=2$
+\end{itemize}
+So the best mooves is the one that leads to the left branch.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/minmaxtree.png}
+    \caption{Game's tree }
+    \label{fig:minmax}
+\end{figure}
+
+This is the simplest possible game search algorithm, but in practice is unfeasible since the search tree are way too large to expand. The minimax algorithm is:\begin{itemize}
+    \item Complete, if the tree is finite.
+    \item Optimal against an optimal opponent. 
+\end{itemize}
+Since it is a depth first search, the time complexity is $O(b^m)$, where $b$ is the branching factor and $m$ is the depth of the solution. The space complexity is $O(bm)$. In chess, $b\simeq 35$ (possible moves approximately) and a reasonable game terminates in $80$ turns, so $m\simeq 80$, in such a case the state space is $O(35^{80})$ (it's impossible in practice to expand the tree).
+\subsection{Evaluation Functions}
+Since the Minimax game tree are too big, we impose a depth limit $d$ (called horizon) on the search, and we apply an evaluation function to the non-terminal states in that horizon. An evaluation function $f:S\rightarrow \R$ should work to estimate the actual value reachable from a state such as in the unlimited-depth Minimax. If a state is terminal, we use the actual value $u$. We want $f$ to be accurate and fast to compute.\bigskip 
+
+While applying this algorithm, we can consider a depth limit $d$, evaluate $f$ on all the states at that depth, and then considering these cut-off tree and apply the Minimax algorithm.\begin{center}
+    \includegraphics[width=1\textwidth ]{images/cutofftree.eps}
+\end{center}
+Usually, the evaluation function is a linear weighted function, such as \begin{equation}
+    f(s)=\sum_{i=1}^nw_if_i(s)
+\end{equation}
+where $f_1\dots f_n$ are features extracted from the state $s$, designed by human experts of the considered game/domain, and $w_i\in \R$ are real weights, that can be learned automatically (with machine learning algorithms). For example, features in the tetris game could be the number of holes in the block grid, or the maximum height reached by a placed block, as shown in figure \ref{fig:tetris}.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth ]{images/grid_properties.eps}
+    \caption{Grid's properties}
+    \label{fig:tetris}
+\end{figure}
+
+This algorithm is critical since critical  aspects of the game may be cut-off by the horizon. Since we want to search \textit{as deeply as possible in a given time}, we could apply the \textit{iterative deepening search}, until the time's up, and then return the solution of the deepest completed search.\bigskip 
+
+A better solution is called \textit{Quiescence search}, Instead of using a fixed search depth $d$, quiescence search dynamically adapts the depth to handle ''unquiet'' positions where the evaluation function's value is likely to fluctuate quickly—typically due to immediate, forcing moves like captures or checks.
+
+For example, in Chess, if a piece exchange is underway, the search continues past the standard depth limit until a ''quiet'' state is reached, ensuring the final evaluated position is stable and doesn't miss an immediate, significant change in material or safety, thus leading to a much more accurate evaluation.
+
+\subsection{Alpha-Beta Pruning}
+\redText{TODO}
+\subsection{Monte-Carlo Tree Search}
+\redText{TODO}
+
+\chapter{Constraint Satisfaction Problems}
+\begin{definition}
+    A \textbf{CSP} (constraint satisfaction problem) is composed by a set of variables, each associated with it's domain, and a set of constraints over these variables, the goal is to find an assignment of variables so that every constraint is satisfied.
+\end{definition}
+In SuDoKu, the variables are the content of the cells, the domain of each cell is $\{1,2,\dots 9\}$, and the constraints are that, each number should appear only once in each row, column or block. Another CSP problem is the \textit{graph coloring} problem, where we should assign one of the $k$ possible color to each node, such that two adjacent nodes must have different colors (this problem is $\mathsf{NP}$-hard for $k=3$).
+\section{Constraint Networks}
+\begin{definition}
+    A \textbf{Binary Constraint Network} is a tuple $\gamma=(V,D,C)$ where:
+    \end{definition}\begin{itemize}
+        \item $V=\{v_1,v_2\dots v_n\}$ is a finite set of variables. 
+        \item $D=\{D_{v_1},D_{v_2}\dots D_{v_n}\}$ is a corresponding set of finite domains.
+        \item $C$ is a set of binary relations that models the constraints. A relation is denoted $C_{uv}$ with $u,v$ variables in $V$. $$C_{uv}\subseteq D_u\times D_v$$If $C_{uv}\in C$ and $C_{xy}\in C$, then $\{u,v\}\ne \{x,y\}$ (no redundancy).
+    \end{itemize}
+    $C_{uv}$ defines the permissible combined assignments to $u$ and $v$. For example, if\begin{align}
+        &u,v\in V\\
+        &v'\in D_{v}\\ 
+        &u' \in D_{u}\\ 
+        & C_{uv}\subseteq D_{v}\times D_{u} \in C\\
+        &(v',u')\notin C_{uv}
+    \end{align}
+the assignment $v=v', u=u'$ violates the constraints. Let's see an example, we consider the map of australia show in figure \ref{fig:australia}. We want to colorate each state with one of 3 possible colors, without having two adjacent state with the same color.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/australia.png}
+    \caption{Coloring Australia}
+    \label{fig:australia}
+\end{figure}
+
+The variables are the states 
+$$ V=\{WA,NT,SA,Q,NSW,V,T\}$$
+The domain for each variable $v\in V$ is $D_v=\{red,green,blue\}$.
+If all the variables have the same domain \begin{equation}
+    \forall v\ne u, D_v=D_u
+\end{equation}
+we do an notation abuse saying that the domain of the problem is $D=\{red,green,blue\}$.
+For each adjacent couple of states $u,v$, there is a constraint
+$$C_{uv}=\{(d,d')\in D\times D \ : \ d\ne d'\}.$$
+Constraint Networks can be extended\begin{itemize}
+    \item the domains $D_v$ may be infinite or uncountable, like $D_v=\R$.
+    \item the constraints may have an arity higher than 2, with relations over $k>2$ variables, like in CNF satisfiability.
+\end{itemize}
+A constraint may be \textbf{unary}: $C_v\subseteq D_v$, in this case the domain of a single variable is restricted, equivalently to setting $D_v=C_v$.\bigskip 
+
+There exists CSP solvers, generic algorithms that find assignment for constraints problem, by taking in input a constraint network as the generic language to describe the problem. The core exercise in this context is to model a problem with a constraint network.
+\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network, a \textbf{partial assignment} is a function $$a:V'\rightarrow \bigcup_{v\in V}D_v$$ where \begin{itemize}
+        \item $V'\subseteq V$
+        \item $a(v)\in D_v$ for all $v\in V'$
+    \end{itemize}
+    if $V'=V$ is a \textbf{total assignment} (or just assignment). A partial assignment assigns some variables to values from their
+respective domains. A total assignment is defined on all variables.
+\end{definition}
+\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network and let $a$ to be a partial assignment, we say that $a$ is \textbf{inconsistent} if there exists variables $u,v\in V$ such that
+\end{definition}
+\begin{itemize}
+        \item $a$ is defined on $u$ and $v$
+        \item $C_{uv}\in C$
+        \item $(a(u),a(v))\notin C_{uv}$.
+    \end{itemize}
+If a partial assignment is not inconsistent, is \textbf{consistent}. An assignment $a$ is a \textbf{solution} if it's total and consistent. A constraint network $\gamma$ is \textbf{solvable} if there exists a solution $a$, otherwise is \textbf{unsolvable}.\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/australia2.png}
+\end{center}
+\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network, and let $a$ to be a partial assignment. $a$ can be \textbf{extended} to a solution if there exists a solution $a'$ that agrees with $a$ on the variables where $a$ is defined.
+\end{definition}
+\begin{itemize}
+    \item the domain of $a$ is $V'\subset V$
+    \item for each $v\in V'$, we have that $a(v)=a'(v)$.
+\end{itemize}
+\begin{proposition}
+    if $a$ can be extended to a solution, then it's consistent (the opposite doesn't necessary holds).
+\end{proposition}
+Given a constraint network $\gamma=(V,D,C)$, if $n=|V|$ and $\forall D_v\in D$, $|D_v|=k$, the number of total assignments is $k^n$. There are at most $n^2$ constraints, each constraint have size at most $k^2$, the number of assignments is \textit{exponentially bigger} than the size of $\gamma$.\begin{theorem}
+    The problem to decide if a constraint network $\gamma=(V,D,C)$, is solvable is  $\mathsf{NP}$-complete.
+\end{theorem}
+\section{Naive Backtracking}
+The following algorithm is simple and used to find a solution for a constraint network. The method is recursive, the first step given assignment $a$ is the empty assignment.
+ \begin{algorithm}
+    \caption{NaiveBacktracking}\label{alg:NaiveBacktracking}
+    \begin{algorithmic}
+    \Require $\gamma=(V,D,C),a$
+    \If{$a$ is inconsistent} \State\Return inconsistent\EndIf
+    \If{$a$ is a total assignment} \State\Return $a$\EndIf
+    \State let $V'$ to be the domain of $a$
+    \State select color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
+    \For{ each $d\in D_v$ in \color{blue} some order \color{black}}
+    \State $a'=a\cup \{v=d\}$
+    \State $a''=$NaiveBacktracking($\gamma$,$a'$)
+    \If{$a''$ is not inconsistent} \State\Return $a''$\EndIf
+    \EndFor
+    \State\Return inconsistent
+    \end{algorithmic}
+\end{algorithm}
+With \textit{Backtracking}, we mean the action of recursively instantiate variables one-by-one, backing up out
+of a search branch if the current partial assignment is already inconsistent.
+Note that in the algorithm \ref{alg:NaiveBacktracking} we are iterating the possible values in $D_v$ in a specific \color{blue} order \color{black} that is not described yet, and is not described which variable are we picking at each recursion step.\bigskip 
+
+\noindent The Naive Backtracking algorithm is\begin{itemize}
+    \item simple to implement 
+    \item much more efficient than enumerating all possible assignment
+    \item complete, if there is a solution, backtracking
+will find it.
+\end{itemize}
+This algorithm can't predict if an assignment $a$ can't be extended to a solution unless $a$ is already inconsistent.
+\subsection{About the Order}
+The ordering in the for loop of algorithm \ref{alg:NaiveBacktracking} can  influences the search space size. If no solution exists below current node, the order doesn't matter, the algorithm will search the whole sub-tree anyway, otherwise, if a solution does exist below current node, by choosing the ''correct'' value, then no backtracking is needed.\bigskip 
+
+A common strategy is to consider the variable ''most constrained'', at each recursion step, we pick the variable $v$ that minimize the size of the set\begin{equation}
+    \{d\in D_v \ : \ a\cup\{v=d\} \text{ is consistent }\}
+\end{equation}
+by choosing a most constrained variable $v$ first, we reduce the
+branching factor (number of sub-trees generated for $v$) and thus reduce
+the size of our search tree.\bigskip 
+
+Another common heuristic is to choose the variable that is the ''most constraining'', we choose $v$ that maximize the size of the set\begin{equation}
+    \{u\in V \ : \ a(u)\text{ is undefined }\land C_{uv}\in C \}
+\end{equation}
+by choosing a most constraining variable first, we detect
+inconsistencies earlier on and thus reduce the size of our search tree.\bigskip 
+
+For the order of the value in the for loop, we can choose the least constraining value first, for a variable $v$, we choose the value $d\in D_v$ that minimize the size of the set\begin{equation}
+    \{d' \ : \ d'\in D_u\land a(u)\text{ is undefined }\land C_{uv}\in C\land (d',d)\notin C_{uv}\}
+\end{equation}
+by choosing a least constraining value first, we increase the chances
+to not rule out the solutions below the current node.
+
 \end{document}
