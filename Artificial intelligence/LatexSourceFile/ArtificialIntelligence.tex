@@ -695,6 +695,7 @@ We describe the algorithm playing as $Max$, and we assume that the opponents wil
     \For{each $a\in $\texttt{Actions}($s$)}
     \State $v\leftarrow$ max($v$,MinValue(ChildState($s$,$a$)))
     \EndFor 
+    \State\Return $v$
     \end{algorithmic}
 \end{algorithm}
  \begin{algorithm}
@@ -708,6 +709,7 @@ We describe the algorithm playing as $Max$, and we assume that the opponents wil
     \For{each $a\in $\texttt{Actions}($s$)}
     \State $v\leftarrow$ min($v$,MaxValue(ChildState($s$,$a$)))
     \EndFor 
+    \State\Return $v$
     \end{algorithmic}
 \end{algorithm}
 
@@ -754,7 +756,68 @@ A better solution is called \textit{Quiescence search}, Instead of using a fixed
 For example, in Chess, if a piece exchange is underway, the search continues past the standard depth limit until a ''quiet'' state is reached, ensuring the final evaluated position is stable and doesn't miss an immediate, significant change in material or safety, thus leading to a much more accurate evaluation.
 
 \subsection{Alpha-Beta Pruning}
-\redText{TODO}
+There is a way to save time during the computation, we can cut-off some branches of the search for which we know at priori that will not lead to the solution. Consider the tree in figure \ref{fig:alphaPruning}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/alphapruning.png}
+    \caption{Let's say $n>m$}
+    \label{fig:alphaPruning}
+\end{figure}
+
+THe left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the left branch and continue with the right one.\bigskip
+
+We consider two additional variables $\alpha,\beta$ defined on each node during the search, such that:\begin{itemize}
+    \item for each node $n$, $\alpha$ is the highest utility that search has already found for $Max$ on its path to $n$.\begin{itemize}
+        \item In a $Min$ node, if one of the successors has a utility value less or equal than $\alpha$, we can stop considering $n$ and cutting it off  (pruning out its remaining successors).
+    \end{itemize}
+    \item We can consider a dual method for $Min$, for each node $n$, $\beta$ is the lowest utility that search has already found for $Min$ on its path to $n$.\begin{itemize}
+        \item in a $Max$ node, if one of the successors has a utility value greater or equal than $\beta$, we can stop considering $n$ and cutting it off  (pruning out its remaining successors).
+    \end{itemize}
+\end{itemize}
+
+%%%
+ \begin{algorithm}
+    \caption{AlphaBetaPruning}\label{alg:alphabetapruning}
+    \begin{algorithmic}
+    \Require $s$
+    \State $v\leftarrow$MaxValue($s$,$-\infty$,$+\infty$)
+    \State\Return an action $a\in $\texttt{Actions}($s$) yielding value $v$
+    \end{algorithmic}
+\end{algorithm}
+ \begin{algorithm}
+    \caption{MaxValue}\label{alg:ABMaxValue}
+    \begin{algorithmic}
+    \Require $s,\alpha,\beta$
+    \If{TerminalTest($s$)}
+    \State\Return $u(s)$
+    \EndIf
+    \State$v\leftarrow -\infty$
+    \For{each $a\in $\texttt{Actions}($s$)}
+    \State $v\leftarrow$ max($v$,MinValue(ChildState($s$,$a$)),$\alpha$,$\beta$)
+    \State$\alpha\leftarrow\max(\alpha,v)$
+    \State\textbf{if $v\ge\beta$ then return $v$}
+    \EndFor 
+    \State\Return $v$
+    \end{algorithmic}
+\end{algorithm}
+  \begin{algorithm}
+    \caption{MinValue}\label{alg:ABMaxValue}
+    \begin{algorithmic}
+    \Require $s,\alpha,\beta$
+    \If{TerminalTest($s$)}
+    \State\Return $u(s)$
+    \EndIf
+    \State$v\leftarrow +\infty$
+    \For{each $a\in $\texttt{Actions}($s$)}
+    \State $v\leftarrow$ min($v$,MaxValue(ChildState($s$,$a$)),$\alpha$,$\beta$)
+    \State$\beta\leftarrow\min(\beta,v)$
+    \State\textbf{if $v\le\alpha$ then return $v$}
+    \EndFor 
+    \State\Return $v$
+    \end{algorithmic}
+\end{algorithm}
+%%%
 \subsection{Monte-Carlo Tree Search}
 \redText{TODO}
 
