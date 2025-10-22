@@ -1085,4 +1085,116 @@ to find the position of the north pole $\mathbf p$ respect to $RF_0$, we have to
     4\\3\\0
 \end{pmatrix}.
 \end{align}
+Let's consider 4 reference frames $RF_0,RF_1,RF_2,RF_3$, with different orientations, we have 3 matrix$${}^0R_1,{}^1R_2,{}^2R_3$$
+let's consider a position $\mathbf p$, in the coordinate system of $RF_3$, it's denoted ${}^3\mathbf p$, to express this position in $RF_0$ we can consider the matrix $$ {}^0R_1{}^1R_2{}^2R_3={}^0R_3$$
+and we have$$ {}^0\mathbf p={}^0R_3{}^3\mathbf p$$
+by getting this matrix products, we perform in total 63 products an 42 summations, we may calculate $ {}^0\mathbf p$ by deriving ${}^1\mathbf p$ and ${}^2\mathbf p$\begin{align}
+    &{}^2\mathbf p = {}^2R_3{}^3\mathbf p\\ 
+    &{}^1\mathbf p = {}^1R_2{}^2\mathbf p\\ 
+    &{}^0\mathbf p = {}^0R_1{}^1\mathbf p
+\end{align}
+in this case, we perform in total 27 products an 18 summations, this is computationally better, in case we have to change the coordinates of multiple vector, is convenient to calculate the matrix ${}^0R_3$.
+\section{Generalizing Rotation}
+We defined the basic rotation along the three axis by an angle $\theta$\begin{equation}
+    R_x(\theta),R_y(\theta),R_z(\theta)
+\end{equation}
+we want to generalize this concept by considering a rotation of $\theta$ degrees along an arbitrary direction $\mathbf r$ (with $\|\mathbf r\|=1$).
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/rotation.eps}
+\end{center}
+Given $\mathbf r,\theta$, we want to find the rotation matrix $R(\theta,\mathbf r)$ that describes the rotation of a vector of $\theta$ degrees along $r$, or the change of coordinates from a reference frame that is rotated in that orientation respect to the base frame.\begin{equation}
+    \mathbf v'=R(\theta,\mathbf r)\mathbf v
+\end{equation}
+\subsection{Direct Problem}
+We have to calculate $R(\theta,\mathbf r)\in SO(3)$ given $\theta,\mathbf r$. We can apply the following process:\begin{enumerate}
+    \item We consider a transformation denoted $C$ that change the coordinate of our system, by making to set $\mathbf r$ aligned with the axis $z$.
+    \item We consider the rotation along the $z$ axis by $\theta$ degrees. 
+    \item We consider the inverse transformation of $C$ (since $C\in SO(3)$, $C^{-1}=C^T$).
+\end{enumerate}
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/CRC.eps}
+\end{center}
+In fact, we are looking for a rotation matrix $C$ such that\begin{equation}
+    R(\theta,\mathbf r)=CR_z(\theta)C^T
+\end{equation}
+decomposing $ R(\theta,\mathbf r)$ in a sequence of three rotations. It's relevant to know that the third columns of $C$ is the vector $\mathbf r$\begin{equation}
+    C=\begin{pmatrix}
+        &&\\
+        \mathbf n&\mathbf s&\mathbf r\\
+        &&
+    \end{pmatrix}
+\end{equation}
+Since $C\in SO(3)$, the vectors $ \mathbf n,\mathbf s,\mathbf r$ are orthogonal, and it holds that\begin{equation}
+    \mathbf n\times \mathbf s =\mathbf r.
+\end{equation}
+Now we show how to get to $C$, by the fact that the column vectors are orthogonal, the inner product $C^TC$ is the identity matrix\begin{equation}
+    \begin{pmatrix}
+        
+        &\mathbf n^T&\\ &\mathbf s^T& \\&\mathbf r^T&
+        
+    \end{pmatrix}
+    \begin{pmatrix}
+        &&\\
+        \mathbf n&\mathbf s&\mathbf r\\
+        &&
+    \end{pmatrix}=I
+\end{equation}
+the \textbf{outer product} of two vectors $\mathbf v,\mathbf u\in\R^n$ is defined as follows\begin{equation}
+    \mathbf v\mathbf u^T\in Mat(n\times n) 
+\end{equation}
+let $\mathbf e_i$ to be a vector of the canonical basis, the outer product \begin{equation}
+    \mathbf e_i\mathbf e_j^T 
+\end{equation}
+is the $n\times n$ matrix with all entries equal to zeros, except for the $i,j$ entry, that is one, for example:\begin{equation}
+   \mathbf e_1\mathbf e_3^T= \begin{pmatrix}
+        1\\ 0\\ 0
+    \end{pmatrix}\begin{pmatrix}
+       0&0&1
+    \end{pmatrix}=\begin{pmatrix}
+        0&0&1\\ 
+        0&0&0\\ 
+        0&0&0
+    \end{pmatrix}
+\end{equation}
+We define the \textbf{dyadic expansion} of an $n\times n$ matrix $A$ as the sum of $n^2$ matrices, in term of the entrance of that matrix\begin{equation}
+    A=\sum_{i=1}^n\sum_{j=1}^n a_{ij}\mathbf e_i\mathbf e_j^T
+\end{equation}
+such that $a_{ij}$ is the $(i,j)$ entry of $A$. Note how \begin{equation}
+    \sum_{i=1}^n\sum_{j=1}^n a_{ij}\mathbf e_i\mathbf e_j^T=IAI^T 
+\end{equation}
+the product of three matrices $B,A,B^T$ can be expressed in dyadic expansion as \begin{equation}
+    BAB^T=\sum_{i=1}^n\sum_{j=1}^n a_{ij}\mathbf b_i\mathbf b_j^T
+\end{equation}
+Since $C\in SO(3)$, $CC^T=I$, with dyadic expansion:\begin{equation}
+    CC^T=I= \begin{pmatrix}
+        
+        &\mathbf n^T&\\ &\mathbf s^T& \\&\mathbf r^T&
+        
+    \end{pmatrix}
+    \begin{pmatrix}
+        &&\\
+        \mathbf n&\mathbf s&\mathbf r\\
+        &&
+    \end{pmatrix}= \begin{pmatrix}
+        
+        &\mathbf n^T&\\ &\mathbf s^T& \\&\mathbf r^T&
+        
+    \end{pmatrix}\begin{pmatrix}
+        1&0&0\\ 
+        0&1&0\\ 
+        0&0&1
+    \end{pmatrix}
+    \begin{pmatrix}
+        &&\\
+        \mathbf n&\mathbf s&\mathbf r\\
+        &&
+    \end{pmatrix}=\mathbf n\mathbf n^T+
+    \mathbf s\mathbf s^T+
+    \mathbf r\mathbf r^T
+\end{equation} 
+the outer product of different vectors cancels out since are orthogonal from each other. We have that\begin{equation}
+    \mathbf n\mathbf n^T+
+    \mathbf s\mathbf s^T+
+    \mathbf r\mathbf r^T=I.
+\end{equation}
 \end{document}
