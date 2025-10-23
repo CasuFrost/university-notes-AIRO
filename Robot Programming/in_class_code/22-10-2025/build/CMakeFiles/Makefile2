@@ -63,8 +63,7 @@ CMAKE_BINARY_DIR = "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Ro
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/linalg_main.dir/all
-all: CMakeFiles/grid_library.dir/all
+all: CMakeFiles/simulator_main.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -72,61 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/linalg_main.dir/clean
-clean: CMakeFiles/grid_library.dir/clean
+clean: CMakeFiles/simulator_main.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/linalg_main.dir
+# Target rules for target CMakeFiles/simulator_main.dir
 
 # All Build rule for target.
-CMakeFiles/linalg_main.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" --progress-num=3,4 "Built target linalg_main"
-.PHONY : CMakeFiles/linalg_main.dir/all
+CMakeFiles/simulator_main.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" --progress-num=1,2,3 "Built target simulator_main"
+.PHONY : CMakeFiles/simulator_main.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/linalg_main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/linalg_main.dir/all
+CMakeFiles/simulator_main.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/simulator_main.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" 0
-.PHONY : CMakeFiles/linalg_main.dir/rule
+.PHONY : CMakeFiles/simulator_main.dir/rule
 
 # Convenience name for target.
-linalg_main: CMakeFiles/linalg_main.dir/rule
-.PHONY : linalg_main
+simulator_main: CMakeFiles/simulator_main.dir/rule
+.PHONY : simulator_main
 
 # clean rule for target.
-CMakeFiles/linalg_main.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/clean
-.PHONY : CMakeFiles/linalg_main.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/grid_library.dir
-
-# All Build rule for target.
-CMakeFiles/grid_library.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" --progress-num=1,2 "Built target grid_library"
-.PHONY : CMakeFiles/grid_library.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/grid_library.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/grid_library.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/22-10-2025/build/CMakeFiles" 0
-.PHONY : CMakeFiles/grid_library.dir/rule
-
-# Convenience name for target.
-grid_library: CMakeFiles/grid_library.dir/rule
-.PHONY : grid_library
-
-# clean rule for target.
-CMakeFiles/grid_library.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/clean
-.PHONY : CMakeFiles/grid_library.dir/clean
+CMakeFiles/simulator_main.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/clean
+.PHONY : CMakeFiles/simulator_main.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

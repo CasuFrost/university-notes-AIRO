@@ -117,78 +117,65 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named linalg_main
+# Target rules for targets named simulator_main
 
 # Build rule for target.
-linalg_main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 linalg_main
-.PHONY : linalg_main
+simulator_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simulator_main
+.PHONY : simulator_main
 
 # fast build rule for target.
-linalg_main/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/build
-.PHONY : linalg_main/fast
+simulator_main/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/build
+.PHONY : simulator_main/fast
 
-#=============================================================================
-# Target rules for targets named grid_library
-
-# Build rule for target.
-grid_library: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 grid_library
-.PHONY : grid_library
-
-# fast build rule for target.
-grid_library/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/build
-.PHONY : grid_library/fast
-
-grid.o: grid.cpp.o
-.PHONY : grid.o
+grid2.o: grid2.cpp.o
+.PHONY : grid2.o
 
 # target to build an object file
-grid.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/grid.cpp.o
-.PHONY : grid.cpp.o
+grid2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/grid2.cpp.o
+.PHONY : grid2.cpp.o
 
-grid.i: grid.cpp.i
-.PHONY : grid.i
+grid2.i: grid2.cpp.i
+.PHONY : grid2.i
 
 # target to preprocess a source file
-grid.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/grid.cpp.i
-.PHONY : grid.cpp.i
+grid2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/grid2.cpp.i
+.PHONY : grid2.cpp.i
 
-grid.s: grid.cpp.s
-.PHONY : grid.s
+grid2.s: grid2.cpp.s
+.PHONY : grid2.s
 
 # target to generate assembly for a file
-grid.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_library.dir/build.make CMakeFiles/grid_library.dir/grid.cpp.s
-.PHONY : grid.cpp.s
+grid2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/grid2.cpp.s
+.PHONY : grid2.cpp.s
 
-linalg_main.o: linalg_main.cpp.o
-.PHONY : linalg_main.o
+simulator_main.o: simulator_main.cpp.o
+.PHONY : simulator_main.o
 
 # target to build an object file
-linalg_main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/linalg_main.cpp.o
-.PHONY : linalg_main.cpp.o
+simulator_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/simulator_main.cpp.o
+.PHONY : simulator_main.cpp.o
 
-linalg_main.i: linalg_main.cpp.i
-.PHONY : linalg_main.i
+simulator_main.i: simulator_main.cpp.i
+.PHONY : simulator_main.i
 
 # target to preprocess a source file
-linalg_main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/linalg_main.cpp.i
-.PHONY : linalg_main.cpp.i
+simulator_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/simulator_main.cpp.i
+.PHONY : simulator_main.cpp.i
 
-linalg_main.s: linalg_main.cpp.s
-.PHONY : linalg_main.s
+simulator_main.s: simulator_main.cpp.s
+.PHONY : simulator_main.s
 
 # target to generate assembly for a file
-linalg_main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/linalg_main.cpp.s
-.PHONY : linalg_main.cpp.s
+simulator_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulator_main.dir/build.make CMakeFiles/simulator_main.dir/simulator_main.cpp.s
+.PHONY : simulator_main.cpp.s
 
 # Help Target
 help:
@@ -198,14 +185,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... grid_library"
-	@echo "... linalg_main"
-	@echo "... grid.o"
-	@echo "... grid.i"
-	@echo "... grid.s"
-	@echo "... linalg_main.o"
-	@echo "... linalg_main.i"
-	@echo "... linalg_main.s"
+	@echo "... simulator_main"
+	@echo "... grid2.o"
+	@echo "... grid2.i"
+	@echo "... grid2.s"
+	@echo "... simulator_main.o"
+	@echo "... simulator_main.i"
+	@echo "... simulator_main.s"
 .PHONY : help
 
 

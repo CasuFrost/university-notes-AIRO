@@ -60,6 +60,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================FOOTER e HEADER=======================%
 \newtheorem{definition}{Definition}
 \newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduction}
 In this chapter we will see a brief introduction to the mathematical tools used in the main topics of the course. The topics presented in this section may seem somewhat unclear, as many concepts and definitions are only briefly introduced and deliberately not elaborated upon. They will be discussed in detail in their respective chapters.\bigskip
@@ -1098,17 +1099,17 @@ in this case, we perform in total 27 products an 18 summations, this is computat
 We defined the basic rotation along the three axis by an angle $\theta$\begin{equation}
     R_x(\theta),R_y(\theta),R_z(\theta)
 \end{equation}
-we want to generalize this concept by considering a rotation of $\theta$ degrees along an arbitrary direction $\mathbf r$ (with $\|\mathbf r\|=1$).
+we want to generalize this concept by considering a rotation of $\theta$ radiants along an arbitrary direction $\mathbf r$ (with $\|\mathbf r\|=1$).
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/rotation.eps}
 \end{center}
-Given $\mathbf r,\theta$, we want to find the rotation matrix $R(\theta,\mathbf r)$ that describes the rotation of a vector of $\theta$ degrees along $r$, or the change of coordinates from a reference frame that is rotated in that orientation respect to the base frame.\begin{equation}
+Given $\mathbf r,\theta$, we want to find the rotation matrix $R(\theta,\mathbf r)$ that describes the rotation of a vector of $\theta$ radiants along $r$, or the change of coordinates from a reference frame that is rotated in that orientation respect to the base frame.\begin{equation}
     \mathbf v'=R(\theta,\mathbf r)\mathbf v
 \end{equation}
 \subsection{Direct Problem}
 We have to calculate $R(\theta,\mathbf r)\in SO(3)$ given $\theta,\mathbf r$. We can apply the following process:\begin{enumerate}
     \item We consider a transformation denoted $C$ that change the coordinate of our system, by making to set $\mathbf r$ aligned with the axis $z$.
-    \item We consider the rotation along the $z$ axis by $\theta$ degrees. 
+    \item We consider the rotation along the $z$ axis by $\theta$ radiants. 
     \item We consider the inverse transformation of $C$ (since $C\in SO(3)$, $C^{-1}=C^T$).
 \end{enumerate}
 \begin{center}
@@ -1197,4 +1198,192 @@ the outer product of different vectors cancels out since are orthogonal from eac
     \mathbf s\mathbf s^T+
     \mathbf r\mathbf r^T=I.
 \end{equation}
+\begin{definition}
+    A matrix $S\in Mat(n\times n)$ is \textbf{skew symmetric} if\begin{equation}
+        S^T=-S
+    \end{equation}
+\end{definition}
+The diagonal of a skew symmetric matrix have null entries. There are some notable properties:\begin{itemize}
+    \item Any square matrix $A$ can be decomposed in a sum of two matrices, one symmetric, and one skew symmetric:\begin{equation}
+        A=\frac{A+A^T}{2}+\frac{A-A^T}{2}
+    \end{equation}
+    where $\frac{A+A^T}{2}$ is symmetric and $\frac{A-A^T}{2}$ is skew symmetric. 
+    \item In quadratic forms, only the symmetric part of a matrix influences the function:\begin{equation}
+        \mathbf x^T A \mathbf x = \frac{1}{2}(\mathbf x^T A \mathbf x+(\mathbf x^T A \mathbf x)^T)=\frac{1}{2}(\mathbf x^T A \mathbf x+\mathbf x^T A^T \mathbf x)=\mathbf x^T\frac{A+A^T}{2}\mathbf x
+    \end{equation}
+    so only the symmetric part matters\begin{equation}
+        \mathbf x^T A\mathbf x=\mathbf x^T\frac{A+A^T}{2}\mathbf x
+    \end{equation}
+    if follows that if $S$ is skew symmetric \begin{equation}
+        \mathbf x^T S\mathbf x=\mathbf 0.   
+    \end{equation}
+\end{itemize}
+The canonical form of a skew symmetric matrix is the following\begin{equation}
+    S=\begin{pmatrix}
+        0&-v_z&v_y\\ 
+        v_z&0&-v_x\\ 
+        -v_y&v_x&0
+    \end{pmatrix}
+\end{equation}
+so to describe a matrix $S$ is sufficient a single vector \begin{equation}
+    \mathbf v=\begin{pmatrix}
+        v_x\\ 
+        v_y\\ 
+        v_z
+    \end{pmatrix}
+\end{equation}
+in this way, given an arbitrary vector $\mathbf v\in \R^n$, we can construct the associated skew symmetric matrix $S(\mathbf v)\in Mat(n\times n)$.
+\begin{proposition}
+    Given two vectors $\mathbf v,\mathbf u$, the dot product $\mathbf v\times \mathbf u$ is equal to the product from the skew symmetric associated matrix $S(\mathbf v)$ and $\mathbf u$:\begin{equation}
+        \mathbf v\times \mathbf u=S(\mathbf v)\mathbf u
+    \end{equation}
+\end{proposition}
+Since $\mathbf v\times u=-\mathbf u\times \mathbf v$ and $-\mathbf u\times \mathbf v=-S(\mathbf u)\mathbf v$ it follows that \begin{equation}
+    S(\mathbf v)\mathbf u = S^{T}(\mathbf u)\mathbf v.
+\end{equation}
+Let's go back to the original problem, given that $R(\theta,\mathbf r)=CR_z(\theta)C^T$, we want to derive $C$. Expanding the form we can see how\begin{align}
+   & \begin{pmatrix}
+        &&\\
+        \mathbf n&\mathbf s&\mathbf r\\
+        &&
+    \end{pmatrix}
+    \begin{pmatrix}
+        \cos\theta&-\sin\theta&0\\ 
+        \sin\theta&\cos\theta&0\\ 
+        0&0&1
+    \end{pmatrix}
+    \begin{pmatrix}
+        &\mathbf n^T&\\ &\mathbf s^T& \\&\mathbf r^T& 
+    \end{pmatrix}=\\
+    & \mathbf r\mathbf r^T+
+    (\mathbf n\mathbf n^T+\mathbf s\mathbf s^T)\cos\theta+
+    (\mathbf s\mathbf n^T-\mathbf n\mathbf s^T)\sin\theta
+\end{align}
+Since $CC^T= \mathbf r\mathbf r^T+
+    \mathbf n\mathbf n^T+\mathbf s\mathbf s^T=I$, it implies that $\mathbf n\mathbf n^T+\mathbf s\mathbf s^T=I-\mathbf r\mathbf r^T$.\begin{align}
+        &\mathbf r\mathbf r^T+
+    (\mathbf n\mathbf n^T+\mathbf s\mathbf s^T)\cos\theta+
+    (\mathbf s\mathbf n^T-\mathbf n\mathbf s^T)\sin\theta=\\ 
+    &\mathbf r\mathbf r^T+
+    (I-\mathbf r\mathbf r^T)\cos\theta+
+    (\mathbf s\mathbf n^T-\mathbf n\mathbf s^T)\sin\theta
+    \end{align}
+It's important to notice that $\mathbf r$ is orthogonal to $\mathbf s$ and $\mathbf n$, and all three vectors are unit 1, it has to be that 
+\begin{equation}
+    \mathbf n \times\mathbf s =\mathbf r 
+\end{equation}
+so\begin{align}
+     &\mathbf n \times\mathbf s =\begin{pmatrix}
+        n_ys_z-s_yn_z\\ 
+        n_zs_x-s_zn_x\\ 
+        n_xs_y-s_xn_y
+     \end{pmatrix}=\begin{pmatrix}
+        r_x\\ r_y\\ r_z 
+     \end{pmatrix}=\mathbf r
+\end{align}
+we can see how \begin{align}
+    &\mathbf s\mathbf n^T-\mathbf n\mathbf s^T=\begin{pmatrix}
+        0&-r_z&r_y\\
+        r_z&0&-r_x\\ 
+        -r_y&r_x&0 
+    \end{pmatrix}=S(\mathbf r)
+\end{align}
+So $\mathbf s\mathbf n^T-\mathbf n\mathbf s^T$ is equal to the skew symmetric matrix associated to $\mathbf r$. Given these propositions, the following theorem holds.\begin{theorem}
+    Given a vector $\mathbf r\in \R^3$ and an angle $\theta$, the rotation matrix that describes a rotation of $\theta$ radiants along the vector $\mathbf r$ is\begin{equation}
+        R(\theta,\mathbf r)=\mathbf r\mathbf r^T+(I-\mathbf r\mathbf r^T)\cos\theta +S(\mathbf r)\sin\theta.
+    \end{equation}
+\end{theorem}
+By developing all the computation we can expand the form of that matrix:\begin{equation}
+     R(\theta,\mathbf r)=\begin{pmatrix}
+r_x^2(1 - \cos \theta) + \cos \theta & r_x r_y(1 - \cos \theta) - r_z \sin \theta & r_x r_z(1 - \cos \theta) + r_y \sin \theta \\
+r_x r_y(1 - \cos \theta) + r_z \sin \theta & r_y^2(1 - \cos \theta) + \cos \theta & r_y r_z(1 - \cos \theta) - r_x \sin \theta \\
+r_x r_z(1 - \cos \theta) - r_y \sin \theta & r_y r_z(1 - \cos \theta) + r_x \sin \theta & r_z^2(1 - \cos \theta) + \cos \theta
+\end{pmatrix}
+\end{equation}
+The trace of that matrix is $1+2\cos\theta$:\begin{equation}
+    Trace(R(\theta,\mathbf r))=1+2\cos\theta
+\end{equation}
+and we have that\begin{equation}
+    R(\theta,\mathbf r)=R(-\theta,-\mathbf r)=R^T(-\theta,\mathbf r)
+\end{equation}
+There are some properties of $ R(\theta,\mathbf r)$:\begin{itemize}
+    \item Since is the rotation along $\mathbf r$, is invariant to $\mathbf r$\begin{equation}
+         R(\theta,\mathbf r)\mathbf r = \mathbf r
+    \end{equation}
+    \item the map $(\theta,\mathbf r)\rightarrow  R(\theta,\mathbf r)$ is not injective since $R(\theta,\mathbf r)=R(-\theta,-\mathbf r)$
+    \item if $\lambda_1,\lambda_2,\lambda_3$ are the eigenvalues of $R(\theta,\mathbf r)$, the determinant is\begin{equation}
+        \det R = \lambda_1\lambda_2\lambda_3=1
+    \end{equation}
+    the trace is \begin{equation}
+        \lambda_1+\lambda_2+\lambda_3=1+2\cos\theta
+    \end{equation}
+    one of the eigenvalues of $R$ is 1. Since $\lambda_2+\lambda_3=2\cos\theta$
+    to find the other eigenvalues we can set the quadratic equation\begin{equation}
+        \lambda^2+2\cos\theta\lambda+1=0 
+    \end{equation}
+    the two complex roots are\begin{equation}
+        e^{\pm i\theta}
+    \end{equation}
+\end{itemize}\begin{center}
+    \includegraphics[width=0.2\textwidth ]{images/eigenvalues.png}
+\end{center}
+Since $R$ is orthonormal, all eigenvalues have unitary norm.
+\subsection{Inverse Problem}
+Given a rotation matrix $R=(R_{ij})$, we want to find the unit vector $\mathbf r$ and the angle $\theta$ such that\begin{equation}
+    R(\theta,\mathbf r)=(R_{ij})
+\end{equation}
+Since the trace is 
+$R_{11}+R_{22}+R_{33}=1+2\cos\theta$, a possible solution for $\theta$ is\begin{equation}
+    \theta=\arccos\frac{R_{11}+R_{22}+R_{33}-1}{2}
+\end{equation}
+this is not a good solution since $\arccos\in[0,\pi]$, and the function, when implemented, lacks of precision for $\theta$ near to 0. We can consider from the data $R$ that\begin{equation}
+    R - R^{T} = \begin{pmatrix}
+0 & R_{12} - R_{21} & R_{13} - R_{31} \\
+R_{21} - R_{12} & 0 & R_{23} - R_{32} \\
+R_{31} - R_{13} & R_{32} - R_{23} & 0
+\end{pmatrix} = 2 \sin \theta \begin{pmatrix}
+0 & -r_{z} & r_{y} \\
+r_{z} & 0 & -r_{x} \\
+-r_{y} & r_{x} & 0
+\end{pmatrix}
+\end{equation}
+and since $\|\mathbf r \|$ we derive\begin{equation}
+    \sin \theta = \pm \frac{1}{2} \sqrt{(R_{12} - R_{21})^2 + (R_{13} - R_{31})^2 + (R_{23} - R_{32})^2}
+\end{equation}
+so we can use the atan2 function\begin{equation}
+    \text{atan2}(\pm \frac{1}{2} \sqrt{(R_{12} - R_{21})^2 + (R_{13} - R_{31})^2 + (R_{23} - R_{32})^2},R_{11}+R_{22}+R_{33}-1
+    )
+\end{equation}
+if $\sin\theta\ne 0$, $\mathbf r$ is\begin{equation}
+    \mathbf r=\frac{1}{2\sin\theta}\begin{pmatrix}
+        R_{32}-R_{23}\\ 
+        R_{13}-R_{31}\\
+        R_{21}-R_{12}
+    \end{pmatrix}
+\end{equation}
+if $\sin\theta=0$, we have two cases\begin{itemize}
+    \item if $\theta=0$, there is no solution for $\mathbf r$
+    \item if $\theta=\pm\pi$, we have $\sin\theta=0, \ \cos\theta=-1$ and we solve\begin{equation}
+        R=2\mathbf r\mathbf r^T-I
+    \end{equation}
+    for $\mathbf r$.
+\end{itemize}
+\subsection{Quaternion Representation}
+We can use quaternions to represent rotations, we will not enter in the algebraic details of the quaternions field, in this context, is sufficient to know that a quaternion is an element that can be described with a scalar and a vector in $\R^3$
+\begin{align}
+    &q=(\eta,\boldsymbol{\epsilon})\\
+    &\eta\in\R\\ 
+    &\boldsymbol{\epsilon}\in \R^3
+\end{align}
+We can represent a rotation along $\mathbf r$ of $\theta$ radiants by considering the quaternion\begin{align}
+    q=(\cos\frac{\theta}{2},\sin\frac{\theta}{2}\mathbf r)
+\end{align}
+notice how  the application $q \rightarrow R(\theta,\mathbf r)$ is injective since $(\theta,\mathbf r)$ and  $(-\theta,-\mathbf r)$ are associated to the same quaternion. Given $q$, the rotation matrix is\begin{equation}
+    R(q)=R((\eta,\boldsymbol{\epsilon}))=\begin{pmatrix}
+2(\eta^2 + \epsilon_x^2) - 1 & 2(\epsilon_x\epsilon_y - \eta\epsilon_z) & 2(\epsilon_x\epsilon_z + \eta\epsilon_y) \\
+2(\epsilon_x\epsilon_y + \eta\epsilon_z) & 2(\eta^2 + \epsilon_y^2) - 1 & 2(\epsilon_y\epsilon_z - \eta\epsilon_x) \\
+2(\epsilon_x\epsilon_z - \eta\epsilon_y) & 2(\epsilon_y\epsilon_z + \eta\epsilon_x) & 2(\eta^2 + \epsilon_z^2) - 1
+\end{pmatrix}
+\end{equation}
+the inverse rotation of $q=(\eta,\boldsymbol{\epsilon})$ is $(\eta,-\boldsymbol{\epsilon})$, and the null rotation is $(1,\mathbf 0)$.
 \end{document}
