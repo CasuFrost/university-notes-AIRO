@@ -1378,12 +1378,21 @@ We can use quaternions to represent rotations, we will not enter in the algebrai
 We can represent a rotation along $\mathbf r$ of $\theta$ radiants by considering the quaternion\begin{align}
     q=(\cos\frac{\theta}{2},\sin\frac{\theta}{2}\mathbf r)
 \end{align}
-notice how  the application $q \rightarrow R(\theta,\mathbf r)$ is injective since $(\theta,\mathbf r)$ and  $(-\theta,-\mathbf r)$ are associated to the same quaternion. Given $q$, the rotation matrix is\begin{equation}
+notice how $(\theta,\mathbf r)$ and  $(-\theta,-\mathbf r)$ are associated to the same quaternion. Given $q$, the rotation matrix is\begin{equation}\label{quat_mat}
     R(q)=R((\eta,\boldsymbol{\epsilon}))=\begin{pmatrix}
 2(\eta^2 + \epsilon_x^2) - 1 & 2(\epsilon_x\epsilon_y - \eta\epsilon_z) & 2(\epsilon_x\epsilon_z + \eta\epsilon_y) \\
 2(\epsilon_x\epsilon_y + \eta\epsilon_z) & 2(\eta^2 + \epsilon_y^2) - 1 & 2(\epsilon_y\epsilon_z - \eta\epsilon_x) \\
 2(\epsilon_x\epsilon_z - \eta\epsilon_y) & 2(\epsilon_y\epsilon_z + \eta\epsilon_x) & 2(\eta^2 + \epsilon_z^2) - 1
 \end{pmatrix}
 \end{equation}
-the inverse rotation of $q=(\eta,\boldsymbol{\epsilon})$ is $(\eta,-\boldsymbol{\epsilon})$, and the null rotation is $(1,\mathbf 0)$.
+the inverse rotation of $q=(\eta,\boldsymbol{\epsilon})$ is $(\eta,-\boldsymbol{\epsilon})$, and the null rotation is $(1,\mathbf 0)$. There is a binary operation on quaternions $*$ such that\begin{equation}
+    q_1*q_2=(\eta_1,\boldsymbol{\epsilon}_1)*
+    (\eta_2,\boldsymbol{\epsilon}_2)=(\eta_1\eta_2-\boldsymbol{\epsilon}_1^T\boldsymbol{\epsilon}_2, \eta_1\boldsymbol{\epsilon}_2+\eta_2\boldsymbol{\epsilon}_1+\boldsymbol{\epsilon}_1\times \boldsymbol{\epsilon}_2)
+\end{equation}
+We also want to find the quaternion $q$ associated to a given rotation matrix $R=(R_{ij})$. Summing the elements on the diagonal of the matrix shown in \eqref{quat_mat} we get\begin{equation}
+    R_{11}+R_{22}+R_{33}=4\eta^2-1
+\end{equation}
+the positive roots of this quadratic equation is the value of $\eta$\begin{equation}
+    \eta=\frac{1}{2}TODO
+\end{equation}
 \end{document}
