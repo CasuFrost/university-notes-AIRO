@@ -950,7 +950,7 @@ applying equations \eqref{eq:model_balance_2},\eqref{eq:model_balance} we get\be
 \redText{TODO}
 \section{Sensors}
 \redText{TODO}
-\chapter{Direct Kinematics}
+\chapter{Describing Orientation}
 \section{Position and Orientation of a Rigid Body}
 We have a base reference frame $RF_A=(\mathbf x_A,\mathbf y_A,\mathbf z_A)$, and a rigid body $B$ in the space, let's say that there is a fixed reference frame $RF_B=(\mathbf x_B,\mathbf y_B,\mathbf z_B)$ attached to a point of $B$, a vector ${}^A\mathbf p\in\R^3$ can describe the position of the whole body respect to the frame $RF_A$, and a $3\times3$ matrix is sufficient to describe the orientation of that body.
 \begin{center}
@@ -1393,6 +1393,266 @@ We also want to find the quaternion $q$ associated to a given rotation matrix $R
     R_{11}+R_{22}+R_{33}=4\eta^2-1
 \end{equation}
 the positive roots of this quadratic equation is the value of $\eta$\begin{equation}
-    \eta=\frac{1}{2}TODO
+    \eta=\frac{1}{2}\sqrt{R_{11}+R_{22}+R_{33}+1}\ge 0 
 \end{equation}
+without entering in the details, from the equation \eqref{quat_mat} we can derive the values for $\boldsymbol{\epsilon}$ as follows:\begin{align}
+    &\epsilon_x=\frac{1}{2}\text{sign}(R_{32}-R_{23})\sqrt{R_{11}-R_{22}-R_{33}+1}\\
+    &\epsilon_y=\frac{1}{2}\text{sign}(R_{13}-R_{32})\sqrt{R_{22}-R_{11}-R_{33}+1}\\
+    &\epsilon_z=\frac{1}{2}\text{sign}(R_{21}-R_{12})\sqrt{R_{33}-R_{11}-R_{22}+1}
+\end{align}
+\section{Minimal Representations of Orientation}
+We discussed many representation of rotation, quaternions, rotation axis and angle and  rotation matrices, we want to describe an orientation with the minimum number of variables, indeed, the group $SO(3)$ is a 3-mainfold, to describe an element in $SO(3)$ we need just three independent variables. We define three rotation along the base axis with three angles $\alpha_1,\alpha_2,\alpha_3$.\bigskip 
+
+There are two ways to use 3 angles to describe a rotation, one along moving axis, and one along fixed axis.
+\subsection{Euler Angles}
+We describe a rotation as a triple of angles $(\alpha_1,\alpha_2,\alpha_3)$, each angle is associated to an axis $X,Y$ or $Z$. The angle $\alpha_1$ describe a rotation of the frame along his associated axis, this will provide a new set of axis $X',Y',Z'$ with a different orientation respect to the initial one. The angle $\alpha_2$ describe a rotation of the frame along his associated axis in the new frame $X',Y',Z'$, this will provide a new frame $X'',Y'',Z''$, and  $\alpha_3$ describe a rotation of the frame along his associated axis in this last frame.\bigskip 
+
+\noindent There are 12 possible sequence of axis for a rotation, for example\begin{itemize}
+    \item $XY'X''$ describe a rotation along $X$, then $Y'$, and then $X''$. We use the quotation mark $'$ do emphasizes the fact that the axis is part of a frame that has been rotated.
+    \item $ZX'Z''$ describe a rotation along $Z$, then $X'$, and then $Z''$.
+\end{itemize}
+We exclude  contiguous repetitions of axes, like $XX'Z''$ or $YZ'Z''$. Let's consider an example, we have the three euler angles $(\phi,\theta,\psi)$ associated to the axis $ZX'Z''$.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/eulerangles.eps}
+\end{center}
+The rotation matrix that describes this rotation is \begin{equation}
+    R_z(\phi)R_{x}(\theta)R_z(\psi)
+\end{equation}
+\begin{definition}
+    Given three euler angles $\alpha_1,\alpha_2,\alpha_3$ and three axis $$(a_1,a_2,a_3)  \ : \ a_i\in \{x,y,z\}, \ a_1\ne a_{2}, \ a_2\ne a_3
+    $$
+    the rotation matrix describing the rotation along this moving axes is\begin{equation}
+        R_{a_1}(\alpha_1) R_{a_2}(\alpha_2) R_{a_3}(\alpha_3)
+    \end{equation}
+\end{definition}
+For the example with the axis $ZX'Z''$, the expanded version of the matrix is the following\begin{equation}\label{ZXZ_mat}
+    R=  \begin{pmatrix}
+        \cos\phi\cos\psi-\sin\phi\cos\theta\sin\psi&-\cos\phi\sin\psi-\sin\phi\cos\theta\cos\psi&\sin\phi\sin\theta\\ 
+        \sin\phi\sin\psi+\cos\phi\cos\theta\sin\psi&-\sin\phi\sin\psi+\cos\phi\cos\theta\cos\psi&-\cos\phi\sin\theta\\ 
+        \sin\theta\sin\psi&\sin\theta\cos\psi&\cos\theta
+    \end{pmatrix}
+\end{equation}
+Given a rotation matrix $R=(R_{ij})$, we can derive the values for $(\phi,\theta,\psi)$ by looking at the matrix in equation \eqref{ZXZ_mat}. Since \begin{align}
+    &R_{13}=\sin\phi\sin\theta \\ 
+    &R_{23}=-\cos\phi\sin\theta  
+\end{align}
+we have that \begin{align}
+    &R_{13}^2+R_{23}^2=\sin^2\phi\sin^2\theta+(-\cos\phi)^2\sin^2\theta=\\ 
+    &\sin^2\theta(\sin^2\phi+(-\cos\phi)^2)= \sin^2\theta(\sin^2\phi+\cos^2\phi)=\sin^2\theta\\ &\implies
+    \sin\theta=\pm\sqrt{R_{13}^2+R_{23}^2}
+\end{align}
+and\begin{align}
+    &R_{33}=\cos\theta  
+\end{align}
+we can derive $\theta$ with the atan2 function:\begin{equation}
+    \theta=\text{atan2}\left(
+        \pm\sqrt{R_{13}^2+R_{23}^2}, \ R_{33}
+    \right).
+\end{equation}
+We have two possible values for $\theta$ since we have to consider that $\sin\theta=\pm\sqrt{R_{13}^2+R_{23}^2}$.
+We consider the case without singularities, where $\sin\theta\ne 0$, since $R_{31}=\sin\theta\sin\psi$ and $R_{32}=\sin\theta\cos\psi$, we have that\begin{align}
+    &\sin\psi=\nicefrac{R_{31}}{\sin\theta}\\ 
+    &\cos\psi=\nicefrac{R_{32}}{\sin\theta}\\ 
+    &\implies \psi=\text{atan2}\left(
+        \frac{R_{31}}{\sin\theta}, \frac{R_{32}}{\sin\theta}
+    \right).
+\end{align}
+By analogous steps, we can derive $\phi$:\begin{equation}
+     \phi=\text{atan2}\left(
+        \frac{R_{13}}{\sin\theta},- \frac{R_{23}}{\sin\theta}
+    \right).
+\end{equation}
+Since we have two different values for $\theta$, this process provides two different triplets for the angles $(\phi,\theta,\psi)$. We have a singularity when\begin{equation}
+    \theta=0\lor \theta=\pm\pi
+\end{equation}
+in that case, $\sin\theta=0$, so we can't derive the values for $\phi,\psi$. When $\sin\theta=0$, the rotation along the second axis $X'$ is irrelevant, we can't derive fixed values for $\psi,\phi$, but we can determine only the sum $\phi+\psi$ or the difference $\phi-\psi$. This fact should be intuitive, since we are not rotating along $X'$, we are doing two consecutive rotation along $Z=Z''$.
+$$R=R_z(\phi+\psi)$$
+This discussion concerns the specific case of rotations along $ZX'Z''$, analogous considerations can be made for all other cases.
+\subsection{Roll-Pitch-Yaw Angles}
+We describe a rotation as a triple of angles $(\alpha_1,\alpha_2,\alpha_3)$, each angle is associated to an axis $X,Y$ or $Z$. The frame gets rotated always along fixed axis, so, if we have a rotation along $ZXZ$ with angles $(\phi,\theta,\psi)$, the frame gets rotated by $\phi$ along $Z$, then by $\theta$ along the original axis $X$ and not the rotated one $X'$.\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/rpy_angles.eps}
+\end{center}
+In this case\begin{enumerate}
+    \item We perform a rotation along $Z$ with $R_z(\phi)$
+    \item We perform a rotation along the original $X$, that is not coincident with the current axis $X'$, so the rotation matrix is $C_1R_x(\theta)C_1^T$
+    \item We perform a rotation along the original $Z$, that is not coincident with the current axis $Z''$, so the rotation matrix is $C_2R_z(\psi)C_2^T$
+\end{enumerate}
+The final matrix is \begin{equation}
+    R_z(\phi)C_1R_x(\theta)C_1^TC_2R_z(\psi)C_2^T
+\end{equation}
+\begin{theorem}
+    $R_z(\phi)C_1R_x(\theta)C_1^TC_2R_z(\psi)C_2^T=R_z(\psi)R_x(\theta)R_z(\phi)$
+\end{theorem}
+\textit{Proof}: The rotation $C_1$ align the  axis $X'$ of the frame after the first rotation along $Z$ with the original axis $X$, so $$C_1=R^T_z(\phi).$$ Similarly, the transformation $C_2$ align the axis $Z''$ after two rotation with the original axis $Z$, so $$C_2=R^T_z(\phi)R^T_x(\theta).$$
+We can expand the matrix \begin{align}
+     &R_z(\phi)C_1R_x(\theta)C_1^TC_2R_z(\psi)C_2^T=\\ 
+    &R_z(\phi)R^T_z(\phi)R_x(\theta)R_z(\phi)R^T_z(\phi)R^T_x(\theta)R_z(\psi)R_x(\theta)R_z(\phi)=\\ 
+&\color{red}R_z(\phi)R^T_z(\phi)\color{black}R_x(\theta)\color{red}R_z(\phi)R^T_z(\phi)\color{black}R^T_x(\theta)R_z(\psi)R_x(\theta)R_z(\phi)=\\ 
+&\color{red}R_x(\theta)R^T_x(\theta)\color{black}R_z(\psi)R_x(\theta)R_z(\phi)=\\ 
+&R_z(\psi)R_x(\theta)R_z(\phi) \ \ \ \ \ \ \ \ \ \ \ \ \blacksquare
+\end{align}
+\begin{definition}
+    Given three roll-pitch-yaw angles $\alpha_1,\alpha_2,\alpha_3$ and three axis $$(a_1,a_2,a_3)  \ : \ a_i\in \{x,y,z\}, \ a_1\ne a_{2}, \ a_2\ne a_3
+    $$
+    the rotation matrix describing the rotation along this fixed axes is\begin{equation}
+        R_{a_3}(\alpha_3) R_{a_2}(\alpha_2) R_{a_1}(\alpha_1)
+    \end{equation}
+\end{definition}
+The roll-pitch-yaw angles rotation is equivalent to an euler angles rotation, we get this equivalence by inverting the order of the sequence of axis:$$\begin{matrix}
+    \begin{matrix}
+        \textbf{Euler angles}\\ 
+        \text{first rotation :  by }\alpha_1\text{ radiants along }a_1\\ 
+        \text{second rotation :  by }\alpha_2\text{ radiants along }a_2\\ 
+        \text{third rotation :  by }\alpha_3\text{ radiants along }a_3
+    \end{matrix}&
+    \equiv
+    & \begin{matrix}
+        \textbf{Roll-Pitch-Yaw angles}\\ 
+        \text{first rotation :  by }\alpha_3\text{ radiants along }a_3\\ 
+        \text{second rotation :  by }\alpha_2\text{ radiants along }a_2\\ 
+        \text{third rotation :  by }\alpha_1\text{ radiants along }a_1
+    \end{matrix}
+\end{matrix} $$
+Let's consider now a rotation along $XYZ$, by the angles $(\psi,\theta,\phi)$. The rotation matrix that describes this rotation is\begin{equation}
+    R=R_z(\phi)R_y(\theta)R_x(\psi)  
+\end{equation}
+the expanded form is\begin{equation}\label{rpy_mat}
+    \begin{pmatrix}
+        \cos\phi\cos\theta&\cos\phi\sin\psi-\sin\phi\cos\psi&\cos\phi\sin\theta\cos\psi+\sin\phi\sin\psi\\ 
+        \sin\phi\cos\theta&\sin\phi\sin\theta\sin\psi+\cos\phi\cos\psi&\sin\phi\sin\theta\cos\phi-\cos\phi\sin\psi\\ 
+        -\sin\theta&\cos\theta\sin\psi&\cos\theta\cos\psi
+    \end{pmatrix}
+\end{equation}
+The inverse problem is to find $(\psi,\theta,\phi)$ given $R=(R_{ij})$, we can determine the values of the angles by considering the matrix in equation \eqref{rpy_mat}. Since\begin{align}
+    &R_{32}^2+R_{33}^2=\cos^2\theta \\ 
+    &R_{31}=-\sin\theta  
+\end{align}
+we get the two possible values for $\theta$:\begin{equation}
+    \theta=\text{atan2}\left(
+        -R_{31}, \ \pm\sqrt{R_{32}^2+R_{33}^2}
+    \right)
+\end{equation}
+if $\cos\theta\ne 0$, we have\begin{align}
+    & \psi=\text{atan2}\left(
+        \frac{R_{32}}{\cos\theta}, \ \frac{R_{33}}{\cos\theta}
+    \right)\\ 
+     & \phi=\text{atan2}\left(
+        \frac{R_{21}}{\cos\theta}, \ \frac{R_{11}}{\cos\theta}
+    \right)
+\end{align}
+We have singularities when $\theta=\pm\frac{\pi}{2}$, in these cases, we can determine only the sum $\phi+\psi$ or the difference $\phi-\psi$. This discussion concerns the specific case of rotations along $XYZ$, analogous considerations can be made for all other cases.
+\section{Homogeneous Transformations}
+For now, we discussed about frames with different orientation, but fixed in the same spot. Now we consider frames with different orientation and position. Let's consider two frames, $O_A$ and $O_B$, and let's say that\begin{itemize}
+    \item ${}^AR_B$ is the rotation matrix that act as a change of coordinates from $O_A$ to $O_B$ 
+    \item ${}^A\mathbf p_{AB}$ is the vector that starts from $A$ and goes to $B$, it describes the position of the frame $O_B$ respect to $O_A$.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/affine_rel1.eps}
+\end{center}
+Let's consider a point $P$, let ${}^B\mathbf p$ the vector that describes the position $P$ in the frame $O_B$. To determine the vector ${}^A\mathbf p$ that describes the position $P$ in the frame $O_A$, we have to apply the translation and the rotation as follows:\begin{equation}
+    {}^A\mathbf p={}^A\mathbf p_{AB}+{}^AR_B{}^B\mathbf p
+\end{equation}\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/affine_rel2.eps}
+\end{center}
+Instead of considering a sum and a multiplication by a matrix, we can consider the \textbf{affine relationship} as a linear relationship by considering a $4\times 4$ homogeneous matrix and transforming $ {}^A\mathbf p$ and $ {}^B\mathbf p$ in the homogeneous coordinates as follows:\begin{equation}
+    {}^A\mathbf p_{hom}=\begin{pmatrix}
+        {}^A\mathbf p\\ 1 
+    \end{pmatrix}\in\R^4
+\end{equation}\begin{equation}
+    {}^B\mathbf p_{hom}=\begin{pmatrix}
+        {}^B\mathbf p\\ 1 
+    \end{pmatrix}\in\R^4
+\end{equation}
+\begin{equation}
+     {}^A\mathbf p_{hom}=\begin{pmatrix}
+        & & & \\ 
+        &{}^AR_B & & {}^A\mathbf p_{AB} \\ 
+        & & & \\
+        0&0 &0 & 1
+     \end{pmatrix}\begin{pmatrix}
+        \\ {}^B\mathbf p \\ \\ 1 
+    \end{pmatrix}={}^A\mathbf p_{AB}+{}^AR_B{}^B\mathbf p
+\end{equation}
+we denote this \textbf{homogeneous transformation} ${}^AT_B$\begin{equation}
+     {}^A\mathbf p_{hom}={}^AT_B{}^B\mathbf p_{hom}
+\end{equation}\begin{itemize}
+    \item A homogeneous transformation $T$ describes the relation between two reference frames relative to the pose.
+    \item Transforms the representation of a position vector
+(applied vector starting from the origin of the frame)
+from one frame to another frame.
+\item It is a roto-translation operator on vectors in the three dimensional space. 
+\item It is invertible $({}^AT_B)^{-1}={}^BT_B$
+\item and can be composed\begin{equation}
+    {}^AT_B{}^BT_C={}^AT_C.
+\end{equation}
+\end{itemize}
+If $${}^AT_B=\begin{pmatrix}
+    {}^AR_B&{}^A\mathbf p_{AB}\\ 
+    \mathbf 0^T&1
+\end{pmatrix}$$
+the inverse 
+$${}^BT_A=\begin{pmatrix}
+    {}^BR_A&{}^B\mathbf p_{BA}\\ 
+    \mathbf 0^T&1
+\end{pmatrix}$$
+can be written in term of the original vector/matrices as follows\begin{equation}
+    {}^BT_A=({}^AT_B)^{-1}=\begin{pmatrix}
+    {}^AR_B^T&-{}^AR_B^T{}^A\mathbf p_{AB}\\ 
+    \mathbf 0^T&1
+\end{pmatrix}
+\end{equation}
+\subsection{Example of a Robotic Task}
+Let's consider the following scenario\begin{itemize}
+    \item There is a world reference frame  $RF_W$
+    \item There is a robotic arm with his reference frame $RF_B$
+    \item There is a reference frame $RF_E$ attached to the end effector of the robot
+    \item There is a  table with a reference frame $RF_T$ and an object placed on the table, in position $P$.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/rob_task.eps}
+\end{center}
+The end effector is placed in a way such that, is pointing downward to the table, so the axis $z$ of $RF_T$ is in the same direction of the axis $z$ of $RF_E$, but with opposite  orientation\begin{equation}
+    {}^ER_T=\begin{pmatrix}
+        1&0&0\\ 
+        0&-1&0\\ 
+        0&0&-1
+    \end{pmatrix}=R_x(\pi)
+\end{equation}
+Since the point $P$ lies on the table, the $z$ value for the vector that describes $P$ in $RF_T$ will be null\begin{equation}
+    {}^T\mathbf p=\begin{pmatrix}
+        p_x\\p_y\\ 0
+    \end{pmatrix}
+\end{equation}
+Let's say that the end effector is pointing $P$, in that case the vector that describes $P$ in $RF_E$ will be\begin{equation}
+    {}^E\mathbf p=\begin{pmatrix}
+       0\\0\\ h
+    \end{pmatrix}
+\end{equation}
+where $h$ is the distance between $P$ and $RF_E$. To determine the position of the end effector respect to the table, we have to consider\begin{equation}
+    {}^TR_E={}^ER_T^{-1}=\begin{pmatrix}
+        1&0&0\\ 
+        0&-1&0\\ 
+        0&0&-1
+    \end{pmatrix}^T=\begin{pmatrix}
+        1&0&0\\ 
+        0&-1&0\\ 
+        0&0&-1
+    \end{pmatrix}={}^ER_T
+\end{equation}
+we need the vector ${}^T\mathbf p_{TE}$ that describes the position of the end effector respect to the frame $RF_T$. This is given by \begin{align}
+    &{}^T\mathbf p_{TE}={}^T\mathbf p-{}^TR_E{}^E\mathbf p=\\ 
+    &\begin{pmatrix}
+        p_x\\p_y\\ 0
+    \end{pmatrix}-\begin{pmatrix}
+        1&0&0\\ 
+        0&-1&0\\ 
+        0&0&-1
+    \end{pmatrix}\begin{pmatrix}
+       0\\0\\ h
+    \end{pmatrix}=\begin{pmatrix}
+        p_x\\p_y\\ h
+    \end{pmatrix}
+\end{align}\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/rob_task2.eps}
+\end{center}
 \end{document}
