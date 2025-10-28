@@ -1655,4 +1655,83 @@ we need the vector ${}^T\mathbf p_{TE}$ that describes the position of the end e
 \end{align}\begin{center}
     \includegraphics[width=0.3\textwidth ]{images/rob_task2.eps}
 \end{center}
+\subsection{Example of An Exercise}
+Let's consider the following configuration:\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/exercise1.png}
+\end{center}
+We have two robots, robot $A$ with the base in the frame $RF_A$, and robot $B$ with the base in $RF_B$. $RF_B$ is rotated along the $z$ axis respect to our base world frame $RF_w$. We also have the frames of the end effectors $RF_{EA}$ and $RF_{EB}$. The joints $\mathbf q_A$ are fixed\begin{equation}
+    \mathbf q_A=\begin{pmatrix}
+        \frac{\pi}{3}\\-\frac{\pi}{2}
+    \end{pmatrix}
+\end{equation}
+We want to find the values for $\mathbf q_B$ such that 
+the two end effectors are in the same positions and points each other:\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/exercise11.png}
+\end{center} 
+In that case, the rotation matrix that describe the orientation of $RF_{EA}$ respects to $RF_{EB}$ is\begin{equation}
+    {}^{EA}R_{EB}=R_z(\pi)=\begin{pmatrix}
+        \cos\pi & -\sin\pi &0\\
+        \sin\pi&\cos\pi&0\\
+        0&0&1
+    \end{pmatrix} = \begin{pmatrix}
+        -1 & 0 &0\\
+        0&-1&0\\
+        0&0&1
+    \end{pmatrix}
+\end{equation}
+so\begin{equation}
+    {}^{EA}T_{EB}=\begin{pmatrix}
+        -1&0&0&0\\ 
+        0&-1&0&0\\
+        0&0&1&0\\ 
+        0&0&0&1
+    \end{pmatrix}
+\end{equation}
+Since $RF_w$ and $RF_A$ have the same orientation, the homogeneous transformation ${}^wT_A$ is just a translation\begin{equation}
+    {}^wT_A=\begin{pmatrix}
+        1&0&0&-2.5\\ 
+        0&1&0&1\\
+        0&0&1&0\\ 
+        0&0&0&1\end{pmatrix}
+\end{equation}
+the frame $RF_B$ is rotated along $z$ by $\frac{\pi}{6}$ radiants respects to the frame $RF_w$ so\begin{equation}
+    {}^wR_B=R_z(\nicefrac{\pi}{6})
+\end{equation}
+the homogeneous transformation is\begin{equation}
+     {}^wT_B=\begin{pmatrix}
+        &&&1\\ 
+        &R_z(\nicefrac{\pi}{6})&&2\\
+        &&&0\\
+        0&0&0&1
+     \end{pmatrix}=\begin{pmatrix}
+        0.866&-0.5&0&1\\ 
+        0.5&0.866&0&2\\
+        0&0&1&0\\
+        0&0&0&1
+     \end{pmatrix}
+\end{equation}
+The pose of the end effector $RF_{EA}$ respect his base $RF_A$ is calculated with direct kinematics, and it's in function of $\mathbf q_A$\begin{equation}
+    {}^AT_{EA}=\begin{pmatrix}
+        0.866&0.5&0&1.366\\ 
+        -0.5&0.866&0&0.366\\
+        0&0&1&0\\
+        0&0&0&1
+     \end{pmatrix}
+\end{equation}
+For now, it is not important how ${}^AT_{EA}$ is calculated, since we didn't discussed about direct kinematics yet. The pose of the end effector of the robot $A$ respect to our world frame is\begin{equation}
+    {}^wT_{EA}={}^wT_{A}{}^AT_{EA}
+\end{equation}
+The position of the end effector of $B$ can be computed by "passing" through the robot $A$ as follows\begin{equation}
+    {}^wT_{EB}={}^wT_{A}{}^AT_{EA}{}^{EA}T_{EB}
+\end{equation}
+can be also computed by passing through $B$\begin{equation}
+    {}^wT_{EB}={}^wT_{B}{}^BT_{EB}
+\end{equation}
+the transformation ${}^BT_{EB}$ is unknown and it is in function of $\mathbf q_B$. We have to solve the system of non linear equations \begin{equation}
+    {}^wT_{A}{}^AT_{EA}{}^{EA}T_{EB}={}^wT_{B}{}^BT_{EB}(\mathbf q_B)
+\end{equation}
+\begin{equation}
+    {}^BT_{EB}(\mathbf q_B)=({}^wT_{B})^{-1}{}^wT_{A}{}^AT_{EA}{}^{EA}T_{EB}
+\end{equation}
+for $\mathbf q_B$ with inverse kinematics. We do not discuss the full procedure to find the solutions (there are two).
 \end{document}

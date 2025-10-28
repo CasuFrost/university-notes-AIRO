@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblinear_algebra_library.a CMakeFiles/linear_algebra_library.dir/vec_d.cpp.o CMakeFiles/linear_algebra_library.dir/mat_d.cpp.o
+/usr/bin/ranlib liblinear_algebra_library.a

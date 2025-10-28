@@ -1784,6 +1784,59 @@ Suitable solution for the termination condition may be\begin{itemize}
     \item after a predefined number of iteration.
 \end{itemize}
 After we learned a model $\mathbf w^*$, a new sample $\mathbf x$ is predicted with $H({\mathbf  w^*}^T\mathbf x)$.
+\subsection{Fisher's Linear Discriminant}
+This method's consider a linear discriminant $\mathbf w$, and it adjust the direction of that linear function to maximize the separation of classes in the dataset, consider a dataset $D$ with points in two classes, where $N_1$ are the number of points in class $C_1$ and $N_2$ are the number of points in class $C_2$. Two vectors $\mathbf m_1,\mathbf m_2$ are calculated in the following way\begin{align}
+&\mathbf m_1=\frac{1}{N_1}\sum_{\mathbf x_n\in C_1}\mathbf x_n\\ 
+&\mathbf m_2=\frac{1}{N_2}\sum_{\mathbf x_n\in C_2}\mathbf x_n
+\end{align}
+We solve the following optimization problem:\begin{align*}
+    &\max J(\mathbf w)=\mathbf w^T(\mathbf m_1-\mathbf m_2)\\ 
+    \text{subject to} \ \ \ &\|\mathbf w\|=1
+\end{align*}
+$\mathbf m_1$ is the center of mass of the samples of class $C_1$ (analogous interpretation for $\mathbf m_2$ and $C_2$).
+The value of $\mathbf w$ that maximize $\mathbf w^T(\mathbf m_1-\mathbf m_2)$ will be aligned to the vector $(\mathbf m_1-\mathbf m_2)$.\begin{center}
+    \includegraphics[width=0.4\textwidth]{images/fisher.eps}
+\end{center} 
+\redText{TODO}
+\subsection{Support Vector Machines}
+\redText{TODO}
+\section{Linear Regression}
+We want to use a linear model for regression, the target function is\begin{align}
+    &f:X\rightarrow Y\\ 
+    &X\subseteq \R^d\\ 
+    &Y\subseteq \R 
+\end{align}
+The $d$ parameters are $\mathbf w$ and the model is\begin{equation}
+    y(\mathbf x)=y(\mathbf x,\mathbf w)=\mathbf w^T\mathbf x
+\end{equation}
+with \begin{align*}
+    &\mathbf x^T=\begin{pmatrix}
+        1&x_1&\dots &x_d
+    \end{pmatrix}\\ 
+    &\mathbf w^T=\begin{pmatrix}
+        w_0&w_1&\dots &w_d
+    \end{pmatrix}
+\end{align*}
+\begin{center}
+    \includegraphics[width=0.4\textwidth]{images/lin_reg.eps}
+\end{center} 
+It is possible to consider a non linear transformation of the input $\boldsymbol{\phi}(\mathbf x)$\begin{equation}
+    y(\mathbf x)=\mathbf w^T\boldsymbol{\phi}(\mathbf x)
+\end{equation}
+where\begin{equation}
+    \boldsymbol{\phi}(\mathbf x)=\begin{pmatrix}
+        \phi_0(\mathbf x)\\\phi_1(\mathbf x)\\ 
+        \vdots \\ 
+        \phi_M(\mathbf x)
+    \end{pmatrix}
+\end{equation}
+An example, with $X=\R$, is $\phi_j(x)=x^j$:\begin{equation}
+    y(x,\mathbf w)=\sum_{j=1}^Mw_jx^j
+\end{equation}
+$M$ is an hyper parameter of the machine learning problem.
+\begin{center}
+    \includegraphics[width=0.5\textwidth]{images/lin_reg2.png}
+\end{center} 
 \end{document}
 
 
