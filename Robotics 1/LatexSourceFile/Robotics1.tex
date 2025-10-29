@@ -1734,4 +1734,165 @@ the transformation ${}^BT_{EB}$ is unknown and it is in function of $\mathbf q_B
     {}^BT_{EB}(\mathbf q_B)=({}^wT_{B})^{-1}{}^wT_{A}{}^AT_{EA}{}^{EA}T_{EB}
 \end{equation}
 for $\mathbf q_B$ with inverse kinematics. We do not discuss the full procedure to find the solutions (there are two).
+\chapter{Direct Kinematics}
+In this chapter we study the geometric and timing aspects of robot motion, without considering the forces that causes that motion (since we are not considering the dynamics of a robotic manipulator, but just the kinematics). 
+
+A robot is defined as an open kinematic chain of rigid bodies, interconnected by joints, these joints can be revolute or prismatic. To plan a robotic task, we consider three abstract spaces:\begin{itemize}
+    \item the actuation space, where we give commands to the actuators to generate torque and forces to make the joints move 
+    \item the joint space, where we define the degree of freedom of a robotic system 
+    \item the tasks space, such as the cartesian space where the end effector lies. 
+\end{itemize}
+We don't take in account the actuation space for now, we assume that we can directly control the joint space, the \textit{direct kinematics} is a map from that space and the task space, we usually denote\begin{equation}
+    \mathbf q =(q_1\dots, q_n) 
+\end{equation}
+the variables of the joint space, and\begin{equation}
+    \mathbf r = (r_1\dots ,r_m) 
+\end{equation}
+the variables of the task space. The direct kinematics is a map $f$ such that\begin{equation}
+    \mathbf r=f_r(\mathbf q)
+\end{equation}
+the $r$ as a subscript denotes that the function $f$ depends on the characterization of the task space, this should be \textit{minimal} and \textit{unambiguous}.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth ]{images/pendulum.eps}
+    \caption{Non minimal representation of the configuration}
+    \label{fig:pendulum}
+\end{figure}
+
+
+A non minimal characterization of the configuration of a mechanical system is the following: Let's consider a simple pendulum with a stick of length $L$, we want to describe the position of each point of the stick, we define the vector $(p_x,p_y)$, as shown in figure \ref{fig:pendulum}.
+
+
+Since there is a constraint \begin{equation}
+    p_x^2+p_y^2=L^2 
+\end{equation}
+only one variable will be sufficient to describe the entire configuration, a minimal representation is to consider the angle $\theta$ between the stick and the $y$ axis, as shown in figure \ref{fig:pendulum2}.\bigskip
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth ]{images/pendulum2.eps}
+    \caption{Minimal representation of the configuration}
+    \label{fig:pendulum2}
+\end{figure}
+
+We have an ambiguous choice of the representation when the variables of the task space doesn't define one single configuration, let's consider the robotic arm shown in figure \ref{fig:ambogous}, if the configuration is represented by the angle of the third joint $q_3$ and the position of that joint
+$$
+\mathbf r=(p_x,p_y,q_3)
+$$a single value for $\mathbf r$ identifies two configurations. \bigskip 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/ambigous.eps}
+    \caption{ambiguous representation of the configuration}
+    \label{fig:ambogous}
+\end{figure}
+
+Usually, the number variables of the configuration space are less or equals than the number of degree of freedom:$$ m\le n$$
+to describe the pose of an object we need a configuration space with $m=6$ variables (3 for the position and 3 for the orientation). \bigskip 
+
+For simple robotic system, as the one shown in figure \ref{fig:simple_dk}, the direct kinematics can be computed geometrically by inspecting the planar diagram.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/simple_dk.eps}
+    \caption{Planar manipulator}
+    \label{fig:simple_dk}
+\end{figure}
+
+With simple consideration we can easily compute the configuration $\mathbf r=(p_x,p_y,\phi)$:\begin{align}
+    &p_x=l_1\cos q_1+l_2\cos(q_1+q_2)\\
+    &p_y=l_1\sin q_1+l_2\sin(q_1+q_2)\\
+    &\phi=q_1+q_2
+\end{align}
+
+For more general case, we need a systematic method that assigns frames to each joints.
+\section{Denavit-Hartenberg Frames}
+\begin{definition}
+    Given two axes in $\R^3$, described by two functions\begin{align}
+        &f_1(t)=\mathbf p_1+\mathbf v_1t\\ 
+        &f_2(t)=\mathbf p_2+\mathbf v_2t
+    \end{align}
+    the \textbf{common normal} is the segment passing trough $f_1$ and $f_2$ that is orthogonal to both axes. Is the shortest segment that connect the two axis. 
+\end{definition}
+\begin{definition}
+    Given two axes $f_1,f_2$ and the common normal $AB$, let $\Pi$ to be the plane orthogonal to $AB$, and let $f'_1$ and $f'_2$ to be the projection of $f_1,f_2$ on $\Pi$. The angle between $f'_1$ and $f'_2$ is called the \textbf{twist angle} between the joint axes.
+\end{definition}
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/twist_angle.pdf}
+\end{center}
+In our representation of robotics arm, given two consecutive joints $i$ and $i+1$, and given the axis of that joints, we consider the common normal, and denote $\alpha_i$ the twisted angle between the axis, and $a_i$ the \textit{displacement}, the length of the common normal.\bigskip 
+
+Now we have to describe how to assign a frame to each joints of a robotic arm. We recall that\begin{itemize}
+    \item Given a joint axis $i$, if the joint is revolut, the rigid body associated can rotate around the axis. 
+    \item Given a joint axis $i$, if the joint is prismatic, the rigid body associated can translate along the axis. 
+\end{itemize}
+We describe two consecutive joints ($i-1$ and $i$), we consider the axis of these joints. The frame $O_{i-1}$ of the joint $i-1$ will have the $z$ axes (denoted $z_{i-1}$) aligned with the joint axis, and we consider the common normal between the two joints axes, denoting with $a_i$ the length.
+\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/DH_frames.eps}
+\end{center}
+We denote $d_i$ the distance between $O_{i-1}$ and the point that is the intersection between the axis $i-1$ and the common normal. $\alpha_i$ is the twisted angle between the two axes $i-1$ and $i$.\bigskip 
+
+$\theta_i$ is the axis between the common normal $a_{i-1}$ and $a_i$. If the joint $i-1$ is prismatic, $d_i$ is variable and $\theta_i$ is fixed, if it is revolut, $d_i$ is fixed and $\theta_i$ is variable. $\alpha_i$ and $a_i$ are fixed and depends on the construction of the robotic arm. \bigskip 
+
+The homogeneous transformation from $O_{i-1}$ to $O_i$ is given by\begin{enumerate}
+    \item a translation of $d_i$ along $z_{i-1}$
+    \item a rotation of $\theta_i$ radiants around $z_{i-1}$. Once these rotation is performed, $x_{i-1}$ and $x_i$ will be parallel. 
+    \item a translation of $a_i$ along $x_i$ 
+    \item a rotation of $\alpha_i$ radiants around $x_{i}$.
+\end{enumerate}
+The first rotation around $z_{i-1}$ is given by\begin{equation}
+    \begin{pmatrix}
+        \cos\theta_i&-\sin\theta_i&0&0\\ 
+        \sin\theta_i&\cos\theta_i&0&0\\ 
+        0&0&1&0\\ 
+        0&0&0&1
+    \end{pmatrix}
+\end{equation}
+the translation along $z_{i-1}$ is given by \begin{equation}
+    \begin{pmatrix}
+        1&0&0&0\\ 
+        0&1&0&0\\ 
+        0&0&1&d_i\\ 
+        0&0&0&1
+    \end{pmatrix}
+\end{equation}
+the roto-translation around and along $x_i$ is given by\begin{equation}
+    \begin{pmatrix}
+       1&0&0&a_i\\ 
+       0&\cos\alpha_i&-\sin\alpha_i&0\\ 
+        0&\sin\alpha_i&\cos\alpha_i&0\\ 
+        0&0&0&1
+    \end{pmatrix}
+\end{equation}
+the final homogeneous transformation to describe the pose of $O_{i}$ respects to $O_{i-1}$ is\begin{equation}
+    {}^{i-1}A_i(q_i)=\begin{pmatrix}
+        \cos\theta_i&-\sin\theta_i&0&0\\ 
+        \sin\theta_i&\cos\theta_i&0&0\\ 
+        0&0&1&0\\ 
+        0&0&0&1
+    \end{pmatrix}\begin{pmatrix}
+        1&0&0&0\\ 
+        0&1&0&0\\ 
+        0&0&1&d_i\\ 
+        0&0&0&1
+    \end{pmatrix} \begin{pmatrix}
+       1&0&0&a_i\\ 
+       0&\cos\alpha_i&-\sin\alpha_i&0\\ 
+        0&\sin\alpha_i&\cos\alpha_i&0\\ 
+        0&0&0&1
+    \end{pmatrix}=\end{equation}  \begin{equation}
+    \begin{pmatrix}
+        \cos\theta_i&-\cos\alpha_i\sin\theta_i&\sin\alpha_i\cos\theta_i&a_i\cos\theta_i\\ 
+        \sin\theta_i&\cos\alpha_i\cos\theta_i&-\sin\alpha_i\cos\theta_i&a_i\sin\theta_i\\ 
+        0&\sin\alpha_i&\cos\alpha_i&d_i\\ 
+        0&0&0&1
+    \end{pmatrix}
+\end{equation} 
+if the joint is revolut, $q_i=\theta_i$, if it is prismatic, then $q_i=d_i$. This matrix is called the \textbf{DH matrix}. When we consider a full robotic arm, the first frame $O_0$ is placed arbitrary, with the only condition to align the $z_0$ axis with the first joint axis. To describe the pose of the last $n$-th joint frame $O_n$ respect to the first joint frame $O_0$, we perform a product of DH matrices\begin{equation}
+    {}^0A_n={}^0A_1(q_1){}^1A_2(q_2)\dots {}^{n-1}A_n(q_n)
+\end{equation}
+Usually, if the word frame $RF_w$ is not in the same pose of the first joint frame, we have a constant transformation ${}^wT_0$. The transformation from the $n$-th joint frame $O_n$ and the end effector frame $RF_E$ is constant (we will discuss about this transformation later). In general, the final direct kinematics  transformation   is\begin{equation}
+    {}^wT_E(\mathbf q)={}^wT_0{}^0A_1(q_1){}^1A_2(q_2)\dots {}^{n-1}A_n(q_n){}^nT_E.
+\end{equation}
 \end{document}
