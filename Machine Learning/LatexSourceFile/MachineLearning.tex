@@ -1837,6 +1837,63 @@ $M$ is an hyper parameter of the machine learning problem.
 \begin{center}
     \includegraphics[width=0.5\textwidth]{images/lin_reg2.png}
 \end{center} 
+Let's now consider a noisy dataset\begin{align}
+    &D=\{(\mathbf x_n,t_n)_{n=1}^N\}\\ 
+    &f \text{ is the real target function }\\ 
+    &t_n=f(\mathbf x_n)+\epsilon\\ 
+    &\epsilon\in \R, \ \ \epsilon\sim 0
+\end{align}
+We assume that the noise on the samples have a Gaussian distribution\begin{equation}
+    \Prob(\epsilon \text{ noise on sample }t_n)=\mathcal N(\epsilon,0,\beta^{-1})
+\end{equation}
+where $\beta^{-1}$ is the variance, we call $\beta$ the \textit{information coefficient}. Given such assumption:\begin{equation}
+    \Prob(t_n|\mathbf x_n,\beta)=\mathcal N(t_n,f(\mathbf x_n),\beta^{-1})=\text{ probability that }t_n\text{ is the real value of }f(\mathbf x_n)
+\end{equation}
+Given a trained model $y$ with parameters $\mathbf w$, under this assumption we have\begin{equation}
+    \Prob(t|\mathbf x,\mathbf w,\beta) 
+\end{equation}
+the probability that $t$ is the real outcome of $f(\mathbf x)$ given the model $\mathbf w$ and the information coefficient $\beta$, assuming that the samples are independent from each other, we have the maximum likelihood function:\begin{equation}
+     \Prob(\{t_1\dots t_N\}|\{\mathbf x_1\dots\mathbf x_N\},\mathbf w,\beta) = 
+     \prod_{n=1}^{N} \Prob(t_n|\mathbf x_n,\mathbf w,\beta) 
+\end{equation}
+given the assumptions:\begin{equation}
+    \Prob(t_n|\mathbf x_n,\mathbf w,\beta) =\mathcal{N}(t_n|\mathbf w^T,\boldsymbol{\phi}(\mathbf x_n),\beta^{-1})
+\end{equation}
+we consider the log likelihood function:$$
+ \ln \Prob(\{t_1\dots t_N\}|\{\mathbf x_1\dots\mathbf x_N\},\mathbf w,\beta) = 
+     \sum_{n=1}^{N} \ln\Prob(t_n|\mathbf x_n,\mathbf w,\beta) $$
+    Without entering in the details of the proof, it is shown that the log likelihood is proportional to the least squared error:\begin{equation}
+        \ln \Prob(\{t_1\dots t_N\}|\{\mathbf x_1\dots\mathbf x_N\},\mathbf w,\beta)\simeq 
+        \frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2
+    \end{equation}
+    We can solve analytically the following problem:\begin{equation}
+        \mathbf w^*=\arg\min_{\mathbf w}\frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2
+    \end{equation}
+    If we consider the vector of labels $\mathbf t$ and the matrix\begin{equation}
+        \Phi=\begin{pmatrix}
+           \phi_0(\mathbf x_1)& \phi_1(\mathbf x_1)&\dots& \phi_M(\mathbf x_1)\\ 
+            \phi_0(\mathbf x_1)&\phi_1(\mathbf x_2)&\dots& \phi_M(\mathbf x_2)\\
+            \vdots &\ddots&\vdots
+            \\ 
+           \phi_0(\mathbf x_1)& \phi_1(\mathbf x_N)&\dots& \phi_M(\mathbf x_N)
+        \end{pmatrix}=\begin{pmatrix}
+            \boldsymbol{\phi}(\mathbf x_1)^T\\ 
+             \boldsymbol{\phi}(\mathbf x_2)^T\\
+             \vdots \\ 
+              \boldsymbol{\phi}(\mathbf x_N)^T
+        \end{pmatrix}
+    \end{equation}
+the least squared error can be rewritten in matrix form:\begin{equation}
+    \frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2=\frac{1}{2}(\mathbf t-\Phi\mathbf w)^T(\mathbf t-\Phi\mathbf w)
+\end{equation}
+the optimal value for $\mathbf w$ is\begin{equation}
+    \mathbf w_{ML}=(\Phi^T\Phi)^{-1}\Phi^T\mathbf t=\Phi^{\dag}\mathbf t
+\end{equation}
+computing $\Phi^{\dag}\mathbf t$ is computationally expensive, we may consider a sequential algorithm, like the stochastic gradient descent.
+$$\hat{\mathbf w}\leftarrow \hat{\mathbf w}-\eta\nabla E_S$$
+with $\eta$ a learning parameter, $S\subset D$ and $E_S$ the least squared error evaluated on the samples in $S$.
+\subsection{Regularization}
+\redText{TODO}
 \end{document}
 
 

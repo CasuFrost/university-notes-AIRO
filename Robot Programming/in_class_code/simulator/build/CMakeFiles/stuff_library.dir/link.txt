@@ -1,0 +1,2 @@
+/usr/bin/ar qc libstuff_library.a CMakeFiles/stuff_library.dir/linalg.cpp.o CMakeFiles/stuff_library.dir/grid.cpp.o CMakeFiles/stuff_library.dir/world_item.cpp.o
+/usr/bin/ranlib libstuff_library.a
