@@ -111,11 +111,41 @@ CMakeFiles/stuff_library.dir/world_item.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/stuff_library.dir/world_item.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/world_item.cpp" -o CMakeFiles/stuff_library.dir/world_item.cpp.s
 
+CMakeFiles/stuff_library.dir/laser_scanner.cpp.o: CMakeFiles/stuff_library.dir/flags.make
+CMakeFiles/stuff_library.dir/laser_scanner.cpp.o: ../laser_scanner.cpp
+CMakeFiles/stuff_library.dir/laser_scanner.cpp.o: CMakeFiles/stuff_library.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/stuff_library.dir/laser_scanner.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/stuff_library.dir/laser_scanner.cpp.o -MF CMakeFiles/stuff_library.dir/laser_scanner.cpp.o.d -o CMakeFiles/stuff_library.dir/laser_scanner.cpp.o -c "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/laser_scanner.cpp"
+
+CMakeFiles/stuff_library.dir/laser_scanner.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/stuff_library.dir/laser_scanner.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/laser_scanner.cpp" > CMakeFiles/stuff_library.dir/laser_scanner.cpp.i
+
+CMakeFiles/stuff_library.dir/laser_scanner.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/stuff_library.dir/laser_scanner.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/laser_scanner.cpp" -o CMakeFiles/stuff_library.dir/laser_scanner.cpp.s
+
+CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o: CMakeFiles/stuff_library.dir/flags.make
+CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o: ../unicycle_robot.cpp
+CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o: CMakeFiles/stuff_library.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o -MF CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o.d -o CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o -c "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/unicycle_robot.cpp"
+
+CMakeFiles/stuff_library.dir/unicycle_robot.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/stuff_library.dir/unicycle_robot.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/unicycle_robot.cpp" > CMakeFiles/stuff_library.dir/unicycle_robot.cpp.i
+
+CMakeFiles/stuff_library.dir/unicycle_robot.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/stuff_library.dir/unicycle_robot.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/unicycle_robot.cpp" -o CMakeFiles/stuff_library.dir/unicycle_robot.cpp.s
+
 # Object files for target stuff_library
 stuff_library_OBJECTS = \
 "CMakeFiles/stuff_library.dir/linalg.cpp.o" \
 "CMakeFiles/stuff_library.dir/grid.cpp.o" \
-"CMakeFiles/stuff_library.dir/world_item.cpp.o"
+"CMakeFiles/stuff_library.dir/world_item.cpp.o" \
+"CMakeFiles/stuff_library.dir/laser_scanner.cpp.o" \
+"CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o"
 
 # External object files for target stuff_library
 stuff_library_EXTERNAL_OBJECTS =
@@ -123,9 +153,11 @@ stuff_library_EXTERNAL_OBJECTS =
 libstuff_library.a: CMakeFiles/stuff_library.dir/linalg.cpp.o
 libstuff_library.a: CMakeFiles/stuff_library.dir/grid.cpp.o
 libstuff_library.a: CMakeFiles/stuff_library.dir/world_item.cpp.o
+libstuff_library.a: CMakeFiles/stuff_library.dir/laser_scanner.cpp.o
+libstuff_library.a: CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o
 libstuff_library.a: CMakeFiles/stuff_library.dir/build.make
 libstuff_library.a: CMakeFiles/stuff_library.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libstuff_library.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/mnt/c/Users/mcasu/OneDrive/Desktop/university-notes-AIRO/Robot Programming/in_class_code/simulator/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX static library libstuff_library.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/stuff_library.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/stuff_library.dir/link.txt --verbose=$(VERBOSE)
 

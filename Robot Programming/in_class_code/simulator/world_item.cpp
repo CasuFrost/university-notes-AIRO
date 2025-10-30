@@ -21,19 +21,22 @@ WorldItemPtrVector::~WorldItemPtrVector()
     delete[] _items;
 }
 
-WorldItem::WorldItem(WorldItem *parent, const Isometry2f pose_in_parent) : _parent(parent),
-                                                                           _pose_in_parent(pose_in_parent),
-                                                                           _mapping(parent->_mapping)
+WorldItem::WorldItem(GridMapping &mapping_) : _parent(0),
+                                              _mapping(mapping_)
+{
+  _pose_in_parent.setIdentity();
+}
+
+WorldItem *WorldItem::isColliding() { return 0; }
+
+WorldItem::WorldItem(WorldItem &parent,
+                     const Isometry2f &pose_in_parent) : _parent(&parent),
+                                                         _pose_in_parent(pose_in_parent),
+                                                         _mapping(_parent->_mapping)
 {
   if (!_parent)
     return;
   _parent->_children.pushBack(this);
-}
-
-WorldItem::WorldItem(GridMapping &maping_) : _parent(0),
-                                             _mapping(mapping_)
-{
-  _pose_in_parent.setIdentity();
 }
 
 void WorldItem::timerTick(float dt)

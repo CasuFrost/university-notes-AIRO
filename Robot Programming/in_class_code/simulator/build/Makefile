@@ -155,6 +155,32 @@ grid_main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_main.dir/build.make CMakeFiles/grid_main.dir/build
 .PHONY : grid_main/fast
 
+#=============================================================================
+# Target rules for targets named laser_scanner_main
+
+# Build rule for target.
+laser_scanner_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 laser_scanner_main
+.PHONY : laser_scanner_main
+
+# fast build rule for target.
+laser_scanner_main/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/laser_scanner_main.dir/build.make CMakeFiles/laser_scanner_main.dir/build
+.PHONY : laser_scanner_main/fast
+
+#=============================================================================
+# Target rules for targets named unicycle_main
+
+# Build rule for target.
+unicycle_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unicycle_main
+.PHONY : unicycle_main
+
+# fast build rule for target.
+unicycle_main/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/build
+.PHONY : unicycle_main/fast
+
 grid.o: grid.cpp.o
 .PHONY : grid.o
 
@@ -202,6 +228,54 @@ grid_main.s: grid_main.cpp.s
 grid_main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/grid_main.dir/build.make CMakeFiles/grid_main.dir/grid_main.cpp.s
 .PHONY : grid_main.cpp.s
+
+laser_scanner.o: laser_scanner.cpp.o
+.PHONY : laser_scanner.o
+
+# target to build an object file
+laser_scanner.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/laser_scanner.cpp.o
+.PHONY : laser_scanner.cpp.o
+
+laser_scanner.i: laser_scanner.cpp.i
+.PHONY : laser_scanner.i
+
+# target to preprocess a source file
+laser_scanner.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/laser_scanner.cpp.i
+.PHONY : laser_scanner.cpp.i
+
+laser_scanner.s: laser_scanner.cpp.s
+.PHONY : laser_scanner.s
+
+# target to generate assembly for a file
+laser_scanner.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/laser_scanner.cpp.s
+.PHONY : laser_scanner.cpp.s
+
+laser_scanner_main.o: laser_scanner_main.cpp.o
+.PHONY : laser_scanner_main.o
+
+# target to build an object file
+laser_scanner_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/laser_scanner_main.dir/build.make CMakeFiles/laser_scanner_main.dir/laser_scanner_main.cpp.o
+.PHONY : laser_scanner_main.cpp.o
+
+laser_scanner_main.i: laser_scanner_main.cpp.i
+.PHONY : laser_scanner_main.i
+
+# target to preprocess a source file
+laser_scanner_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/laser_scanner_main.dir/build.make CMakeFiles/laser_scanner_main.dir/laser_scanner_main.cpp.i
+.PHONY : laser_scanner_main.cpp.i
+
+laser_scanner_main.s: laser_scanner_main.cpp.s
+.PHONY : laser_scanner_main.s
+
+# target to generate assembly for a file
+laser_scanner_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/laser_scanner_main.dir/build.make CMakeFiles/laser_scanner_main.dir/laser_scanner_main.cpp.s
+.PHONY : laser_scanner_main.cpp.s
 
 linalg.o: linalg.cpp.o
 .PHONY : linalg.o
@@ -251,6 +325,54 @@ linalg_main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/linalg_main.dir/build.make CMakeFiles/linalg_main.dir/linalg_main.cpp.s
 .PHONY : linalg_main.cpp.s
 
+unicycle_main.o: unicycle_main.cpp.o
+.PHONY : unicycle_main.o
+
+# target to build an object file
+unicycle_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/unicycle_main.cpp.o
+.PHONY : unicycle_main.cpp.o
+
+unicycle_main.i: unicycle_main.cpp.i
+.PHONY : unicycle_main.i
+
+# target to preprocess a source file
+unicycle_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/unicycle_main.cpp.i
+.PHONY : unicycle_main.cpp.i
+
+unicycle_main.s: unicycle_main.cpp.s
+.PHONY : unicycle_main.s
+
+# target to generate assembly for a file
+unicycle_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/unicycle_main.cpp.s
+.PHONY : unicycle_main.cpp.s
+
+unicycle_robot.o: unicycle_robot.cpp.o
+.PHONY : unicycle_robot.o
+
+# target to build an object file
+unicycle_robot.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/unicycle_robot.cpp.o
+.PHONY : unicycle_robot.cpp.o
+
+unicycle_robot.i: unicycle_robot.cpp.i
+.PHONY : unicycle_robot.i
+
+# target to preprocess a source file
+unicycle_robot.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/unicycle_robot.cpp.i
+.PHONY : unicycle_robot.cpp.i
+
+unicycle_robot.s: unicycle_robot.cpp.s
+.PHONY : unicycle_robot.s
+
+# target to generate assembly for a file
+unicycle_robot.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/stuff_library.dir/build.make CMakeFiles/stuff_library.dir/unicycle_robot.cpp.s
+.PHONY : unicycle_robot.cpp.s
+
 world_item.o: world_item.cpp.o
 .PHONY : world_item.o
 
@@ -284,20 +406,34 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... grid_main"
+	@echo "... laser_scanner_main"
 	@echo "... linalg_main"
 	@echo "... stuff_library"
+	@echo "... unicycle_main"
 	@echo "... grid.o"
 	@echo "... grid.i"
 	@echo "... grid.s"
 	@echo "... grid_main.o"
 	@echo "... grid_main.i"
 	@echo "... grid_main.s"
+	@echo "... laser_scanner.o"
+	@echo "... laser_scanner.i"
+	@echo "... laser_scanner.s"
+	@echo "... laser_scanner_main.o"
+	@echo "... laser_scanner_main.i"
+	@echo "... laser_scanner_main.s"
 	@echo "... linalg.o"
 	@echo "... linalg.i"
 	@echo "... linalg.s"
 	@echo "... linalg_main.o"
 	@echo "... linalg_main.i"
 	@echo "... linalg_main.s"
+	@echo "... unicycle_main.o"
+	@echo "... unicycle_main.i"
+	@echo "... unicycle_main.s"
+	@echo "... unicycle_robot.o"
+	@echo "... unicycle_robot.i"
+	@echo "... unicycle_robot.s"
 	@echo "... world_item.o"
 	@echo "... world_item.i"
 	@echo "... world_item.s"

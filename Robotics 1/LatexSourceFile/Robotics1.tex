@@ -1813,15 +1813,15 @@ For more general case, we need a systematic method that assigns frames to each j
         &f_1(t)=\mathbf p_1+\mathbf v_1t\\ 
         &f_2(t)=\mathbf p_2+\mathbf v_2t
     \end{align}
-    the \textbf{common normal} is the segment passing trough $f_1$ and $f_2$ that is orthogonal to both axes. Is the shortest segment that connect the two axis. 
+    the \textbf{common normal} is the segment passing trough $f_1$ and $f_2$ that is orthogonal to both axes. Is the shortest segment that connects the two axis. 
 \end{definition}
 \begin{definition}
-    Given two axes $f_1,f_2$ and the common normal $AB$, let $\Pi$ to be the plane orthogonal to $AB$, and let $f'_1$ and $f'_2$ to be the projection of $f_1,f_2$ on $\Pi$. The angle between $f'_1$ and $f'_2$ is called the \textbf{twist angle} between the joint axes.
+    Given two axes $f_1,f_2$ and the common normal $AB$, let $\Pi$ to be the plane orthogonal to $AB$, and let $f'_1$ and $f'_2$ to be the projection of $f_1,f_2$ on $\Pi$. The angle between $f'_1$ and $f'_2$ is called the \textbf{twist angle} between the axes.
 \end{definition}
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/twist_angle.pdf}
 \end{center}
-In our representation of robotics arm, given two consecutive joints $i$ and $i+1$, and given the axis of that joints, we consider the common normal, and denote $\alpha_i$ the twisted angle between the axis, and $a_i$ the \textit{displacement}, the length of the common normal.\bigskip 
+In our representation of a robotics arm, given two consecutive joints $i$ and $i+1$, and given the axis of these joints, we consider the common normal, and denote $\alpha_i$ the twisted angle between the axis, and $a_i$ the \textit{displacement}, the length of the common normal.\bigskip 
 
 Now we have to describe how to assign a frame to each joints of a robotic arm. We recall that\begin{itemize}
     \item Given a joint axis $i$, if the joint is revolut, the rigid body associated can rotate around the axis. 
@@ -1831,11 +1831,11 @@ We describe two consecutive joints ($i-1$ and $i$), we consider the axis of thes
 \begin{center}
     \includegraphics[width=0.8\textwidth ]{images/DH_frames.eps}
 \end{center}
-We denote $d_i$ the distance between $O_{i-1}$ and the point that is the intersection between the axis $i-1$ and the common normal. $\alpha_i$ is the twisted angle between the two axes $i-1$ and $i$.\bigskip 
+We denote $d_i$ the distance between $O_{i-1}$ and the point that is the intersection between the axis $i-1$ and the common normal. $\alpha_i$ is the twisted angle between the two axes $i-1$ and $i$. The $x_i$ axis of the frame $O_i$ is aligned with the common normal.\bigskip 
 
 $\theta_i$ is the axis between the common normal $a_{i-1}$ and $a_i$. If the joint $i-1$ is prismatic, $d_i$ is variable and $\theta_i$ is fixed, if it is revolut, $d_i$ is fixed and $\theta_i$ is variable. $\alpha_i$ and $a_i$ are fixed and depends on the construction of the robotic arm. \bigskip 
 
-The homogeneous transformation from $O_{i-1}$ to $O_i$ is given by\begin{enumerate}
+\noindent The homogeneous transformation from $O_{i-1}$ to $O_i$ is given by\begin{enumerate}
     \item a translation of $d_i$ along $z_{i-1}$
     \item a rotation of $\theta_i$ radiants around $z_{i-1}$. Once these rotation is performed, $x_{i-1}$ and $x_i$ will be parallel. 
     \item a translation of $a_i$ along $x_i$ 

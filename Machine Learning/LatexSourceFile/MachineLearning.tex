@@ -1866,7 +1866,7 @@ we consider the log likelihood function:$$
         \ln \Prob(\{t_1\dots t_N\}|\{\mathbf x_1\dots\mathbf x_N\},\mathbf w,\beta)\simeq 
         \frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2
     \end{equation}
-    We can solve analytically the following problem:\begin{equation}
+    We can solve analytically the following problem:\begin{equation}\label{lin_reg}
         \mathbf w^*=\arg\min_{\mathbf w}\frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2
     \end{equation}
     If we consider the vector of labels $\mathbf t$ and the matrix\begin{equation}
@@ -1893,7 +1893,64 @@ computing $\Phi^{\dag}\mathbf t$ is computationally expensive, we may consider a
 $$\hat{\mathbf w}\leftarrow \hat{\mathbf w}-\eta\nabla E_S$$
 with $\eta$ a learning parameter, $S\subset D$ and $E_S$ the least squared error evaluated on the samples in $S$.
 \subsection{Regularization}
-\redText{TODO}
+The \textit{regularization} of a model is a technique applied to find a solution $\mathbf w$ with a smaller norm $\|\mathbf w\|$ respect the one found by considering a standard  linear regression algorithm. A common choice is the following: We consider a regularization parameter
+$$ \lambda \in \R$$
+We have $E_D(\mathbf w)$ as the least squared error on the dataset $D$, we define a new error function\begin{equation}
+    E_W(\mathbf w)=\frac{1}{2}\mathbf w^T\mathbf w
+\end{equation}
+Instead of solving the problem in equation \eqref{lin_reg}, we solve\begin{align}
+    &\arg\min_{\mathbf w} \left(E_D(\mathbf w)+\lambda E_W(\mathbf w)\right)=\\ 
+    &\arg\min_{\mathbf w}\left( \frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2 + \frac{\lambda}{2}\mathbf w^T\mathbf w\right)
+\end{align}
+
+The graph in figure \ref{fig:lin_reg_noreg} show (in red) the solution of a linear regression with a 9 degree polynomial without regularization.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth]{images/lin_reg_noreg.png}
+    \caption{in green, the true function, in red, the learned function.}
+    \label{fig:lin_reg_noreg}
+\end{figure}
+
+The graph in figure \ref{fig:lin_reg_reg} show the solutions of a linear regression with a 9 degree polynomial with regularization and different choices for $\lambda$.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/lin_reg_reg.png}
+    \caption{in green, the true function, in red, the learned function.}
+    \label{fig:lin_reg_reg}
+\end{figure}
+A wrong choice for $\lambda$ may result in underfitting or overfitting model.\bigskip 
+In case of multiple classes (let's say $K$), instead of a single vector of $d+1$ parameters $\mathbf w$, we have $K$ vectors, the parameters are contained in a $d+1\times K $ matrix\begin{equation}
+    W=\begin{pmatrix}
+        w_{1,0}&w_{1,1}&\dots & w_{1,d}\\ 
+        \vdots&\vdots&\ddots & \vdots\\ 
+        w_{K,0}&w_{K,1}&\dots & w_{K,d}
+    \end{pmatrix}
+\end{equation}
+the model $y$ is the following:\begin{equation}
+    y(\mathbf x,W)=W^T\boldsymbol{\phi}(\mathbf x)
+\end{equation}
+Instead of a label vector $\mathbf t$ in the dataset, we have a matrix $T$, the maximum likelihood solution (similarly as before) is the following matrix:\begin{equation}
+    W_{ML}=(\Phi^T\Phi)^{-1}\Phi^TT=\Phi^{\dag}T.
+\end{equation}
+\section{Kernel Methods}
+We have seen that, in linear regression, we have the following error function\begin{equation}
+    E(\mathbf w)=\frac{1}{2}\sum_{n=1}^N(t_n-\mathbf w^T\boldsymbol{\phi}(\mathbf x_n))^2 + \frac{\lambda}{2}\mathbf w^T\mathbf w
+\end{equation}
+written also as:\begin{equation}
+    E(\mathbf w)=(\mathbf t-X\mathbf w)^T(\mathbf t-X\mathbf w)+\lambda \|\mathbf w \|
+\end{equation}
+the optimal solution is given by $\mathbf w^*$ such that\begin{equation}
+    \nabla E(\mathbf w^*)=0 
+\end{equation}
+we saw that this problem can be solved analytically\begin{align}
+    &\nabla E(\mathbf w)=
+    \sum_{n=1}^N(\mathbf w^T\mathbf x_n-t_n)\mathbf x_n+\lambda\mathbf w
+    =0\implies \\ 
+    &\mathbf w=-\frac{1}{\lambda}\sum
+\end{align}
+
 \end{document}
 
 
