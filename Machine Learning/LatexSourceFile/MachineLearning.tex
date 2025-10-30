@@ -133,7 +133,7 @@ The iterative method given in the Algorithm \ref{alg:LMS} is an informal example
 \end{algorithm}
 In this case $c$ is a small constant, usually in $(0,1]$, to moderate the rate of learning.\bigskip
 
-The function $error(b)$ is computable only on the sample $b$ given in the dataset $B$, the goal of the method is to converge to a local minimum for the function  \begin{equation}
+The function $error(b)$ is computable only on the sample $b$ given in the dataset $D$, the goal of the method is to converge to a local minimum for the function  \begin{equation}
     \sum_{b_i\in D}error(b_i).
 \end{equation}
 Once we synthesize $\hat V$ with this method, we can make the model play against human and track the result to use it as an additional dataset. The diagram in image \ref{img:DesignChoice} represents the process of designing an artificial intelligence agent.
