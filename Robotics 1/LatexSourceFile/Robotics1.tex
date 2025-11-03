@@ -1895,4 +1895,13 @@ if the joint is revolut, $q_i=\theta_i$, if it is prismatic, then $q_i=d_i$. Thi
 Usually, if the word frame $RF_w$ is not in the same pose of the first joint frame, we have a constant transformation ${}^wT_0$. The transformation from the $n$-th joint frame $O_n$ and the end effector frame $RF_E$ is constant (we will discuss about this transformation later). In general, the final direct kinematics  transformation   is\begin{equation}
     {}^wT_E(\mathbf q)={}^wT_0{}^0A_1(q_1){}^1A_2(q_2)\dots {}^{n-1}A_n(q_n){}^nT_E.
 \end{equation}
+There are som caveats in the assignments of the DH frames:\begin{itemize}
+    \item the frame 0 origin and $x_0$ axis are arbitrary, $z_0$ must be on the first joint axis. 
+    \item the origin of frame $n$ should be chosen conveniently (to zero out displacements), $x_{n}$ must intersect and be chosen orthogonal to $z_{n-1}$.
+    \item the direction of $z_{i-1}$ is arbitrary, is better to avoid to flip over consecutive  $z$ axes.
+    \item if $z_{i-1}$ and $z_i$ are parallel, there are infinitely many common normal. We should try to zero out parameters.
+    \item if $z_{i-1}$ and $z_i$ are coincident, $x_i$ axis can be chosen at will.
+\end{itemize}\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/parallel_axis.eps}
+\end{center}
 \end{document}

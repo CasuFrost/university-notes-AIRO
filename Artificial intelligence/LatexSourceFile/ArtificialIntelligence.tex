@@ -907,7 +907,7 @@ The following algorithm is simple and used to find a solution for a constraint n
     \If{$a$ is inconsistent} \State\Return inconsistent\EndIf
     \If{$a$ is a total assignment} \State\Return $a$\EndIf
     \State let $V'$ to be the domain of $a$
-    \State select color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
+    \State select \color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
     \For{ each $d\in D_v$ in \color{blue} some order \color{black}}
     \State $a'=a\cup \{v=d\}$
     \State $a''=$NaiveBacktracking($\gamma$,$a'$)
@@ -947,6 +947,86 @@ For the order of the value in the for loop, we can choose the least constraining
     \{d' \ : \ d'\in D_u\land a(u)\text{ is undefined }\land C_{uv}\in C\land (d',d)\notin C_{uv}\}
 \end{equation}
 by choosing a least constraining value first, we increase the chances
-to not rule out the solutions below the current node.
+to not rule out the solutions below the current node. 
+\section{Inference}
+Given a constraint networks, we would like to obtain an equivalent network with more constraint, without losing any feasible solution, in such case, we are giving a tighter description of the problem, and we obtain a network with a smaller number of
+consistent partial assignments. Already known constraints may implies additional (unary or binary) constraints.\begin{definition}
+    Let $\gamma=(V,D,C)$ and $\gamma'=(V,D',C')$ to be two constraint networks, sharing the same set of variables. We say that $\gamma$ are \textbf{equivalent} to $\gamma'$, and we denote $$ \gamma\equiv\gamma' $$
+    if every solution (assignment of variables) of $\gamma$ is a solution of $\gamma'$ and vice versa.
+\end{definition}
+\begin{definition}
+    Let $\gamma=(V,D,C)$ and $\gamma'=(V,D',C')$ to be two constraint networks, sharing the same set of variables. We say that $\gamma'$ is \textbf{tighter} than $\gamma$ and we denote $$ \gamma'\sqsubseteq \gamma $$
+    if
+\begin{itemize}
+    \item $\forall v\in V, \ \ D'_v\subseteq D_v$
+    \item $\forall u,v \text{ such that }u\ne v$ either $C_{uv}\notin C$ or $C'_{uv}\subseteq C_{uv}$.
+\end{itemize}\end{definition}
+If at least one of these inclusions is strict, we say that  $\gamma'$ is \textbf{strictly tighter} than $\gamma$: $$ \gamma'\sqsubset \gamma. $$\begin{theorem}
+    Let $\gamma$ and $\gamma'$ to be two constraint networks, if\begin{itemize}
+        \item $\gamma'\equiv\gamma$
+        \item $\gamma'\sqsubset\gamma$
+    \end{itemize}
+    then $\gamma'$ has the same solutions as $\gamma$ but fewer consistent partial
+assignments than $\gamma$. In such case, $\gamma'$ is a \textbf{better encoding} of the problem.
+\end{theorem}
+We define \textit{inference} the procedure to derive a tighter equivalent network. We want to use it to define an algorithm that finds a solution for a constraint network. We will incorporate inference in the  backtracking algorithm, at every recursive call, a complex inference procedure leads to\begin{itemize}
+    \item a smaller  number of search nodes 
+    \item larger runtime needed at each node
+\end{itemize} 
+We encode partial assignments as unary constraints\begin{itemize}
+    \item if $a(v)=d$
+    \item we set the constraint $D_v=\{d\}$
+\end{itemize}
 
+\begin{algorithm}
+    \caption{BacktrackingWithInference}\label{alg:BacktrackingWithInference}
+    \begin{algorithmic}
+    \Require $\gamma=(V,D,C),a$
+    \If{$a$ is inconsistent} \State\Return inconsistent\EndIf
+    \If{$a$ is a total assignment} \State\Return $a$\EndIf
+    \State $\gamma'=$ copy of $\gamma$
+    \State \color{orange}$\gamma'=$ Inference$(\gamma')$\color{black}
+    \State\textbf{If} $\exists v \ : \ D'_v=\emptyset$ \textbf{ then return } inconsistent
+    \State let $V'$ to be the domain of $a$
+    \State select \color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
+    \For{ each $d\in D'_v$ in \color{blue} some order \color{black}}
+    \State $a'=a\cup \{v=d\}$
+    \State $D'_v=\{d\}$
+    \State $a''=$NaiveBacktracking($\gamma'$,$a'$)
+    \If{$a''$ is not inconsistent} \State\Return $a''$\EndIf
+    \EndFor
+    \State\Return inconsistent
+    \end{algorithmic}
+\end{algorithm}
+With the function \color{orange}Inference \color{black} we denote any procedure deriving a tighter equivalent network. One simple inference procedure called \textit{forward checking} is described in algorithm \ref{alg:FWCH}.\bigskip 
+
+\begin{algorithm}
+    \caption{Forward Checking}\label{alg:FWCH}
+    \begin{algorithmic}
+    \Require $\gamma,a$
+    \For{ each $v$ where $a(v)=d'$ is defined }
+    \For{ each $u$ where $a(u)$ is undefined and $C_{uv}\in C$}
+    \State $D_u=\{d \ | \ d\in D_u, (d,d')\in C_{uv}\}$
+    \EndFor 
+    \EndFor 
+     \State\Return $\gamma$
+    \end{algorithmic}
+\end{algorithm}
+
+The forward checking algorithm tightens the constraints without ruling out any solutions, it guarantees to deliver an equivalent network. The computation can be done incrementally, instead of performing the first loop, we may run only the second loop every time a new assignment $a(v)=d'$ is added.\begin{itemize}
+    \item The forward checking procedure is cheap and useful 
+    \item In rare situations is not a good idea to use it, there are stronger inference methods, but in many cases, forward checking is the best choice.
+\end{itemize}
+
+\subsection{Arc Consistency for Stronger Inference}
+We now describe a properties between two variables that can be used to describe a stronger inference method than the forward checking.\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network, a variable $u\in V$ is \textbf{arc consistent} to another variable $v\in V$ if \begin{itemize}
+            \item either $C_{uv}\notin  C$ 
+            \item or for every $d\in D_u$ there exists $d'\in D_v$ such that $(d,d')\in C_{uv}$.
+    \end{itemize}
+\end{definition}
+When two variables in a constraint network are arc consistent, it means that the domain  of each variable contains at least one value that is compatible with at least one value in the domain of the other variable, according to the constraint between them.
+\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network, if every variable $u\in V$ is arc consistent relative to every other variable $v\in V$, then we say that the network $\gamma$ is \textbf{arc consistent}.
+\end{definition}
 \end{document}
