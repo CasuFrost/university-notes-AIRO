@@ -1026,7 +1026,91 @@ We now describe a properties between two variables that can be used to describe 
     \end{itemize}
 \end{definition}
 When two variables in a constraint network are arc consistent, it means that the domain  of each variable contains at least one value that is compatible with at least one value in the domain of the other variable, according to the constraint between them.
+
+As an example, let's say the variable $v$ describes the color of your shirt, that can be red, blue, yellow or green, and the variable $u$ define the color of your pants, that can be black, white, gray or brown. The constraint is that the shirt and the pants cannot be the same color, the variable $v$ is  arc consistent to $u$ because for every shirt color you can find a pant color and vice versa.\begin{quote}
+    \textbf{Note}: Arc consistency is a non commutative relation, if $v$ is  arc consistent to $u$, it's not implied directly that $u$ is  arc consistent to $v$.
+\end{quote}
 \begin{definition}
     Let $\gamma=(V,D,C)$ to be a constraint network, if every variable $u\in V$ is arc consistent relative to every other variable $v\in V$, then we say that the network $\gamma$ is \textbf{arc consistent}.
 \end{definition}
+We can define an inference procedure that aims to make the network $\gamma$ arc consistent, by removing variable domain values. Let's say that AC($\gamma$) is a procedure that makes $\gamma$ arc consistent, in such case:\begin{itemize}
+    \item is guaranteed that AC($\gamma$) returns an equivalent network.
+    \item AC($\gamma$) is more powerful (more general) tha forward checking, in details:\begin{equation}
+        \text{AC}(\gamma)\sqsubseteq \text{ForwardChecking}(\gamma)
+    \end{equation}
+\end{itemize}
+We define the following subroutine:
+
+\begin{algorithm}
+    \caption{Revise}\label{alg:revise}
+    \begin{algorithmic}
+    \Require $\gamma,u\in V,v\in V$
+    \For{ each $d\in D_u$}
+    \If{$\not\exists d'\in D_v$ such that $(d,d')\in C_{uv}$}
+    \State $D_u=D_u\backslash\{d\}$
+    \EndIf
+    \EndFor 
+     \State\Return $\gamma$
+    \end{algorithmic}
+\end{algorithm}
+
+We apply pairwise Revisions in algorithm \ref{alg:AC1} and define the first version of the inference procedure that makes a constraint network $\gamma$ arc consistent.\bigskip
+
+\begin{algorithm}
+    \caption{AC\_1}\label{alg:AC1}
+    \begin{algorithmic}
+    \Require $\gamma$
+    changes = False
+    \While{changes = False }
+    \For{ each $C_{uv}\in C$}
+    \State\textbf{If } $D_u$ after applying Revise($\gamma,u,v$ reduces) \textbf{ then } changes = True
+    \State\textbf{If } $D_v$ after applying Revise($\gamma,v,u$ reduces) \textbf{ then } changes = True
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+It's not hard to show that this enforce arc consistency. If there are $n$ variables, $m$ constraints and $k$ is the cardinality of the biggest domain, then the time complexity is $O(mk^2\cdot nk)$, this algorithm performs redundant computation since $u$ and $v$ are revised even if their domains
+haven't changed since the last time.\bigskip 
+
+\noindent There is another version of the arc consistency procedure, described in algorithm \ref{alg:AC3}. At any moment during the while loop, if $(u,v)\notin M$ then $u$ is arc consistent to $v$.
+
+\begin{algorithm}
+    \caption{AC\_3}\label{alg:AC3}
+    \begin{algorithmic}
+    \Require $\gamma$
+    \State $M=\emptyset$
+     \For{ each $C_{uv}\in C$}
+     \State $M=M\cup\{(u,v),(v,u)\}$
+     \EndFor
+      \While{$M\ne\emptyset$ }
+      \State remove any element $(u,v)$ from $M$
+      \State Revise($\gamma,u,v$)
+      \If{ $D_u$ has changed in the call Revise}
+      \For{ each $C_{wu}\in C$ where $w\ne v$}
+      \State $M=M\cup\{(w,u)\}$
+       \EndFor
+      \EndIf 
+      \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+In the algorithm, we check the constraints where $w\ne v$ because $v$ is the reason why $D_u$ just changed, if $v$ was arc consistent to $u$ before, that continues to hold, the values just removed from $D_u$ did not match any values from $D_v$ anyway.
+\begin{theorem}
+    Let $\gamma$ to be a constraint network with $m$ constraint and maximal domain size $k$. The algorithm AC3 showed in \ref{alg:AC3} have a time complexity in $O(mk^3)$.
+\end{theorem}
+\textit{Proof}: Each Revise call takes $O(k^2)$, it is sufficient to prove that at most $O(mk)$ calls to revise are made. 
+The number of calls to Revise is the number of iterations of the
+while-loop, which is at most the number of insertions into $M$. \begin{itemize}
+    \item Consider
+    any constraint $C_{uv}$
+    \item two variables pairs corresponding to the constraint $C_{uv}$ are inserted into $M$ in the first for loop
+    \item then
+beforehand the domain of either $u $ or $v$ was reduced, which happens at
+most $2k$ times 
+\item thus we have $O(k)$ insertions per constraint, and $O(mk)$ insertions overall.\hfill$\blacksquare$
+\end{itemize}
+
+\section{Decomposition}
+
 \end{document}
