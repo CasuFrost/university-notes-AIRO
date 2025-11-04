@@ -1112,5 +1112,61 @@ most $2k$ times
 \end{itemize}
 
 \section{Decomposition}
+If $\gamma$ is a network with $n$ variables and maximal domain size $k$, we may search a feasible assignment by checking among all the possible ones, this will require to check $O(k^n)$ assignments in the worst case. We saw how the inference help to shrink the search space, another useful methods is called \textit{decomposition}.\begin{quote}
+    \textbf{decomposition}: exploit the structure of a network to decompose it into smaller (and easier to solve) independent networks.
+\end{quote}
+\begin{definition}
+    Given a constraint network $\gamma=(V,D,C)$, the \textbf{constraint graph} of $\gamma$ is the undirected graph, where the vertices are the variables $V$ and there are an edge $(u,v)$ if $C_{uv}\in C $.
+\end{definition}
+For example, the graph for the ''coloring Australia'' problem shown in figure \ref{fig:australia} is the following:\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/australia_graph.png}
+\end{center}
+Note how this graph is composed by two connected sub-graph, since the variable $T$ (Tasmania) is disconnected from the other variables. The idea is to separate a network in function of his connected sub-graphs.  
+\begin{theorem}
+    Let $\gamma=(V,D,C)$ to be a constraint network. Let $G$ to be the constraint graph, we denote $\mathcal V(G)$ the vertices of $G$ and $\mathcal E(G)$ the edges of $G$, we know that $\mathcal V(G)=V $. We consider a partition of $\mathcal V(G)$\begin{equation}
+        \mathcal V(G)=\bigcup_i V_i
+    \end{equation}
+    such that each $V_i$ is connected and $$\begin{cases}
+        v\in V_i\\ 
+        u\in V_j\\ 
+        V_i\ne V_j
+    \end{cases}\implies\begin{matrix}
+     (u,v)\notin \mathcal E(G)\\ 
+      (v,u)\notin \mathcal E(G)
+    \end{matrix} \implies C_{uv}\notin C$$
+    so the components of the partition are disconnected from each other. Let $a_i$ to be an feasible assignment (solution) for the variables $V_i$, then \begin{equation}
+        a=\cup_i a_i 
+    \end{equation}
+    is a solution to $\gamma$.
+\end{theorem}
+The theorem states that if two parts of $\gamma$ are not connected (in term of his constraint graph), then they are independent and we can find separately a solution for each connected component.\bigskip 
 
+\begin{theorem}
+    Let $\gamma=(V,D,C)$ to be a constraint network with $n$ variables and maximal domain size $k$. Let $G$ to be the constraint graph, if $G$ is acyclic, we can find a solution for $\gamma$ (or prove that $\gamma$ is inconsistent) with a time complexity of $O(nk^2)$.
+\end{theorem}
+The procedure is the following (assuming that a constraint network is connected, if not, we can apply the procedure to each connected component).\begin{enumerate}
+    \item We consider the constraint graph of $\gamma$, denoted $G$. We choose an arbitrary node $v\in \mathcal V(G)=V$, and we consider the BFS spanning tree $G'$ starting from $v$. 
+    \item $G'$ is a directed graph, we consider a topological ordering $v_1\dots, v_n$ of the variables.
+    \item we iterate through the variables $v_i$ in the opposite order respect to the topological ordering: for each $i=n,n-1,n-2,\dots, 3,2$ (except for $v_1$)\begin{enumerate}
+        \item we perform the procedure Revise($\gamma$, parent($v_i$), $v_i$)
+        \item if $D_{\text{parent($v_i$)}}\ne \emptyset$, return inconsistent
+    \end{enumerate}
+    at this point,  every variable is arc consistent relative to its children
+    \item We perform the algorithm \ref{alg:BacktrackingWithInference} using the variable order $v_1,v_2\dots , v_n$.
+\end{enumerate}
+\subsection{Cutsets}
+\begin{definition}
+    Let $\gamma=(V,D,C)$ to be a constraint network. Let $G$ to be the constraint graph, a \textbf{cutset} $V_0\subseteq V$ is a set such that, the graph $G'$ where $\mathcal V(G')=V\backslash V_0$ is acyclic.
+\end{definition}
+A cutset is a subset of variables removing which renders the constraint
+graph acyclic. The graph of the ''coloring Australia'' problem is \textit{almost acyclic} since, removing $SA$ will make the graph a tree.\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/australia_graph2.png}
+\end{center}
+The following procedure use cutsets to find a solution for $\gamma$.
+\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/cutset.png}\bigskip
+
+    \redText{TODO: Riscrivere questo algoritmo, l'identazione è ambigua}
+\end{center}
+The forward checking operation is required to ensure that $a\cup a'$ is consistent in $\gamma$, the runtime is exponential in $V_0$. It is true that finding an optimal cutset for a graph is $\mathsf{NP}$-hard, but practical approximated procedures exists.
 \end{document}

@@ -1948,7 +1948,102 @@ we saw that this problem can be solved analytically\begin{align}
     &\nabla E(\mathbf w)=
     \sum_{n=1}^N(\mathbf w^T\mathbf x_n-t_n)\mathbf x_n+\lambda\mathbf w
     =0\implies \\ 
-    &\mathbf w=-\frac{1}{\lambda}\sum
+    &\mathbf w^*=X^T(XX^T+\lambda I_N)^{-1}\mathbf t
+\end{align}
+let $\boldsymbol{\alpha}=(XX^T+\lambda I_N)^{-1}\mathbf t$, then\begin{equation}
+    \mathbf w^*=X^T\boldsymbol{\alpha}
+\end{equation}
+the model is the following\begin{equation}
+    y(\mathbf x,\mathbf w^*)=\mathbf {w^*}^T\mathbf x=\sum_{n=1}^N\alpha_n\mathbf x^T_n\mathbf x
+\end{equation}
+note how in the model, it appears the dot product $\mathbf x^T_n\mathbf x$, this is a similarity measure between $\mathbf x_n$ and $\mathbf x$. The model $y$ can be expressed in $\mathbf w$ and in $\boldsymbol{\alpha}$, the solution is:\begin{equation}
+    \boldsymbol{\alpha}=(XX^T+\lambda I_N)^{-1}\mathbf t=(K+\lambda I_N)^{-1}\mathbf t
+\end{equation}
+we set $K=XX^T$, this is called \textbf{Gram matrix} and the entries are the dot products between the samples $\mathbf x_n$, we recall that these entries is a measure of how ''similar'' two samples are.\begin{equation}
+    K=\begin{pmatrix}
+        \mathbf x_1^T\mathbf x_1&\dots& \mathbf x_1^T\mathbf x_N\\ 
+        \vdots&\ddots&\vdots \\
+        \mathbf x_N^T\mathbf x_1&\dots& \mathbf x_N^T\mathbf x_N
+    \end{pmatrix}
+\end{equation}
+Instead of using the dot product, we may consider a general \textbf{similarity function} that we call \textbf{kernel}\begin{equation}
+    k:X\times X\rightarrow \R
+\end{equation}
+the function $k(\mathbf x,\mathbf x')= \mathbf x^T\mathbf x'$ is called \textit{linear kernel}.
+\begin{definition}
+    A \textbf{kernel function} is a real valued function $k:X\times X\rightarrow \R$. Typically:\begin{itemize}
+        \item $k(\mathbf x,\mathbf x')=k(\mathbf x',\mathbf x)$
+        \item $k(\mathbf x,\mathbf x')\ge 0$
+    \end{itemize}
+\end{definition}
+The generalized model became\begin{equation}
+    y(\mathbf x,\boldsymbol{\alpha})=\sum_{n=1}^N\alpha_n k(\mathbf x_n,\mathbf x)
+\end{equation}
+the kernel function $k$ is arbitrary, the trainable parameters are $\boldsymbol{\alpha}$. The solution is\begin{equation}
+   \boldsymbol{\alpha}=(K+\lambda I_N)^{-1}\mathbf t 
+\end{equation}
+where $K$ is the generalized Gram matrix\begin{equation}
+     K=\begin{pmatrix}
+       k(\mathbf x_1,\mathbf x_1)&\dots&  k(\mathbf x_1,\mathbf x_N)\\ 
+       k(\mathbf x_2,\mathbf x_1)&\dots&  k(\mathbf x_2,\mathbf x_N)\\ 
+        \vdots&\ddots&\vdots \\
+        k(\mathbf x_N,\mathbf x_1)&\dots&  k(\mathbf x_N,\mathbf x_N)
+    \end{pmatrix}.
+\end{equation}
+Before entering in the details of kernel functions, we introduce a procedure called \textbf{normalization}, that aims to transform the input dataset $D$ making feasible to define a similarity measure. Let $D=\{(\mathbf x_n,t_n)_{n=1}^N\}$, we denote $X$ the samples $\mathbf x_n$ in $D$. Given\begin{itemize}
+    \item ${min_j}$ is the smallest value that appears as the $j$-th component in all the samples in $X$\begin{equation}
+        min_j=\min_{n=1,\dots N}x_{n,j}.
+    \end{equation}
+    \item ${max_j}$ is the largest value that appears as the $j$-th component in all the samples in $X$\begin{equation}
+        max_j=\max_{n=1,\dots N}x_{n,j}.
+    \end{equation}
+\end{itemize}
+We can normalize each sample $\mathbf x_n$, the transformed sample $\bar{\mathbf x}_n$ is the vector such that:\begin{equation}
+    \bar{x}_{n,j}=\frac{x_{n,j}-min_j}{max_j-min_j}
+\end{equation}
+this procedure is called \textbf{min max} normalization and ensures that\begin{equation}
+    \bar{x}_{n,j}\in [0,1], \ \ \ \forall n\forall j
+\end{equation}
+Another type of normalization is to resize all the vectors such that they have unitary length:\begin{equation}
+    \bar{\mathbf x}=\frac{\mathbf x}{\|\mathbf x\|}
+\end{equation}
+The last one is called \textbf{standardization}, let $\bmu$ and $\boldsymbol{\sigma}$ to be the mean and the standard deviation in $X$, we transform vectors in the following way:\begin{equation}
+    \bar{\mathbf x}=\frac{\mathbf x-\bmu}{\boldsymbol{\sigma}}
+\end{equation}
+The division by $\boldsymbol{\sigma}$ is applied element wise\begin{equation}
+    \bar{ x}_j=\frac{ x_j-\mu_j}{\sigma_j}.
+\end{equation}
+In the following discussion, we assume that the input dataset is normalized. There are different families of kernel functions:\begin{itemize}
+    \item \textbf{linear}: $$k(\mathbf x,\mathbf x')=\mathbf x^T\mathbf x'$$
+    \item \textbf{polynomial}: $$k(\mathbf x,\mathbf x')=(\beta\mathbf x^T\mathbf x'+\gamma)^d, \ \ d\in\{2,3,\dots\}$$
+    \item \textbf{radial basis function}: $$k(\mathbf x,\mathbf x')=\exp(-\beta\|\mathbf x - \mathbf x'\|^2)$$
+    \item \textbf{sigmoid}: $$k(\mathbf x,\mathbf x')=\tanh(\beta \mathbf x^T\mathbf x'+\gamma)$$
+\end{itemize}
+\subsection{Kernelized Support Vector Machines}
+We saw that, for the support vector machines, the solution $\mathbf w^*$ has the form:\begin{equation}
+    \mathbf w^*=\sum_{n=1}^N\alpha_n\mathbf x_n
+\end{equation}
+it is composed by a weighted sum of the samples. The linear model for binary classification is\begin{equation}
+    y(\mathbf x,\boldsymbol{\alpha})=\text{sign}\left(
+w_0+\sum_{n=1}^N\alpha_n\mathbf x_n^T\mathbf x
+    \right)
+\end{equation}
+Since it appears the dot product $\mathbf x_n^T\mathbf x$, we can apply the \textit{kernel trick} and substitute $\mathbf x_n^T\mathbf x$ with a general kernel function:
+\begin{equation}
+    y(\mathbf x,\boldsymbol{\alpha})=\text{sign}\left(
+w_0+\sum_{n=1}^N\alpha_nk(\mathbf x_n,\mathbf x)
+    \right)
+\end{equation}
+The Lagrangian function for the kernelized SVM classification became\begin{equation}
+    \mathcal L(\mathbf a)=\sum_{n=1}^Na_n-\frac{1}{2}\sum_{n=1}^N\sum_{m=1}^N a_na_mt_nt_mk(\mathbf x_n,\mathbf x_m)
+\end{equation}
+we know that the solution $\mathbf w^*$ expressed in terms of the Lagrangian multipliers $\mathbf a^*$ is\begin{equation}
+    \mathbf w^*=\sum_{n=1}^N a_n^*t_n\mathbf x_n
+\end{equation}
+and $\mathbf a^*$ is the solution to the optimization problem\begin{align}
+    &\mathbf a^*= \arg\max_{\mathbf a} \mathcal L(\mathbf a)\\ 
+    &\text{subject to }\\ &a_n\ge 0\\ 
+    &\sum_{n=1}^{N}a_nt_n=0
 \end{align}
 
 \end{document}
