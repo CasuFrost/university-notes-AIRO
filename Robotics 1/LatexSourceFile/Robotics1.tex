@@ -1734,7 +1734,7 @@ the transformation ${}^BT_{EB}$ is unknown and it is in function of $\mathbf q_B
     {}^BT_{EB}(\mathbf q_B)=({}^wT_{B})^{-1}{}^wT_{A}{}^AT_{EA}{}^{EA}T_{EB}
 \end{equation}
 for $\mathbf q_B$ with inverse kinematics. We do not discuss the full procedure to find the solutions (there are two).
-\chapter{Direct Kinematics}
+\chapter{Direct And Inverse Kinematics}
 In this chapter we study the geometric and timing aspects of robot motion, without considering the forces that causes that motion (since we are not considering the dynamics of a robotic manipulator, but just the kinematics). 
 
 A robot is defined as an open kinematic chain of rigid bodies, interconnected by joints, these joints can be revolute or prismatic. To plan a robotic task, we consider three abstract spaces:\begin{itemize}
@@ -1788,7 +1788,7 @@ $$a single value for $\mathbf r$ identifies two configurations. \bigskip
     \label{fig:ambogous}
 \end{figure}
 
-Usually, the number variables of the configuration space are less or equals than the number of degree of freedom:$$ m\le n$$
+Usually, the number of variables of the configuration space are less or equals than the number of degree of freedom:$$ m\le n$$
 to describe the pose of an object we need a configuration space with $m=6$ variables (3 for the position and 3 for the orientation). \bigskip 
 
 For simple robotic system, as the one shown in figure \ref{fig:simple_dk}, the direct kinematics can be computed geometrically by inspecting the planar diagram.
@@ -1904,4 +1904,286 @@ There are som caveats in the assignments of the DH frames:\begin{itemize}
 \end{itemize}\begin{center}
     \includegraphics[width=0.9\textwidth ]{images/parallel_axis.eps}
 \end{center}
+\section{Workspace}
+The \textit{reachable workspace} of a robot manipulator is the set of all points that can be reached by the origin of the end effector (realized by changing che joint's variables) with at least one orientation. Let $f_{p}(\mathbf q)$ to be the positional part of the direct kinematics map, that describe the position of the origin of the end effector, it is a restriction of $f_r$. The workspace is defined as follows:\begin{equation}
+    WS_1=\{ f_p(\mathbf q) \  : \ \mathbf q \in \R^n \ \land \ q_{im}\le q_i\le q_{iM}, \ i=1,2\dots, n \}
+\end{equation}
+where $n$ is the number of joints and $[q_{im},q_{iM}]$ is the range of the joint's variable $q_i$. We can define the joint's space as
+\begin{equation}
+    Q=\{ \mathbf q \  : \ \mathbf q \in \R^n \ \land \ q_{im}\le q_i\le q_{iM}, \ i=1,2\dots, n \}
+\end{equation}
+and rewrite the reachable workspace as follows:\begin{equation}
+     WS_1=\{ f_p(\mathbf q) \  : \ \mathbf q \in Q\}
+\end{equation}
+Since the joint's can be spherical, revolut and prismatic, the workspace $WS_1$ can always be defined as the intersection of planar, toroidal, spherical and cylindrical surfaces. In general, $Q$ is a differentiable manifold, and $WS_1$ is finite, closed and connected, because the function $f_p$ is continuous on $Q$.\bigskip 
+
+The space $WS_1$ is called \textbf{primary workspace}. We define also the \textbf{secondary workspace} $WS_2$ as the set of positions $\mathbf p$ that can be reached by the origin of the end effector in any possible orientation. Clearly, $$WS_2\subseteq WS_1$$if $f_r: Q\rightarrow \R^6$ is the direct kinematics map that assigns at each joint's configuration $\mathbf q$ a pose $\mathbf r\in\R^6$, we can describe $f_r$ as a couple of two functions, one for the position and one for the orientation:\begin{equation}
+    f_r(\mathbf q)=\begin{pmatrix}
+        f_p(\mathbf q)\\ 
+        f_\phi(\mathbf q)
+    \end{pmatrix}
+\end{equation}
+The secondary workspace is defined as follows:\begin{equation}
+    WS_2=\Bigg\{
+        \mathbf p\in \R^3 \ : \  
+        \forall \boldsymbol\phi\in[0,2\pi]^3, \  \exists \mathbf q\in Q \text{ such that } 
+        \begin{pmatrix}
+        f_p(\mathbf q)\\ 
+        f_\phi(\mathbf q)
+    \end{pmatrix}=\begin{pmatrix}
+        \mathbf p\\ 
+        \boldsymbol\phi
+    \end{pmatrix}
+    \Bigg\}
+\end{equation}
+Usually, side views of the workspace of a robot manipulator are shown in the technical sheets of the robot as shown in figure \ref{img:workspace}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/workspace.pdf} 
+    \caption{side view workspace of a robotic manipulator}
+    \label{img:workspace}
+\end{figure} \bigskip
+
+Let's consider a planar 2R arm, with two links of length $l_1,l_2$. The workspace is\begin{itemize}
+    \item if $l_1\ne l_2$\begin{itemize}
+        \item $WS_1=\{\mathbf p\in \R^2 \ : \ |l_1-l_2|\le \|\mathbf p \| \le l_1+l_2\}$
+        \item $WS_2=\emptyset$
+    \end{itemize}
+    \item if $l_1 =  l_2=l$\begin{itemize}
+        \item $WS_1=\{\mathbf p\in \R^2 \ : \|\mathbf p \| \le 2l\}$
+        \item $WS_2=\{\mathbf 0\}$
+    \end{itemize}
+\end{itemize}
+
+\noindent The workspace is the difference between a closed and an open ball in $\R^2$, as shown in figure \ref{img:workspace_2R}.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/2R_workspace.eps} 
+    \caption{workspace of a planar 2R robotic manipulator}
+    \label{img:workspace_2R}
+\end{figure} \bigskip
+
+We denote $\partial WS_1$ the boundaries of $WS_1$. The end effector can lie in only one orientation in $\partial WS_1$ and in two possible orientation in $WS_1\backslash \partial WS_1$.
+
+\section{The Inverse Kinematics Problem}
+The inverse kinematics problem is to find the joint's configuration $\mathbf q$ that realize a desired task configuration $\mathbf r$. The direct kinematics is always unique, given $\mathbf q \in Q$, we can always identify one configuration $\mathbf r$. This is not true for the inverse kinematics, since, given a desired pose $\mathbf r$, they may be  zero, infinite, or a finite number of joint's configuration that realize $\mathbf r$.\bigskip 
+
+This is in general a non linear problem, due to the trigonometric functions inside the homogeneous transformation. We have to determine if there are solutions (workspace definition), the uniqueness and multiplicity of these solutions, and the methods for finding them.\bigskip 
+
+For example, given an anthropomorphic arm (3 revolut joints, the first orthogonal to the second, the second and the third parallel) we can identify four possible joint's configuration that realize a given end-effector position, as shown in figure \ref{img:IK_sol}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/IK_solutions.png} 
+    \caption{IK solutions of an anthropomorphic arm}
+    \label{img:IK_sol}
+\end{figure} 
+
+\noindent For the UR10 robotic arm, shown in figure \ref{img:UR10_IK}, there are 8 IK solutions that realize the desired pose:
+
+\begin{align}
+    &\mathbf p = \begin{pmatrix}
+        -0.2373\\ 
+        -0.0832\\ 
+        1.3224
+    \end{pmatrix}\text{ meters }\\ 
+    &R=\begin{pmatrix}
+        \nicefrac{\sqrt{3}}{2}&0.5&0\\ 
+        -0.5&\nicefrac{\sqrt{3}}{2}&0\\ 
+        0&0&1
+    \end{pmatrix}
+\end{align}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/UR10_IK.png} 
+    \caption{IK solutions for the UR10 robotic manipulator}
+    \label{img:UR10_IK}
+\end{figure} 
+
+The multiplicity of solutions depends on the kinematic structure of the manipulator, a few examples are the following:\begin{itemize}
+    \item For a desired position of the end effector of a 2R planar robot ($m=n=2$)\footnote{
+        We denote with $n$ the number of joints (DOF) and with $m$ the number of variables of the configuration space. 
+    } we have\begin{itemize}
+        \item 2 regular solutions in $WS_1\backslash\partial WS_1$
+        \item 1 solution on $\partial WS_1$
+        \item if $l_1=l_2$ (the link's lengths are equals) there are infinite solutions on the origin $WS_2=\{\mathbf 0\}$.
+    \end{itemize}
+    \item For a desired position of the end effector of a elbow-type 3R robot ($m=n=3$) we have 4 regular solutions on $WS_1$. The singular cases have not been investigated yet.
+    \item For a spatial 6R robot ($m=n=6$) we have\begin{itemize}
+        \item at most 16 distinct solutions. This upper bound of 16 is attained by a particular instance of an orthogonal robotic arm. 
+        \item the analysis of the solutions is based on algebraic transformations of the robot kinematics,  transcendental equations are transformed into a single polynomial equation
+in one variable, or we seek for a transformed polynomial equation of the least possible degree.
+    \end{itemize}
+\end{itemize}
+Let's see an example of these algebraic transformations. In some cases, we may have to solve for $\theta$ the equation\begin{equation}\label{trig_eq}
+    a\sin\theta+b\cos\theta=c
+\end{equation}
+we define a variable $u=\tan\nicefrac{\theta}{2}$, in this case:\begin{align}
+    &\sin\theta = \frac{2u}{1+u^2}\\ 
+    &\cos\theta = \frac{1-u^2}{1+u^2}
+\end{align}
+and \begin{equation}
+    \tan\theta=\tan\frac{2\theta}{2}=\frac{2\tan\nicefrac{\theta}{2}}{1-\tan^2\nicefrac{\theta}{2}}=\frac{2u}{1-u^2}
+\end{equation}
+We substitute in equation \eqref{trig_eq}:\begin{align}
+   & a\frac{2u}{1+u^2}+b\frac{1-u^2}{1+u^2}=c 
+\end{align}
+this is a second degree polynomial equation:
+\begin{align}
+   & a\frac{2u}{1+u^2}+b\frac{1-u^2}{1+u^2}=c \implies \\ 
+   & \frac{b-u^2b+2au}{1+u^2}=c \implies \\ 
+    & b-u^2b+2au=c+cu^2 \implies \\ 
+     & b-u^2b+2au-c-cu^2=0 \implies \\ 
+      & -b+u^2b-2au+c+cu^2=0 \implies \\ 
+        & u^2(c+b)-2au-(b-c)=0 \implies 
+\end{align}
+the solutions are\begin{equation}
+    u_{1,2}=\frac{a\pm\sqrt{a^2+b^2-c^2}}{b+c}
+\end{equation}
+if $a^2+b^2\ge c^2$ we have\begin{align}
+    &u_1=\tan\frac{\theta_1}{2}\\
+     &u_2=\tan\frac{\theta_2}{2}
+\end{align}
+and we can solve for $\theta_{1,2}$\begin{equation}
+    \theta_{1,2}=2\arctan(u_{1,2})
+\end{equation}
+\subsection{Workspace of a Planar 3R Arm}
+Let's consider a 3R planar robotic manipulator ($n=3$, $m=2$), we consider the case where the 3 links have the same length $l_1=l_2=l_3=l$. The primary workspace is the closed ball of radius $3l$ centered in the origin\begin{equation}
+    WS_1=\{\mathbf p\in \R^2 \  : \ \|\mathbf p\|\le 3l\}
+\end{equation}
+The end effector could lie in any possible orientation in the closed ball of radius $l$:\begin{equation}
+    WS_2=\{\mathbf p\in \R^2 \  : \ \|\mathbf p\|\le l\}
+\end{equation}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/3R_planar_workspace.pdf} 
+    \caption{workspace of a planar 3R robotic manipulator}
+    \label{img:workspace_3R}
+\end{figure} \bigskip
+
+\begin{itemize}
+    \item In the space $WS_1\backslash\{\partial WS_1+\partial WS_2\}$ (the orange region), the end effector can lie in any position with a continuum number of possible orientation $\phi\in \Phi\subset [0,2\pi]$, but \textit{not all possible} orientation.
+    \item In the region $\partial WS_1$ ($\|\mathbf p\| = 3l$) the end effector can lie in only one possible orientation (\textit{singular case}).
+    \item In the region $\partial WS_2$ ($\|\mathbf p\| = l$), the end effector can lie in any position and in any orientation, there are infinite solution for an IK problem in that region, but 3 of that solutions are singular: 
+    \begin{center}
+        \includegraphics[width=0.9\textwidth ]{images/singular_3R.eps} 
+    \end{center}
+    These configurations are singular since the arm loses degree of freedom: In that particular configuration, the arm cant move in any arbitrary direction.
+
+    \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/singular_3R_2.eps} 
+    \caption{in the current configuration, the end effector can't move in the direction $\mathbf v$.}
+    \label{img:singular_3R}
+\end{figure} 
+
+    \item  In the region $WS_2\backslash\partial WS_2 $ ($\|\mathbf p\| < l$), the end effector can lie in any position and in any orientation, each solution is non singular.
+\end{itemize}
+In general, $l_1,l_2,l_3$ are not are not necessarily equal, the reachable points that are the most far from the first joint are at distance $l_1+l_2+l_3$, the closest one are at distance $\max\{0,l_{max}-(l_{med}+l_{min})\}$ where\begin{align}
+    &l_{max}=\max\{l_1,l_2,l_3\}\\ 
+    &l_{min}=\min\{l_1,l_2,l_3\}\\ 
+    &l_{med}\text{ is the remaining one}
+\end{align} 
+In general:\begin{itemize}
+    \item if $m=n$, for an IK problem they may:\begin{itemize}
+        \item doesn't exist solutions (out of workspace)
+        \item exist a finite number of solution (regular case)
+        \item infinite set of solutions, or a finite set, in a different number respects to the regular case, these are the \textbf{singular case}. 
+    \end{itemize}
+    \item if $m<n$, the robot are mor DOF than the dimension of the task space, the robot is \textit{kinematically redundant}, in that case for an IK problem they may:\begin{itemize}
+    \item  doesn't exist solutions (out of workspace)
+    \item infinitely many solutions, in details, we say that there are $\infty^{n-m}$ solutions, if the set $Q'$ of joint's configuration that is a solution for the inverse kinematics, is a $n-m$-mainfold.
+    \item they may be a finite or infinite number of \textbf{singular} solutions.
+    \end{itemize}
+\end{itemize}
+The formal definition of a \textbf{singular solution/case} will be formalized in chapter \ref{chap:diff_kin} in the context of differential kinematics.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Differential Kinematics}\label{chap:diff_kin}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+with the following DH table\begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+\hline
+\rowcolor[HTML]{C0C0C0} 
+Link & twist angle $\alpha_i$ & common normal $a_i$ & displacement $d_i$ & joint's angle $\theta_i$ \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+1    & 0          & $a_1$ & 0     & $q_1$      \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+2    & 0          & $a_2$ & 0     & $q_2$      \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+3    & 0          & $a_3$ & 0     & $q_3$      \\ \hline
+\end{tabular}
+\end{center}
+where $q_i$ are variables. The pose of the end effector is described, with a minimal of 3 number of parameters, $p_x,p_y$ and angle $\phi$ with axis $x_0$. With the direct kinematics equations\begin{equation}
+    \begin{pmatrix}
+        p_x\\ p_y\\ \phi 
+    \end{pmatrix}=f_r(\mathbf q)=\begin{pmatrix}
+        a_1\cos q_1+a_2\cos(q_1+q_2)+a_3\cos(q_1+q_2+q_3)\\ 
+         a_1\sin q_1+a_2\sin(q_1+q_2)+a_3\sin(q_1+q_2+q_3)\\ 
+         q_1+q_2+q_3
+    \end{pmatrix}
+\end{equation}
 \end{document}
