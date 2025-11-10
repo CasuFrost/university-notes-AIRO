@@ -1005,9 +1005,10 @@ the probability that an hypothesis $h\in H$ is the optimal solution for the prob
 $\Prob(h)$ is the probability that an hypothesis $h\in H$ is the optimal solution without knowing anything about the dataset, if the hypothesis space  $H$ is finite, $\Prob(h)=\frac{1}{|H|}$. We define the \textbf{Maximum a Posteriori Hypothesis} as follows:\begin{equation}
     h_{MAP}=\arg\max_{h\in H}\Prob(h|D)= h_{MAP}=\arg\max_{h\in H}\frac{\Prob(D|h)\Prob(h)}{\Prob(D)}= h_{MAP}=\arg\max_{h\in H}\Prob(D|h)\Prob(h)
 \end{equation}
-the denominator $\Prob(D)$ can be removed since doesn't affect the output of the arg max function (since it is constant). Since at priori all hypothesis have the same probability, the value can be written as\begin{equation}
-    h_{MAP}=\arg\max_{h\in H}\Prob(D|h).
+the denominator $\Prob(D)$ can be removed since doesn't affect the output of the arg max function (since it is constant). If we assume that all hypothesis have the same probability, the value can be written as\begin{equation}
+    h_{MAP}=h_{ML}=\arg\max_{h\in H}\Prob(D|h).
 \end{equation}
+this is the \textbf{Maximum likelihood hypothesis}.
 We can make a brute force approach by computing $\Prob(D|h)$ for each $h\in H$ (if $h$ is finite).
 \subsection{Bayes Optimal Classifier}
 $h_{MAP}$ is not necessary the optimal solution, let's consider $v_j\in V$, we can apply the total probability formula:\begin{equation}
