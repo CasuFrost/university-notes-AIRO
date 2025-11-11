@@ -2341,17 +2341,49 @@ There is also another singularity when $l_1=l_2$ and the desired position is the
 We consider a robotic arm of the following type:\begin{center}
     \includegraphics[width=0.5\textwidth ]{images/Polar_RRP.png} 
 \end{center}
-
-
-
-
-
-
-
-
-
-
-
+Note that $q_2$ is not a DH variable. The direct kinematics for this type of manipulator is the following\begin{equation}
+    \begin{cases}
+        p_x=q_3\cos q_2\cos q_1\\
+        p_y=q_3\cos q_2\sin q_1\\
+        p_z=d_1+q_3\sin q_2
+    \end{cases}
+\end{equation}
+By summing and squaring the  equations we can find the value of $q_3$\begin{align}
+    &p_x^2+p_y^2+(p_z-d_1)^2=q_3^2\cos^2 q_2\cos^2 q_1+ 
+    q^2_3\cos^2q_2\sin^2 q_1+q_3^2\sin^2 q_2\\ 
+    &p_x^2+p_y^2+(p_z-d_1)^2=q_3^2(\cos^2 q_2\cos^2 q_1+ 
+    \cos^2q_2\sin^2 q_1+\sin^2 q_2)\\
+    &p_x^2+p_y^2+(p_z-d_1)^2=q_3^2[\cos^2 q_2(\cos^2 q_1+ 
+   \sin^2 q_1)+\sin^2 q_2]\\
+    &p_x^2+p_y^2+(p_z-d_1)^2=q_3^2[\cos^2 q_2+\sin^2 q_2]\\
+    &q_3^2=p_x^2+p_y^2+(p_z-d_1)^2\\ 
+    &q_3=\pm\sqrt{p_x^2+p_y^2+(p_z-d_1)^2}=\pm\gamma
+\end{align}
+For simplicity, we denote $\gamma=\sqrt{p_x^2+p_y^2+(p_z-d_1)^2}$.
+If $q_3=0$, the end effector is on the point $(0,0,d_1)$, in such case, every value of $q_1$ and $q_2$ works as a solution, we can say that the set of solutions for an IK problem where the end effector lies on $(0,0,d_1)$ is a 2-mainfold. We can solve the third equation for $\sin q_2$\begin{align}
+    &p_z=d_1\pm\gamma\sin q_2\\ 
+      &\sin q_2=\pm \frac{p_z-d_1}{\gamma}\\ 
+\end{align}
+We can find the two values for $\cos q_2$:\begin{equation}
+    \cos q_2 = \pm\sqrt{1-\left(\pm \frac{p_z-d_1}{\gamma}\right)^2}
+\end{equation}
+Note how we have two values for $q_3=\pm \gamma$ and two values for $\cos q_2$, at this point, we are identifying 4 possible solutions for $(q_2,q_3)$. We can extract $q_2$ :\begin{equation}
+    q_2=\text{atan2}\left(\pm \frac{p_z-d_1}{\gamma},\pm\sqrt{1-\left(\pm \frac{p_z-d_1}{\gamma}\right)^2}\right)
+\end{equation}
+The four solutions for now are\begin{align}
+    &q_3 = \gamma, \ \ \  q_2 = \text{atan2}\left( \frac{p_z-d_1}{\gamma},\sqrt{1-\left( \frac{p_z-d_1}{\gamma}\right)^2}\right)\\
+    &q_3 = \gamma, \ \ \  q_2 = \text{atan2}\left( \frac{p_z-d_1}{\gamma},-\sqrt{1-\left( \frac{p_z-d_1}{\gamma}\right)^2}\right)\\
+    &q_3 = -\gamma, \ \ \  q_2 = \text{atan2}\left( \frac{p_z-d_1}{-\gamma},\sqrt{1-\left( \frac{p_z-d_1}{-\gamma}\right)^2}\right)\\
+    &q_3 = -\gamma, \ \ \  q_2 = \text{atan2}\left( \frac{p_z-d_1}{-\gamma},-\sqrt{1-\left( \frac{p_z-d_1}{-\gamma}\right)^2}\right)
+\end{align}
+If we fix $q_2,q_3$, by the system of equation\begin{equation}
+    \begin{cases}
+        p_x=q_3\cos q_2\cos q_1\\
+        p_y=q_3\cos q_2\sin q_1
+    \end{cases}\implies q_1=\text{atan2}\left(\frac{p_y}{\cos q_2},\frac{p_x}{\cos q_2}\right)
+\end{equation}
+we find one value for $q_1$ (by solving it for $\cos q_1$ and $\sin q_1$), at the end, for an IK problem (where the task vector is the pose of the end effector) of this polar robot, there are 4 solutions in the regular case.
+\subsection{Inverse Kinematics of a 3R Elbow-type Arm}
 
 
 
