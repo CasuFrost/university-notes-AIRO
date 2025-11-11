@@ -6,6 +6,8 @@ project(simple_simulator)
 FIND_PACKAGE(OpenCV  REQUIRED)
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 
+set(CMAKE_BUILD_TYPE Release)
+
 add_library(stuff_library
             linalg.cpp
             grid.cpp
@@ -39,6 +41,14 @@ add_executable(unicycle_main
         unicycle_main.cpp)
 
 target_link_libraries(unicycle_main
+        stuff_library
+        ${OpenCV_LIBRARIES}
+)
+
+add_executable(unicycle_profile
+        unicycle_profile.cpp)
+
+target_link_libraries(unicycle_profile
         stuff_library
         ${OpenCV_LIBRARIES}
 )

@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <cassert>
-#include <opencv4/opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 #include "linalg.h"
 using CellType = uint8_t;
 

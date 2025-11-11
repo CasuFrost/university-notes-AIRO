@@ -2239,17 +2239,108 @@ In general:\begin{itemize}
     \end{itemize}
 \end{itemize}
 The formal definition of a \textbf{singular solution/case} will be formalized in chapter \ref{chap:diff_kin} in the context of differential kinematics.
+\subsection{Solution Methods}
+There are two ways to solve the inverse kinematics for a robotic arm:\begin{itemize}
+    \item \textbf{Analytical Solution}: It is preferred, since it doesn't require too much computation, can be found algebraically by solving some polynomial equation derived from the DK equations. There are systematic ways to generate a reduced set of equations to solve. The following condition (for a 6 dof arm) are sufficient to find an analytical solution\begin{itemize}
+        \item there are 3 consecutive rotational joints that are parallel 
+        \item there are 3 consecutive rotational joints that are incidents (spherical wrist).
+    \end{itemize}
+    \item \textbf{Numerical Solution}: If the problem is too complex (i.g. in the redundant case where $n>m$) an iterative method to solve system of non linear equations can be used. These methods are easy to set up, but computationally expensive, the methods usually consider the Jacobian matrix of the direct kinematics map\footnote{
+        with $f_r^i$ is denoted the $i$-th component of the direct kinematics map $f_r$
+    } $$J_r(\mathbf q)=\left( \frac{\partial f^i_r}{\partial q_j} \right) $$
+    commons methods are Newton method, Quasi Newton Method, Gradient descent and so on.
+\end{itemize}
+\subsection{Inverse Kinematics of a Planar 2R}
+We will inspect the IK for some common cases. The simplest one is the 2R planar arm, in figure \ref{img:2R_planar}. We will denote $q_1$ and $q_2$ the joint's angles. The direct kinematics for the position is\begin{equation}
+    \mathbf p(\mathbf q)=\begin{pmatrix}
+        p_x\\ p_y
+    \end{pmatrix}=\begin{pmatrix}
+        l_1\cos q_1+ l_2\cos(q_1+q_2)\\ 
+        l_1\sin q_1+ l_2\sin(q_1+q_2)
+    \end{pmatrix}
+\end{equation}
+we have to solve the system\begin{equation}
+    \begin{cases}
+        p_x=l_1\cos q_1+ l_2\cos(q_1+q_2)\\ 
+        p_y=l_1\sin q_1+ l_2\sin(q_1+q_2)
+    \end{cases}
+\end{equation}
+in the unknown $q_1,q_2$.
+In this case, one variable can be isolated by squaring and summing the two equations:\begin{align}
+    &\begin{cases}
+        \sapText{p_x=l_1\cos q_1+ l_2\cos(q_1+q_2)}\\ 
+       \blueText{ p_y=l_1\sin q_1+ l_2\sin(q_1+q_2)}
+    \end{cases}\implies \\
+&\sapText{p^2_x}+\blueText{p^2_y}=
+\sapText{l_1^2\cos^2 q_1+ l_2^2\cos^2(q_1+q_2)+2l_1l_2\cos q_1\cos(q_1+q_2)}+\\ &\blueText{
+l_1^2\sin^2 q_1+ l_2^2\sin^2(q_1+q_2)+2l_1l_2\sin q_1\sin(q_1+q_2)}\implies \\
+&
+p_x^2+p_y^2-(l_1^2+l_2^2)=2l_1l_2(\cos q_1\cos(q_1+q_2)+\sin q_1\sin(q_1+q_2))=2l_1l_2\cos q_2\implies \\ 
+&\cos q_2=\frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}
+\end{align}
+We used the identity \begin{equation}
+    \cos(x)\cos(x+y)+\sin(x)\sin(x+y)=\cos(y)
+\end{equation}
+Since we have $\cos q_2$, we can evaluate the two possible values for $\sin q_2$ since\begin{equation}
+    \sin q_2=\pm \sqrt{1-\cos^2 q_2}
+\end{equation}
+At this point we can evaluate the two possible values of $q_2$:\begin{align}
+    &q_2^+=\text{atan2}(\sqrt{1-\cos^2 q_2},\cos q_2)\\ 
+    &q_2^-=\text{atan2}(-\sqrt{1-\cos^2 q_2},\cos q_2)
+\end{align}
+Since \begin{equation}
+    \cos q_2=\frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}
+\end{equation}
+it is necessary that \begin{equation}
+    \frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}\in [-1,1]
+\end{equation}
+if not, there is no value for $q_2$, the desired position $p_x,p_y$ is outside of the workspace.
+Once we have evaluated $q_2^+$ and $q_2^-$, we can evaluate $q_1$ by inspecting the geometry of the problem.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/2R_IK.png} 
+\end{center}
+The angle $\alpha$ is given by \begin{equation}
+    \alpha = \text{atan2}(p_y,p_x)
+\end{equation}
+the angle $\beta $ can be found by considering the reference frame where the link $l_1$ is parallel to the $x$ axis:\begin{equation}
+    \beta=\text{atan2}(l_2\sin(q_2),l_1+l_2\cos(q_2))
+\end{equation}
+$q_1$ is given by $\alpha-\beta$:\begin{equation}
+    q_1=\text{atan2}(p_y,p_x)-\text{atan2}(l_2\sin(q_2),l_1+l_2\cos(q_2))
+\end{equation}
+Since there are two possible values for $q_2$, there are also two possible values for $q_1$:\begin{align}
+    &q_1^+=\text{atan2}(p_y,p_x)-\text{atan2}(l_2\sin(q_2^+),l_1+l_2\cos(q_2^+))\\
+    &q_1^-=\text{atan2}(p_y,p_x)-\text{atan2}(l_2\sin(q_2^-),l_1+l_2\cos(q_2^-)) 
+\end{align}
+\textbf{Note}: When the difference of these atan2 functions are evaluated, the result may be outside the interval $(-\pi,\pi]$, these value have to be re-expressed in the interval.\bigskip
 
-
-
-
-
-
-
-
-
-
-
+\noindent In the regular case, there are two possible solution for the IK problem:\begin{equation}
+    \mathbf q' = \begin{pmatrix}
+        q_1^+\\ 
+        q_2^+
+    \end{pmatrix}, \ \ \ \ \ \ \ 
+    \mathbf q'' = \begin{pmatrix}
+        q_1^-\\ 
+        q_2^-
+    \end{pmatrix}
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/2R_IK_2ù.png} 
+\end{center}
+There is a singularity when the desired position is on the boundaries of $WS_1$, in that case, we have that\begin{equation}
+    p_x^2+p_y^2=l_1+l_2
+\end{equation}
+so \begin{equation}
+     \cos q_2=\frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}=\frac{p_x^2+p_y^2-p_x^2+p_y^2}{2l_1l_2}=0
+\end{equation}
+if $\cos q_2 = 0$, there is only one values for $\sin q_2$:\begin{equation}
+    \sin q_2=\pm \sqrt{1-\cos^2 q_2}=\pm 0 = 0 \implies q_2=0
+\end{equation}
+There is also another singularity when $l_1=l_2$ and the desired position is the origin, in that case, there are infinite solution (with $q_2=\pi$ fixed).
+\subsection{Inverse Kinematics of a Polar RRP arm}
+We consider a robotic arm of the following type:\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/Polar_RRP.png} 
+\end{center}
 
 
 
@@ -2324,4 +2415,5 @@ where $q_i$ are variables. The pose of the end effector is described, with a min
          q_1+q_2+q_3
     \end{pmatrix}
 \end{equation}
+
 \end{document}

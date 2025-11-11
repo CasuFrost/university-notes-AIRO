@@ -181,6 +181,19 @@ unicycle_main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/build
 .PHONY : unicycle_main/fast
 
+#=============================================================================
+# Target rules for targets named unicycle_profile
+
+# Build rule for target.
+unicycle_profile: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unicycle_profile
+.PHONY : unicycle_profile
+
+# fast build rule for target.
+unicycle_profile/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_profile.dir/build.make CMakeFiles/unicycle_profile.dir/build
+.PHONY : unicycle_profile/fast
+
 grid.o: grid.cpp.o
 .PHONY : grid.o
 
@@ -349,6 +362,30 @@ unicycle_main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_main.dir/build.make CMakeFiles/unicycle_main.dir/unicycle_main.cpp.s
 .PHONY : unicycle_main.cpp.s
 
+unicycle_profile.o: unicycle_profile.cpp.o
+.PHONY : unicycle_profile.o
+
+# target to build an object file
+unicycle_profile.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_profile.dir/build.make CMakeFiles/unicycle_profile.dir/unicycle_profile.cpp.o
+.PHONY : unicycle_profile.cpp.o
+
+unicycle_profile.i: unicycle_profile.cpp.i
+.PHONY : unicycle_profile.i
+
+# target to preprocess a source file
+unicycle_profile.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_profile.dir/build.make CMakeFiles/unicycle_profile.dir/unicycle_profile.cpp.i
+.PHONY : unicycle_profile.cpp.i
+
+unicycle_profile.s: unicycle_profile.cpp.s
+.PHONY : unicycle_profile.s
+
+# target to generate assembly for a file
+unicycle_profile.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unicycle_profile.dir/build.make CMakeFiles/unicycle_profile.dir/unicycle_profile.cpp.s
+.PHONY : unicycle_profile.cpp.s
+
 unicycle_robot.o: unicycle_robot.cpp.o
 .PHONY : unicycle_robot.o
 
@@ -410,6 +447,7 @@ help:
 	@echo "... linalg_main"
 	@echo "... stuff_library"
 	@echo "... unicycle_main"
+	@echo "... unicycle_profile"
 	@echo "... grid.o"
 	@echo "... grid.i"
 	@echo "... grid.s"
@@ -431,6 +469,9 @@ help:
 	@echo "... unicycle_main.o"
 	@echo "... unicycle_main.i"
 	@echo "... unicycle_main.s"
+	@echo "... unicycle_profile.o"
+	@echo "... unicycle_profile.i"
+	@echo "... unicycle_profile.s"
 	@echo "... unicycle_robot.o"
 	@echo "... unicycle_robot.i"
 	@echo "... unicycle_robot.s"
