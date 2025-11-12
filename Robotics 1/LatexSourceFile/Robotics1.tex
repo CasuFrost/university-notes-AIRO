@@ -2384,6 +2384,39 @@ If we fix $q_2,q_3$, by the system of equation\begin{equation}
 \end{equation}
 we find one value for $q_1$ (by solving it for $\cos q_1$ and $\sin q_1$), at the end, for an IK problem (where the task vector is the pose of the end effector) of this polar robot, there are 4 solutions in the regular case.
 \subsection{Inverse Kinematics of a 3R Elbow-type Arm}
+We now consider a manipulator with 3 rotational joints, as shown in the following picture.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/3R_elbow.png} 
+\end{center}
+
+The direct kinematics is given by the following system of equations:\begin{equation}
+    \begin{cases}
+        p_x=\cos q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_y=\sin q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_z=d_1+L_2\sin q_2+L_3\sin(q_2+q_3)
+    \end{cases}
+\end{equation}
+In the third equation we can move $d_1$ to the left side 
+\begin{equation}
+    \begin{cases}
+        p_x=\cos q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_y=\sin q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_z-d_1=L_2\sin q_2+L_3\sin(q_2+q_3)
+    \end{cases}
+\end{equation}
+then we square and sum the three equations:
+\begin{align}
+   &p^2_x+p_y^2+p_z^2 = \\
+   &\cos^2 q_1(L_2cos q_2+L_3\cos(q_2+q_3))^2+
+   \sin^2 q_1(L_2cos q_2+ L_3\cos(q_2+q_3))^2+\\ &
+   (L_2\sin q_2+L_3\sin(q_2+q_3))^2=\\ 
+   &(L_2cos q_2+L_3\cos(q_2+q_3))^2+
+   (L_2\sin q_2+L_3\sin(q_2+q_3))^2=\\ 
+   &L_2^2\sin^2 q_2+L^2_3\sin^2(q_2+q_3)+2L_2\sin q_2L_3\sin(q_2+q_3)+\\
+   &L_2^2\cos^2 q_2+L^2_3\cos^2(q_2+q_3)+2L_2\cos q_2L_3\cos(q_2+q_3)
+\end{align}
+
+
 
 
 
