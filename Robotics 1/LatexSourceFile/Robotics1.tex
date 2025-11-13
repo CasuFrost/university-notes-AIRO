@@ -1049,7 +1049,7 @@ straight line that best fits the real characteristics, this is the ''error'' of 
 \subsection{Absolute and Incremental Encoders}
 The \textbf{absolute encoders} are angular position sensors, highly used in robotics, these are optical sensor, that uses light pulses to measure the absolute angular position. An encoder works in the following way:\begin{itemize}
     \item there are a rotating optical disk, with alternate transparent and opaque sectors on multiple concentric tracks 
-    \item an light beam are emitted, it passes trough these opaque and transparent sensor and then hits a photo-receiver 
+    \item a light beam are emitted, it passes trough these opaque and transparent sensor and then hits a photo-receiver 
     \item the intensity of the lights received depends on the tracks, in this way, the intensity is a measure of the position of the rotating part 
     \item light pulses are converted into
 electrical pulses, electronically
@@ -1075,8 +1075,43 @@ The third track $Z$ is used to define a zero reference position with a reset of 
 \end{equation}
 
 360 electrical degrees (one full electrical turn) corresponds to $\frac{360}{N_e}$ mechanical degrees. The two signals $A$ and $B$ are shifted of $90^\circ$ electrical degrees.
+In that case, the signals $A$ and $B$ are always out of phase of 90 degrees, if $A$ anticipates $B$, the rotation direction is clockwise, else, if $B$ anticipates $A$, is clockwise.\bigskip 
 
-
+The resolution of the incremental encoder depends on the number of slits on the rotating disc.\begin{itemize}
+    \item since the incremental encoder can count the pulses per second, we can count the pulses $C$ every $\Delta t$ seconds. The ''pulses speed'' is $$ f=\frac{C}{\Delta T}$$
+    \item the resolution of the encoder, denoted $PPR$ is the number of pulses per each turn.
+    \item we can compute the degrees for each pulses as $$ AR=\frac{360^\circ}{PPR}$$
+    \item at this point $f$ is the number of pulses per second, $AR$ is the degrees per pulses, angular velocity is the number of degrees per second:\begin{equation}
+        \omega=f\cdot AR=\frac{C}{\Delta T}\cdot\frac{360^\circ}{PPR}\ \ \frac{\text{degrees}}{\text{seconds}}
+    \end{equation}
+\end{itemize}
+For example, if an encoder have a resolution  of $PPR=1000$ (every 1000 pulses, the motor performs one complete turn), the angular resolution is $\frac{360^\circ}{1000}=0.36^\circ$, if in an interval of $\Delta t=0.1$ seconds, we count $C=200$ pulses, the angular speed of the motor is\begin{equation}
+    \frac{200}{0.1}\frac{360}{1000}=720\ \ \frac{\text{degrees}}{\text{seconds}}
+\end{equation}
+So every second the motor performs two complete revolutions.
+\subsection{Quadrature}
+For now, we described the ''pulses'' per second, in details, the encoder counts the rising edges of the signal $A$:\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/pulses.eps}
+\end{center}
+in the image, in the interval $t\in [0,4]$, 2 pulses are detected, so the velocity is $\frac{2}{4}$ pulses per seconds. The angular resolution $AR$ is computed as the number of pulses (rising edges of the signal $A$) per round. We can increase the angular resolution, instead of counting the rising edges of $A$, we can count the rising and descending edges of the two signals $A$ and $B$, increasing the angular resolution by 4 times.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/pulses2.eps}
+\end{center}
+In that case instead of counting 2 pulses, we detected 8 pulses by the two signals, in that case the angular resolution become 
+\begin{equation}
+    AR=\frac{360^\circ}{PPR\cdot 4}
+\end{equation}
+Since the pulses per revolut are 4 times greater then the PPR without counting the two signals. We recap the general procedure:\begin{enumerate}
+    \item Every incremental encoder have a fixed number of slits, we denote $PPR$ (pulses per revolution) this number. This is the number of square waves generated for each complete revolution of the motor. 
+    \item The angular resolution depends on the quadrature\begin{itemize}
+        \item if we count as pulses the rising edges of the signal $A$, we have a $D=1$ encoding 
+        \item if we count as pulses the rising edges of $A$ and $B$, we have $D=2$ as encoding 
+        \item if we count as pulses the rising and descending edges of $A$ and $B$, we have $D=4$ as encoding
+    \end{itemize}
+    \item the angular resolution (degrees over pulses) is\begin{equation}
+        AR=\frac{360^\circ}{PPR\cdot D}
+    \end{equation}
+\end{enumerate}
 \chapter{Describing Orientation}
 \section{Position and Orientation of a Rigid Body}
 We have a base reference frame $RF_A=(\mathbf x_A,\mathbf y_A,\mathbf z_A)$, and a rigid body $B$ in the space, let's say that there is a fixed reference frame $RF_B=(\mathbf x_B,\mathbf y_B,\mathbf z_B)$ attached to a point of $B$, a vector ${}^A\mathbf p\in\R^3$ can describe the position of the whole body respect to the frame $RF_A$, and a $3\times3$ matrix is sufficient to describe the orientation of that body.
