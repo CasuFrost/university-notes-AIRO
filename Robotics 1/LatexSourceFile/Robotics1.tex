@@ -2458,62 +2458,106 @@ then we square and sum the three equations:
 
 
 \chapter{Differential Kinematics}\label{chap:diff_kin}
-\end{document}
 
 
 
 
+\chapter*{Appendix}
+\section*{Useful Trigonometric Formulas}
+\subsection*{atan2 Definition}
+\begin{align*}
+    \text{atan2}(y, x) =
+\begin{cases}
+\text{atan}\left(\frac{y}{x}\right) & x > 0 \\
+\pi + \text{atan}\left(\frac{y}{x}\right) & y \geq 0, x < 0 \\
+-\pi + \text{atan}\left(\frac{y}{x}\right) & y < 0, x < 0 \\
+\frac{\pi}{2} & y > 0, x = 0 \\
+-\frac{\pi}{2} & y < 0, x = 0 \\
+\text{undefined} & y = 0, x = 0
+\end{cases}
+\end{align*}
+\subsection*{Fundamental Identities}
+\begin{align*}
+&\sin^2 x + \cos^2 x = 1 \\
+&\tan^2 x + 1 = \sec^2 x \\
+&1 + \cot^2 x = \csc^2 x \\
+&\tan x = \frac{\sin x}{\cos x},\quad \cot x = \frac{\cos x}{\sin x} \\
+&\sec x = \frac{1}{\cos x},\quad \csc x = \frac{1}{\sin x}
+\end{align*}
 
+\subsection*{Associated Angles}
+\begin{align*}
+\sin(\pi - x) &= \sin x, & \cos(\pi - x) &= -\cos x \\
+\sin(\pi + x) &= -\sin x,\quad &\cos(\pi + x) &= -\cos x \\
+\sin(2\pi - x) &= -\sin x,\quad &\cos(2\pi - x) &= \cos x \\
+\sin\left(\frac{\pi}{2}-x\right)&=\cos x,\quad &\cos\left(\frac{\pi}{2}-x\right) &= \sin x
+\end{align*}
 
+\subsection*{Sum and Difference of Angles}
+\begin{align*}
+\sin(x+y) &= \sin x\cos y + \cos x\sin y \\
+\cos(x+y) &= \cos x\cos y - \sin x\sin y \\
+\tan(x+y) &= \frac{\tan x + \tan y}{1 - \tan x\tan y} \\[6pt]
+\sin(x-y) &= \sin x\cos y - \cos x\sin y \\
+\cos(x-y) &= \cos x\cos y + \sin x\sin y \\
+\tan(x-y) &= \frac{\tan x - \tan y}{1 + \tan x\tan y}
+\end{align*}
 
+\subsection*{Double and Triple Angle Formulas}
+\begin{align*}
+\sin(2x) &= 2\sin x\cos x \\
+\cos(2x) &= \cos^2 x - \sin^2 x = 2\cos^2 x - 1 = 1 - 2\sin^2 x \\
+\tan(2x) &= \frac{2\tan x}{1 - \tan^2 x}\\[8pt]
+\sin(3x) &= 3\sin x - 4\sin^3 x \\
+\cos(3x) &= 4\cos^3 x - 3\cos x \\
+\tan(3x) &= \frac{3\tan x - \tan^3 x}{1 - 3\tan^2 x}
+\end{align*}
 
+\subsection*{Half-Angle Formulas}
+\begin{align*}
+\sin\frac{x}{2} &= \pm\sqrt{\frac{1 - \cos x}{2}} \\
+\cos\frac{x}{2} &= \pm\sqrt{\frac{1 + \cos x}{2}} \\
+\tan\frac{x}{2} &= \frac{\sin x}{1+\cos x} = \frac{1-\cos x}{\sin x}
+\end{align*}
 
+\subsection*{Sum-to-Product Formulas}
+\begin{align*}
+\sin x + \sin y &= 2 \sin\frac{x + y}{2}\cos\frac{x - y}{2} \\
+\sin x - \sin y &= 2 \cos\frac{x + y}{2}\sin\frac{x - y}{2} \\
+\cos x + \cos y &= 2 \cos\frac{x + y}{2}\cos\frac{x - y}{2} \\
+\cos x - \cos y &= -2 \sin\frac{x + y}{2}\sin\frac{x - y}{2}
+\end{align*}
 
+\subsection*{Product-to-Sum Formulas}
+\begin{align*}
+\sin x \sin y &= \frac{1}{2}[\cos(x - y) - \cos(x + y)] \\
+\cos x \cos y &= \frac{1}{2}[\cos(x - y) + \cos(x + y)] \\
+\sin x \cos y &= \frac{1}{2}[\sin(x + y) + \sin(x - y)]
+\end{align*}
 
+\subsection*{Exponentials and Complex Numbers}
+\begin{align*}
+e^{ix} &= \cos x + i\sin x \\
+\cos x &= \frac{e^{ix}+e^{-ix}}{2},\quad \sin x = \frac{e^{ix}-e^{-ix}}{2i} \\
+\tan x &= \frac{e^{ix}-e^{-ix}}{i(e^{ix}+e^{-ix})}\\[8pt]
+(\cos x + i\sin x)^n &= \cos(nx) + i\sin(nx)
+\end{align*}
 
+\subsection*{Hyperbolic Functions and Exponentials}
+\begin{align*}
+\sinh x &= \frac{e^x - e^{-x}}{2},\quad \cosh x = \frac{e^x + e^{-x}}{2},\quad \tanh x = \frac{\sinh x}{\cosh x} \\[6pt]
+\sinh(ix) &= i\sin x,\quad \cosh(ix) = \cos x
+\end{align*}
 
+\subsection*{Complex Numbers in Trigonometric Form}
+\begin{align*}
+z &= r(\cos\theta+i\sin\theta)=re^{i\theta}\\[6pt]
+r &= |z|=\sqrt{x^2+y^2},\quad \theta=\arg(z)=\tan^{-1}\frac{y}{x}
+\end{align*}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-with the following DH table\begin{center}
-    \begin{tabular}{|c|c|c|c|c|}
-\hline
-\rowcolor[HTML]{C0C0C0} 
-Link & twist angle $\alpha_i$ & common normal $a_i$ & displacement $d_i$ & joint's angle $\theta_i$ \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-1    & 0          & $a_1$ & 0     & $q_1$      \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-2    & 0          & $a_2$ & 0     & $q_2$      \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-3    & 0          & $a_3$ & 0     & $q_3$      \\ \hline
-\end{tabular}
-\end{center}
-where $q_i$ are variables. The pose of the end effector is described, with a minimal of 3 number of parameters, $p_x,p_y$ and angle $\phi$ with axis $x_0$. With the direct kinematics equations\begin{equation}
-    \begin{pmatrix}
-        p_x\\ p_y\\ \phi 
-    \end{pmatrix}=f_r(\mathbf q)=\begin{pmatrix}
-        a_1\cos q_1+a_2\cos(q_1+q_2)+a_3\cos(q_1+q_2+q_3)\\ 
-         a_1\sin q_1+a_2\sin(q_1+q_2)+a_3\sin(q_1+q_2+q_3)\\ 
-         q_1+q_2+q_3
-    \end{pmatrix}
-\end{equation}
-
+\subsection*{Periodicity and Symmetry}
+\begin{align*}
+\sin(x+2k\pi)&=\sin x,\quad \cos(x+2k\pi)=\cos x,\quad \tan(x+k\pi)=\tan x,\quad k\in\mathbb{Z}\\[6pt]
+\sin(-x)&=-\sin x,\quad \cos(-x)=\cos x,\quad \tan(-x)=-\tan x
+\end{align*}
 \end{document}
