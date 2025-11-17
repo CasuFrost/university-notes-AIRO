@@ -2066,7 +2066,7 @@ We recap the parameters of the DH frames:\begin{itemize}
     \item $\theta_i$ is the angle from $x_{i-1}$ to $x_i$ around $z_{i-1}$, this value is variable if the joint $i$ is revolute.
 \end{itemize}
 \begin{center}
-    \includegraphics[width=0.8\textwidth ]{images/DH_frames_slides.png}
+    \includegraphics[width=0.9\textwidth ]{images/DH_frames2.eps}
 \end{center}
 There are some caveats in the assignments of the DH frames:\begin{itemize}
     \item the frame 0 origin and $x_0$ axis are arbitrary, $z_0$ must be on the first joint axis. 
@@ -2363,12 +2363,12 @@ Since there are two possible values for $q_2$, there are also two possible value
     \includegraphics[width=0.5\textwidth ]{images/2R_IK_2ù.png} 
 \end{center}
 There is a singularity when the desired position is on the boundaries of $WS_1$, in that case, we have that\begin{equation}
-    p_x^2+p_y^2=l_1+l_2
+    \sqrt{p_x^2+p_y^2}=l_1+l_2
 \end{equation}
 so \begin{equation}
-     \cos q_2=\frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}=\frac{p_x^2+p_y^2-p_x^2+p_y^2}{2l_1l_2}=0
+     \cos q_2=\frac{p_x^2+p_y^2-(l_1^2+l_2^2)}{2l_1l_2}=\frac{(l_1+l_2)^2-(l_1^2+l_2^2)}{2l_1l_2}=\frac{l_1^2+l_2^2+2l_1l_2-l_1^2-l_2^2}{2l_1l_2}=1
 \end{equation}
-if $\cos q_2 = 0$, there is only one values for $\sin q_2$:\begin{equation}
+if $\cos q_2 = 1$, there is only one value for $\sin q_2$:\begin{equation}
     \sin q_2=\pm \sqrt{1-\cos^2 q_2}=\pm 0 = 0 \implies q_2=0
 \end{equation}
 There is also another singularity when $l_1=l_2$ and the desired position is the origin, in that case, there are infinite solution (with $q_2=\pi$ fixed).
@@ -2447,19 +2447,158 @@ then we square and sum the three equations:
    (L_2\sin q_2+L_3\sin(q_2+q_3))^2=\\ 
    &(L_2cos q_2+L_3\cos(q_2+q_3))^2+
    (L_2\sin q_2+L_3\sin(q_2+q_3))^2=\\ 
-   &L_2^2\sin^2 q_2+L^2_3\sin^2(q_2+q_3)+2L_2\sin q_2L_3\sin(q_2+q_3)+\\
-   &L_2^2\cos^2 q_2+L^2_3\cos^2(q_2+q_3)+2L_2\cos q_2L_3\cos(q_2+q_3)
+   &\redText{L_2^2\sin^2 q_2}+\blueText{L^2_3\sin^2(q_2+q_3)}+2L_2\sin q_2L_3\sin(q_2+q_3)+\\
+   &\redText{L_2^2\cos^2 q_2}+\blueText{L^2_3\cos^2(q_2+q_3)}+2L_2\cos q_2L_3\cos(q_2+q_3)=\\ 
+   &\redText{L_2^2}+\blueText{L_3^2}+2L_2L_3(\sin q_2\sin(q_2+q_3)+\cos q_2\cos(q_2+q_3))=\end{align}
+We use the identity $\sin q_2\sin(q_2+q_3)+\cos q_2\cos(q_2+q_3)=\cos q_3$:
+   \begin{align}
+   &p^2_x+p_y^2+p_z^2 =L_2^2+L_3^2+2L_2L_3\cos q_3\implies \\ 
+   &2L_2L_3\cos q_3=p^2_x+p_y^2+p_z^2-L_2^2-L_3^2 \implies \\ 
+   &\cos q_3=\frac{p^2_x+p_y^2+p_z^2-L_2^2-L_3^2}{2L_2L_3}
 \end{align}
+if  $\frac{p^2_x+p_y^2+p_z^2-L_2^2-L_3^2}{2L_2L_3}\notin [-1,1]$, the point is out of the workspace. Else, we can consider \begin{equation}
+     \sin q_3 = \pm s_3 = \pm\sqrt{1-\cos^2 q_3}\implies \begin{cases}
+        q_3^{\{+\}}=\text{atan2}(s_3,\cos q_3)\\
+         q_3^{\{-\}}=\text{atan2}(-s_3,\cos q_3)
+    \end{cases}
+\end{equation} 
+If we square and sum the first two equations we get\begin{align}
+   & p_x^2+p_y^2=(L_2\cos q_2+L_3\cos (q_2+q_3))^2\implies 
+   \\ &L_2\cos q_2+L_3\cos (q_2+q_3)=\pm\sqrt{p^2_x+p^2_y}
+\end{align}
+So we rearrange the first two equations:\begin{align}
+    \begin{cases}
+        p_x=\pm\cos q_1\sqrt{p^2_x+p^2_y}\\ 
+        p_y=\pm\sin q_1\sqrt{p^2_x+p^2_y}
+    \end{cases}\implies 
+    \begin{cases}
+       \cos q_1 = \frac{p_x}{\pm\sqrt{p^2_x+p^2_y}}\\ 
+       \sin q_1 = \frac{p_y}{\pm\sqrt{p^2_x+p^2_y}}
+    \end{cases}
+\end{align}
+If $p^2_x+p^2_y=0$, the sine and cosine of $q_1$ are undefined, so there are infinite solutions (singular case), else\begin{equation}
+\begin{cases}
+    q_1^{\{+\}}=\text{atan2}(p_y,p_x)\\
+    q_1^{\{-\}}=\text{atan2}(-p_y,-p_x)
+\end{cases}\end{equation}
+To find $q_2$, we have to combine the two equations and rearrange the last one in the following way:\begin{align}
+    & \begin{cases}
+        p_x=\cos q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_y=\sin q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_z=d_1+L_2\sin q_2+L_3\sin(q_2+q_3)
+    \end{cases}\\ 
+    &\begin{cases}
+        p_x+p_y=\cos q_1(L_2cos q_2+L_3\cos(q_2+q_3))
+        +\sin q_1(L_2cos q_2+L_3\cos(q_2+q_3))\\ 
+        p_z-d_1=L_2\sin q_2+L_3\sin(q_2+q_3)
+    \end{cases}\\ 
+    &\begin{cases}
+       \cos q_1 p_x+\sin q_1 p_y = (L_2+L_3\cos q_3)\cos q_2-L_3\sin q_3\sin q_2\\ 
+        p_z-d_1=L_3\sin q_3\cos q_2+(L_2+L_3\cos q_3)\sin q_2
+    \end{cases}
+\end{align}
+Since $q_1$ and $q_3$ are known, this became a linear system in the variables $\cos q_2, \sin q_2$
+\begin{equation}
+   \begin{cases}
+       \cos q_1 p_x+\sin q_1 p_y = (L_2+L_3\cos q_3)\blueText{\cos q_2}-L_3\sin q_3\blueText{\sin q_2}\\ 
+        p_z-d_1=L_3\sin q_3\blueText{\cos q_2}+(L_2+L_3\cos q_3)\blueText{\sin q_2}
+    \end{cases}
+\end{equation}
+In details, there are 4 linear systems for the 4 possible combinations of $q_1,q_3$\begin{align}
+    (q_1^{\{+\}},q_3^{\{+\}}), \ \ \ \ \ 
+    (q_1^{\{+\}},q_3^{\{-\}}), \ \ \ \ \ 
+    (q_1^{\{-\}},q_3^{\{+\}}), \ \ \ \ \ 
+    (q_1^{\{-\}},q_3^{\{-\}})
+\end{align}
+$q_2$ is defined only if the system have the determinant different than zero:\begin{equation}
+    p_x^2+p_y^2+(p_z-d_1)^2\ne 0
+\end{equation}
+In the end, by solving the four systems we will obtain four regular solutions.
 
+\section{Numerical Solutions}
+Numerical solutions are applied in the most part in real life cases, if a task is redundant ($n>m$), it's impossible to find an analytical solution, since there are infinitely many in the regular case.
+\subsection{Newton Method}
+The newton method is an optimization iterative algorithm that aims to find the roots of a multi-variate real function. It's easy to understand the case with a function $f:\R\rightarrow \R$. This method aims fo find $x^*$ such that $f(x^*)=0$. This method can be applied to find an $x$ that realize any real value $r_d$ by setting $\hat f = f-r_d$ and applying the method to find $x^*$ such that $\hat f(x^*)=0\implies f(x^*)=r_d$.\bigskip 
 
+The method needs an initial guess $x_0$ to start, and consider a linear approximation of the function $f$ in $x_0$:\begin{equation}
+    f(x)\simeq f(x_0)+f'(x_0)(x-x_0)
+\end{equation}
+we denote $f'$ the derivative of $f$. To reach the next step, we consider the root of that linear approximation:\begin{equation}
+    f(x_0)+f'(x_0)(x^*-x_0)=0\implies  x^*=x_0-\frac{f(x_0)}{f'(x_0)}
+\end{equation}
+The points $x^*=x_1$ and $x_0$ (initial guess) is represented in the following picture.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/newton_1.eps} 
+\end{center}
+Then, we consider the next guess $x_1$ and linearize the function $f$ on $x_1$, to get\begin{equation}
+     f(x)\simeq f(x_1)+f'(x_1)(x-x_1)
+\end{equation}
+the root of this linearized function will be the next guess $x_2$:\begin{equation}
+    x_2-\frac{f(x_1)}{f'(x_1)}
+\end{equation}
+The step $2$ and $3$ is represented in the following picture.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/newton_2.eps} 
+\end{center}
+In general, the method is applied iterative, with the $n+1$-th guess as \begin{equation}
+    x_{n+1}=\frac{f(x_n)}{f'(x_n)}
+\end{equation}
+\noindent Under sufficient conditions, the method will converge to the root of the function $f(x)$.
 
+Let's now consider the robotic task where $n=m$ (no redundant case), we have the direct kinematics equation\begin{equation}
+    \mathbf r = f_r(\mathbf q)=\begin{pmatrix}
+        f^1_r(\mathbf q)\\ \vdots \\ f^m_r(\mathbf q)
+    \end{pmatrix}
+\end{equation}
+In a given initial guess $\mathbf q^0$, the linearize version of $f_r$ as a function of $\mathbf q$ is
+\begin{equation}
+    f_r(\mathbf q^0)+J_r(\mathbf q^0)(\mathbf q -\mathbf q^0)
+\end{equation}
+where $J_r$ is the analytical Jacobian of $f_r$\begin{equation}
+    J_r=\left( \frac{\partial f^i_r}{\partial q_j} \right)=\begin{pmatrix}
+         \frac{\partial f^1_r}{\partial q_1}&\dots &  \frac{\partial f^1_r}{\partial q_n}\\ 
+         \vdots & \ddots & \vdots \\
+          \frac{\partial f^m_r}{\partial q_1}&\dots &  \frac{\partial f^m_r}{\partial q_n}
+    \end{pmatrix} 
+\end{equation}
+Let $\mathbf r_d$ to be the desired solution for the inverse kinematics problem. The iterative method consider the $k+1$-th guess as:\begin{equation}
+    \mathbf q^{k+1}=\mathbf q^k+J_r^{-1}(\mathbf q^k)(\mathbf r_d-f_r(\mathbf q^k))
+\end{equation}
+So, the Jacobian matrix $J_r$ must be invertible during the iterations, in case of singularities, there will be problems. In case of redundancy ($m<n$), instead of the inverse, we consider the pseudo inverse of the Jacobian matrix
+\begin{equation}
+    \mathbf q^{k+1}=\mathbf q^k+J_r^{\#}(\mathbf q^k)(\mathbf r_d-f_r(\mathbf q^k))
+\end{equation}
+where\begin{equation}
+    J_r^{\#}=(J_r^TJ_r)^{-1}J_r^T
+\end{equation}
+We have singularities when $J_r^TJ_r$ is not invertible. Without entering in the mathematical and computational complexity details, the Newton method converge when the initial guess is ''close enough'' to some $\mathbf q^*$ that realize $f_r(\mathbf q^*)=\mathbf r_d$, and the convergence rate is quadratic.\bigskip 
 
-
-
+We will now discuss about singularities during the iterations. Let's assume that we iterate $k-1$ times, and we obtained a series of guesses that are converging to a solution $\mathbf q^*$\begin{equation}
+    \{ \mathbf q^0, \mathbf q^1, \mathbf q^2,\dots ,\mathbf q^{k-1}  \}\longrightarrow \mathbf q^*
+\end{equation}
+Let's assume that we are getting closer to the solution:\begin{equation}
+   \| \mathbf q^i-\mathbf q^{*}\| > \| \mathbf q^{i+1}-\mathbf q^{*}\|, \ \ \ \forall i
+\end{equation}
+We are near a singularity at the $k$-th step, so, the matrix $J_r(\mathbf q^{k-1})$ is almost (but not) singular:
+\begin{equation}
+    \det J_r(\mathbf q^{k-1}) \simeq 0
+\end{equation}
+so the determinant is not zero, but really close, we calculate the $k$-th guess by considering\begin{equation}
+     \mathbf q^{k}=\mathbf q^{k-1}+J_r^{-1}(\mathbf q^{k-1})(\mathbf r_d-f_r(\mathbf q^{k-1}))
+\end{equation}
+we use the identity \begin{equation}
+    J_r^{-1}=\frac{1}{\det J_r}J_r^{+}
+\end{equation}
+where $J_r^{+}$ is the classical adjoint matrix of $J_r$. The $k$-th guess is
+\begin{equation}
+     \mathbf q^{k}=\mathbf q^{k-1}+\frac{1}{\det J_r(\mathbf q^{k-1})}J_r^{+}(\mathbf q^{k-1})(\mathbf r_d-f_r(\mathbf q^{k-1}))
+\end{equation}
+Since $\det J_r(\mathbf q^{k-1})$ is really small, matrix $J_r^{-1}$ will have terms that grows really fast to infinity with $\det J_r(\mathbf q^{k-1})\rightarrow 0$, and the next guess $\mathbf q^k$ will be really far from $\mathbf q^{k-1}$, and far from the solution $\mathbf q^*$.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/newton_3.eps} 
+\end{center}
 
 \chapter{Differential Kinematics}\label{chap:diff_kin}
-
-
 
 
 \chapter*{Appendix}
