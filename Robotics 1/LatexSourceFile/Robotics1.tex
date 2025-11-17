@@ -2593,10 +2593,62 @@ where $J_r^{+}$ is the classical adjoint matrix of $J_r$. The $k$-th guess is
 \begin{equation}
      \mathbf q^{k}=\mathbf q^{k-1}+\frac{1}{\det J_r(\mathbf q^{k-1})}J_r^{+}(\mathbf q^{k-1})(\mathbf r_d-f_r(\mathbf q^{k-1}))
 \end{equation}
-Since $\det J_r(\mathbf q^{k-1})$ is really small, matrix $J_r^{-1}$ will have terms that grows really fast to infinity with $\det J_r(\mathbf q^{k-1})\rightarrow 0$, and the next guess $\mathbf q^k$ will be really far from $\mathbf q^{k-1}$, and far from the solution $\mathbf q^*$.
+Since $\det J_r(\mathbf q^{k-1})$ is really small, matrix $J_r^{-1}$ will have terms that grows really fast to infinity with $\det J_r(\mathbf q^{k-1})\rightarrow 0$, and the next guess $\mathbf q^k$ will be really far from $\mathbf q^{k-1}$, and far from the solution $\mathbf q^*$, so this methods might diverge.
 \begin{center}
     \includegraphics[width=0.5\textwidth ]{images/newton_3.eps} 
 \end{center}
+An useful visualization of the newton method in case $m=n=1$ is presented to the following link.
+\begin{quote}
+    \url{https://upload.wikimedia.org/wikipedia/commons/e/e0/NewtonIteration_Ani.gif}
+\end{quote}
+\subsection{Gradient Descent}
+The gradient descent is an iterative algorithm that aims to minimize a given function. In our context, we want to find a $\mathbf q^*$ that realize\begin{equation}
+    f_r(\mathbf q^*)=\mathbf r_d 
+\end{equation}
+for a given task vector $\mathbf r_d$. We can define the following \textit{error function}:\begin{equation}
+    H(\mathbf q)=\frac{1}{2}\| \mathbf r_d-f_r(\mathbf q) \|^2=\frac{1}{2}(\mathbf r_d-f_r(\mathbf q))^T(\mathbf r_d-f_r(\mathbf q))
+\end{equation}
+that, for a given $\mathbf q$, measure how far it is from a solution $\mathbf q^*$ (this distance is expressed in the task space). After defining $H$, we apply the gradient descent to minimize it, since, if $H(\mathbf q^*)=0\implies f_r(\mathbf q^*)=\mathbf r_d$. We start with an initial guess $\mathbf q^0$, the $k+1$-th guess is given by
+\begin{equation}
+     \mathbf q^{k+1}=\mathbf q^k-\alpha\nabla H(\mathbf q^k)
+\end{equation}
+$\nabla H(\mathbf q^k)$ is the gradient of $H$ respect to $\mathbf q$, by expanding it we get
+\begin{equation}
+    \mathbf q^{k+1}=\mathbf q^k+\alpha J_r^T(\mathbf q^k)(\mathbf r_d-f_r(\mathbf q^k))
+\end{equation}
+$\alpha\in (0,+\infty)$ is a real value called \textbf{step size}, and have to be chosen as an hyper parameter of the optimization. \begin{itemize}
+    \item a small choice of $\alpha$ may leads to extremely slow convergence 
+    \item a large choice of $\alpha$ may lead the method to ''miss'' the minimum
+\end{itemize}
+Notice how this method is a good choice since at each step we don't have to invert the Jacobian matrix. We may also see revisit the gradient method as a feedback scheme, by considering continuous steps in time $t$ instead of discrete steps $k$, in that case:\begin{equation}
+    \mathbf q(t+dt)=\mathbf q(0)+\int_0^t K J_r^T(\mathbf q(\tau))(\mathbf r_d-f_r(\mathbf q(\tau)))d\tau
+\end{equation}
+$K$ is a gain that depends on $\alpha$. The feedback scheme is the following:
+\begin{center}
+    \includegraphics[width=0.75\textwidth ]{images/gradient.drawio.pdf} 
+\end{center}
+$\mathbf e$ is the error $\mathbf r_d-f_r(\mathbf q)$, this system is asymptotically stable and $\mathbf e$ will converge to $0$. The function \begin{equation}
+    V=\frac{1}{2}\mathbf e^T\mathbf e = H(\mathbf q) 
+\end{equation}
+is a \textit{Lyapunov candidate function}. 
+\begin{definition}
+    For a dynamical system, a \textbf{Lyapunov function} is a scalar function defined on the state space of the system, that proves the stability of an equilibrium point. A function $V$ for the equilibrium point $\mathbf x = \mathbf 0$ is a Lyapunov function if\begin{itemize}
+        \item $V(\mathbf x)>0$ for all $\mathbf x\ne 0$ and $V(\mathbf 0)=0$
+        \item $\dot V(\mathbf x)=\frac{dV}{dt}\le 0$, the time derivative must be less than or equal to zero.
+    \end{itemize}
+\end{definition}
+For now, we will not enter in the details of Lyapunov stability. Let's consider our Lyapunov candidate 
+$$ V=\frac{1}{2}\mathbf e^T\mathbf e = H(\mathbf q)  $$ 
+the time derivative is\begin{equation}
+    \dot V = \dot H = -\alpha\mathbf e^TJ_r(\mathbf q)J_r^T(\mathbf q)\mathbf e \le 0
+\end{equation}
+notice how $\dot V=0\iff \mathbf e \in \ker(J_r^T(\mathbf q))$.
+The Gradient descent is a good optimization method because:\begin{itemize}
+    \item It never diverges, may converge to a point that is not a solution 
+    \item Have  the same use for regular case $n=m$ and redundant case $n>m$
+    \item It is computationally simpler since it uses the Jacobian transpose and not the inverse 
+\end{itemize}
+
 
 \chapter{Differential Kinematics}\label{chap:diff_kin}
 
