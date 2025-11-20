@@ -2751,4 +2751,97 @@ r &= |z|=\sqrt{x^2+y^2},\quad \theta=\arg(z)=\tan^{-1}\frac{y}{x}
 \sin(x+2k\pi)&=\sin x,\quad \cos(x+2k\pi)=\cos x,\quad \tan(x+k\pi)=\tan x,\quad k\in\mathbb{Z}\\[6pt]
 \sin(-x)&=-\sin x,\quad \cos(-x)=\cos x,\quad \tan(-x)=-\tan x
 \end{align*}
+\section*{Products of Three Rotation Matrices}\begin{eqnarray*}R_{X}(\alpha)R_{Y}(\beta)R_{X}(\gamma)=\begin{pmatrix}
+ c \beta &  s \beta s \gamma &  s \beta c \gamma \\ 
+ s \alpha s \beta & - s \alpha s \gamma c \beta +  c \alpha c \gamma & - s \alpha c \beta c \gamma -  s \gamma c \alpha \\ 
+- s \beta c \alpha &  s \alpha c \gamma +  s \gamma c \alpha c \beta & - s \alpha s \gamma +  c \alpha c \beta c \gamma 
+\end{pmatrix} \\ \\ 
+R_{X}(\alpha)R_{Y}(\beta)R_{Z}(\gamma)=\begin{pmatrix}
+ c \beta c \gamma & - s \gamma c \beta &  s \beta \\ 
+ s \alpha s \beta c \gamma +  s \gamma c \alpha & - s \alpha s \beta s \gamma +  c \alpha c \gamma & - s \alpha c \beta \\ 
+ s \alpha s \gamma -  s \beta c \alpha c \gamma &  s \alpha c \gamma +  s \beta s \gamma c \alpha &  c \alpha c \beta 
+\end{pmatrix} \\ \\ 
+R_{X}(\alpha)R_{Z}(\beta)R_{X}(\gamma)=\begin{pmatrix}
+ c \beta & - s \beta c \gamma &  s \beta s \gamma \\ 
+ s \beta c \alpha & - s \alpha s \gamma +  c \alpha c \beta c \gamma & - s \alpha c \gamma -  s \gamma c \alpha c \beta \\ 
+ s \alpha s \beta &  s \alpha c \beta c \gamma +  s \gamma c \alpha & - s \alpha s \gamma c \beta +  c \alpha c \gamma 
+\end{pmatrix} \\ \\ 
+R_{X}(\alpha)R_{Z}(\beta)R_{Y}(\gamma)=\begin{pmatrix}
+ c \beta c \gamma & - s \beta &  s \gamma c \beta \\ 
+ s \alpha s \gamma +  s \beta c \alpha c \gamma &  c \alpha c \beta & - s \alpha c \gamma +  s \beta s \gamma c \alpha \\ 
+ s \alpha s \beta c \gamma -  s \gamma c \alpha &  s \alpha c \beta &  s \alpha s \beta s \gamma +  c \alpha c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{X}(\beta)R_{Y}(\gamma)=\begin{pmatrix}
+- s \alpha s \gamma c \beta +  c \alpha c \gamma &  s \alpha s \beta &  s \alpha c \beta c \gamma +  s \gamma c \alpha \\ 
+ s \beta s \gamma &  c \beta & - s \beta c \gamma \\ 
+- s \alpha c \gamma -  s \gamma c \alpha c \beta &  s \beta c \alpha & - s \alpha s \gamma +  c \alpha c \beta c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{X}(\beta)R_{Z}(\gamma)=\begin{pmatrix}
+ s \alpha s \beta s \gamma +  c \alpha c \gamma &  s \alpha s \beta c \gamma -  s \gamma c \alpha &  s \alpha c \beta \\ 
+ s \gamma c \beta &  c \beta c \gamma & - s \beta \\ 
+- s \alpha c \gamma +  s \beta s \gamma c \alpha &  s \alpha s \gamma +  s \beta c \alpha c \gamma &  c \alpha c \beta 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{Z}(\beta)R_{X}(\gamma)=\begin{pmatrix}
+ c \alpha c \beta &  s \alpha s \gamma -  s \beta c \alpha c \gamma &  s \alpha c \gamma +  s \beta s \gamma c \alpha \\ 
+ s \beta &  c \beta c \gamma & - s \gamma c \beta \\ 
+- s \alpha c \beta &  s \alpha s \beta c \gamma +  s \gamma c \alpha & - s \alpha s \beta s \gamma +  c \alpha c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{Z}(\beta)R_{Y}(\gamma)=\begin{pmatrix}
+- s \alpha s \gamma +  c \alpha c \beta c \gamma & - s \beta c \alpha &  s \alpha c \gamma +  s \gamma c \alpha c \beta \\ 
+ s \beta c \gamma &  c \beta &  s \beta s \gamma \\ 
+- s \alpha c \beta c \gamma -  s \gamma c \alpha &  s \alpha s \beta & - s \alpha s \gamma c \beta +  c \alpha c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{X}(\beta)R_{Y}(\gamma)=\begin{pmatrix}
+- s \alpha s \beta s \gamma +  c \alpha c \gamma & - s \alpha c \beta &  s \alpha s \beta c \gamma +  s \gamma c \alpha \\ 
+ s \alpha c \gamma +  s \beta s \gamma c \alpha &  c \alpha c \beta &  s \alpha s \gamma -  s \beta c \alpha c \gamma \\ 
+- s \gamma c \beta &  s \beta &  c \beta c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{X}(\beta)R_{Z}(\gamma)=\begin{pmatrix}
+- s \alpha s \gamma c \beta +  c \alpha c \gamma & - s \alpha c \beta c \gamma -  s \gamma c \alpha &  s \alpha s \beta \\ 
+ s \alpha c \gamma +  s \gamma c \alpha c \beta & - s \alpha s \gamma +  c \alpha c \beta c \gamma & - s \beta c \alpha \\ 
+ s \beta s \gamma &  s \beta c \gamma &  c \beta 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{Y}(\beta)R_{X}(\gamma)=\begin{pmatrix}
+ c \alpha c \beta & - s \alpha c \gamma +  s \beta s \gamma c \alpha &  s \alpha s \gamma +  s \beta c \alpha c \gamma \\ 
+ s \alpha c \beta &  s \alpha s \beta s \gamma +  c \alpha c \gamma &  s \alpha s \beta c \gamma -  s \gamma c \alpha \\ 
+- s \beta &  s \gamma c \beta &  c \beta c \gamma 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{Y}(\beta)R_{Z}(\gamma)=\begin{pmatrix}
+- s \alpha s \gamma +  c \alpha c \beta c \gamma & - s \alpha c \gamma -  s \gamma c \alpha c \beta &  s \beta c \alpha \\ 
+ s \alpha c \beta c \gamma +  s \gamma c \alpha & - s \alpha s \gamma c \beta +  c \alpha c \gamma &  s \alpha s \beta \\ 
+- s \beta c \gamma &  s \beta s \gamma &  c \beta 
+\end{pmatrix} 
+\end{eqnarray*} 
+
+\section*{Products of Two Rotation Matrices}\begin{eqnarray*}R_{X}(\alpha)R_{Y}(\beta)==\begin{pmatrix}
+ c \beta & 0 &  s \beta \\ 
+ s \alpha s \beta &  c \alpha & - s \alpha c \beta \\ 
+- s \beta c \alpha &  s \alpha &  c \alpha c \beta 
+\end{pmatrix} \\ \\ 
+R_{X}(\alpha)R_{Z}(\beta)==\begin{pmatrix}
+ c \beta & - s \beta & 0 \\ 
+ s \beta c \alpha &  c \alpha c \beta & - s \alpha \\ 
+ s \alpha s \beta &  s \alpha c \beta &  c \alpha 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{X}(\beta)==\begin{pmatrix}
+ c \alpha &  s \alpha s \beta &  s \alpha c \beta \\ 
+0 &  c \beta & - s \beta \\ 
+- s \alpha &  s \beta c \alpha &  c \alpha c \beta 
+\end{pmatrix} \\ \\ 
+R_{Y}(\alpha)R_{Z}(\beta)==\begin{pmatrix}
+ c \alpha c \beta & - s \beta c \alpha &  s \alpha \\ 
+ s \beta &  c \beta & 0 \\ 
+- s \alpha c \beta &  s \alpha s \beta &  c \alpha 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{X}(\beta)==\begin{pmatrix}
+ c \alpha & - s \alpha c \beta &  s \alpha s \beta \\ 
+ s \alpha &  c \alpha c \beta & - s \beta c \alpha \\ 
+0 &  s \beta &  c \beta 
+\end{pmatrix} \\ \\ 
+R_{Z}(\alpha)R_{Y}(\beta)==\begin{pmatrix}
+ c \alpha c \beta & - s \alpha &  s \beta c \alpha \\ 
+ s \alpha c \beta &  c \alpha &  s \alpha s \beta \\ 
+- s \beta & 0 &  c \beta 
+\end{pmatrix} 
+\end{eqnarray*}
 \end{document}
