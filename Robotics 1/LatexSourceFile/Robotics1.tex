@@ -2651,6 +2651,58 @@ The Gradient descent is a good optimization method because:\begin{itemize}
 
 
 \chapter{Differential Kinematics}\label{chap:diff_kin}
+In this chapter we will explain the relation between the velocity of the joints $\dot{\mathbf q}$ and the velocity of the task vector $\dot{\mathbf r}$. This relation is explained by the Jacobian matrix, can be obtain by deriving the direct kinematics function respects to time, or by geometric reasoning if the task vector represents the pose of the end effector.
+
+First, we recap some basics concepts about the velocity of a rigid body. Let $B$ to be a set of points describing a rigid body, let $\mathbf r_i$ and $\mathbf r_j$ to be two points of $B$, since it is rigid, the distance between this two points is constant in time\begin{equation}
+    \|\mathbf r_i-\mathbf r_j\|=\text{constant}
+\end{equation}
+Let's consider two distinct points $\mathbf r_1,\mathbf r_2$, let $\mathbf v_1=\dot{\mathbf r_1}$ and $\mathbf v_2=\dot{\mathbf r_2}$ to be the velocities of the points. It is always true that the vector $$\mathbf v_2-\mathbf v_1 $$
+is orthogonal to $\mathbf r_{12}$, where this last one is the vector that goes from $\mathbf r_1$ to $\mathbf r_2$. Since it is orthogonal, there exists a vector $\boldsymbol{\omega}_1$ such that\begin{equation}
+    \mathbf v_2-\mathbf v_1 = \bomega_1\times \mathbf r_{12}
+\end{equation}
+Let $\mathbf r_3$ to be another point, it is also holds (for the same reason) that\begin{equation}
+    \mathbf v_3-\mathbf v_1 = \bomega_1\times \mathbf r_{13}
+\end{equation} 
+and 
+\begin{equation}
+    \mathbf v_3-\mathbf v_2 = \bomega_2\times \mathbf r_{23}
+\end{equation} 
+We can subtract the first two equations\begin{align}
+    &\mathbf v_2-\mathbf v_1-( \mathbf v_3-\mathbf v_1) = \bomega_1\times \mathbf r_{12}-(\bomega_1\times \mathbf r_{13})\implies \implies \\ 
+    &\mathbf v_2- \mathbf v_3 = \bomega_1\times 
+    (\mathbf r_{12}-\mathbf r_{13})\implies \\ 
+    &
+     \mathbf v_3-\mathbf v_2 = \bomega_2\times \mathbf r_{23}
+\end{align}
+So, it follows that\begin{equation}
+    \bomega_1=\bomega_2
+\end{equation}
+In fact, even if all the points of $B$ have different velocities, they all shares the same $\bomega$, this is \textit{angular velocity} associated to the whole body (not to a single point).
+If $\bomega = \mathbf 0$ but the velocities of the points are non zero, the object is moving in a pure translation motion. If some points have non zero velocity but there exists two distinct points with zero velocity, then the object is in a pure rotation motion (the points with zero velocity is on the axis of rotation).\bigskip 
+
+\noindent Since \begin{equation}
+    \mathbf v_j=\mathbf v_i+\bomega\times \mathbf r_{ij}
+\end{equation}
+we can use the skew symmetric matrix to write\begin{equation}
+     \mathbf v_j=\mathbf v_i+S(\bomega) \mathbf r_{ij}
+\end{equation}
+and this holds if and only if\begin{equation}
+    \dot{\mathbf r}_{ij}=\bomega\times  \mathbf r_{ij}
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/rigid_body_velocity.png} 
+\end{center}
+\section{End Effector Velocities}
+The end effector have an angular velocity $\bomega$ and a linear velocity $\mathbf v$.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/end_effector_vel.png} 
+\end{center}
+These two quantities are vectors. The pose of the end effector is described by 6 scalars:\begin{equation}
+    \mathbf r = (\mathbf p, \phi)
+\end{equation}
+
+
+
 
 
 \chapter*{Appendix}
