@@ -2700,11 +2700,78 @@ The end effector have an angular velocity $\bomega$ and a linear velocity $\math
 These two quantities are vectors. The pose of the end effector is described by 6 scalars:\begin{equation}
     \mathbf r = (\mathbf p, \phi)
 \end{equation}
+The first, $\mathbf p$ is the position, and is a vector of $\R^3$, the velocity $\mathbf v$ is just the time derivative of $\mathbf p$.
+$$
+\dot{\mathbf p} = \mathbf v
+$$
+The other 3 scalars  $\phi = \langle  \phi_1,\phi_2,\phi_3\rangle$ are the minimal representation of the orientation of the end effector. $\phi$ is not a vector since is not an element of any vector space, in fact:\begin{equation}
+    \dot \phi\ne \bomega
+\end{equation}
+The pose can also be described by an homogeneous matrix\begin{equation}
+    T=\begin{pmatrix}
+        R&\mathbf p \\ 
+        \mathbf 0^T&1
+    \end{pmatrix}
+\end{equation}
+So, the orientation is described by $R$ or $\phi$, these quantities are not vectors. The angular speed is described by a vector $\bomega$, and this is not directly the time derivative of $\phi$. We want to explicit the relation between $\bomega$ and the time derivative of $R$. $R(\mathbf q)$ is variable in time if we give a time law $\mathbf q(t)$ to the joints, so it is well defined the time derivative of the matrix $R$.\begin{equation}
+    R=(R_{ij}(\mathbf q))\implies \dot R=\left(
+        \frac{dR_{ij}}{dt}
+    \right)
+\end{equation}
+Let's consider now a finite displacement of a rigid body (ora a point)\begin{equation}
+    \begin{pmatrix}
+        \Delta x\\\Delta y\\ \Delta z
+    \end{pmatrix}
+\end{equation}
+we now that, by applying the displacement in series by different coordinates, the final position of the rigid body will be independent from the order in which we apply these displacements.\begin{equation}
+    \mathbf p +  \Delta x\begin{pmatrix}
+        1\\0\\ 0
+    \end{pmatrix}
+    +  \Delta z\begin{pmatrix}
+        0\\0\\ 1
+    \end{pmatrix}
+    =
+      \mathbf p +  \Delta z\begin{pmatrix}
+        0\\0\\ 1
+    \end{pmatrix}
+    +  \Delta x\begin{pmatrix}
+        1\\0\\ 0
+    \end{pmatrix}
+\end{equation}
+this holds also for infinitesimal displacement $dx,dy,dz$.\begin{quotation}
+    translating a point by $\Delta x$ on the $x$ axis and then by $\Delta z$ on the $z$ axis is the same that translating by $\Delta z$ on the $z$ axis and then by $\Delta x$ on the $x$ axis.
+\end{quotation}
+This doesn't holds for finite rotation, in general:\begin{equation}
+    R_x(\alpha)R_z(\gamma)\mathbf p \ne R_z(\gamma)R_x(\alpha)\mathbf p
+\end{equation}
+This is true because the function $\bomega(t)$ is not an exact \textit{differential form}, in particular, the integral of $\bomega$ over time depends on the choice of the integration path, and not only on the initial and final value of $\bomega$, for example, in $t\in [0,2]$ seconds, if we have these time law for $\bomega$:
+\begin{equation}
+    \bomega^1(t)=\begin{pmatrix}
+        \omega^1_x(t)= 0 \text{ if }t<1, \ 90^\circ\text{ else}\\ 
+        \omega^1_x(t)= 0 \\ 
+        \omega^1_x(t)= 90^\circ \text{ if }t<1, \ 0\text{ else}
+    \end{pmatrix} \ \ \  
+     \bomega^2(t)=\begin{pmatrix}
+        \omega^2_x(t)= 90^\circ \text{ if }t<1, \ 0\text{ else}\\ 
+        \omega^2_x(t)= 0 \\ 
+        \omega^2_x(t)= 0 \text{ if }t<1, \ 90^\circ\text{ else}
+    \end{pmatrix}
+\end{equation}
+it is true that \begin{equation}
+    \int_0^2\bomega^1(t)dt\text{ and }\int_0^2\bomega^2(t)dt
+\end{equation}
+will lead to different final orientation. In particular, the results of the two integrals will be the same:\begin{equation}
+    \begin{pmatrix}
+        90^\circ\\ 0 \\ 90^\circ
+    \end{pmatrix}
+\end{equation}
+but the final orientations (described by $\phi$ or $R$) will be different.
 
-
-
-
-
+Differently from the finite case, infinitesimal rotations commute, since\begin{equation}
+    \cos(dx)=1\\ 
+    \sin(dx)=dx
+\end{equation}
+we have that  
 \chapter*{Appendix}
 \section*{Useful Trigonometric Formulas}
 \subsection*{atan2 Definition}
