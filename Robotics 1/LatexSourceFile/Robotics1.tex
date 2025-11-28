@@ -1563,7 +1563,7 @@ without entering in the details, from the equation \eqref{quat_mat} we can deriv
     &\epsilon_z=\frac{1}{2}\text{sign}(R_{21}-R_{12})\sqrt{R_{33}-R_{11}-R_{22}+1}
 \end{align}
 \section{Minimal Representations of Orientation}
-We discussed many representation of rotation, quaternions, rotation axis and angle and  rotation matrices, we want to describe an orientation with the minimum number of variables, indeed, the group $SO(3)$ is a 3-mainfold, to describe an element in $SO(3)$ we need just three independent variables. We define three rotation along the base axis with three angles $\alpha_1,\alpha_2,\alpha_3$.\bigskip 
+We discussed many representation of rotation, quaternions, rotation axis and angle and  rotation matrices, we want to describe an orientation with the minimum number of variables, indeed, the group $SO(3)$ is a 3-manifold, to describe an element in $SO(3)$ we need just three independent variables. We define three rotation along the base axis with three angles $\alpha_1,\alpha_2,\alpha_3$.\bigskip 
 
 There are two ways to use 3 angles to describe a rotation, one along moving axis, and one along fixed axis.
 \subsection{Euler Angles}
@@ -2269,7 +2269,7 @@ In general:\begin{itemize}
     \end{itemize}
     \item if $m<n$, the robot are mor DOF than the dimension of the task space, the robot is \textit{kinematically redundant}, in that case for an IK problem they may:\begin{itemize}
     \item  doesn't exist solutions (out of workspace)
-    \item infinitely many solutions, in details, we say that there are $\infty^{n-m}$ solutions, if the set $Q'$ of joint's configuration that is a solution for the inverse kinematics, is a $n-m$-mainfold.
+    \item infinitely many solutions, in details, we say that there are $\infty^{n-m}$ solutions, if the set $Q'$ of joint's configuration that is a solution for the inverse kinematics, is a $n-m$-manifold.
     \item they may be a finite or infinite number of \textbf{singular} solutions.
     \end{itemize}
 \end{itemize}
@@ -2395,7 +2395,7 @@ By summing and squaring the  equations we can find the value of $q_3$\begin{alig
     &q_3=\pm\sqrt{p_x^2+p_y^2+(p_z-d_1)^2}=\pm\gamma
 \end{align}
 For simplicity, we denote $\gamma=\sqrt{p_x^2+p_y^2+(p_z-d_1)^2}$.
-If $q_3=0$, the end effector is on the point $(0,0,d_1)$, in such case, every value of $q_1$ and $q_2$ works as a solution, we can say that the set of solutions for an IK problem where the end effector lies on $(0,0,d_1)$ is a 2-mainfold. We can solve the third equation for $\sin q_2$\begin{align}
+If $q_3=0$, the end effector is on the point $(0,0,d_1)$, in such case, every value of $q_1$ and $q_2$ works as a solution, we can say that the set of solutions for an IK problem where the end effector lies on $(0,0,d_1)$ is a 2-manifold. We can solve the third equation for $\sin q_2$\begin{align}
     &p_z=d_1\pm\gamma\sin q_2\\ 
       &\sin q_2=\pm \frac{p_z-d_1}{\gamma}\\ 
 \end{align}
@@ -2856,12 +2856,58 @@ around three axis, we consider the roll pitch yaw matrix $T(\alpha,\beta,\gamma)
         \dot\alpha\\\dot\beta\\\dot\gamma
     \end{pmatrix}
 \end{equation}
-
-
-
-
-
-
+\subsection{The Jacobian Matrix}
+Given two differential manifolds $X,Y$, and a function $f:X\rightarrow Y$, the Jacobian is a linear application defined between the tangent spaces of $X$ and $Y$ in a given point, it would be overly long to introduce the space of derivation and the tangent space for differential manifold, so we will give a non general definition of the Jacobian without entering in the differential geometry field. It's important to know that the joint space $Q$ (the set of all possible configuration $\mathbf q$) and the task space $R$ (the set of all possible task vectors $\mathbf r$) are manifolds, and the direct kinematics is a differentiable function defined on them\begin{equation}
+    f_r:Q\rightarrow R
+\end{equation}
+A manifold, is (briefly) a topological space that is locally homeomorphic  to an open set of $\R^n$, the joint space of a planar 2R robot is a torus\begin{equation}
+    Q=S^1\times S^1 
+\end{equation}
+where $S^1$ denotes the unit sphere in $\R^2$ (circle). The torus is a $2$-mainfold because is locally homeomorphic to $\R^2$. We can imagine (not in a formal way) the tangent space of a mainfold in a point $p$ as the tangent plane in that point (this holds for manifolds that are embedded in $\R^n$). Usually, if $X$ is a manifold and $p\in X$ is a point, the tangent space in $p$ is denoted $T_pX$.\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/tangent_space.eps}
+\end{center}
+The Jacobian $J$ of a differentiable function $f:X\rightarrow Y$ between two manifolds in a given point $p$ is a linear mapping\begin{equation}
+    J:T_pX\rightarrow T_pY
+\end{equation}
+If $X\subseteq \R^n$ and $Y\subseteq R^m$, the Jacobian is a  matrix with $m$ rows and $n$ columns. In the robotics domain, the tangent space of $Q$ in a given point is the set of all possible joint's velocities $\dot{\mathbf q}$, the tangent space in a given point of $R$ is set of all possible task vector velocities, if the task vector is the pose of the end effector, this is the set of all possible linear and angular velocities of the end effector.\begin{quote}
+    The Jacobian matrix $J_r$ of the direct kinematics function $f_r$ in a given point is a linear map that describe the relation between joint's velocities and task vector velocities.
+\end{quote}
+Since $\mathbf r = f_r(\mathbf q)$, by deriving respect to time, due to the chain rule we get\begin{equation}
+    \dot{\mathbf r}=\frac{\partial f_r}{\partial \mathbf q}\dot{\mathbf q}=J_r(\mathbf q)\dot{\mathbf q}
+\end{equation}
+the analytical Jacobian is the following matrix\begin{equation}
+    J_r=\left( \frac{\partial f^i_r}{\partial q_j} \right)=\begin{pmatrix}
+         \frac{\partial f^1_r}{\partial q_1}&\dots &  \frac{\partial f^1_r}{\partial q_n}\\ 
+         \vdots & \ddots & \vdots \\
+          \frac{\partial f^m_r}{\partial q_1}&\dots &  \frac{\partial f^m_r}{\partial q_n}
+    \end{pmatrix} 
+\end{equation}
+and depends on the actual configuration $\mathbf q$.\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/tangent_space2.eps}
+\end{center}
+Let's see an example for a planar 2R, the direct kinematics for the end effector pose is\begin{equation}
+    f_r(q_1,q_2)=\mathbf r = \begin{cases}
+        p_x=l_1\cos q_1+ l_2\cos(q_1+q_2)\\ 
+        p_y=l_1\sin q_1+ l_2\sin(q_1+q_2)\\ 
+        \phi = q_1+q_2
+    \end{cases}
+\end{equation}
+The Jacobian matrix is \begin{equation}
+    J_r(q_1,q_2)=\begin{pmatrix}
+        -l_1\sin q_1-l_2\sin(q_1+q_2)& -l_2\sin(q_1+q_2)\\
+         l_1\cos q_1+l_2\cos(q_1+q_2)& l_2\cos(q_1+q_2)\\ 
+         1&1
+    \end{pmatrix}
+\end{equation}
+the joint's velocity $\dot{\mathbf q}$ will produce an end effector velocity of\begin{equation}
+    \dot{\mathbf r}=J_r(\mathbf q)\dot{\mathbf q}=\begin{pmatrix}
+        -l_1\sin q_1-l_2\sin(q_1+q_2)& -l_2\sin(q_1+q_2)\\
+         l_1\cos q_1+l_2\cos(q_1+q_2)& l_2\cos(q_1+q_2)\\ 
+         1&1
+    \end{pmatrix}\begin{pmatrix}
+        \dot q_1\\ \dot q_2\\ \dot\phi
+    \end{pmatrix}
+\end{equation}
 
 
 
