@@ -2746,16 +2746,16 @@ This doesn't holds for finite rotation, in general:\begin{equation}
 \end{equation}
 This is true because the function $\bomega(t)$ is not an exact \textit{differential form}, in particular, the integral of $\bomega$ over time depends on the choice of the integration path, and not only on the initial and final value of $\bomega$, for example, in $t\in [0,2]$ seconds, if we have these time law for $\bomega$:
 \begin{equation}
-    \bomega^1(t)=\begin{pmatrix}
+    \bomega^1(t)=\begin{cases}
         \omega^1_x(t)= 0 \text{ if }t<1, \ 90^\circ\text{ else}\\ 
-        \omega^1_x(t)= 0 \\ 
-        \omega^1_x(t)= 90^\circ \text{ if }t<1, \ 0\text{ else}
-    \end{pmatrix} \ \ \  
-     \bomega^2(t)=\begin{pmatrix}
+        \omega^1_y(t)= 0 \\ 
+        \omega^1_z(t)= 90^\circ \text{ if }t<1, \ 0\text{ else}
+    \end{cases} \ \ \  
+     \bomega^2(t)=\begin{cases}
         \omega^2_x(t)= 90^\circ \text{ if }t<1, \ 0\text{ else}\\ 
-        \omega^2_x(t)= 0 \\ 
-        \omega^2_x(t)= 0 \text{ if }t<1, \ 90^\circ\text{ else}
-    \end{pmatrix}
+        \omega^2_y(t)= 0 \\ 
+        \omega^2_z(t)= 0 \text{ if }t<1, \ 90^\circ\text{ else}
+    \end{cases}
 \end{equation}
 it is true that \begin{equation}
     \int_0^2\bomega^1(t)dt\text{ and }\int_0^2\bomega^2(t)dt
@@ -2767,11 +2767,114 @@ will lead to different final orientation. In particular, the results of the two 
 \end{equation}
 but the final orientations (described by $\phi$ or $R$) will be different.
 
-Differently from the finite case, infinitesimal rotations commute, since\begin{equation}
-    \cos(dx)=1\\ 
-    \sin(dx)=dx
-\end{equation}
+Differently from the finite case, infinitesimal rotations commute, since\begin{align}
+   & \cos(dx)=1\\ 
+    &\sin(dx)=dx
+\end{align}
 we have that  
+\begin{align}
+    &R_x(d\phi_x)=\begin{pmatrix}
+        1&0&0\\ 0&1&-d\phi_x\\ 0 &d\phi_x & 1
+    \end{pmatrix}\\
+    &R_y(d\phi_y)=\begin{pmatrix}
+        1&0&d\phi_y\\ 0&1&0\\  -d\phi_y&0 & 1
+    \end{pmatrix}\\ 
+    &R_z(d\phi_z)=\begin{pmatrix}
+        1&-d\phi_z&0\\ d\phi_z&1&0\\  0&0 & 1
+    \end{pmatrix}
+\end{align}
+In that case all the 12 possible products in any order of the three matrices leads to the same results:\begin{equation}
+    \begin{pmatrix}
+        1&-d\phi_z&d\phi_y\\ 
+        d\phi_z&1&-d\phi_x\\ 
+         -d\phi_y&d\phi_x & 1
+    \end{pmatrix}=I+S(d\phi)
+\end{equation}
+where $S$ is the skew symmetric matrix associated to the triplets $d\phi=(d\phi_x,d\phi_y,d\phi_z)$.\bigskip
+
+We introduce now the time derivative of the rotation matrix, and we will describe the relation between that quantity and the angular velocity vector $\bomega$. Let's say that $R(\mathbf q)$ is the orientation matrix of the end effector in function of the joint's angles $\mathbf q(t)$, that depends on time variable $t$, we can directly define $R(t)$ in function of time. Since $R\in SO(3)$, $R^T=R^{-1}\implies RR^T=I$. Since $R(t)R^T(t)$ is constant, it's time derivative is zero\begin{equation}\label{dev_R_1}
+    R(t)R^T(t)=\begin{pmatrix}
+        1&0&0\\
+        0&1&0\\
+        0&0&0\\
+    \end{pmatrix}\implies \frac{d}{dt}(R(t)R^T(t)) = \begin{pmatrix}
+        \frac{d}{dt}1&\frac{d}{dt}0&\frac{d}{dt}0\\
+        \frac{d}{dt}0&\frac{d}{dt}1&\frac{d}{dt}0\\
+        \frac{d}{dt}0&\frac{d}{dt}0&\frac{d}{dt}1
+    \end{pmatrix}=\begin{pmatrix}
+        0&0&0\\
+        0&0&0\\
+        0&0&0\\
+    \end{pmatrix}=M_0
+\end{equation}
+It's also true, for the chain rule, that\begin{align}\label{dev_R_2}
+     \frac{d}{dt}(R(t)R^T(t))= \frac{d}{dt}(R(t))R^T(t)+R(t)\frac{d}{dt}(R^T(t))
+\end{align}
+from equations \eqref{dev_R_1} and \eqref{dev_R_2} we get\begin{equation}
+     \frac{d}{dt}(R(t))R^T(t)+R(t)\frac{d}{dt}(R^T(t))=M_0
+\end{equation}
+where $M_0$ denotes the $3\times 3$ matrix with all the components equal to zero. Since $R(t)\frac{d}{dt}(R^T(t))=(\frac{d}{dt}(R(t))R^T(t))^T$ we have \begin{align}
+    &\frac{d}{dt}(R(t))R^T(t)+(\frac{d}{dt}(R(t))R^T(t))^T=M_0\implies\\ 
+    &\frac{d}{dt}(R(t))R^T(t)=-(\frac{d}{dt}(R(t))R^T(t))^T
+\end{align}
+So $\frac{d}{dt}(R(t))R^T(t)$ is a skew symmetric matrix, that we denote $S(t)$\begin{equation}\label{time_skew}
+S(t)=\frac{d}{dt}(R(t))R^T(t)\implies \frac{d}{dt}(R(t))=S(t)R(t)
+\end{equation} Let's now consider a vector $\mathbf p(t)$ with constant norm that is being rotated over time:\begin{equation}
+    \mathbf p(t)=R(t)\mathbf p'
+\end{equation}
+where $\mathbf p'$ is constant and $R(t)$ is a time dependent rotation matrix. Let's consider the time derivative of $\mathbf p$\begin{equation}
+    \dot{\mathbf p}(t)=\frac{dR}{dt}\mathbf p'
+\end{equation}
+from \eqref{time_skew} we get to:\begin{equation}
+     \dot{\mathbf p}(t)=S(t)R(t)\mathbf p' = S(t)\mathbf p(t)
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/Rotation_omega.eps}
+\end{center}
+Since $\mathbf p$ it exists a vector $\bomega(t)$ such that\begin{equation}
+    \dot{\mathbf p}(t)=\bomega(t)\times \mathbf p(t)
+\end{equation}
+the cross product can be rewritten with the skew symmetric matrix associated to $\bomega$
+\begin{equation}
+    \dot{\mathbf p}(t)=S(\bomega(t))\mathbf p(t)
+\end{equation}
+it follows that\begin{equation}
+    S(t)=S(\bomega(t))
+\end{equation}
+So at the end we derive the following relations between the time derivative of a rotation matrix and the angular velocity vector:\begin{align}
+    &\dot R = S(\bomega) R\\ &S(\bomega)=\dot R R^T 
+\end{align}
+The orientation over time can be described by a rotation matrix $R$ or by 3 angles $(\alpha,\beta,\gamma)$ (RPY), we derived the relation between the derivative of $R$ and the angular velocity, we now consider the time derivative of the RPY angles.\bigskip 
+
+Given the time derivatives of the angles\begin{equation}
+    \begin{pmatrix}
+        \dot\alpha\\\dot\beta\\\dot\gamma
+    \end{pmatrix}
+\end{equation}
+around three axis, we consider the roll pitch yaw matrix $T(\alpha,\beta,\gamma)$ (depends on the order of the axis). The following holds:\begin{equation}
+    \bomega= T(\alpha,\beta,\gamma) \begin{pmatrix}
+        \dot\alpha\\\dot\beta\\\dot\gamma
+    \end{pmatrix}
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \chapter*{Appendix}
 \section*{Useful Trigonometric Formulas}
 \subsection*{atan2 Definition}
