@@ -2864,7 +2864,7 @@ A manifold, is (briefly) a topological space that is locally homeomorphic  to an
     Q=S^1\times S^1 
 \end{equation}
 where $S^1$ denotes the unit sphere in $\R^2$ (circle). The torus is a $2$-mainfold because is locally homeomorphic to $\R^2$. We can imagine (not in a formal way) the tangent space of a mainfold in a point $p$ as the tangent plane in that point (this holds for manifolds that are embedded in $\R^n$). Usually, if $X$ is a manifold and $p\in X$ is a point, the tangent space in $p$ is denoted $T_pX$.\begin{center}
-    \includegraphics[width=0.4\textwidth ]{images/tangent_space.eps}
+    \includegraphics[width=0.4\textwidth ]{images/tangent_space.pdf}
 \end{center}
 The Jacobian $J$ of a differentiable function $f:X\rightarrow Y$ between two manifolds in a given point $p$ is a linear mapping\begin{equation}
     J:T_pX\rightarrow T_pY
@@ -2875,7 +2875,7 @@ If $X\subseteq \R^n$ and $Y\subseteq R^m$, the Jacobian is a  matrix with $m$ ro
 Since $\mathbf r = f_r(\mathbf q)$, by deriving respect to time, due to the chain rule we get\begin{equation}
     \dot{\mathbf r}=\frac{\partial f_r}{\partial \mathbf q}\dot{\mathbf q}=J_r(\mathbf q)\dot{\mathbf q}
 \end{equation}
-the analytical Jacobian is the following matrix\begin{equation}
+the  \textbf{analytical Jacobian} is the following matrix\begin{equation}
     J_r=\left( \frac{\partial f^i_r}{\partial q_j} \right)=\begin{pmatrix}
          \frac{\partial f^1_r}{\partial q_1}&\dots &  \frac{\partial f^1_r}{\partial q_n}\\ 
          \vdots & \ddots & \vdots \\
@@ -2908,13 +2908,135 @@ the joint's velocity $\dot{\mathbf q}$ will produce an end effector velocity of\
         \dot q_1\\ \dot q_2\\ \dot\phi
     \end{pmatrix}
 \end{equation}
+The analytical Jacobian is defined for an arbitrary task vector, in case $\mathbf r$ is the pose of the end effector, there is a parallel description of the Jacobian that can be defined without evaluating the partial derivatives of the direct kinematics. We call that matrix the \textbf{geometric Jacobian}, if $n$ are de degrees of freedom, is always a $6\times n$ matrix.\begin{itemize}
+    \item The analytical Jacobian is denoted $J_r$
+    \item The geometric Jacobian is denoted $J$, but can be defined as two $3\times n$ matrices $J_L$, $J_A$\begin{equation}
+        J(\mathbf q)=\begin{pmatrix}
+             J_L(\mathbf q)\\  J_A(\mathbf q)
+        \end{pmatrix}=\begin{pmatrix}
+             J_{L1}(\mathbf q)&\dots &J_{Ln}(\mathbf q)\\
+             J_{A1}(\mathbf q)&\dots &J_{An}(\mathbf q)
+        \end{pmatrix}
+    \end{equation}
+\end{itemize}
+$J_L$ is related to the linear velocity, $J_A$ to the angular velocity. The velocity of the pose is given by\begin{equation}
+    \dot{\mathbf r}=\begin{pmatrix}
+        \mathbf v_E\\ 
+        \bomega_E
+    \end{pmatrix}=\begin{pmatrix}
+             J_{L1}(\mathbf q)&\dots &J_{Ln}(\mathbf q)\\
+             J_{A1}(\mathbf q)&\dots &J_{An}(\mathbf q)
+        \end{pmatrix}\dot{\mathbf q}
+\end{equation}
+$ \mathbf v_E$ and $ 
+        \bomega_E$ are the linear and angular velocities of the end effector. For the principle of super position we have that\begin{align}
+            &\mathbf v_E=J_{L1}(\mathbf q)\dot{ q_1}+\dots +J_{Ln}(\mathbf q)\dot{ q_n}\\
+             &\bomega_E=J_{A1}(\mathbf q)\dot{ q_1}+\dots +J_{An}(\mathbf q)\dot{ q_n}
+        \end{align}
+where $\dot q_i$ is the $i$-the component of the vector $\dot{\mathbf q}$. In this way we can split the contribution to the linear and the angular velocity. This contributions are the 3 dimensional vectors $J_{Li},J_{Ai}$ (the columns of the matrix) and can be derived by geometric inspection.\bigskip 
 
 
+Let's consider the contribution of a single prismatic joint. It's clear that, the extension of the prismatic joint $i$ will effect in a linear acceleration of the end effector along the $z_{i-1}$ axis.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/prism_contr.eps}
+\end{center}
+So, if the $i$-th joint is prismatic, the contributions for linear and angular acceleration will be\begin{itemize}
+    \item $J_{Li}(\mathbf q)\dot q_i=\mathbf z_{i-1}\dot{d_i}$
+    \item $J_{Ai}(\mathbf q)\dot q_i=\mathbf 0$
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/revolut_contr.eps}
+\end{center}
+The contribution of a revolut joint is the following:
+\begin{itemize}
+    \item $J_{Li}(\mathbf q)\dot q_i=(\mathbf z_{i-1}\times \mathbf p_{i-1,E})\dot{\theta_i}$
+    \item $J_{Ai}(\mathbf q)\dot q_i=\mathbf z_{i-1}\dot{\theta_i}$
+\end{itemize}
+where $\mathbf p_{i-1,E}$ is the position of the end effector in the $i$-th joint's frame, so, if\begin{equation}
+    T={}^0T_1{}^1T_2\dots {}^{i-1}T_i
+\end{equation}
+we have \begin{equation}
+    \mathbf p_{i-1,E}=\begin{pmatrix}
+        T_{1,4}\\ T_{2,4}\\ T_{3,4}
+    \end{pmatrix}
+\end{equation}
+$\mathbf z_{i-1}$ is the $z$-axis direction of the $i$-th joint's frame\begin{equation}
+    \mathbf z_{i-1}={}^0R_1{}^1R_2\dots {}^{i-1}R_i\begin{pmatrix}
+        0\\0\\1
+    \end{pmatrix}.
+\end{equation}
+\subsection{Mobility Analysis}
+We will now consider the space of the torques of the joint's (a more detailed discussion will be given in the following sections). Let's say that $\tau_i$ is the scalar torque of the $i$-th joint, the vector $\boldsymbol{\tau}$ is in the torque space (a subset of $\R^n$, this depends on the capabilities of the motors).\bigskip 
+\begin{definition}
+    given two  subspaces of $V$: $W_1,W_2$, such that \begin{equation}
+    W_1\cap W_2 = \{\mathbf 0\}
+    \end{equation} the \textbf{direct sum} $W_1\oplus W_2$ is the subspace of $V$ such that\begin{equation}
+        \mathbf w \in  W_1\oplus W_2 \implies \exists \mathbf w_1 \in  W_2, \  
+        \mathbf w_2 \in  W_2 \text{ such that }\mathbf w_1+\mathbf w_2=\mathbf w
+    \end{equation}
+\end{definition}
+The following diagram resumes the space where the Jacobian matrix operates.\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/jacobian.eps}
+\end{center} 
+With $\mathcal N(J)$ is denoted the kernel (null space) of $J$ (also denote ker$(J)$), when with $\mathcal R(J)$ is denoted the range of $J$.\begin{align}
+    &\mathcal N(J)=\{\mathbf q\in Q \ : \ J\mathbf q=\mathbf 0\}\\
+     &\mathcal R(J)=\{\mathbf r\in \R^m \ : \ \exists \mathbf q\in \R^n \ \text{such that} \ J\mathbf q=\mathbf r\}
+\end{align}
+The transpose of the Jacobian matrix is a map between the torque space and the force space for the task vector. Given $\boldsymbol{\tau}$, the resulting force applied on the task vector is given by $\mathbf F$ that satisfies:\begin{equation}
+    \boldsymbol{\tau}=J^T\mathbf F
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/jacobian_dual.eps}
+\end{center} 
+The null space of the Jacobian is the \textbf{dual space} of the range of the Jacobian transpose, and the null space of the Jacobian transpose is the dual space of the range of the Jacobian, this means that\begin{align}
+    &\mathcal R(J^T)\oplus \mathcal N(J) = \R^n\\
+    &\mathcal R(J)\oplus \mathcal N(J^T) = \R^m
+\end{align}
 
-
-
-
-
+The range and the null space of the Jacobian matrix is directly related to the mobility of the end effector for a manipulator.\begin{itemize}
+   \item $\mathcal R(J(\mathbf q))$ is the subspace og the generalized velocities of the task vector that can be instantaneously realized in the current configuration $\mathbf q$. 
+   \item if $\mathbf v_d\notin \mathcal R(J(\mathbf q))$, there is no joint's velocities $\dot{\mathbf q}$ that can realize the desired task velocity $\mathbf v_d$. This happens if the rank $\rho(J)$ of the Jacobian \textit{is not maximal}.
+   \item if $\rho(J)=m$, the Jacobian have max rank, so any task velocity can be realized (the end effector can be moved in any direction of the task space $\R^m$).
+   \item if $\rho(J)<m$, there are directions in which the end effector cannot move (instantaneously). The forbidden velocities is the ones contained in $\mathcal N(J^T(\mathbf q))$, since is the complement of $R(J(\mathbf q))$ that has dimension $m-\rho(J)$.
+   \item if $\mathcal N(J(\mathbf q))\ne \{\mathbf 0\}$ there are joint velocities $\dot{\mathbf q}\ne \mathbf 0$ that produces zero motion of the end effector (or in general, task vector). This always happens if the robot is redundant: $m<n$.
+\end{itemize}
+Some examples will clarify the relations between the Jacobian matrix and the mobility of the end effector. Let's consider a planar 3R robot ($m=2$, $n=3$) with unitary lengths for the links. The Jacobian matrix is the $2\times 3$ matrix:\begin{equation}
+    J(\mathbf q) = \begin{pmatrix}
+        -s_1-s_{12}-s_{123}&-s_{12}-s_{123}&-s_{123}\\ 
+        c_1+c_{12}+c_{123}&c_{12}+c_{123}&c_{123}
+    \end{pmatrix}
+\end{equation}
+where $c_{1}=\cos(q_1), c_{123}=\cos(q_1+q_2+q_3)$ and so on. The end effector velocity is given by\begin{equation}
+    \dot{\mathbf p}=J(\mathbf q)\dot{\mathbf q}
+\end{equation}
+In the configuration $\mathbf q^*=(0,\frac{\pi}{2},\frac{\pi}{2})$, the Jacobian evaluates in \begin{equation}
+    J(\mathbf q^*)=\begin{pmatrix}
+        -1&-1&0\\ 
+        0&-1&-1
+    \end{pmatrix}
+\end{equation}
+the rank is maximal: $\rho(J)=2$, so the end effector can move in any direction in $\R^2$.
+\begin{center}
+    \includegraphics[width=0.25\textwidth ]{images/max_rank_jac.eps}
+\end{center} 
+Now, let $\mathbf q^*=(\frac{\pi}{2},0,\pi)$the Jacobian evaluates in \begin{equation}
+    J(\mathbf q^*)=\begin{pmatrix}
+        -1&0&1\\ 
+        0&0&0
+    \end{pmatrix}
+\end{equation}
+the matrix doesn't have full rank since $J_1+J_3=\mathbf 0$, we have that $\rho(J)=1$. The only directions which the end effector can move are the ones in the range:\begin{equation}
+    \mathcal R(J)=\text{span}\begin{pmatrix}
+    1\\ 0
+    \end{pmatrix}=\{\begin{pmatrix}
+    \alpha\\ 0
+    \end{pmatrix}\in \R^2 \ :  \ \alpha \in \R\}
+\end{equation}
+The end effector cannot move along the $y$ axis.
+\begin{center}
+    \includegraphics[width=0.25\textwidth ]{images/not_max_rank_jac.eps}
+\end{center} 
+\subsection{Kinematic Singularities}
 
 
 
