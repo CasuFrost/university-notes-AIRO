@@ -3037,6 +3037,299 @@ The end effector cannot move along the $y$ axis.
     \includegraphics[width=0.25\textwidth ]{images/not_max_rank_jac.eps}
 \end{center} 
 \subsection{Kinematic Singularities}
+We already called a ''singularity'' a case where the number of solutions for the inverse kinematics of a robot differs from the regular case, we say that a configuration $\mathbf q$ for the joint's variables is \textbf{singular} if we cannot find a vector for the joint's velocities $\dot{\mathbf q}$ that realizes a desired end effector velocity $\dot{\mathbf r}$ in some directions of the task space. This happens when the rank of the Jacobian matrix is not maximal, hence, the determinant is zero. 
+
+A robot is ''close''  to a singularity if the determinant is really small and close to zero (the Jacobian matrix is almost singular), in that case, to realize some small end effector velocities we may need really large joint velocities (not feasible for the motors).
+
+It is required to analyze the mobility of a robot to avoid singularities and help during trajectory planning and motion control.\begin{itemize}
+    \item when $m=n$, a configuration $\mathbf q$ si singular if $\det J(\mathbf q)=0$
+    \item when $m<n$, a configuration $\mathbf q$ si singular if $\det (J(\mathbf q)J^T(\mathbf q))=0$
+\end{itemize}
+Let's consider a 2R planar robot, tha Jacobian matrix is\begin{equation}
+    J(\mathbf q) = \begin{pmatrix}
+        -l_1s_1-l_2s_{12}&-l_2s_{12}\\ 
+       l_1 c_1+l_2c_{12}&l_2c_{12}
+    \end{pmatrix}
+\end{equation}
+the determinant is\begin{equation}
+    \det(J)=(-l_1s_1-l_2s_{12})(l_2c_{12})-(-l_2s_{12})( l_1 c_1+l_2c_{12})=l_1l_2\sin q_2
+\end{equation}
+so we have a singularity configuration when $\sin q_2=0\implies q_2 = 0$ or $q_2=\pi$. These configurations identifies the points on the boundaries of the primary workspace (or at the center if $l_1=l_2$).
+For a polar RRP robot, the direct kinematics is
+\begin{equation}
+    \begin{cases}
+        p_x=q_3\cos q_2\cos q_1\\
+        p_y=q_3\cos q_2\sin q_1\\
+        p_z=d_1+q_3\sin q_2
+    \end{cases}
+\end{equation}
+so the Jacobian matrix is\begin{equation}
+    J(\mathbf q) = \begin{pmatrix}
+        -q_3s_1c_2&-q_3c_1s_2&c_1c_2\\ 
+        q_3c_1c_2&-q_3s_1s_2&s_1c_2\\ 
+        0&q_3c_2&s_2
+    \end{pmatrix}
+\end{equation}
+the determinant is\begin{equation}
+     \det(J)=q_3^2\cos q_2
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/Polar_RRP.png} 
+\end{center}
+We have a singular configuration if\begin{itemize}
+    \item $q_3=0$, in that case, the end effector is along the $z$ axis with the prismatic joint fully retracted, in that case the Jacobian matrix becomes:\begin{equation}
+    J(\mathbf q) = \begin{pmatrix}
+       0&0&c_1c_2\\ 
+        0&0&s_1c_2\\ 
+        0&0&s_2
+    \end{pmatrix}
+\end{equation}
+the rank is 1 and the and effector can reach (instantaneously) velocities along only one direction (depending on $q_1$ and $q_2$). 
+\item $q_2=\pm\frac{\pi}{2}$, this is a ''better'' singularity than the previous one since the rank of $J$ becomes $2$, the end effector is along the $z$ axis. In that situation, all the EE velocities that can be realized lies on a plane in the cartesian space that is parallel to the $z$ axis and contains the origin. The Jacobian matrix becomes \begin{equation}
+    J(\mathbf q) = \begin{pmatrix}
+        0&-q_3c_1s_2&0\\ 
+        0&-q_3s_1s_2&0\\ 
+        0&0&s_2
+    \end{pmatrix}=\begin{cases}
+        \begin{pmatrix}
+        0&-q_3c_1&0\\ 
+        0&-q_3s_1&0\\ 
+        0&0&1
+    \end{pmatrix}\\ \\
+    \begin{pmatrix}
+        0&q_3c_1&0\\ 
+        0&q_3s_1&0\\ 
+        0&0&-1
+    \end{pmatrix}
+    \end{cases}
+\end{equation}
+\end{itemize}
+if $\mathbf q = (\frac{\pi}{4},\frac{\pi}{2},1)$, the Jacobian matrix is 
+$$J(\mathbf q)=\begin{pmatrix}
+        0&-0.7071&0\\ 
+        0&-0.7071&0\\ 
+        0&0&1
+\end{pmatrix}$$
+The velocities that can be realized are\begin{equation}
+    \begin{pmatrix}
+        0&-0.7071&0\\ 
+        0&-0.7071&0\\ 
+        0&0&1
+\end{pmatrix}\begin{pmatrix}
+    \dot q_1\\ \dot q_2 \\ \dot q_3
+\end{pmatrix}=\begin{pmatrix}
+    -0.7071\dot q_2\\-0.7071\dot q_2 \\ \dot q_3
+\end{pmatrix}
+\end{equation}\begin{center}
+    \includegraphics[width=0.25\textwidth ]{images/singular_conf.eps} 
+\end{center}
+the green plane on the images shows the realizable velocities.
+\section{Inverse Differential Kinematics}
+We want to realized a desired end effector velocity $\mathbf v$, so, we need the corresponding joint's  velocities $\dot{\mathbf q}$, if the Jacobian $J$ is squared and non singular:\begin{equation}
+    \dot{\mathbf q}=J^{-1}\mathbf v
+\end{equation}
+this is a straightforward inversion method, but it has problems when\begin{itemize}
+    \item we are near a singularity (the resulting $\dot{\mathbf q}$ will have a big norm).
+    \item we are in the case $n>m$, so we can't invert a non square matrix. 
+\end{itemize}
+It is possible to consider an incremental solution that solves the IDK problem \textit{online}. Let's consider the direct kinematics function\begin{equation}
+    \mathbf r = f_r(\mathbf q)
+\end{equation}
+a small increment $d\mathbf r$ in function of a small increment $d\mathbf q$ is\begin{equation}
+    d\mathbf r=J_r(\mathbf q)d\mathbf q
+\end{equation}
+if we are in the position $\mathbf r$, we want to perform a small displacement to reach $\hat{\mathbf r}$:\begin{equation}
+    \mathbf r\longrightarrow \hat{\mathbf r}=\mathbf r+d\mathbf r
+\end{equation}
+so we find the next configuration $\hat{\mathbf q}$ by solving\begin{equation}
+    \hat{\mathbf q}=f_r^{-1}(\mathbf r+d\mathbf r)
+\end{equation}
+so the inverse differential kinematics can be solved online by solving the inverse kinematics for $\mathbf r+d\mathbf r$, possibly with a numerical methods where we use the previous configuration $\mathbf q$ as the initial guess, in this case, the Newton method should converge in a few iterations.
+Clearly, if $J$ is square and invertible, the increment $d\mathbf q$ can be found easily:\begin{equation}
+    d\mathbf q = J^{-1}d\mathbf r
+\end{equation}
+and the next configuration will be \begin{equation}
+      \hat{\mathbf q}=\mathbf q+d\mathbf q
+\end{equation}
+When we compute the desired joint velocity, problems arises near the singularities, the required small displacements $d\mathbf r$ may lead to sudden increase of the velocity of one or more joint.\bigskip
+
+The online method works well when we are far from singularities, clearly, if we want to go from point $A$ to point $B$ along a straight line, we can perform the online method by imposing a constant velocity $\mathbf v$, due to the numerical integration error, the final position will be near $B$, but not exactly there. Let's consider an example, we have a 2R planar robot that have to follow the path shown in the picture:
+\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/path_to_follow1.png} 
+\end{center}
+This is a path (from left to the right)  that have an angle of $170^\circ$ respect to the $x$-axis. The desired velocity $\mathbf v$ will be constant and will have a norm of $\|\mathbf v\|=0.6\frac{m}{s}$, this velocity will be executed for $T=6$ seconds. The stroboscopic view of the manipulator from the starting position to the end is shown in the following picture.
+\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/stroboscopic1.png} 
+\end{center}
+The following plots shows the configuration and the joint's velocities over time:\begin{center}
+    \includegraphics[width=0.75\textwidth ]{images/conf_over_time.png} 
+\end{center}
+We can observe a small peak in the joint's velocities at $T=3$, since at that time step the end effector is near (but still far enough) to the origin. At the end, the norm between the end effector position and the initial desired point is around $0.65\cdot 10^{-10}$, this small error is due to the numerical integration.\bigskip 
+
+We consider now a more ''degenerate'' case, where the line pass near the origin:
+\begin{center}
+    \includegraphics[width=0.75\textwidth ]{images/stroboscopic2.png} 
+\end{center}
+This is a path (from left to the right)  that have an angle of $178^\circ$ respect to the $x$-axis. The desired velocity $\mathbf v$ will be constant and will have a norm of $\|\mathbf v\|=0.6\frac{m}{s}$, this velocity will be executed for $T=6$ seconds.
+\bigskip 
+
+In that case, around $T=3.2$ seconds, the end effector will be really close to the origin (singular configuration), and we observe a peak for the velocity of the first joint $\dot q_1$, that arise in a small time window from 100 degree per second to 500 degree per second. The following plots shows the configuration and the joint's velocities over time:\begin{center}
+    \includegraphics[width=0.85\textwidth ]{images/conf_over_time2.png} 
+\end{center}
+
+At the end, the norm between the end effector position and the initial desired point is around $1.8\cdot 10^{-9}$, this small error (like the previous case) is due to the numerical integration.\bigskip 
+
+In this simulation, we are assuming that a joint velocity of 500 degree per second is feasible for the motors, let's add in the simulation a saturation limit for the joint's velocities, in particular, we impose that\begin{equation}
+    |q_i|\le \frac{300^\circ}{\text{second}}
+\end{equation}
+In that case, when the required velocity (given from the inversion) will be higher than $\frac{300^\circ}{\text{second}}$, the motor will actuate the joint's without exceeding that value.
+
+The following plots shows the configuration and the joint's velocities over time:\begin{center}
+    \includegraphics[width=0.85\textwidth ]{images/conf_over_time3.png} 
+\end{center}
+For a small time interval around $T=3\text{s}$, the velocity of $q_1$ remain fixed at $300$ degrees per second, such a saturation problem ultimately leads to a large error in the final position of the end effector (of about 6 centimeters) upon completion of the execution. 
+\subsection{Damped Least Squares Method}
+The following method is a robust live algorithm that is used to solve the inverse differential kinematics problem. Given a desired end effector velocity $\mathbf v$, we want to find the joint's velocity $\dot {\mathbf q}$ that \begin{itemize}
+    \item have a small norm 
+    \item realize (as close as possible) the EE desired velocity
+\end{itemize}
+given that, we set up an unconstrained optimization problem:\begin{equation}
+    \dot{\mathbf q}^*=\min_{\dot{\mathbf q}} \frac{\lambda}{2}\|\dot{\mathbf q} \|^2+\frac{1}{2}\|J\dot{\mathbf q}-\mathbf v\|^2
+\end{equation}
+$\lambda\ge 0$ is a real number called \textbf{damping factor}  that weights the problem (if $\lambda$ is big, a small norm solution will be more pursued than a solution that realize the desired velocity). This is a quadratic problem and can be solved analytically by setting the gradient to zero. Let's denote the objective function $H(\dq)$.
+\begin{align}
+    &\nabla_{\dq} H = \left(\frac{\partial H}{\partial \dot{ q_i}}\right)=\lambda\dq+J^T(J\dq-\mathbf v)\end{align}
+we set\begin{align}
+    &\nabla_{\dq} H = \mathbf 0 \implies \\ 
+    &\lambda\dq+J^T(J\dq-\mathbf v)=\mathbf 0\implies \\ 
+    &(\lambda I_n+J^TJ)\dq=J^T\mathbf v\implies \\ 
+    &\dq=(\lambda I_n+J^TJ)^{-1}J^T\mathbf v
+\end{align}
+where $I_n$ denotes the $n\times n$ identity matrix. It can be proved that \begin{equation}
+    (\lambda I_n+J^TJ)^{-1}J^T=J^T(\lambda I_n+JJ^T)^{-1}
+\end{equation}
+So, the solution of the DLS problem is\begin{equation}
+    (\lambda I_n+J^TJ)^{-1}J^T\mathbf v=J_{DLS}\mathbf v
+\end{equation}
+we denote $J_{DLS}$ the matrix that maps the desired end effector velocity to the solution joint's velocities\begin{equation}
+     J_{DLS}=(\lambda I_n+J^TJ)^{-1}J^T.
+\end{equation}
+The damping factor $\lambda$ can be chosen non zero only when we are near singularities. To prove that this method results in better performance, we considered a path that passes really close to the origin: 
+\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/path_to_follow2.png} 
+\end{center}
+The plots of the joint's  velocities over time:
+\begin{center}
+    \includegraphics[width=0.85\textwidth ]{images/conf_over_time4.png} 
+\end{center}
+in the left, we have the classical inverse iterative method, in the right the DLS method, that produces joint's velocities always limited : $|\dot q_i|<120$ degrees per second. The path performed by the method is the following:
+\begin{center}
+    \includegraphics[width=0.45\textwidth ]{images/path_to_follow3.png} 
+\end{center}
+We have a cartesian error of about $25$ millimeters near the singularity, that are recovered by a feedback action.
+\subsection{Pseudo-inverse method}
+The pseudo inverse method consider an optimization problem similar to the DLS. We consider a constrained optimization problem:\begin{align}
+    &\dot{\mathbf q}^*=\min_{\dot{\mathbf q}}\frac{1}{2}\|\dq\|^2\\
+    &\text{ such that }J\dq=\mathbf v 
+\end{align}
+this problem is equivalent to the following:
+\begin{align}
+    &\dot{\mathbf q\in S}^*=\min_{\dot{\mathbf q}}\frac{1}{2}\|\dq\|^2\\
+    &S=\{\dq\in \R^n \ : \ \|J\dq-\mathbf v \| \text{ is minimum }\}
+\end{align}
+This problem admits an analytical solution, we define the Lagrangian function:\begin{equation}
+    L=\frac{1}{2}\dq^T\dq+\boldsymbol{\lambda}^T(J\dq+\mathbf v)
+\end{equation}
+where $\boldsymbol{\lambda}$ are the Lagrangian multipliers. We can find a solution by setting the gradient (respect to $\dq$ and to $\boldsymbol{\lambda}$) to zero:\begin{equation}
+    \begin{cases}
+        \nabla_\dq L=\dq+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
+        \nabla_{\boldsymbol{\lambda}} L=J\dq-\mathbf v=\mathbf 0
+    \end{cases}\implies \begin{cases}
+        \dq = -J^T\boldsymbol{\lambda}\\ 
+        -JJ^T\boldsymbol{\lambda}=\mathbf v
+    \end{cases}
+\end{equation}
+by solving for $\boldsymbol{\lambda}$;\begin{equation}
+    \boldsymbol{\lambda}=-(JJ^T)^{-1}\mathbf v 
+\end{equation}
+since $\dq = -J^T\boldsymbol{\lambda}$, the solution for $\dq$ is\begin{equation}
+    \dq = J^T(JJ^T)^{-1}\mathbf v = J^\#\mathbf v
+\end{equation}
+the matrix $J^\#=J^T(JJ^T)^{-1}$ is the \textbf{pseudo inverse} of the Jacobian matrix. The following properties are satisfied:\begin{itemize}
+    \item if $\mathbf v\in \mathcal R(J)$, then the differential constrained is satisfied, and the solution $\dq=J^\#\mathbf v$ will realize $\mathbf v$ and minimize the norm $\|\dq\|$. 
+    \item else, if $\mathbf v\notin \mathcal R(J)$, the given solution will minimize the error $\|J\dq-\mathbf v\|$.
+\end{itemize}
+Note how the solution will perform the velocity \begin{equation}
+    J\dq = JJ^\#\mathbf v = \mathbf v^\perp 
+\end{equation}
+where $\mathbf v^\perp $ is the orthogonal projection of $\mathbf v$ on $\mathcal R(J)$.\begin{center}
+    \includegraphics[width=0.45\textwidth ]{images/orthogonal_proj.eps} 
+\end{center}
+The general definition of the pseudo inverse of a matrix $J$ is the following.\begin{definition}
+    Given a matrix $J$ of $m$ rows and $n$ columns, the pseudo inverse $J^\#$ is the matrix that satisfies the following relation:\begin{itemize}
+        \item $JJ^\#J=J$
+        \item $(JJ^\#)^T=JJ^\#$
+        \item $J^\#JJ^\#=J^\#$
+        \item $(J^\#J)^T=J^\#J$
+    \end{itemize}
+    the pseudo inverse $J^\#$ always exists and is unique.
+\end{definition}
+If the rank of $J$ is full, the pseudo inverse can be computed with simple algebraic forms:\begin{itemize}
+    \item $\rho(J)=m=n\implies J^\#=J^{-1}$
+    \item $\rho(J)=m<n\implies J^\#=J^T(JJ^T)^{-1}$
+    \item $\rho(J)=n<m\implies J^\#=(J^TJ)^{-1}J^T$
+\end{itemize}
+In general, $J^\#$ can be computed numerically with the singular value decomposition of $J$.
+\subsection{Singular Value Decomposition}
+This section is a linear algebra recap about singular value decomposition for a matrix.\begin{definition}
+    Given a matrix $A$ of $m$ rows and $n$ columns, it always exists a triplets of matrices $U,\Sigma,V$ such that:\begin{itemize}
+        \item $A=U\Sigma V^T$
+        \item $U\in Mat(n\times n)$
+        \item $\Sigma\in Mat(n\times m)$
+        \item $V\in Mat(m\times m)$
+    \end{itemize}                                          
+\end{definition}
+The matrices $U,V$ are unitary matrices (the conjugate transpose is equal to the inverse) and are not uniques.  $\Sigma$ is unique and is a diagonal matrices for which the diagonal contains all the singular values of $A$.
+\begin{equation}
+    \Sigma=\begin{pmatrix}
+        \sigma_1&0&0&\dots &0 &\dots &0& 0\\
+        0&\sigma_2&0&\dots &0 &\dots &0& 0\\
+        0&0&\sigma_3&\dots &0 &\dots &0& 0\\ 
+        \vdots&\vdots&\vdots&\ddots &\vdots &\vdots &\vdots& \vdots\\ 
+         0&0&0&\dots &\sigma_r &\dots &0& 0\\ 
+         0&0&0&\dots &0 &\dots &0& 0\\ 
+         \vdots&\vdots&\vdots&\ddots &\vdots &\vdots &\vdots& \vdots\\ 
+         0&0&0&\dots &0 &\dots &0& 0\\ 
+    \end{pmatrix}
+\end{equation}
+where \begin{equation}
+    \sigma_1\ge \sigma_2\dots \ge \sigma_r\ge 0 
+\end{equation}
+the rank of $A$ is $r$. We can express the pseudo inverse of $A$ in terms of $U,V,\Sigma$ as follows:\begin{equation}
+    A^\#=V\Sigma^\# U^T
+\end{equation}
+so, we just have to compute the pseudo inverse of $\Sigma$, that is a $n\times m$ matrix, computed as follows\begin{itemize}
+    \item we consider $\Sigma$
+    \item we substitute each value $\sigma_i$ with the inverse $\frac{1}{\sigma_i}$
+\end{itemize}
+\begin{equation}
+    \Sigma^\#=\begin{pmatrix}
+        \frac{1}{\sigma_1}&0&0&\dots &0 &\dots &0& 0\\
+        0&\frac{1}{\sigma_2}&0&\dots &0 &\dots &0& 0\\
+        0&0&\frac{1}{\sigma_3}&\dots &0 &\dots &0& 0\\ 
+        \vdots&\vdots&\vdots&\ddots &\vdots &\vdots &\vdots& \vdots\\ 
+         0&0&0&\dots &\frac{1}{\sigma_r} &\dots &0& 0\\ 
+         0&0&0&\dots &0 &\dots &0& 0\\ 
+         \vdots&\vdots&\vdots&\ddots &\vdots &\vdots &\vdots& \vdots\\ 
+         0&0&0&\dots &0 &\dots &0& 0\\ 
+    \end{pmatrix}
+\end{equation}
+In many programming languages and libraries, algorithms that computes the singular value decomposition for a matrix are provided. 
+
+
+
+
+
 
 
 
