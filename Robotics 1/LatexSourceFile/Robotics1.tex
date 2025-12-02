@@ -2863,7 +2863,7 @@ Given two differential manifolds $X,Y$, and a function $f:X\rightarrow Y$, the J
 A manifold, is (briefly) a topological space that is locally homeomorphic  to an open set of $\R^n$, the joint space of a planar 2R robot is a torus\begin{equation}
     Q=S^1\times S^1 
 \end{equation}
-where $S^1$ denotes the unit sphere in $\R^2$ (circle). The torus is a $2$-mainfold because is locally homeomorphic to $\R^2$. We can imagine (not in a formal way) the tangent space of a mainfold in a point $p$ as the tangent plane in that point (this holds for manifolds that are embedded in $\R^n$). Usually, if $X$ is a manifold and $p\in X$ is a point, the tangent space in $p$ is denoted $T_pX$.\begin{center}
+where $S^1$ denotes the unit sphere in $\R^2$ (circle). The torus is a $2$-manifold because is locally homeomorphic to $\R^2$. We can imagine (not in a formal way) the tangent space of a manifold in a point $p$ as the tangent plane in that point (this holds for manifolds that are embedded in $\R^n$). Usually, if $X$ is a manifold and $p\in X$ is a point, the tangent space in $p$ is denoted $T_pX$.\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/tangent_space.pdf}
 \end{center}
 The Jacobian $J$ of a differentiable function $f:X\rightarrow Y$ between two manifolds in a given point $p$ is a linear mapping\begin{equation}
@@ -3324,14 +3324,205 @@ so, we just have to compute the pseudo inverse of $\Sigma$, that is a $n\times m
          0&0&0&\dots &0 &\dots &0& 0\\ 
     \end{pmatrix}
 \end{equation}
-In many programming languages and libraries, algorithms that computes the singular value decomposition for a matrix are provided. 
+In many programming languages and libraries, algorithms that computes the singular value decomposition for a matrix are provided. \bigskip 
+
+Let's consider an example with the planar 2R robot, with $l_1=l_2=1$, in a singular configuration with $q_2=0$.\begin{center}
+    \includegraphics[width=0.45\textwidth ]{images/perp_jac.eps} 
+\end{center}
+The Jacobian and the pseudo inverse are:\begin{equation}
+    J=\begin{pmatrix}
+        -2s_1&-s_1\\ 
+        2c_1&c_1
+    \end{pmatrix} \ \ \ \  
+    J^\#=\frac{1}{5}\begin{pmatrix}
+        -2s_1&2c_1\\ 
+        -s_1&c_1
+    \end{pmatrix}
+\end{equation}
+if $q_2=0$, then $\rho(J)=1$. The vector $\dq=J^\#\mathbf v$ is the minimum norm joint velocity  that realize exactly ${\mathbf v}^\perp$.\begin{itemize}
+    \item at $q_1=\frac{\pi}{6}$, for $\mathbf v=(-0.5,0)$, we get\begin{equation}
+        J^\#\mathbf v = \begin{pmatrix}0.1\\0.05 \end{pmatrix}\implies \mathbf v^\perp = JJ^\#\mathbf v=\begin{pmatrix}-\nicefrac{1}{8}\\\nicefrac{\sqrt{3}}{8} \end{pmatrix}
+    \end{equation}
+    \item if $q_1=\frac{\pi}{2}$, $\mathbf v\in \mathcal R(J)$, so with $\dq=J^\#\mathbf v$ we get\begin{equation}
+        JJ^\#\mathbf v = \mathbf v^\perp = \mathbf v
+    \end{equation}
+\end{itemize}
+In general, any solution for the inverse differential kinematics problem\begin{equation}
+    J\dq=\mathbf v 
+\end{equation}
+can be written in the following form:\begin{equation}\label{xi_sol}
+    \dq=J^\#\mathbf v+(I-J^\#J)\boldsymbol{\xi }
+\end{equation}
+where $(I-J^\#J)$ is the orthogonal projection on $\mathcal N(J)$ and $\boldsymbol{\xi }$ is a joint velocity vector.
+This solution is not the minimum norm one, but is the optimal solution for a slightly modified constrained optimization problem:\begin{align}
+    &\min_{\dq} \frac{1}{2}\|\dq-\boldsymbol{\xi}\|^2\\ 
+    &\text{such that }J\dq=\mathbf v
+\end{align}
+with that solution, the actual task velocity obtained is\begin{align}
+    &J\dq = J(J^\#\mathbf v+(I-J^\#J)\boldsymbol{\xi })=\\ 
+    &JJ^\#\mathbf v +J(I-J^\#J)\boldsymbol{\xi }=JJ^\#\mathbf v
+\end{align}
+if $\mathbf v \in \mathcal R(J)$, it exists $\mathbf w$ such that $\mathbf v = J\mathbf w$:
+\begin{align}
+    &JJ^\#\mathbf v=JJ^\#(J\mathbf w)=J\mathbf w=\mathbf v
+\end{align}
+In the equation \eqref{xi_sol} the solution si given by the sum of the orthogonal projection of $\boldsymbol{\xi }$ on $\mathcal N(J)$ and the minimum norm solution  $J^\#\mathbf v$:
+\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/min_norm_sol.eps} 
+\end{center}
+\section{Velocity Manipulability}
+This section is about the manipulability of the end effector:\begin{quotation}
+    how easy is to move an end effector towards a desired velocity by imposing joint's velocity?
+\end{quotation}
+In details, we say that is ''hard'' to move the task vector in a specific direction if the required joint velocity is high, in particular, we want to measure how close to a singularity we are.
+\begin{definition}
+    An ellipsoid in $\R^n$ is the set of points $\mathbf p$ that satisfies\begin{equation}
+        \mathbf p^TA^{-1}\mathbf p \le 1
+    \end{equation}
+    where $A$ is symmetric, and positive definite.
+\end{definition}
+Given the joint space $Q$, we consider the unitary sphere:\begin{equation}
+    \{\dq \ : \ \dq^T\dq = 1\}
+\end{equation}
+we now that, to obtain a velocity $\mathbf v$, we have $\dq=J^\#\mathbf v$, so\begin{equation}
+    \dq^T\dq = 1\implies (J^\#\mathbf v)^T(J^\#\mathbf v)=1\implies \mathbf v^T{J^\#}^TJ^\#\mathbf v = 1
+\end{equation}
+
+if $\rho(J)=m$ (we are not in a singular configuration), ${J^\#}^TJ^\#=(JJ^T)^{-1}$:\begin{equation}
+    \mathbf v^T(JJ^T)^{-1} \mathbf v=1
+\end{equation}
+We note how all the unitary norm joint velocity $\dq$ identifies the surface of an ellipsoid $\mathbf v^T(JJ^T)^{-1} \mathbf v=1$ in the task space, the ellipsoid is described by the matrix $JJ^T$. Geometrically, the unit sphere in the joint space is stretched in the ellipsoid in the task space.
+\begin{center}
+    \includegraphics[width=0.75\textwidth ]{images/ellipsoid.eps} 
+\end{center}
+This ellipsoid can be drawn in the task space attached to the end effector, this will be easily steerable along the ellipsoid's major axes, and will be harder to manipulate along the minor axes.
+\begin{center}
+    \includegraphics[width=0.55\textwidth ]{images/manipulability_ellipsoid.png} 
+\end{center}
+The fact is that, the more the ellipsoid is flattened, the more it is hard to manipulate the end effector to the minor axes, and the closer we are to a singular configuration. In fact, in a singular configuration, the ellipsoid is totally flatten, and becomes a plane in the space (the end effector lose manipulability).
+
+We will describe more formally this relation between the ellipsoid and the singular configurations. The $i$-th singular value of $J$ is the root of the $i$-th eigen value of $JJ^T$\begin{equation}
+    \sigma_i(J)=\sqrt{\lambda_i(JJ^T)}
+\end{equation}
+this is the length of the principal axes, and the direction are the one related to the $i$-th eigen vector of $JJ^T$.
+\begin{center}
+    \includegraphics[width=0.35 \textwidth ]{images/ellipsoid_values.eps} 
+\end{center}
+We define the \textbf{manipulability measure} the quantity\begin{equation}
+    w=\sqrt{\det(JJ^T)}=\prod_{i=1}^m\sigma_i\ge 0 
+\end{equation}
+the quantity $w$ is proportional to the volume of the ellipsoid:\begin{itemize}
+    \item a small $w$ means that we are near a singular case (the ellipsoid is flat)
+\end{itemize}
+With the singular values decomposition:\begin{equation}
+    JJ^T=U\Sigma V^TV\Sigma^T U^T=U\Sigma\Sigma^T U^T
+\end{equation}
+the matrix $\Sigma\Sigma^T$ looks like that:\begin{equation}
+    \Sigma\Sigma^T=\begin{pmatrix}
+        \sigma_1^2& & & &\\
+        &\ddots & & &\\
+        & &\sigma_r^2 & &\\
+        & & &0&\\
+        & & & &\ddots& \\
+         & & & & & 0 \\
+    \end{pmatrix}
+\end{equation}
+Let's consider a column vector $\mathbf u_i$ of $U$:
+\begin{align}
+    &JJ^T\mathbf u_i=\\ 
+    &U\Sigma\Sigma^T U^T\mathbf u_i=\\ 
+    &U\Sigma\Sigma^T \begin{pmatrix}
+        \mathbf u_1^T\mathbf u_i\\ \vdots \\ 
+         \mathbf u_n^T\mathbf u_i
+    \end{pmatrix}
+\end{align}
+but $U$ is a unitary matrix, so the dot product of each distinct column vector is zero, except for the dot product of a column with himself that is 1.
+\begin{align}
+    &U\Sigma\Sigma^T \begin{pmatrix}
+        \mathbf u_1^T\mathbf u_i\\ \vdots \\ 
+         \mathbf u_n^T\mathbf u_i
+    \end{pmatrix}=
+    U\Sigma\Sigma^T\mathbf e_i
+\end{align}
+where $\mathbf e_i$ is the all zero vector except for the $i$-th coordinate that is $1$.
+Since $\Sigma\Sigma^T$ is a diagonal matrix:\begin{equation}
+     U\Sigma\Sigma^T\mathbf e_i=U\sigma_i^2\mathbf e_i = \sigma_i^2 U\mathbf e_i = \sigma_i^2\mathbf u_i
+\end{equation}
+In the end we have that:\begin{equation}
+    JJ^T\mathbf u_i=\sigma_i^2\mathbf u_i
+\end{equation}
+so $\sigma_i$ is the eigen value of $JJ^T$ associated with the eigen vector $\mathbf u_i$.\bigskip
+
+\noindent Let's consider the planar 2R robot, with $l_1=l_2=1$, the following plots shows (in order)\begin{enumerate}
+    \item the manipulability in function of $q_2$
+    \item the manipulability in function of the $x$ axis distance of the end effector 
+    \item the singular values of $J$ in function of the $x$ axis distance of the end effector 
+\end{enumerate}
+\begin{center}
+    \includegraphics[width=1\textwidth ]{images/manipulability_plots.png} 
+\end{center}
+
+the maximum value is obtained at $r=\sqrt{2}$, this is the best configuration for manipulability (where the ellipsoid have the maximal volume).
+
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/max_man.eps} 
+\end{center}
+
+\section{Static Forces Transformations}
+Let's consider a robot manipulator, let $\boldsymbol{\tau}=(\tau_i)$ to be the vector of the torques applied to each joint.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/forces.png} 
+\end{center}
+We assume that the end effector is in contact with a rigid body of the environment, and is applying to it a force $\mathbf F$. For the principle of action and reaction, on the end effector is applied a force $\mathbf F_e=-\mathbf F$, so we are in a static condition where the robot doesn't move. With $\mathbf F$ we denote the generalized forces vector, that contains linear and angular components, since on the end effector might be applied a linear force and/or a torque.
+
+Our goal is to describe the relation between the forces $\mathbf F$ and the torque vector $\boldsymbol{\tau}$. 
+%----------------------
+The robotic manipulator is a constrained system of rigid bodies, in particular, the bodies (the links) can move in the space with holonomic constraints, let's say that we have $n$ rigid bodies, each described by a position vector $\mathbf p_i$ (their frame origin). The constraints are relative to the position, so there exists $k$ constraints $f_1\dots f_k$ such that\begin{align}
+   & f_1(\mathbf p_1\dots \mathbf p_n)=0\\ 
+    &\vdots\\ 
+   &f_k(\mathbf p_1\dots \mathbf p_n)=0
+\end{align}
+even if there are $n$ bodies (described by three coordinates each), the system doesn't have $3n$ degrees of freedom, we already know that the system have $n$ degrees of freedom (one for each joint). The choice of the DH coordinates $\mathbf q = q_1\dots q_n$ makes the system free of constraints. Let's remind that these are a set of Lagrangian coordinates for our robotic system with $n$ joints.
+
+A \textbf{virtual displacement} for the system is a displacement $\delta \mathbf q$ that is compatible with the constraints, since with the choice of the DH variables we don't have any constraint, any infinitesimal displacement $d\mathbf q$ is a virtual displacement.\bigskip
 
 
-
-
-
-
-
+Let's consider an infinitesimal (a virtual) displacement $d\mathbf q$ of the joint's variables. The corresponding linear and angular displacement of the end effector will be\begin{equation}
+    \begin{pmatrix}
+        d\mathbf p\\ 
+        \bomega dt 
+    \end{pmatrix}=J(\mathbf q)d\mathbf q
+\end{equation}
+the virtual work $dW_e$ (equivalent to the infinitesimal work) of the end effector is given by the dot product of the force applied on it and the end effector ''velocity'' (in this case, the infinitesimal displacement):\begin{equation}
+    dW_e=-F^T \begin{pmatrix}
+        d\mathbf p\\ 
+        \bomega dt 
+    \end{pmatrix}=-F^TJ(\mathbf q)d\mathbf q
+\end{equation}
+the virtual work $dW_q$ on the joints is given by the dot product of the torque vector and the infinitesimal displacement $d\mathbf q$:\begin{equation}
+    dW_q=\boldsymbol{\tau}^Td\mathbf q
+\end{equation}
+The total virtual work of the system is given by $dW=dW_e+dW_q$. For the principle of the \textbf{virtual work}, since the system is in a static equilibrium, the work associated to this infinitesimal variation respect to the equilibrium configuration is null:\begin{equation}
+    dW=dW_e+dW_q = 0
+\end{equation}
+hence\begin{align}
+    &\boldsymbol{\tau}^Td\mathbf q-F^T \begin{pmatrix}
+        d\mathbf p\\ 
+        \bomega dt 
+    \end{pmatrix}=0\implies\\ 
+    &\boldsymbol{\tau}^Td\mathbf q-F^TJ(\mathbf q)d\mathbf q=0\implies\\ 
+    &\boldsymbol{\tau}^Td\mathbf q=F^TJ(\mathbf q)d\mathbf q\implies\\ 
+    &\boldsymbol{\tau}=J^T(\mathbf q)\mathbf F 
+\end{align}
+Therefore we derived the relation between $\boldsymbol{\tau}$ and $\mathbf F $, and is given by the transpose of the Jacobian matrix. Let's keep in mind that in our case we considered equivalent virtual displacements and infinitesimal displacements due to the absence of constraints for the Lagrangian variables $\mathbf q$. Since $\rho(J)=\rho(J^T)$, a singular configuration for the velocity map is also singular for the force map. As already discussed, the following relations holds:
+\begin{align*}
+    &\mathcal{R}(J) = \left\{\mathbf v \in \mathbb{R}^m : \exists \dq \in \mathbb{R}^n, J\dq = \mathbf v\right\} \\
+    &\mathcal{N}(J^T) = \left\{\mathbf F \in \mathbb{R}^m : J^T \mathbf F = \mathbf 0\right\} \\
+    &\mathcal{R}(J) \oplus \mathcal{N}(J^T) = \mathbb{R}^m\\ \\
+    &\mathcal{R}(J^T) = \left\{\boldsymbol{\tau} \in \mathbb{R}^n : \exists \mathbf F \in \mathbb{R}^m, J^T \mathbf F = \boldsymbol{\tau}\right\} \\
+    &\mathcal{N}(J)= \left\{\dq \in \mathbb{R}^n : J\dq = \mathbf 0\right\} \\
+    &\mathcal{R}(J^T) \oplus \mathcal{N}(J) = \mathbb{R}^n
+\end{align*}
 
 
 
