@@ -3473,9 +3473,9 @@ Let's consider a robot manipulator, let $\boldsymbol{\tau}=(\tau_i)$ to be the v
 \begin{center}
     \includegraphics[width=0.6\textwidth ]{images/forces.png} 
 \end{center}
-We assume that the end effector is in contact with a rigid body of the environment, and is applying to it a force $\mathbf F$. For the principle of action and reaction, on the end effector is applied a force $\mathbf F_e=-\mathbf F$, so we are in a static condition where the robot doesn't move. With $\mathbf F$ we denote the generalized forces vector, that contains linear and angular components, since on the end effector might be applied a linear force and/or a torque.
+We assume that the end effector is in contact with a rigid body of the environment, and is applying to it a force $\mathbf F$. For the principle of action and reaction, on the end effector is applied a force $\mathbf F_e=-\mathbf F$, so we are in a static condition where the robot doesn't move. With $\mathbf F$ we denote the generalized forces vector, that contains linear and angular components, since on the end effector might be applied a linear force and/or a torque, we call \textbf{wrench} this generalized forces vector $\mathbf F\in \R^6$.
 
-Our goal is to describe the relation between the forces $\mathbf F$ and the torque vector $\boldsymbol{\tau}$. 
+Our goal is to describe the relation between the wrench $\mathbf F$ and the torque vector $\boldsymbol{\tau}$. 
 %----------------------
 The robotic manipulator is a constrained system of rigid bodies, in particular, the bodies (the links) can move in the space with holonomic constraints, let's say that we have $n$ rigid bodies, each described by a position vector $\mathbf p_i$ (their frame origin). The constraints are relative to the position, so there exists $k$ constraints $f_1\dots f_k$ such that\begin{align}
    & f_1(\mathbf p_1\dots \mathbf p_n)=0\\ 
@@ -3493,7 +3493,7 @@ Let's consider an infinitesimal (a virtual) displacement $d\mathbf q$ of the joi
         \bomega dt 
     \end{pmatrix}=J(\mathbf q)d\mathbf q
 \end{equation}
-the virtual work $dW_e$ (equivalent to the infinitesimal work) of the end effector is given by the dot product of the force applied on it and the end effector ''velocity'' (in this case, the infinitesimal displacement):\begin{equation}
+the virtual work $dW_e$ (equivalent to the infinitesimal work) of the end effector is given by the dot product of the wrench applied on it and the end effector ''velocity'' (in this case, the infinitesimal displacement):\begin{equation}
     dW_e=-F^T \begin{pmatrix}
         d\mathbf p\\ 
         \bomega dt 
@@ -3514,7 +3514,7 @@ hence\begin{align}
     &\boldsymbol{\tau}^Td\mathbf q=F^TJ(\mathbf q)d\mathbf q\implies\\ 
     &\boldsymbol{\tau}=J^T(\mathbf q)\mathbf F 
 \end{align}
-Therefore we derived the relation between $\boldsymbol{\tau}$ and $\mathbf F $, and is given by the transpose of the Jacobian matrix. Let's keep in mind that in our case we considered equivalent virtual displacements and infinitesimal displacements due to the absence of constraints for the Lagrangian variables $\mathbf q$. Since $\rho(J)=\rho(J^T)$, a singular configuration for the velocity map is also singular for the force map. As already discussed, the following relations holds:
+Therefore we derived the relation between $\boldsymbol{\tau}$ and $\mathbf F $, and is given by the transpose of the Jacobian matrix. Let's keep in mind that in our case we considered equivalent virtual displacements and infinitesimal displacements due to the absence of constraints for the Lagrangian variables $\mathbf q$. Since $\rho(J)=\rho(J^T)$, a singular configuration for the velocity map is also singular for the wrench map. As already discussed, the following relations holds:
 \begin{align*}
     &\mathcal{R}(J) = \left\{\mathbf v \in \mathbb{R}^m : \exists \dq \in \mathbb{R}^n, J\dq = \mathbf v\right\} \\
     &\mathcal{N}(J^T) = \left\{\mathbf F \in \mathbb{R}^m : J^T \mathbf F = \mathbf 0\right\} \\
@@ -3523,6 +3523,29 @@ Therefore we derived the relation between $\boldsymbol{\tau}$ and $\mathbf F $, 
     &\mathcal{N}(J)= \left\{\dq \in \mathbb{R}^n : J\dq = \mathbf 0\right\} \\
     &\mathcal{R}(J^T) \oplus \mathcal{N}(J) = \mathbb{R}^n
 \end{align*}
+\subsection{Force Manipulability}
+The discussion about the velocity ellipsoid for a manipulator can be done the forces too. We consider all the unitary norm torques $\boldsymbol{\tau}$:
+$$\boldsymbol{\tau}^T\boldsymbol{\tau}=1 $$
+since $\boldsymbol{\tau}=J^T\mathbf F$, this identifies an ellipsoid in the force space:
+$$ \mathbf F^T JJ^T\mathbf F=1$$
+the area of the ellipsoid is proportional to \begin{equation}
+    \sqrt{\det(JJ^T)^{-1}}
+\end{equation}
+so this one can be used as a measure of singularity (such as the velocity case). The two ellipsoids (velocity and force) are aligned along the same axes, but they are oriented in the opposite way in terms of elongation.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/vel_force_ell.png} 
+\end{center}
+ The interpretation of the force ellipsoid is the following:\begin{quotation}
+    Along the direction of the longest axes of the ellipsoid, it is easier to impose a wrench $\mathbf F$ by applying small torques $\boldsymbol{\tau}$. Along the shortest one, even to impose small wrenches, it may be required a huge torque.
+\end{quotation} 
+
+
+
+
+
+
+
+
 
 
 
