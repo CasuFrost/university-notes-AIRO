@@ -1112,6 +1112,10 @@ Since the pulses per revolut are 4 times greater then the PPR without counting t
         AR=\frac{360^\circ}{PPR\cdot D}
     \end{equation}
 \end{enumerate}
+\subsection{Force Sensors}
+\redText{TODO}
+\subsection{Vision}
+\redText{TODO}
 \chapter{Describing Orientation}
 \section{Position and Orientation of a Rigid Body}
 We have a base reference frame $RF_A=(\mathbf x_A,\mathbf y_A,\mathbf z_A)$, and a rigid body $B$ in the space, let's say that there is a fixed reference frame $RF_B=(\mathbf x_B,\mathbf y_B,\mathbf z_B)$ attached to a point of $B$, a vector ${}^A\mathbf p\in\R^3$ can describe the position of the whole body respect to the frame $RF_A$, and a $3\times3$ matrix is sufficient to describe the orientation of that body.
@@ -3538,6 +3542,71 @@ so this one can be used as a measure of singularity (such as the velocity case).
  The interpretation of the force ellipsoid is the following:\begin{quotation}
     Along the direction of the longest axes of the ellipsoid, it is easier to impose a wrench $\mathbf F$ by applying small torques $\boldsymbol{\tau}$. Along the shortest one, even to impose small wrenches, it may be required a huge torque.
 \end{quotation} 
+
+
+
+
+
+
+
+
+
+
+\chapter{Trajectory Planning}
+We described how to impose task positions by controlling the joint's angle value, we now describe how to make the end effector to follow a general trajectory in the cartesian space, by changing it's pose over time. We recall that\begin{itemize}
+    \item Motion planning: find the path (without collisions) that the robot have to follow (find the correct trajectory)
+    \item Trajectory planning: control the joint's such that the robot end effector follow a given trajectory.
+\end{itemize}
+In this section \textit{we do not cover} motion planning, only the trajectory planning. The aim of a trajectory planner, is to, given a sequence of poses over time, to produce the profiles over time of the joint's angle for the robot controller. Let's consider a simple problem: We have two points in the space: $\mathbf p_A$ and $\mathbf p_B$ (expressed in the robot reference frame), and we want the robot end effector to pass from $\mathbf p_A$ to $\mathbf p_B$.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/PTP.png} 
+\end{center}
+There are many ways, we can go from the start to the end trough a spline, a straight line, or a circular line. To make the end effector to go from $\mathbf p_A$ to $\mathbf p_B$ trough a straight line, we consider the following trajectory:\begin{equation}
+    \mathbf p(s)=\mathbf p_A+s(\mathbf p_B-\mathbf p_A)
+\end{equation}
+where $s\in [0,1]$ is the parameter that define the trajectory. We can assign a timing law by making $s$ a scalar function in the variable $t\in[0,T]$\begin{align}
+    &s=s(t)\in [0,1]\\
+    &s(0)=0\implies \mathbf p=\mathbf p_A\\
+    &s(T)=1\implies \mathbf p=\mathbf p_B
+\end{align}
+Given that, we define a \textbf{trajectory} as the combination of a \textit{geometric path} parametrized by $s\in [0,1]$, and a \textit{timing law} parametrized by $t\in [0,T]$ that describe the time evolution. There are two ways to make the robot follow a path, we can plan the trajectory in the \textit{joint space} or in the \textit{cartesian space} (the difference will be clarified later).\bigskip
+
+In general, we can resume the trajectory planning operative sequence in the following steps:\begin{enumerate}
+    \item We get as an input a sequence of points (named \textbf{knots}) in the cartesian space. 
+    \begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/traj_plan1.eps} 
+\end{center}
+    \item We consider an interpolation of the knots to define a trajectory $\mathbf p(s)$
+    \begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/traj_plan2.eps} 
+\end{center}
+    \item We sample $\mathbf p(s)$ to get a dense but finite sequence of knots on the trajectory
+    \begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/traj_plan3.eps} 
+\end{center}
+    \item We compute the inverse kinematics for each sampled knots to get a sequence of points in the joint space\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/traj_plan4.eps} 
+\end{center} 
+    \item We interpolate these points to obtain a trajectory $\mathbf q(s)$ in the joint space.\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/traj_plan5.eps} 
+\end{center}
+\end{enumerate}
+We may skip from the step $2$ directly to get the resulting trajectory  $\mathbf q(s)$ in the joint space, but this analytic inversion is a complex process, usually unfeasible (this problem can be seen as the task to find the solution of a continuously infinite number of non linear systems of equations).
+
+The timing law is usually chosen by consider some optimal criteria (minimum transfer time) to be satisfied under some constraints imposed by the actuator capabilities. Some trajectory are at priori unfeasible for the manipulator. A trajectory with a straight edge, may require a discontinuous jump for the velocities of the joint's, that is unfeasible for the motor, in fact, if a manipulator have to perform a path like that (such in a square trajectory), there are two options:\begin{itemize}
+    \item the end effector must stops on the edge, and then continue 
+    \item the end effector will follow a rounded curve that approximate the edge (over-fly)
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/overfly.eps} 
+\end{center}
+
+
+
+
+
+
+
 
 
 
