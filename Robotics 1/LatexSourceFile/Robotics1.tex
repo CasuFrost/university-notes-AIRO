@@ -3600,21 +3600,153 @@ The timing law is usually chosen by consider some optimal criteria (minimum tran
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/overfly.eps} 
 \end{center}
+\textbf{Example}: We want to define a trajectory for $q(s), \ s\in[0,1]$ from $q(0)=q_i=0$ to $q(1)=q_f=\pi$, with zero velocity in the start and in the end\begin{equation}
+    \dot q(0)=\dot q(1)=0
+\end{equation}
+to do so, we need a cubic path, for example:\begin{equation}
+    q(s)=s+3(\pi-1)s^2-2(\pi-1)s^3
+\end{equation}
+we consider a timing law from $t_i=0$ sec to $t_f=4$ sec ($T=t_f-t_i=4$), with the conditions of zero velocity and zero acceleration in the start and in the end:\begin{equation}
+    \dot s(t_i)= \ddot s(t_i)= \dot s(t_f)= \ddot s(t_f)=0
+\end{equation}
+we need a quintic timing law:\begin{equation}
+    s(t)=10\tau^3-15\tau^4+6\tau^5, \ \ \ \tau=\frac{t}{T}=\frac{t}{4}
+\end{equation}
+in the end, the trajectory in function of time $q(t)$, will be a polynomial of degree 15.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/timing_law.png} 
+\end{center}
+When we define a trajectory, we have to take in account different things:\begin{itemize}
+    \item We are defining the path in the cartesian space or in the joint space?
+    \item Wat type of task we have to perform? It can be point to point (PTP), multi point (MP) with knots, or concatenated 
+    \item what geometric path we have to follow? It can be rectilinear, polynomial, harmonic, exponential, cycloid ecc... 
+    \item we have to define the timing law: bang-bang in acceleration, trapezoidal in velocity, polynomial ecc... 
+    \item the motion of all the joints have to be coordinated (starts and ends at the same instant) or they can move independently?
+\end{itemize}
+Planning a trajectory in the Cartesian space offers a more direct visualization of the generated path. However, if the task involves avoiding non-static obstacles, online planning is required. While planning in the joint space lets us bypass online kinematic inversion, it doesn't allow for obstacle avoidance and the resulting path might cross manipulator singularities.
 
+The offline planning in the joint space is easier but not always possible, the online (re-)planning is needed when environment interaction
+occurs or when sensor-based motion is required.
+\section{Path Planning}
+Relevant characteristics for a geometric path are the following:\begin{itemize}
+    \item predictability and accuracy of the path: We would like to have predictable motion outside the knots.
+    \item flexibility: allow concatenation of primitive segments, over-fly of knots
+    \item computational efficiency and memory space for MP tasks: store only the coefficients of polynomial functions
+    \item smoothness: in the space and in time, we would like to have at least $C^1$ function for the timing law, possibly, we would like to have continuity up to the jerk.
+\end{itemize}
+Let's consider the general case where we have a generic parametrization for the geometric path $\mathbf q$:\begin{equation}
+    \mathbf q(s)=\begin{pmatrix}
+        q_1(s)\\ \vdots \\ q_n(s)
+    \end{pmatrix}, \ \ s\in [s_i,s_f]
+\end{equation}
+We consider the path derivatives\begin{equation}
+    \mathbf q'(s)=\frac{d\mathbf q}{ds} \ \ \ \mathbf q''(s)=\frac{d^2\mathbf q}{ds^2}
+\end{equation}
+these quantities are related to the \textbf{curvature} of the path, this is a scalar quantity $\kappa$ defined for each $s$ that describe how curved is the path in that point:
+\begin{equation}
+    \kappa(s)=\frac{\| \mathbf q'(s)\times \mathbf q''(s) \|}{\|\mathbf q'(s)\|^3}
+\end{equation}
+We say that a path satisfies the \textbf{regularity condition} if the curvature $\kappa$ is bounded, hence, the first derivative of $\mathbf q$ is never zero:\begin{equation}
+    \mathbf q'(s)\ne 0, \ \ s\in[s_i,s_f]
+\end{equation}
+How can we choose a parametrization $s$ for the path? Given $\mathbf q$, we have a special parametrization, given by the \textbf{arc length} $\sigma$. The length of the path is\begin{equation}
+    L=\int_{s_i}^{s_f}\|\mathbf q'(r)\|dr
+\end{equation}
+the parametrization by the arc length is given by $\sigma=\sigma(s)$:\begin{equation}
+    \sigma(s)=\int_{s_i}^{s}\|\mathbf q'(r)\|dr
+\end{equation}
+this is independent with respect to the choice of $s$. By considering this parametrization:\begin{equation}
+    \mathbf q(\sigma), \ \ \sigma\in[\sigma(s_i),\sigma(s_f)]=[0,L]
+\end{equation}
+with this special parametrization we have always a unit tangent vector to the path:\begin{equation}
+    \|\mathbf q'(\sigma)\|=1
+\end{equation}
+and the curvature is given by the norm of the second derivative:\begin{equation}
+    \kappa(\sigma)=\|\mathbf q''(\sigma)\|
+\end{equation}
+After we define a parametrization for $\mathbf q(s)$ and a timing law $s(t)$ we can consider the derivative of $\mathbf q$ in time by the space-time decomposition:\begin{align}
+    &\dot{\mathbf q}(t)=\frac{d\mathbf q}{ds}\dot s(t)=\mathbf q'\dot s\\ 
+    &\ddot{\mathbf q}(t)=\frac{d\mathbf q}{ds}\ddot s(t)+\frac{d^2\mathbf q}{ds}\dot s^2(t)=
+    \mathbf q'\ddot s+\mathbf q''\dot s^2
+\end{align} 
+\subsection{Trajectory Bounds}
+In real case situations, the actuators can't provide an unbounded amount of joint velocity, we model this limit as bounds for each joint:\begin{equation}
+    |\dot q_j(t)|\le v_{j,max} \ \ j\in 1,\dots n \ \ t\in [0,T]
+\end{equation}
+this limit have to be represented for $q_j$ with the parametrization $s$, since \begin{align}
+    &\dot{ q_j}(t)= q_j'(s)\dot s(t)\implies \\ 
+    &|\dot{ q_j}(t)|= |q_j'(s)|\cdot |\dot s(t)|
+\end{align}
+the condition becomes:\begin{equation}
+    \max_{s\in[s_i,s_f], t\in[0,T]}|q_j'(s)|\cdot |\dot s(t)|\le  v_{j,max}, \ \ \ j\in 1,\dots,n
+\end{equation}
+by doing some algebraic manipulation, we get:\begin{equation}
+    \max_{t\in[0,T]} |\dot{s}(t)| \le \min_{j=1,\dots,n} \frac{v_{j,\max}}{\max_{s\in[s_i,s_f]} |q'_j(s)|}
+\end{equation}
+by denoting\begin{equation}
+    V=\min_{j=1,\dots,n} \frac{v_{j,\max}}{\max_{s\in[s_i,s_f]} |q'_j(s)|}
+\end{equation}
+we have\begin{equation}
+    |\dot s(t)|\le V
+\end{equation}
+If this condition is always satisfied, then we will never outrange the actuator limits.
+\\\redText{TODO:Acceleration limit slide 28}
 
+\section{Trajectory Planning in the Joint Space}
+When we define a trajectory $\mathbf q(t)$ in time or $\mathbf q(s)$ with the timing law $s=s(t)$ we can work component wise for each $q_j$. In the common case, we define implicitly a trajectory by interpolating a set of points in the space with some boundary conditions, with a fixed class of template functions. 
 
-
-
-
-
-
-
-
-
-
-
-
-
+Typical classes of functions are\begin{itemize}
+    \item polynomials
+    \item trigonometric 
+    \item clothoids 
+    \item exponentials 
+\end{itemize}
+the imposed conditions are given in time and/or space such as:\begin{itemize}
+    \item pass trough points (interpolate the knots)
+    \item initial, final, intermediate velocity
+    \item initial, final, intermediate acceleration 
+    \item continuity for the time or space derivative up to the $k$-th order. 
+\end{itemize}
+Clearly, the more conditions we have, the more the function will be ''complex'' (for example, the order of the polynomial will be higher).
+\subsection{PTP Planning}
+We want to define a trajectory from $\mathbf q_i$ to $\mathbf q_f$, with the condition to have a desired velocity  at the start and at the end of the trajectory. The four conditions are\begin{align}
+    &\mathbf q(0)=\mathbf q_i\\
+    &\mathbf q(1)=\mathbf q_f\\
+    &\mathbf q'(0)=\mathbf v_i\\
+    &\mathbf q'(1)=\mathbf v_f\\
+\end{align}
+To satisfy these four conditions with a polynomial function, is strictly necessary that the order is at least 3. We consider a cubic polynomial defined in $s\in[0,1]$:\begin{equation}
+    \mathbf q(s)=\mathbf q_i+\Delta\mathbf q(
+        as^3+bs^2+cs+d
+    )
+\end{equation}
+where $\Delta\mathbf q=\mathbf q_f-\mathbf q_i$ and $a,b,c,d\in \R$ are the coefficient that we have to tune to satisfy the conditions. For the first condition \begin{align}
+    &\mathbf q(0)=\mathbf q_i+\Delta\mathbf qd=\mathbf q_i \iff \\ 
+    &d=0
+\end{align}
+For the other conditions, we have to solve the following system of equation\begin{align}
+    &\begin{cases}
+        \mathbf q(1)=\mathbf q_i+(\mathbf q_f-\mathbf q_i)(
+        a+b+c)=\mathbf q_f\\ 
+        \mathbf q'(0)=(\mathbf q_f-\mathbf q_i)c=\mathbf v_i\\
+        \mathbf q'(1)=(\mathbf q_f-\mathbf q_i)(3a+2b+c)=\mathbf v_f
+    \end{cases}\implies\\ 
+    &\begin{cases}
+       a+b+c=1\\ 
+       c=\frac{\mathbf v_i}{(\mathbf q_f-\mathbf q_i)}\\
+    3a+2b+c=\frac{\mathbf v_i}{(\mathbf q_f-\mathbf q_i)}
+    \end{cases}
+\end{align}
+this is a system of three equations in three unknowns. If $\mathbf v_i=\mathbf v_f=\mathbf 0$ we have\begin{align}
+     &\begin{cases}
+       a+b=1\\ 
+       c=0\\
+    3a+2b=0
+    \end{cases}\implies\\ 
+    &\begin{cases}
+       a=-2\\b=3\\c=0
+    \end{cases}
+\end{align}
 
 
 
