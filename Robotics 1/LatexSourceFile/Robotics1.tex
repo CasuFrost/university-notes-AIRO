@@ -3747,6 +3747,146 @@ this is a system of three equations in three unknowns. If $\mathbf v_i=\mathbf v
        a=-2\\b=3\\c=0
     \end{cases}
 \end{align}
+Let's see an alternative trajectory that considers trigonometric functions, we have the four boundary constraints for a rest-to-rest motion:
+\begin{align}
+    &\mathbf q(0)=\mathbf q_i\\
+    &\mathbf q(1)=\mathbf q_f\\
+    &\mathbf q'(0)=\mathbf 0\\
+    &\mathbf q'(T)=\mathbf 0\\
+\end{align}
+denoting $\Delta\mathbf q=\mathbf q_f-\mathbf q_i$, and $\tau=\frac{t}{T}\in [0,1]$, we consider the following trajectory\begin{equation}
+    \mathbf q(\tau)=\mathbf q_i+\Delta\mathbf q\frac{1-\cos(\pi\tau)}{2}
+\end{equation}
+We have the following profiles for the  velocity and the acceleration:\begin{align}
+    &\dot{\mathbf q}(\tau)=\frac{\Delta\mathbf q}{T}\frac{\pi}{2}\sin(\pi\tau)\\
+    &\ddot{\mathbf q}(\tau)=\frac{\Delta\mathbf q}{T^2}\frac{\pi^2}{2}\cos(\pi\tau)
+\end{align}
+\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/trig_traj.png} 
+\end{center}
+To satisfy more conditions, we need more sofisticate templates, for example, to satisfy the following 6 conditions (in normalized time $\tau=\frac{t}{T}$)
+\begin{align}
+    &\mathbf q(0)=\mathbf q_i\\
+    &\mathbf q(1)=\mathbf q_f\\
+    &\mathbf q'(0)=\mathbf v_iT\\
+    &\mathbf q'(1)=\mathbf v_fT\\
+    &\mathbf q''(0)=\mathbf a_iT^2\\
+    &\mathbf q''(1)=\mathbf a_fT^2\\
+\end{align}
+is required a 6-degree polynomial:\begin{align}
+    &\mathbf q(\tau) = (1-\tau)^3 \left( \mathbf q_i + (3\mathbf q_i + \mathbf v_i T)\tau + (\mathbf a_i T^2 + 6\mathbf v_i T + 12\mathbf q_i)\frac{\tau^2}{2} \right)\\& + \tau^3 \left( \mathbf q_f + (3\mathbf q_f - \mathbf v_f T)(1-\tau) + (\mathbf a_f T^2 - 6\mathbf v_f T + 12\mathbf q_f)(1-\tau)^2\frac{1}{2} \right)
+\end{align}
+in a rest-to-rest trajectory with initial and final velocity and acceleration the form is simpler:\begin{equation}
+    \mathbf q(\tau)=\mathbf q_i+\Delta\mathbf q(6\tau^5-5\tau^4+10\tau^3)
+\end{equation}
+In general, for  symmetric boundary conditions (that imposes zero values for higher order derivatives) the interpolating polynomial is always of odd degree, the coefficient of the doubly normalized polynomial are always\begin{itemize}
+    \item integers 
+    \item alternate in sign 
+    \item sum up to 1 
+    \item all zero for the terms of degree less or equals to $\frac{\text{degree}-1}{2}$
+\end{itemize}
+For the MP tasks (interpolates with a function a large number of knots) polynomials are not recommended, since, for interpolate a function of $N$ points, is required a $N-1$-degree polynomial, and this will have $N-2$ maximum and minimum points, so there will be a condition of oscillation outside the interpolating points (\textit{wandering}).\begin{quote}
+    We call \textbf{wandering} the general situation where we don't know how a trajectory will behave outside the interpolation points
+\end{quote}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.55\textwidth ]{images/interpolating_polynom.png} 
+    \caption{Note how the blue line (the interpolating polynomial for the 11 points)} is subject to uncontrolled oscillation outside the points.
+\end{figure}
+
+
+There is another interesting case, about pick and place operations, where we consider a three phases trajectory known as \textbf{LTS} (Lift off, Travel, Set down)\begin{itemize}
+    \item the robot should move slowly when picking the object 
+    \item accelerate when traveling 
+    \item decelerate to place the object
+\end{itemize} 
+
+We can use three functions, one for each phase, two polynomial of degree 4 for the lift off and set off operations, and one 3-degree polynomial for the travel operation.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/LTS.png} 
+\end{center}
+This graph concerns a generic joint of the $\mathbf q$ vector. The boundary conditions for this trajectory are (for a single joint $q$)\begin{align}
+    &q(t_i)=q_0\\
+    &q(t_1^-)=q(t_1^+)=q_1\\
+    &q(t_2^-)=q(t_2^+)=q_2\\
+    &q(t_f)=q_f
+\end{align}
+for the initial and final velocity acceleration:\begin{align}
+    &\dot q(t_i)=\dot q(t_f)=0\\
+    &\ddot q(t_i)=\ddot q(t_f)=0
+\end{align}
+the conditions for the continuity (up to acceleration) are\begin{align}
+    &\dot q(t_1^-)=\dot q(t_1^+)\\
+     &\dot q(t_2^-)=\dot q(t_2^+)\\
+     &\ddot q(t_1^-)=\ddot q(t_1^+)\\
+     &\ddot q(t_2^-)=\ddot q(t_2^+)
+\end{align}
+this is a $14$ equations linear system and a solution can be found in symbolic form. In particular, the solutions consists in these 3 polynomial function $q_L,q_T,q_S$ where \begin{itemize}
+    \item $q_L$ is a 4-degree polynomial and is defined in $[t_i,t_1]$
+    \item $q_T$ is a 3-degree polynomial and  is defined in $[t_1,t_2]$
+    \item $q_S$ is a 4-degree polynomial and  is defined in $[t_2,t_f]$
+\end{itemize}
+and the final trajectory for the joint will be\begin{equation}
+    q(t)=\begin{cases}
+        q_L(t)\text{ if } t\in [t_i,t_1]\\
+        q_T(t)\text{ if } t\in [t_1,t_2]\\
+        q_S(t)\text{ if } t\in [t_2,t_f]
+    \end{cases}
+\end{equation}
+
+This concept can be generalized: Instead of using an high order polynomial to interpolates $N$ points, is better to use more polynomials of a lower degree, in order to reduce the wandering. Emphasizing that concept to the fullest, we might interpolates $N$ points with $N-1$ linear functions.\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/linear_interp.eps} 
+\end{center}
+By doing so, we would loose continuity on the tangent curve on the knots, a smart idea is to use quadratic polynomials to \textit{blend the linear segments} and overfly the knots.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/interp3.eps} 
+\end{center}
+
+We denote $\Delta t_k$ the time interval $ t_{k+1}-t_k$. We define the \textbf{blending interval} $\Delta t_{k-1,k}$ the time where we include the quadratic polynomial instead of the linear function. The original linear segment from $q_k$ to $q_{k+1}$ is \begin{equation}
+    \theta_k(t)=q_k+(q_{k+1}-q_k)\frac{s-s_k}{\Delta s_k}
+\end{equation}
+The derivative is\begin{equation}
+    \theta'_k=\frac{q_{k+1}-q_k}{\Delta s_k}
+\end{equation}
+on the blending interval, the acceleration of the joint will be constant:\begin{equation}
+    \theta''_k=\frac{\theta_k'-\theta'_{k-1}}{\Delta t_{k-1,k}}
+\end{equation}
+by integrating two times this we will have a quadratic function with constant second derivative.
+\subsection{Splines Interpolation}
+To plan a trajectory in the joint space, we have to solve the following problem\begin{quotation}
+    interpolate $N$ knots, with continuity up to the second derivative 
+\end{quotation}
+A solution consists in the \textbf{spline curve}, a series of $N-1$ cubic polynomial concatenated to pass through the $N$ knots, continuous up to the second derivative at the $N-2$ internal knots. Since each cubic polynomial have $4$ coefficients, and we have $N-1$ functions, the total number of coefficients of a spline is $4(N-1)$. The conditions to satisfy are\begin{itemize}
+    \item $2(N-1)$: passage on the knots for each cubic 
+    \item $N-2$: continuity of first derivative on the internal knots
+    \item $N-2$: continuity of second derivative on the internal knots
+\end{itemize}
+The total number of conditions are $4(N-1)-2$, so there will be 2 free parameters after fixing the other coefficients to satisfy the constraints. We describe the method for a single joint $q$.
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/spline.png} 
+\end{center}
+We split the total time of the trajectory $[t_1,t_N]$ in time intervals $[t_k,t_{k+1}]$, that are the interval to pass from $q_k$ to $q_{k+1}$. Each $\theta_k$ are a cubic polynomial in function of $\tau=t-t_k\in[0,h_k]$\begin{equation}
+    \theta_k(\tau)=\sum_{i=0}^{3}a_{ki}\tau^i
+\end{equation}
+
+The continuity conditions for the velocity and the acceleration are the following:\begin{equation}
+    \begin{matrix}
+        \dot\theta_k(h_k)=\dot\theta_{k+1}(0)\\ \\
+        \ddot\theta_k(h_k)=\ddot\theta_{k+1}(0)
+    \end{matrix} \ \ \ \ \ k=1\dots ,N-2
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
