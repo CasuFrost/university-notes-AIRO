@@ -3876,8 +3876,95 @@ The continuity conditions for the velocity and the acceleration are the followin
     \end{matrix} \ \ \ \ \ k=1\dots ,N-2
 \end{equation}
 
+Notice how, in each interval $[t_k,t_{k+1}]$, the cubic polynomial $\theta_k$ have to satisfy exactly 4 boundary constraints. 
 
+We now describe an algorithm to compute a spline, we assume that the velocities on the internal knots (the derivative of the cubic function $\theta_k$) are known, in that case, there exists a unique solution for the spline.\begin{itemize}
+    \item known data:$$\begin{matrix}
+        \theta_k(0)=q_k=a_{k0} \text{ knots position }\\
+        \dot\theta_k(0)=v_k=a_{k1}\text{ derivative on the knots} 
+    \end{matrix} \ \ \ \ k=1\dots,N$$
+\end{itemize}
+Notice how we denoted $a_{k0},a_{k1}$ the value of $\theta_k$ and $\dot \theta_k$ on $0$. Remember that $\theta_k$ is in function of $\tau = t-t_k$, so $\theta_k(\tau=0)=\theta_k(t=t_k)$\begin{itemize}
+    \item $a_{k0}$ is the value of the spline (the total trajectory) at $t=t_k$
+    \item $a_{k1}$ is the value of the spline's derivative at $t=t_k$
+\end{itemize}
+$a_{k0}$ and $a_{k1}$ are the first two coefficients of $\theta_k$, we compute \blueText{$a_{k2}$ } and \blueText{$a_{k3}$ } by solving the following linear system:\begin{equation}\label{sistema_vel}
+    \begin{pmatrix}
+        h_k^2&h_k^3\\ 
+        2h_k&3h_k^3 
+    \end{pmatrix}
+    \begin{pmatrix}
+        \blueText{a_{k2}}\\\blueText{a_{k3}}
+    \end{pmatrix}=\begin{pmatrix}
+        q_{k+1}-q_k-v_kh_k\\ 
+        v_{k+1}-v_k
+    \end{pmatrix}
+\end{equation}
+And we impose the continuity on the cubic $\theta_k$ by letting the second derivative to be\begin{equation}
+    \ddot{\theta}_k(h_k)=2a_{k2}+6a_{k3}h_k=2a_{k+1,2}=\ddot\theta_{k+1}(0)
+\end{equation}
+We can express $a_{k2},a_{k3},a_{k+1,2}$ in terms of the still unknown velocities such as in the system in equation \eqref{sistema_vel}, this yields to a linear system of the following form:\begin{equation}\label{sistema_vel2}
+    A(h_1\dots h_{N-1})\begin{pmatrix}
+        v_2\\ \vdots\\  v_{N-1}
+    \end{pmatrix}=\mathbf b(h_1\dots h_{N-1},q_1\dots q_N,v_1,v_N)
+\end{equation}
+Where $A(h_1\dots h_{N-1})$ is a tridiagonal matrix defined as follows:\begin{equation}
+    \begin{pmatrix}
+        2(h_1+h_2)&h_1 \\ 
+        h_3&2(h_2+h_3)&h_2 \\ 
+        & h_4&2(h_3+h_4)&h_3 \\ 
+         & & \ddots& \ddots& \ddots& \\ \\
+        & & & & & & h_{N-2}&2(h_{N-3}+h_{N-2})&h_{N-3} \\
+        & & & & & & &h_{N-1}&2(h_{N-2}+h_{N-1})
+    \end{pmatrix}
+\end{equation}
+and $\mathbf b(h_1\dots h_{N-1},q_1\dots q_N,v_1,v_N)$ is the following vector:\begin{equation}
+\begin{pmatrix}
+\frac{3}{h_1 h_2} \left( h_2^2 ({q}_3 - {q}_2) + h_1^2 ({q}_2 - {q}_1) \right) - h_2 v_1 \\
+\frac{3}{h_2 h_3} \left( h_3^2 ({q}_4 - {q}_3) + h_2^2 ({q}_3 - {q}_2) \right) \\
+\vdots \\
+\frac{3}{h_{N-3} h_{N-2}} \left( h_{N-2}^2 ({q}_{N-1} - {q}_{N-2}) + h_{N-3}^2 ({q}_{N-2} - {q}_{N-3}) \right) \\
+\frac{3}{h_{N-2} h_{N-1}} \left( h_{N-1}^2 ({q}_N - {q}_{N-1}) + h_{N-2}^2 ({q}_{N-1} - {q}_{N-2}) \right) - h_{N-2} v_N
+\end{pmatrix}
+\end{equation}
+To resume the algorithm:\begin{itemize}
+    \item We have as an input, the knots $q_k$ for each $k=1\dots N$ and the velocities on the boundary : $v_1$ and $v_N$.
+    \item We compute the velocities on the internal knots $v_2\dots v_{N-1}$ by solving the linear system in equation \eqref{sistema_vel2}. 
+    \item We compute the accelerations of the $N-2$ internal knots by solving the system \eqref{sistema_vel} for each $k$. 
+    \item In the end, we have $a_{k0},a_{k1},a_{k2},a_{k3}$ for each $k$, each cubic is\begin{equation}
+        \theta_k(\tau)=a_{k0}+a_{k1}\tau+a_{k2}\tau^2+a_{k3}\tau^3 \ \ \ \ \tau=t-t_k\in[0,h_k]
+    \end{equation}
+    each cubic can be also expressed in the global time $t$:\begin{equation}
+        \theta_k(t)=a_{k0}+a_{k1}(t-t_k)+a_{k2}(t-t_k)^2+a_{k3}(t-t_k)^3
+    \end{equation}
+    when $t_k$ is the moment when $q$ have to be on $q_k$.
+\end{itemize}
+A spline curve is a good choice since it satisfy some good properties:\begin{itemize}
+    \item a spline curve has the minimum curvature among all interpolating functions with continuous second derivative. For that reason, it's a good choice to use a spline for a trajectory in the space. 
+    \item a spline is uniquely determined by the set of data\begin{itemize}
+        \item $q_1\dots q_N$ knots 
+        \item $h_1\dots h_N$ time intervals
+        \item $v_1,v_N$ boundary velocities 
+    \end{itemize}
+    \item in time, the total motion occurs in $T=\sum_kh_k=t_n-t_1$
+    \item the time intervals $h_k$ can be chosen to minimize $T$ under some bounds on velocities and accelerations in $[0,T]$
+    \item we can construct a spline even if we want to impose a given acceleration for the initial and last knots : $a_1,a_N$.
+\end{itemize}
 
+By imposing zero acceleration:\begin{equation}
+    q_1''(0)=q_N''(h_N)=0
+\end{equation}
+
+We add two more constraints, the total number of conditions are $4N-2$ but we have only $4(N-1)$ available parameters, so we have to introduce 2 \textbf{virtual knots}. The first one will be defined in $t_a\in [t_1,t_2]$, the second one is defined in $t_b\in [t_{N-1},t_N]$.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/virutal_knots.eps} 
+\end{center}
+These two knots defined in $t_a,t_b$ are virtual since the value for $q$ in that instants is not defined\begin{equation}
+    q(t_a),q(t_b)\text{ undefined}
+\end{equation}
+These two knots creates two new sub intervals since instead of $[t_1,t_2]$ we will have $[t_1,t_a]$ and $[t_a,t_2]$ (analogous for $t_b$), and we will have two additional cubics $\theta_a$ and $\theta_b$, bringing the number of free parameters to a total of $4(N +1)$. On the other 
+hand, the total number of conditions is also increased to $4(N + 1)$.
+\section{Trajectory Planning in the Cartesian Space}
 
 
 
