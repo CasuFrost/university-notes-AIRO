@@ -3965,6 +3965,14 @@ These two knots defined in $t_a,t_b$ are virtual since the value for $q$ in that
 These two knots creates two new sub intervals since instead of $[t_1,t_2]$ we will have $[t_1,t_a]$ and $[t_a,t_2]$ (analogous for $t_b$), and we will have two additional cubics $\theta_a$ and $\theta_b$, bringing the number of free parameters to a total of $4(N +1)$. On the other 
 hand, the total number of conditions is also increased to $4(N + 1)$.
 \section{Trajectory Planning in the Cartesian Space}
+There are two ways to impose a trajectory for a manipulator:\begin{itemize}
+    \item By defining a series of knots in the joint space, and making the manipulator to pass trough a configuration to an other by imposing different positions
+    \item By defining a parametrized curve $\gamma$ in the space and by controlling the end effector velocity with the inverse Jacobian matrix, considering the derivative of $\gamma$ over time.
+\end{itemize}
+
+
+
+
 
 
 
