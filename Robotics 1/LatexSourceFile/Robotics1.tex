@@ -3969,21 +3969,129 @@ There are two ways to impose a trajectory for a manipulator:\begin{itemize}
     \item By defining a series of knots in the joint space, and making the manipulator to pass trough a configuration to an other by imposing different positions
     \item By defining a parametrized curve $\gamma$ in the space and by controlling the end effector velocity with the inverse Jacobian matrix, considering the derivative of $\gamma$ over time.
 \end{itemize}
+We usually consider a series of knots and interpolate the paths with simple curves, such as arc of circles or directly straight line. 
+
+\subsection{Planning a Linear Path}
+Let's consider two points in the space $\mathbf p_i,\mathbf p_f\in \R^3$, and initial and final velocities $v_{i},v_f\in \R$, these are just real numbers since the direction are implicitly given by $\mathbf p_f-\mathbf p_i$ (since we are planning a straight line). A simple path parametrization is given by\begin{equation}
+    \mathbf p(s)=\mathbf p_i+s(\mathbf p_f-\mathbf p_i) \ \ \ \ s\in [0,1]
+\end{equation}
+Let $L$ to be the length of the path: $L=\|\mathbf p_f-\mathbf p_i\|$, we can consider a different parametrization $s=\frac{\sigma}{L}$:\begin{equation}
+      \mathbf p(\sigma)=\mathbf p_i+\frac{\sigma}{L}(\mathbf p_f-\mathbf p_i) \ \ \ \ \sigma\in [0,L]
+\end{equation}
+with this parametrization $\sigma$ represents the current length of the path. The velocity is given by\begin{equation}
+    \dot{\mathbf p}(s)=\frac{d\mathbf p}{ds}\dot s=(\mathbf p_f-\mathbf p_i)\dot s=\frac{1}{L}(\mathbf p_f-\mathbf p_i)\dot \sigma
+\end{equation} 
+We recall that $s$ is a parameter that depends on time $t$ when we assign a timing law. The acceleration is given by\begin{equation}
+    \ddot{\mathbf p}(s)=\frac{d^2\mathbf p}{ds^2}\dot s^2+\frac{d\mathbf p}{ds}\ddot s=(\mathbf p_f-\mathbf p_i)\ddot s=\frac{1}{L}(\mathbf p_f-\mathbf p_i)\ddot \sigma
+\end{equation}
+since $\frac{d^2\mathbf p}{ds^2}=\mathbf 0$.
+We have to assign a timing law to satisfy the constraints on final and initial velocities $v_i,v_f$. For simplicity, we let $v_i=v_f=0$ meters per seconds.\bigskip
 
 
+We consider a \textbf{trapezoidal timing law} $\sigma(t)$ named \textit{bang-coast-bang}. The point will accelerate until it reaches the max velocity $v_{max}$ given by the limit of the actuators, in particular, will accelerate at the max acceleration $a_{max}$, to minimize the time to complete the path.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/trapezoidal_timing_law.eps} 
+\end{center}
 
+We define $T$ the total time to complete the path and $T_s$ the time to reach the max speed $v_{max}$. We note how the area under the speed profile is given by \begin{align}
+    &\int_0^T\dot\sigma(t)dt=\\
+    &(T_s)v_{max}\frac{1}{2}+\\ 
+    &(T-2T_s)v_{max} +\\ 
+    &(T-(T-T_s))v_{max}\frac{1}{2}=\\ & v_{max}(T-T_s)
+\end{align}
+for the fundamental theorem of calculus, this area is the total variation of $\sigma(t)$, that is $L$, so we get the equation\begin{equation}
+    L=v_{max}(T-T_s)
+\end{equation}
+it follows:\begin{align}
+    &T_s=\frac{v_{max}}{a_{max}}\\ 
+    &T=\frac{La_{max}+v_{max}^2}{a_{max}v_{max}}
+\end{align}
+If the path is to short, or, if the max acceleration is not strong enough, it might be impossible to reach the max velocity, in that case, the ''coast'' phase is absent and the velocity profile is just a triangle, this happens if\begin{equation}
+    L\le \frac{v_{max}^2}{a_{max}}
+\end{equation}
+The explicit form of $\sigma(t)$ is\begin{equation}
+    \sigma(t)=\begin{cases}
+        \displaystyle\frac{a_{max}t^2}{2}\text{ if }t\in[0,T_s]\\ \\
+           \displaystyle v_{max}t-\frac{v_{max}^2}{2a_{max}}\text{ if }t\in[T_s,T-T_s]\\ \\
+            \displaystyle -\frac{a_{max}(t-T)^2}{2}+L\text{ if }t\in[T-T_s,T]
+    \end{cases}
+\end{equation}
+After defining a path over time for the point $\mathbf p(s)=\mathbf p(\sigma(t))$, we consider the velocity $\dot{\mathbf p}$, and at each sampling time we impose for the end effector this velocity by solving the inverse differential kinematics $\dq=J^{\#}(\mathbf q)\dot{\mathbf p}$.
+\begin{quotation}
+    In practice (especially in industrial robotics), simply solving $\dot{\mathbf{q}} = {J}^{\#}(\mathbf{q}) \dot{\mathbf{p}}$ can lead to numerical integration errors or drift, causing the actual position to diverge from the desired one. To prevent this, a closed feedback loop is typically used by adding an error compensation term.
+\end{quotation}
+\subsection{Concatenation of Linear Paths}
+We have to plan a trajectory for the end effector that pass trough $N$ points in the cartesian space. A way to define a cartesian trajectory is to let the end effector to follow $N-1$ linear paths between the points.
 
-
-
-
-
-
-
-
-
-
-
-
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/discontinuity.eps} 
+\end{center}
+Clearly, there is a discontinuity between two paths, that forces the end effector to stop. The way to account this is to \textit{overfly} the points, as we already seen.
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/overfly2.eps} 
+\end{center}
+Let's model this problem.\begin{itemize}
+    \item We have three points in the space $\mathbf A$, $\mathbf B$ and $\mathbf C$
+    \item $\mathbf A$ and $\mathbf C$ are the initial and final points, $\mathbf B$ is the \textit{via point}, that we have to overfly.
+    \item The directions of the linear paths  $\mathbf A\mathbf{B}$  and  $\mathbf B\mathbf{C}$ are given by\begin{align}
+        &\mathbf k_{AB}=\frac{\mathbf B-\mathbf A}{\|\mathbf B-\mathbf A\|}\\
+        &\mathbf k_{BC}=\frac{\mathbf C-\mathbf B}{\|\mathbf C-\mathbf B\|}
+    \end{align}
+    \item Given $v_1$ and $v_2$ (constant speeds on the linear paths $\mathbf A\mathbf{B}$ and $\mathbf B\mathbf{C}$ ), we want to find the time $\Delta T$ needed for the transition at constant acceleration.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/overfly3..eps} 
+\end{center}
+We want to define the profile of the point $\mathbf p(t)$ on the overfly trajectory, in $t\in[0,\Delta T]$ (the transition starts at $t=0$). We have some constraints\begin{itemize}
+    \item the initial velocity of $\mathbf p(t)$ is $\mathbf k_{AB}v_1$
+    \item the final velocities of  $\mathbf p(t)$ is $\mathbf k_{BC}v_2$
+\end{itemize}
+So
+\begin{align}
+    &\dot{\mathbf p}(0)=\mathbf k_{AB}v_1 \\
+    & \dot{\mathbf p}(\Delta T)=\mathbf k_{BC}v_2
+\end{align}
+Since on the linear paths the velocity is constant, the acceleration of $\mathbf p$ should be zero on $t=0,\Delta T$
+\begin{align}
+    &\ddot{\mathbf p}(0)=\mathbf 0 \\
+    & \ddot{\mathbf p}(\Delta T)=\mathbf 0
+\end{align}
+The constant acceleration needed to go from a velocity of $\mathbf k_{AB}v_1$ to $\mathbf k_{BC}v_2$ in a total time of $\Delta T$ is \begin{equation}
+    \ddot{\mathbf p}(t)=\frac{1}{\Delta T}(\mathbf k_{BC}v_2-\mathbf k_{AB}v_1)
+\end{equation}
+The velocity profile is given by integrating that in time\begin{equation}
+    \int_0^{t}\ddot{\mathbf p}(\tau)d\tau = \frac{1}{\Delta T}(\mathbf k_{BC}v_2-\mathbf k_{AB}v_1)t+\mathbf c 
+\end{equation}
+where $\mathbf c$ is a constant that is the initial velocity (that is $\mathbf k_{AB}v_1$), so:\begin{equation}
+    \dot{\mathbf p}(t)= \frac{1}{\Delta T}(\mathbf k_{BC}v_2-\mathbf k_{AB}v_1)t+\mathbf k_{AB}v_1
+\end{equation}
+By integrating again the velocity we get the position profile that is a parabolic curve (the constant added after the integration is $\mathbf A'$, the initial position where the overfly trajectory starts).
+\begin{equation}
+    \mathbf p(t)=\mathbf A'+\frac{1}{2\Delta T}(\mathbf k_{BC}v_2-\mathbf k_{AB}v_1)t^2+\mathbf k_{AB}v_1t
+\end{equation}
+We now have to find the total transition time $\Delta T$. We denote $d_1$ the distance between $\mathbf A'$ and $\mathbf B$, and $d_2$ the distance between $\mathbf C'$ and $\mathbf B$.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/overfly4.eps} 
+\end{center}
+So we define the two vectors:\begin{align}
+    &\mathbf B-\mathbf A'=d_1\mathbf k_{AB}\\ 
+     &\mathbf C'-\mathbf B=d_2\mathbf k_{BC}
+\end{align}
+We know that $\mathbf p(\Delta T)=\mathbf C'$, so:\begin{align}
+    &\mathbf p(\Delta T)=\mathbf A'+\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\implies \\ 
+    &\redText{-\mathbf B'}+\mathbf A'+\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B'}\implies\\
+    &\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B'}+\redText{\mathbf B'}-\mathbf A'\implies \\
+      &\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=d_1\mathbf k_{AB}+d_2\mathbf k_{BC}
+\end{align}
+So we can express $d_1$ and $d_2$ in terms of $\Delta T$\begin{align}
+    &d_1=v_1\frac{\Delta T}{2}\\ 
+    &d_2=v_2\frac{\Delta T}{2}
+\end{align}
+In the end:\begin{align}\label{relations}
+    &\Delta T=2\frac{d_1}{v_1}\\  \label{relations2}
+    &d_2=d_1\frac{v_2}{v_1}
+\end{align}
+So, when we have to design an overfly parabolic trajectory, we have to decide one parameter between $d_1,d_2$ or $\Delta T$ (the other two follows from the relations \eqref{relations} and \eqref{relations2}).
 
 
 \chapter*{Appendix}
