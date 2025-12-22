@@ -637,7 +637,7 @@ Let's focus on the actuation system, we can consider the scheme in figure \ref{f
 We define the efficiency as the ratio between the output and input power:\begin{equation}
     \text{efficiency}=\frac{P_u}{P_c}.
 \end{equation}
-\section{Electrical Motors}
+\section{Electrical Motors}\label{sec:DCMotor}
 Since pneumatic system have difficulties to guarantee  high levels of precision, and the hydraulic actuation systems are expensive and needs hydraulic supply, in most of the cases electrical servo motors are mounted on the robots.\begin{itemize}
     \item advantages of electrical motors:\begin{itemize}
         \item power supply available everywhere
@@ -4239,9 +4239,168 @@ We should choose as the time scaling factor $k$ the following value:\begin{equat
 in that case, if some bounds are violated, the choice of equation \eqref{time_scale} yields to a $k>1$ that slow down the trajectory, by leading to a new $\mathbf q_s(r)$ that doesn't violate any constraint. Conversely, if all bounds are strictly satisfied, the choice of $k$ yields to a speeded up trajectory $\mathbf q_s(r)$ with $k<1$ such that at least one of the velocities or acceleration constraint are saturated in some instant (making the trajectory as fast as possible).
 
 \chapter{Kinematic Control}
+This chapter requires some basic knowledge in control theory.
+\section{Feedback Loop}
+As we already explained, when we plan a trajectory in the cartesian space $\mathbf p(s)$, we impose a velocity for the end effector at each time step $t$ by considering $\dot{\mathbf p}(s(t))$. If we want to realize a specific motion task without considerable errors, this is not sufficient: initial errors, discrete time implementation and uncertain robot parameters yields to an actual motion that differs from the desired trajectory.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/traj_error.eps} 
+\end{center}
+For these reasons, our general control scheme should include\begin{itemize}
+    \item a \textit{feed forward action}, that commands the velocity of the end effector based on the planned trajectory $\mathbf p(s)$ (what we discussed in the previous chapter).
+    \item a \textbf{feedback} action, that dynamically commands the robots and depends on the current error that came from the robot state measures, is necessary to impose \textit{asymptotic stability} and to make the error converge to zero.
+\end{itemize}
+This control scheme is applied for the two general class of control problems:\begin{itemize}
+    \item regulation: Make the system (our robot manipulator) to reach a constant pose/configuration 
+    \item tracking: Make the manipulator to follow a time-varying reference
+\end{itemize}
+\textbf{About the notation}: From now on, we denote\begin{itemize}
+    \item $\mathbf q(t)$ the \textit{current} configuration of the robot manipulator 
+    \item $\mathbf p(t)$ the \textit{current} position of the task vector 
+    \item $\mathbf q_d(s(t))$ the \textit{desired} configuration of the robot manipulator 
+    \item $\mathbf p_d(s(t))$ the \textit{desired} position of the task vector 
+\end{itemize}
+The error that we consider dynamically is the difference between the desired configuration and the actual configuration, the error can be considered in the joint space or in the task space.
+In the joint space:
+\begin{equation}
+    \mathbf e(t)=\mathbf q_d(s(t))- {\mathbf q}(t)
+\end{equation}\begin{itemize}
+    \item $\mathbf q_d(s(t))$: desired configuration at time $t$
+    \item $ {\mathbf q}(t)$: actual configuration at time $t$
+    \item $s(t)$: timing law
+    \item $\mathbf e(t)\in \R^n$ actual error in the joint space ($n$ is the number of joints)
+\end{itemize}
+In the cartesian space:
+\begin{equation}
+    \mathbf e(t)=\mathbf p_d(s(t))- {\mathbf p}(t)
+\end{equation}\begin{itemize}
+    \item $\mathbf p_d(s(t))$: desired position at time $t$
+    \item $ {\mathbf p}(t)$: actual position of the end effector at time $t$
+    \item $\mathbf e(t)\in \R^3$ actual error in the task space (the segment between the desired position and the current one)
+\end{itemize}
 
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/error2.eps} 
+\end{center}
 
+An example of a simple control low is the following, at each time step:\begin{itemize}
+    \item We measure the current position $\mathbf p$ (for example, we get $\mathbf q$ from the absolute encoder mounted on the actuators and compute the direct kinematics $f_r(\mathbf q)$)
+    \item we consider the error such as the difference between $\mathbf p$ and the desired position $\mathbf p_d$
+    \item we impose for the manipulator a velocity that is proportional to the error $\mathbf e$, by using the inverse differential kinematics $J^\#(\mathbf q)\mathbf e$.
+\end{itemize}
+At low level, we can't control directly the velocity of the end effector, the robot is an electro-mechanical system driven by the motors that produces torques, there is a low-level control scheme that, given the desired velocity $v_d$, finds the correct input current $i$ to realize the torque $\tau$ needed to make the motors to spin at the desired velocity $v_d$.
 
+In this chapter, we assume that we can directly control the velocity of the motors. The low level control scheme for a single DC motor is presented in section \ref{sec:DCMotor}.
+
+\subsection{Feedback Loop Example}
+In this section we give some introductory example of how a feedback control scheme works for some simple linear systems. Let's consider the following toy example: There is a body of mass $M$ kilograms, that lies on a plane, with zero friction, we can control the force $F$ applied on the body in the axis parallel to the plane:
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/mass_plane.eps} 
+\end{center}
+The configuration of the system is the $x$-axis position of the mass on the plane, that we denote $x$. The dynamic of the boyd is given Newton's law:\begin{equation}
+    M\ddot x=F
+\end{equation}
+Since $\ddot x=\frac{F}{M}$, the dynamic of the system can be described by the following block diagram.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/block_diagram_mass_plane.eps} 
+\end{center}
+$F$ is the input, the model of the system is given by a division by $M$ and an integration, the output is the velocity $\dot x$, $\dot x_0$ is the initial velocity.\begin{equation}
+    \dot x(t)=\frac{F}{M}t+\dot x_0
+\end{equation}
+We want to impose a desired velocity $v_d(t)$ for the body, we can add a feedback loop that computes the error and uses it as the input by scaling it for a factor $K>0$:\begin{equation}
+    F=K(v_d-\dot x)
+\end{equation} 
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/block_diagram_mass_plane2.eps} 
+\end{center}
+The system dynamic is described by the following differential equation:\begin{equation}
+    M\ddot x=K(v_d(t)-\dot x)
+\end{equation}
+if the desired velocity $v_d(t)=\bar v_d$ is constant:
+\begin{equation}
+    M\ddot x=K(\bar v_d-\dot x)
+\end{equation}
+this first order differential equation in $\dot x$, for an initial velocity $\dot x_0$ admits an analytical solution:\begin{equation}
+    \dot x(t)=\dot x_0+\left((\bar v_d-\dot x_0) \right)\left(
+    1-\exp(-\frac{K}{M}t)
+    \right)
+\end{equation}
+for $t$ that goes to infinity, $\dot x$ converges to $\bar v_d$.
+the transfert function of the system is \begin{equation}
+    H(s)=\frac{1}{Ms}
+\end{equation}
+where $s$ is the complex variable.
+By adding the feedback loop the global transfert function of the system became\begin{equation}
+    W(s)=\frac{1}{\frac{M}{K}s+1}
+\end{equation}
+
+the cutoff frequency is $\frac{K}{M}$, so practically, we need to increase $K$ if we want to impose a time varying desired velocity $v_d(t)$ at high frequency. For example, by letting $\frac{K}{M}=10$, we have the two possible time responses to unit sinusoidal velocity reference $v_d(t)=\sin(\omega t)$, the left one with $\omega=2$, the right one $\omega=20$.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/freq2.pdf} 
+    \includegraphics[width=0.4\textwidth ]{images/freq20.pdf} 
+\end{center}
+the controller realize perfectly the sinusoidal input with $\omega=2$, but have an attenuation of the amplitude when tries to realize the input with $\omega=20$.
+\section{Joint and Cartesian Control}
+We already explained how the low level control scheme of the robot is not treated in this context, in particular, we see the robot as a system that perfectly realizes the desired motion. 
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/idealModel.eps} 
+\end{center}
+So, in this section we will just describe how to compute the input velocity in the joint space to realize a desired position $\mathbf p$.\bigskip
+
+We can control the task vector by computing the error in the joint space or in the cartesian space. We consider now the kinematic control of joint motion, we have a reference position to follow in time:\begin{equation}
+    \mathbf p_d
+\end{equation}
+that is analytically defined by the trajectory planning module, so we have access to his derivative\begin{equation}
+    \dot{\mathbf p}_d 
+\end{equation}
+this one will be  the input of our control scheme.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/jointControl.eps} 
+\end{center}
+The error is computed by considering the difference between the desired configuration and the actual configuration, $K$ is a diagonal positive matrix.\begin{align}
+   & \mathbf e = \mathbf q_d-\mathbf q\implies \\ 
+    &\dot{\mathbf e}=\dot{\mathbf q_d}-\dot{\mathbf q}=\\ 
+    &\dot{\mathbf q_d}-(\dot{\mathbf q_d}+K(\mathbf q_d-\mathbf q))=
+    -K\mathbf e
+\end{align}
+So the system of differential equations that describe the evolution of the error is\begin{equation}
+    \dot{\mathbf e} = -K\mathbf e
+\end{equation}
+in scalar form:
+\begin{equation}
+    \begin{cases}
+        \dot e_1=-k_1e_1\\ 
+        \vdots \\ 
+        \dot e_n=-k_ne_n
+    \end{cases}
+\end{equation}
+for each $j\in 1\dots, n$ the solution is given by\begin{equation}
+    e_i(t)=e_{i,0}\exp(-kt)
+\end{equation}
+where $e_{i,0}$ is the initial error for the $i$-th joint. So the error in the joint space goes exponentially to zero.
+We can use the Jacobian matrix to explicit the error $\mathbf e_p$ in the cartesian space:\begin{align}
+    &\mathbf e_p=\mathbf p_d-\mathbf p\implies \\ 
+    &\dot{\mathbf e}_p=\dot{\mathbf p}_d-\dot{\mathbf p}=\\ 
+    &\dot{\mathbf e}_p=J(\mathbf q_d)\dq_d-J(\mathbf q)(\dq_d+K(\mathbf q_d-\mathbf q))=\\
+    &\dot{\mathbf e}_p=J(\mathbf q_d)\dq_d-J(\mathbf q)\dq_d-J(\mathbf q)K(\mathbf q_d-\mathbf q)=\\ 
+     &\dot{\mathbf e}_p=J(\mathbf q_d)\dq_d-J(\mathbf q)\dq_d-J(\mathbf q)\mathbf e
+\end{align} 
+So when $\mathbf q\rightarrow \mathbf q_d$ we have that $\dot{\mathbf e}_p\rightarrow J(\mathbf q)\mathbf e$, we can say that\begin{equation}
+    \dot{\mathbf e}_p\simeq -J(\mathbf q)KJ^{\#}(\mathbf q)\mathbf e_p
+\end{equation}
+We now consider a control scheme where the error is computed in the cartesian space.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/cartControl.eps} 
+\end{center}
+Where $K_p$ is a positive diagonal matrix.
+We want to derive the differential equation that describes the evolution of the error in time:\begin{align}
+    &\mathbf e_p=\mathbf p_d-\mathbf p\implies \\
+    &\dot{\mathbf e_p}=\dot{\mathbf p_d}-\dot{\mathbf p} =\\ 
+    &\dot{\mathbf p}_d-J(\mathbf q)J^{\#}(\mathbf q)(\dot{\mathbf p}_d+K_p(\mathbf p_d-\mathbf p))=-K_p\mathbf e_p
+\end{align}
+so\begin{equation}
+    \dot{\mathbf e}_p=-K_p\mathbf e_p
+\end{equation}
+the cartesian error goes exponentially to zero.
 
 
 
