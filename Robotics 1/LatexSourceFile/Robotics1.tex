@@ -4079,8 +4079,8 @@ So we define the two vectors:\begin{align}
 \end{align}
 We know that $\mathbf p(\Delta T)=\mathbf C'$, so:\begin{align}
     &\mathbf p(\Delta T)=\mathbf A'+\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\implies \\ 
-    &\redText{-\mathbf B'}+\mathbf A'+\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B'}\implies\\
-    &\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B'}+\redText{\mathbf B'}-\mathbf A'\implies \\
+    &\redText{-\mathbf B}+\mathbf A'+\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B}\implies\\
+    &\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=\mathbf C'\redText{-\mathbf B}+\redText{\mathbf B}-\mathbf A'\implies \\
       &\frac{\Delta T}{2}(v_1\mathbf k_{AB}+v_2\mathbf k_{BC})=d_1\mathbf k_{AB}+d_2\mathbf k_{BC}
 \end{align}
 So we can express $d_1$ and $d_2$ in terms of $\Delta T$\begin{align}
@@ -4092,6 +4092,159 @@ In the end:\begin{align}\label{relations}
     &d_2=d_1\frac{v_2}{v_1}
 \end{align}
 So, when we have to design an overfly parabolic trajectory, we have to decide one parameter between $d_1,d_2$ or $\Delta T$ (the other two follows from the relations \eqref{relations} and \eqref{relations2}).
+\bigskip
+
+There exists other ways to interpolate points in the cartesian space, usually the manipulators have the built-in feature for a \textit{circular path} through 3 points. In robots with spherical wrist, the planning may be decomposed between the orientation and the position:\begin{itemize}
+    \item We plan the position for the center of the wrist (first $n-3$ joints)
+    \item we plan separately the orientation with the last 3 coincident joints
+    \item we assign a common timing law.
+\end{itemize}
+In general, it is convenient to parametrize the cartesian geometric path $\mathbf p(s)$ with its arc length, if so, the following conditions holds:\begin{itemize}
+    \item The velocity can be expressed as follows\begin{equation}
+        \dot{\mathbf p}=\frac{d\mathbf p}{dt}=\frac{d\mathbf p}{ds}\frac{ds}{dt}=\mathbf p'\dot s
+    \end{equation}
+    where $\mathbf p'$ is the unit vector always tangent to $\mathbf p(s)$, and $\dot s$ is the absolute value of the tangential velocity. We denote $\mathbf t(s)$ the tangent direction. It is trivial that  $\dot s\ge 0$ since the timing law is always designed to be non decreasing.
+    \item the acceleration is\begin{equation}
+        \ddot{\mathbf p}=
+        \frac{d^2\mathbf p}{ds^2}\cdot\left(\frac{ds}{dt}\right)^2+
+         \frac{d\mathbf p}{ds}\cdot\frac{d^2s}{dt^2}=\mathbf p''\dot s^2+\mathbf p'\ddot s
+    \end{equation}
+    where $\|\mathbf p''(s)\|$ is the \textit{curvature} $\kappa(s)$ of the path $\mathbf p$ in $s$. 
+    $\mathbf p''\dot s^2$ is the \textit{centripetal} acceleration that is orthogonal to the direction of the path, we denote $\mathbf n(s)$ the normal acceleration. $\ddot s$ is the tangential acceleration.
+\end{itemize}
+We defined the tangent direction $\mathbf t(s)$ and the normal direction $\mathbf n(s)$.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/frenet_1.eps} 
+\end{center}
+We define the \textit{binormal direction}: \begin{equation}
+    \mathbf b(s)=\mathbf t(s)\times \mathbf n(s)
+\end{equation}
+In general, for a smooth and non degenerate curve $\mathbf p(s)\in \R^3$ parametrized by $s$ that is not necessarily its arc length, we can define a reference frame for the path as follows:\begin{itemize}
+    \item $\mathbf t(s)$ is the unit tangent vector:\begin{equation}
+        \mathbf t(s)=\frac{\mathbf p'(s)}{\|\mathbf p'(s) \|}
+    \end{equation}
+    \item $\mathbf n(s)$ is the normal unit vector that is directed toward the center of the osculating circle of the trajectory at point $s$.
+    \begin{equation}
+        \mathbf n(s)=\frac{\mathbf t'(s)}{\|\mathbf t'(s) \|}
+    \end{equation}
+    \item $\mathbf b(s)$ is the binormal vector that is orthogonal to the previous two to complete an orthonormal reference frame.\begin{equation}
+    \mathbf b(s)=\mathbf t(s)\times \mathbf n(s)
+\end{equation}
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/frenet_2.eps} 
+\end{center}
+This is known as the \textbf{Frenet Frame}.
+We can express the curvature and torsion of the path $\mathbf p$ at point $s$ in the following general way:\begin{align}
+    &\kappa(s)=\frac{\|\mathbf p'(s)\times \mathbf p''(s)\|}{\|\mathbf p'(s)\|^3}\\ 
+    &\tau(s)=[\mathbf p'(s)\cdot (\mathbf p''(s)\times \mathbf p'''(s))]\frac{1}{\|\mathbf p'(s)\times \mathbf p''(s)\|^2}
+\end{align}
+\subsubsection{Example}
+Let's consider the path \begin{equation}
+    \mathbf p(s)=\begin{pmatrix}
+        6s+2\\5s^2\\-8s 
+    \end{pmatrix}, \ \ \ s\in [0,1]
+\end{equation}
+We want to define the Frenet frame. We compute $\mathbf p'(s)$:\begin{equation}
+    \frac{d\mathbf p}{ds}=\begin{pmatrix}
+        6\\10s\\-8 
+    \end{pmatrix}
+\end{equation}
+the norm is\begin{equation}
+    \|\mathbf p'(s)\|=\sqrt{6^2+(10s)^2+8^2}=\sqrt{100+100s^2}=10\sqrt{1+s^2}
+\end{equation}
+the tangent vector is \begin{equation}
+    \mathbf t(s)=\begin{pmatrix}
+        10\sqrt{1+s^2}(6s+2)\\10\sqrt{1+s^2}5s^2\\-10\sqrt{1+s^2}8s 
+    \end{pmatrix}=\begin{pmatrix}
+        60s\sqrt{1+s^2}+20\sqrt{1+s^2}\\50s^2\sqrt{1+s^2}\\-80s\sqrt{1+s^2}s
+    \end{pmatrix}
+\end{equation}
+Subsequently, the remaining frame vectors can be calculated. For the curvature, we compute:\begin{align}
+    &\mathbf p'(s)\times \mathbf p''(s)=\\ 
+    &\begin{pmatrix}
+        6\\10s\\-8 
+    \end{pmatrix}\times \begin{pmatrix}
+        0\\10\\0
+    \end{pmatrix}=\begin{pmatrix}
+        80\\0\\60
+    \end{pmatrix}
+\end{align}
+the norm is\begin{equation}
+    \|\mathbf p'(s)\times \mathbf p''(s)\|=\sqrt{80^2+60^2}=100
+\end{equation}
+the curvature is\begin{equation}
+    \kappa(s)=\frac{100}{(10\sqrt{1+s^2})^3}=\frac{1}{10\cdot (s^2+1)^{\nicefrac{3}{2}}}
+\end{equation}
+We can talk about the \textit{optimality} of a path, we say that a trajectory is optimal if can be executed in minimum time under velocity and acceleration constraints. The optimal timing law is the bang-coast-bang profile type in acceleration, in general, the optimal trajectory for a PTP motion is a \textit{straight line} in the \textit{joint space}\begin{itemize}
+    \item for a 3P spatial robot, a straight line in the joint space corresponds to a straight line in the cartesian space 
+    \item this does not holds for an articulated robot with revolut joints.
+\end{itemize}
+\subsection{Planning Orientation}
+We want to plan a change of orientation in time for the end effector of a manipulator. A naive approach is the following: We use the minimal representations of orientation with the Euler angles $\phi,\theta,\psi$, and we plan a trajectory for each component independently.\begin{equation}
+    \begin{cases}
+        \phi(s)=\phi_i+s(\phi_f-\phi_i)\\
+        \theta(s)=\theta_i+s(\theta_f-\theta_i)\\
+        \psi(s)=\psi_i+s(\psi_f-\psi_i)
+    \end{cases}
+\end{equation}
+For example, we plan a straight line in the angles $\phi,\theta,\psi$ space with a cubic timing law:
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/plan_or.eps} 
+\end{center}
+The problem is that we loos understanding of the intermediate orientations between the starting and the final one, leading to wandering. An alternative method is based on the axis angle representation.
+
+Let $R_A$ to be the matrix that describe the initial orientation and $R_B$ the one that describe the final orientation. We consider \begin{equation}
+    R_A^TR_B 
+\end{equation}
+the matrix that describe the changing of orientation from the initial one to the desired orientation.
+We express this matrix in axis angle orientation \begin{equation}
+    R(\mathbf r,\theta_{AB})= R_A^TR_B 
+\end{equation}
+by solving the inverse problem and finding $\mathbf r$ and $\theta_{AB}$. We plan a timing law $\theta(t)$ that starts from $\theta(t)=0$ and ends at $\theta(t)=\theta_{AB}$, interpolating them in time $t\in[0,T]$. We impose the actual end effector orientation at time $t$ as\begin{equation}
+    R_AR(\mathbf r,\theta(t))
+\end{equation}
+In that case:\begin{align}
+    &R_AR(\mathbf r,\theta(0))=R_AR(\mathbf r,0)=R_A\\
+    &R_AR(\mathbf r,\theta(T))=R_AR(\mathbf r,\theta_{AB})=R_AR_A^TR_B =R_B
+\end{align}
+\subsection{Uniform Time Scaling}
+When a robot's planned motion ignores physical velocity or acceleration limits, it may become unfeasible or inefficient. To fix this without changing the path's shape, you can apply a time scaling procedure. This adjusts the timing of the movement to ensure it stays within the robot's actual capabilities while optimizing performance.
+We describe this procedure in the joint space $\mathbf q$. Given a trajectory $\mathbf q(t)$ with $t\in[0,T]$, we define a new timing law by scaling $t$ with $k>0$ in the following way\begin{equation}
+    t\in [0,T]\implies r=kt\in [0,T_s]
+\end{equation}
+with $T_s=kT$. If $k<1$, the motion are speeded up, if $k>1$ the motion are slowed down. So we have defined this new trajectory\begin{equation}
+    \mathbf q_s(r), \ \ r\in [0,T_s]
+\end{equation}
+the geometric path is the same of $\mathbf q$, and is no affected by the scaling procedure:\begin{equation}
+    \mathbf q_s(r)=\mathbf q_s(kt)=\mathbf q(t)
+\end{equation}
+The joint's velocity and acceleration are scaled for this new timing law:\begin{align}
+    &\dot{\mathbf q}_s(r)=\frac{d\mathbf q_r}{dr}=\frac{d\mathbf q}{dt}\frac{dt}{dr}=\frac{1}{k}\dot{\mathbf q}(t)\\
+    &\ddot{\mathbf q}_s(r)=\frac{d\dot{\mathbf q}_r}{dr}=\frac{d\dot{\mathbf q}}{dt}\frac{dt}{dr}=\frac{1}{k^2}\dot{\mathbf q}(t)
+\end{align}
+so the velocity is scaled by $\frac{1}{k}$ and the acceleration by $\frac{1}{k^2}$. We should apply the time scaling procedure if\begin{itemize}
+    \item one of the velocity or acceleration constraint are violated (by slowing down the trajectory)
+    \item none of the velocity or acceleration constraint are saturated (by speeding up the trajectory as much as we can)
+\end{itemize}
+let $v_{j,max}$ and $a_{j,max}$ to be the bounds for velocity and acceleration of joint $j$. Given the original trajectory $\mathbf q(t)$, we compute the maximum velocity and acceleration reached for each joint during the trajectory:\begin{align}
+    &v_{j,peak}=\max_{t\in [0,T]}|\dot q_j(t)|\\
+    &a_{j,peak}=\max_{t\in [0,T]}|\ddot q_j(t)|
+\end{align}
+
+We should choose as the time scaling factor $k$ the following value:\begin{equation}\label{time_scale}
+    k=\max_{j=1,\dots n}\left\{\frac{v_{j,peak}}{v_{j,max}},\sqrt\frac{a_{j,peak}}{a_{j,max}}\right\}
+\end{equation}
+
+in that case, if some bounds are violated, the choice of equation \eqref{time_scale} yields to a $k>1$ that slow down the trajectory, by leading to a new $\mathbf q_s(r)$ that doesn't violate any constraint. Conversely, if all bounds are strictly satisfied, the choice of $k$ yields to a speeded up trajectory $\mathbf q_s(r)$ with $k<1$ such that at least one of the velocities or acceleration constraint are saturated in some instant (making the trajectory as fast as possible).
+
+\chapter{Kinematic Control}
+
+
+
+
+
+
 
 
 \chapter*{Appendix}
