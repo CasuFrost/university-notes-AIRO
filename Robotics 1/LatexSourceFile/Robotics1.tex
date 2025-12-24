@@ -2681,7 +2681,7 @@ We can subtract the first two equations\begin{align}
 So, it follows that\begin{equation}
     \bomega_1=\bomega_2
 \end{equation}
-In fact, even if all the points of $B$ have different velocities, they all shares the same $\bomega$, this is \textit{angular velocity} associated to the whole body (not to a single point).
+In fact, even if all the points of $B$ have different velocities, they all shares the same $\bomega$, this is the \textit{angular velocity} associated to the whole body (not to a single point).
 If $\bomega = \mathbf 0$ but the velocities of the points are non zero, the object is moving in a pure translation motion. If some points have non zero velocity but there exists two distinct points with zero velocity, then the object is in a pure rotation motion (the points with zero velocity is on the axis of rotation).\bigskip 
 
 \noindent Since \begin{equation}
@@ -2722,12 +2722,12 @@ So, the orientation is described by $R$ or $\phi$, these quantities are not vect
         \frac{dR_{ij}}{dt}
     \right)
 \end{equation}
-Let's consider now a finite displacement of a rigid body (ora a point)\begin{equation}
+Let's consider now a finite displacement of a rigid body (or a point)\begin{equation}
     \begin{pmatrix}
         \Delta x\\\Delta y\\ \Delta z
     \end{pmatrix}
 \end{equation}
-we now that, by applying the displacement in series by different coordinates, the final position of the rigid body will be independent from the order in which we apply these displacements.\begin{equation}
+we know that, by applying the displacement in series by different coordinates, the final position of the rigid body will be independent from the order in which we apply these displacements.\begin{equation}
     \mathbf p +  \Delta x\begin{pmatrix}
         1\\0\\ 0
     \end{pmatrix}
@@ -2800,7 +2800,7 @@ We introduce now the time derivative of the rotation matrix, and we will describ
     R(t)R^T(t)=\begin{pmatrix}
         1&0&0\\
         0&1&0\\
-        0&0&0\\
+        0&0&1\\
     \end{pmatrix}\implies \frac{d}{dt}(R(t)R^T(t)) = \begin{pmatrix}
         \frac{d}{dt}1&\frac{d}{dt}0&\frac{d}{dt}0\\
         \frac{d}{dt}0&\frac{d}{dt}1&\frac{d}{dt}0\\
@@ -2873,11 +2873,11 @@ where $S^1$ denotes the unit sphere in $\R^2$ (circle). The torus is a $2$-manif
 The Jacobian $J$ of a differentiable function $f:X\rightarrow Y$ between two manifolds in a given point $p$ is a linear mapping\begin{equation}
     J:T_pX\rightarrow T_pY
 \end{equation}
-If $X\subseteq \R^n$ and $Y\subseteq R^m$, the Jacobian is a  matrix with $m$ rows and $n$ columns. In the robotics domain, the tangent space of $Q$ in a given point is the set of all possible joint's velocities $\dot{\mathbf q}$, the tangent space in a given point of $R$ is set of all possible task vector velocities, if the task vector is the pose of the end effector, this is the set of all possible linear and angular velocities of the end effector.\begin{quote}
+If $X\subseteq \R^n$ and $Y\subseteq \R^m$, the Jacobian is a  matrix with $m$ rows and $n$ columns. In the robotics domain, the tangent space of $Q$ in a given point is the set of all possible joint's velocities $\dot{\mathbf q}$, the tangent space in a given point of $R$ is set of all possible task vector velocities, if the task vector is the pose of the end effector, this is the set of all possible linear and angular velocities of the end effector.\begin{quote}
     The Jacobian matrix $J_r$ of the direct kinematics function $f_r$ in a given point is a linear map that describe the relation between joint's velocities and task vector velocities.
 \end{quote}
 Since $\mathbf r = f_r(\mathbf q)$, by deriving respect to time, due to the chain rule we get\begin{equation}
-    \dot{\mathbf r}=\frac{\partial f_r}{\partial \mathbf q}\dot{\mathbf q}=J_r(\mathbf q)\dot{\mathbf q}
+    \dot{\mathbf r}=\left(\frac{\partial f_r}{\partial \mathbf q}\right)\dot{\mathbf q}=J_r(\mathbf q)\dot{\mathbf q}
 \end{equation}
 the  \textbf{analytical Jacobian} is the following matrix\begin{equation}
     J_r=\left( \frac{\partial f^i_r}{\partial q_j} \right)=\begin{pmatrix}
@@ -2960,10 +2960,9 @@ where $\mathbf p_{i-1,E}$ is the position of the end effector in the $i$-th join
     T={}^0T_1{}^1T_2\dots {}^{i-1}T_i
 \end{equation}
 we have \begin{equation}
-    \mathbf p_{i-1,E}=\begin{pmatrix}
-        T_{1,4}\\ T_{2,4}\\ T_{3,4}
-    \end{pmatrix}
+    \mathbf p_{i-1,E}=\mathbf p_{0,E}(q_1\dots q_n)-\mathbf p_{0,i-1}(q_1\dots q_{i-1})
 \end{equation}
+where $\mathbf p_{0,E}$ is the complete kinematics for the EE position and $\mathbf p_{0,i-1}$ is the partial kinematics for the position of frame $i-1$.
 $\mathbf z_{i-1}$ is the $z$-axis direction of the $i$-th joint's frame\begin{equation}
     \mathbf z_{i-1}={}^0R_1{}^1R_2\dots {}^{i-1}R_i\begin{pmatrix}
         0\\0\\1
@@ -3388,7 +3387,7 @@ In details, we say that is ''hard'' to move the task vector in a specific direct
 Given the joint space $Q$, we consider the unitary sphere:\begin{equation}
     \{\dq \ : \ \dq^T\dq = 1\}
 \end{equation}
-we now that, to obtain a velocity $\mathbf v$, we have $\dq=J^\#\mathbf v$, so\begin{equation}
+we know that, to obtain a velocity $\mathbf v$, we have $\dq=J^\#\mathbf v$, so\begin{equation}
     \dq^T\dq = 1\implies (J^\#\mathbf v)^T(J^\#\mathbf v)=1\implies \mathbf v^T{J^\#}^TJ^\#\mathbf v = 1
 \end{equation}
 
@@ -4296,7 +4295,7 @@ In this section we give some introductory example of how a feedback control sche
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/mass_plane.eps} 
 \end{center}
-The configuration of the system is the $x$-axis position of the mass on the plane, that we denote $x$. The dynamic of the boyd is given Newton's law:\begin{equation}
+The configuration of the system is the $x$-axis position of the mass on the plane, that we denote $x$. The dynamic of the body is given by Newton's law:\begin{equation}
     M\ddot x=F
 \end{equation}
 Since $\ddot x=\frac{F}{M}$, the dynamic of the system can be described by the following block diagram.
@@ -4325,11 +4324,11 @@ this first order differential equation in $\dot x$, for an initial velocity $\do
     \right)
 \end{equation}
 for $t$ that goes to infinity, $\dot x$ converges to $\bar v_d$.
-the transfert function of the system is \begin{equation}
+the transfer function of the system is \begin{equation}
     H(s)=\frac{1}{Ms}
 \end{equation}
 where $s$ is the complex variable.
-By adding the feedback loop the global transfert function of the system became\begin{equation}
+By adding the feedback loop the global transfer function of the system with the controller became\begin{equation}
     W(s)=\frac{1}{\frac{M}{K}s+1}
 \end{equation}
 
