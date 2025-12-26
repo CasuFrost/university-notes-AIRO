@@ -3126,9 +3126,9 @@ The velocities that can be realized are\begin{equation}
 \end{equation}\begin{center}
     \includegraphics[width=0.25\textwidth ]{images/singular_conf.eps} 
 \end{center}
-the green plane on the images shows the realizable velocities.
+the green plane on the image shows the realizable velocities.
 \section{Inverse Differential Kinematics}
-We want to realized a desired end effector velocity $\mathbf v$, so, we need the corresponding joint's  velocities $\dot{\mathbf q}$, if the Jacobian $J$ is squared and non singular:\begin{equation}
+We want to realize a desired end effector velocity $\mathbf v$, so, we need the corresponding joint's  velocities $\dot{\mathbf q}$, if the Jacobian $J$ is squared and non singular:\begin{equation}
     \dot{\mathbf q}=J^{-1}\mathbf v
 \end{equation}
 this is a straightforward inversion method, but it has problems when\begin{itemize}
@@ -3180,7 +3180,7 @@ In that case, around $T=3.2$ seconds, the end effector will be really close to t
     \includegraphics[width=0.85\textwidth ]{images/conf_over_time2.png} 
 \end{center}
 
-At the end, the norm between the end effector position and the initial desired point is around $1.8\cdot 10^{-9}$, this small error (like the previous case) is due to the numerical integration.\bigskip 
+At the end, the distance between the end effector position and the initial desired point is around $1.8\cdot 10^{-9}$, this small error (like the previous case) is due to the numerical integration.\bigskip 
 
 In this simulation, we are assuming that a joint velocity of 500 degree per second is feasible for the motors, let's add in the simulation a saturation limit for the joint's velocities, in particular, we impose that\begin{equation}
     |q_i|\le \frac{300^\circ}{\text{second}}
@@ -3229,7 +3229,7 @@ in the left, we have the classical inverse iterative method, in the right the DL
 \begin{center}
     \includegraphics[width=0.45\textwidth ]{images/path_to_follow3.png} 
 \end{center}
-We have a cartesian error of about $25$ millimeters near the singularity, that are recovered by a feedback action.
+We have a cartesian error of about $25$ millimeters near the singularity, that are recovered by a feedback action (see Chapter \ref{kin_control}).
 \subsection{Pseudo-inverse method}
 The pseudo inverse method consider an optimization problem similar to the DLS. We consider a constrained optimization problem:\begin{align}
     &\dot{\mathbf q}^*=\min_{\dot{\mathbf q}}\frac{1}{2}\|\dq\|^2\\
@@ -3259,10 +3259,10 @@ since $\dq = -J^T\boldsymbol{\lambda}$, the solution for $\dq$ is\begin{equation
     \dq = J^T(JJ^T)^{-1}\mathbf v = J^\#\mathbf v
 \end{equation}
 the matrix $J^\#=J^T(JJ^T)^{-1}$ is the \textbf{pseudo inverse} of the Jacobian matrix. The following properties are satisfied:\begin{itemize}
-    \item if $\mathbf v\in \mathcal R(J)$, then the differential constrained is satisfied, and the solution $\dq=J^\#\mathbf v$ will realize $\mathbf v$ and minimize the norm $\|\dq\|$. 
+    \item if $\mathbf v\in \mathcal R(J)$, then the constrain is satisfied, and the solution $\dq=J^\#\mathbf v$ will realize $\mathbf v$ and minimize the norm $\|\dq\|$. 
     \item else, if $\mathbf v\notin \mathcal R(J)$, the given solution will minimize the error $\|J\dq-\mathbf v\|$.
 \end{itemize}
-Note how the solution will perform the velocity \begin{equation}
+Note how the solution of the optimization problem is the velocity \begin{equation}
     J\dq = JJ^\#\mathbf v = \mathbf v^\perp 
 \end{equation}
 where $\mathbf v^\perp $ is the orthogonal projection of $\mathbf v$ on $\mathcal R(J)$.\begin{center}
@@ -3285,7 +3285,7 @@ If the rank of $J$ is full, the pseudo inverse can be computed with simple algeb
 In general, $J^\#$ can be computed numerically with the singular value decomposition of $J$.
 \subsection{Singular Value Decomposition}
 This section is a linear algebra recap about singular value decomposition for a matrix.\begin{definition}
-    Given a matrix $A$ of $m$ rows and $n$ columns, it always exists a triplets of matrices $U,\Sigma,V$ such that:\begin{itemize}
+    Given a matrix $A$ of $m$ rows and $n$ columns, there always exists a triplets of matrices $U,\Sigma,V$ such that:\begin{itemize}
         \item $A=U\Sigma V^T$
         \item $U\in Mat(n\times n)$
         \item $\Sigma\in Mat(n\times m)$
@@ -4237,7 +4237,7 @@ We should choose as the time scaling factor $k$ the following value:\begin{equat
 
 in that case, if some bounds are violated, the choice of equation \eqref{time_scale} yields to a $k>1$ that slow down the trajectory, by leading to a new $\mathbf q_s(r)$ that doesn't violate any constraint. Conversely, if all bounds are strictly satisfied, the choice of $k$ yields to a speeded up trajectory $\mathbf q_s(r)$ with $k<1$ such that at least one of the velocities or acceleration constraint are saturated in some instant (making the trajectory as fast as possible).
 
-\chapter{Kinematic Control}
+\chapter{Kinematic Control}\label{kin_control}
 This chapter requires some basic knowledge in control theory.
 \section{Feedback Loop}
 As we already explained, when we plan a trajectory in the cartesian space $\mathbf p(s)$, we impose a velocity for the end effector at each time step $t$ by considering $\dot{\mathbf p}(s(t))$. If we want to realize a specific motion task without considerable errors, this is not sufficient: initial errors, discrete time implementation and uncertain robot parameters yields to an actual motion that differs from the desired trajectory.
