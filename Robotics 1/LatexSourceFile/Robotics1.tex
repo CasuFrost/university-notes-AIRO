@@ -2937,37 +2937,75 @@ $ \mathbf v_E$ and $
             &\mathbf v_E=J_{L1}(\mathbf q)\dot{ q_1}+\dots +J_{Ln}(\mathbf q)\dot{ q_n}\\
              &\bomega_E=J_{A1}(\mathbf q)\dot{ q_1}+\dots +J_{An}(\mathbf q)\dot{ q_n}
         \end{align}
-where $\dot q_i$ is the $i$-the component of the vector $\dot{\mathbf q}$. In this way we can split the contribution to the linear and the angular velocity. This contributions are the 3 dimensional vectors $J_{Li},J_{Ai}$ (the columns of the matrix) and can be derived by geometric inspection.\bigskip 
-
-
-Let's consider the contribution of a single prismatic joint. It's clear that, the extension of the prismatic joint $i$ will effect in a linear acceleration of the end effector along the $z_{i-1}$ axis.
+where $\dot q_i$ is the $i$-the component of the vector $\dot{\mathbf q}$. In this way we can split the contribution to the linear and the angular velocity. This contributions are the 3 dimensional vectors $J_{Li},J_{Ai}$ (the columns of the matrix) and can be derived by geometric inspection.
+\subsubsection{Prismatic Joint}
+We discuss how a prismatic joint $q_i$ that is changing $\dot q_i\ne 0$ is related to the final linear and angular velocity of the end effector. We can imagine all the other joint's as freezed:
 \begin{center}
-    \includegraphics[width=0.6\textwidth ]{images/prism_contr.eps}
+    \includegraphics[width=0.68\textwidth ]{images/prismatic_contribution.png}
 \end{center}
-So, if the $i$-th joint is prismatic, the contributions for linear and angular acceleration will be\begin{itemize}
-    \item $J_{Li}(\mathbf q)\dot q_i=\mathbf z_{i-1}\dot{d_i}$
-    \item $J_{Ai}(\mathbf q)\dot q_i=\mathbf 0$
+Let $\dot d_i$ to be the velocity of the joint $i$, the end effector will move at the same speed along the $i$-th joint axes, that we denote $\mathbf z_{i-1}$.\begin{itemize}
+    \item $\mathbf z_0$ is the $z$ axis of the first joint, in the reference frame $RF_0$, is just $(0 \ 0 \ 1)^T$.
+    \item $\mathbf z_i$ is the $z$ axis of the second joint \item \dots 
+    \item $\mathbf z_{n-1}$ is  the $z$ axis of the $n$-th (last) joint.
 \end{itemize}
+In general, if ${}^{i-1}T_i$ is the homogeneous transformation derived from the DH assignment of frames, and ${}^{i-1}R_i$ is the related rotation matrix (the $3\times 3$ sub matrix), then, the $z$ axis of the $i$-th joint is given by\begin{equation}
+    \mathbf z_{i-1}={}^0R_{i-1}\mathbf z_0={}^0R_{1}{}^1R_{2}\dots {}^{i-2}R_{i-1}\begin{pmatrix}
+        0\\ 0\\ 1
+    \end{pmatrix}
+\end{equation}
+Clearly each rotation matrix ${}^{i-1}R_i$ depends on the current configuration $\mathbf q$.
+In the end, if the $i$-th joint is moving with a speed of $\dot d_i$, in the reference frame $RF_0$ the end effector will have a linear velocity of $\mathbf z_{i-1}\dot d_i$. The contribution on the angular velocity from a prismatic joint is null. \begin{align}
+    &\text{linear contribution: }J_{Li}(\mathbf q)=\mathbf z_{i-1}={}^0R_{i-1}\begin{pmatrix}
+        0\\ 0\\ 1
+    \end{pmatrix}\\ 
+    &\text{angular contribution: }J_{Ai}(\mathbf q)=\mathbf 0
+\end{align}
+\subsubsection{Revolut Joint}
+Let's see the contribution of a revolut joint, this one will influence either the angular and the linear velocity.
 \begin{center}
-    \includegraphics[width=0.6\textwidth ]{images/revolut_contr.eps}
+    \includegraphics[width=0.7\textwidth ]{images/revolut_contribution.png}
 \end{center}
-The contribution of a revolut joint is the following:
-\begin{itemize}
-    \item $J_{Li}(\mathbf q)\dot q_i=(\mathbf z_{i-1}\times \mathbf p_{i-1,E})\dot{\theta_i}$
-    \item $J_{Ai}(\mathbf q)\dot q_i=\mathbf z_{i-1}\dot{\theta_i}$
+The angular contribution is straightforward, if a revolut joint $i$ have a speed of $\dot \theta_i$, then the end effector will have an angular velocity of $\mathbf z_{i-1}\dot \theta_i$.
+
+We denote  $\mathbf p_{i-1,E}$ the position of the end effector expressed in the frame of the $i$-th joint.\begin{itemize}
+    \item $\mathbf p_{0,E}$ is the end effector position expressed in the first frame, so is given by the complete direct kinematics of the manipulator
+    \item $\mathbf p_{n-1,E}$ is the position of the end effector expressed in the last joint frame, that corresponds to the origin of the end effector, so $\mathbf p_{n-1,E}=\mathbf 0$.
 \end{itemize}
-where $\mathbf p_{i-1,E}$ is the position of the end effector in the $i$-th joint's frame, so, if\begin{equation}
-    T={}^0T_1{}^1T_2\dots {}^{i-1}T_i
+It's easy to see how the linear velocity given from the revolut joint is orthogonal to the $z$ axis of the frame.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/revolut_contr_topview.eps}
+\end{center}
+So, the $i$-th row of the linear part of the geometric Jacobian is $\mathbf z_{i-1}\times \mathbf p_{i-1,E}$. It's not hard to find the expression of the vector $\mathbf p_{i-1,E}$. We consider the matrix\begin{equation}
+    {}^0T_{i-1}={}^0T_{1}{}^1T_{2}\dots {}^{i-2}T_{i-1}
 \end{equation}
-we have \begin{equation}
-    \mathbf p_{i-1,E}=\mathbf p_{0,E}(q_1\dots q_n)-\mathbf p_{0,i-1}(q_1\dots q_{i-1})
+We denote $\mathbf p_{0,i-1}$ the fourth columns of the matrix ${}^0T_{i-1}$, this is the center of the $i$-th joint's frame expressed in $RF_0$:\begin{equation}
+    \mathbf p_{0,i-1}={}^0T_{i-1}\begin{pmatrix}
+        0\\0\\0\\1
+    \end{pmatrix}
 \end{equation}
-where $\mathbf p_{0,E}$ is the complete kinematics for the EE position and $\mathbf p_{0,i-1}$ is the partial kinematics for the position of frame $i-1$.
-$\mathbf z_{i-1}$ is the $z$-axis direction of the $i$-th joint's frame\begin{equation}
-    \mathbf z_{i-1}={}^0R_1{}^1R_2\dots {}^{i-1}R_i\begin{pmatrix}
-        0\\0\\1
-    \end{pmatrix}.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/mid_vector.eps}
+\end{center}
+Then, $\mathbf p_{i-1,E}$ is the difference between the complete direct kinematics and $\mathbf p_{0,i-1}$\begin{equation}
+    \mathbf p_{i-1,E}=\mathbf p_{0,E}-\mathbf p_{0,i-1}
 \end{equation}
+Using the homogeneous matrices:\begin{align}
+     &\mathbf p_{i-1,E}={}^0T_{n}\begin{pmatrix}
+        0\\0\\0\\1
+    \end{pmatrix}-{}^{0}T_{i-1}\begin{pmatrix}
+        0\\0\\0\\1
+    \end{pmatrix}\implies \\
+    &\mathbf p_{i-1,E}=({}^0T_{n}-{}^{0}T_{i-1})\begin{pmatrix}
+        0\\0\\0\\1
+    \end{pmatrix}
+\end{align}
+In this discussion, we consider $\mathbf p_{i-1,E}$ with the 3 component vector, removing the last component (useful for the homogeneous transformations).
+The $i$-th row for the linear and angular part given by a revolut joint $i$ are:\begin{align}
+    &\text{linear contribution: }J_{Li}(\mathbf q)=\mathbf z_{i-1}\times \mathbf p_{i-1,E}\\
+    &\text{angular contribution: }J_{Ai}(\mathbf q)=\mathbf z_{i-1}={}^0R_{i-1}\begin{pmatrix}
+        0\\ 0\\ 1
+    \end{pmatrix}\\
+\end{align}
 \subsection{Mobility Analysis}
 We will now consider the space of the torques of the joint's (a more detailed discussion will be given in the following sections). Let's say that $\tau_i$ is the scalar torque of the $i$-th joint, the vector $\boldsymbol{\tau}$ is in the torque space (a subset of $\R^n$, this depends on the capabilities of the motors).\bigskip 
 \begin{definition}
