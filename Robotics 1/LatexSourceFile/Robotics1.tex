@@ -4274,7 +4274,58 @@ We should choose as the time scaling factor $k$ the following value:\begin{equat
 \end{equation}
 
 in that case, if some bounds are violated, the choice of equation \eqref{time_scale} yields to a $k>1$ that slow down the trajectory, by leading to a new $\mathbf q_s(r)$ that doesn't violate any constraint. Conversely, if all bounds are strictly satisfied, the choice of $k$ yields to a speeded up trajectory $\mathbf q_s(r)$ with $k<1$ such that at least one of the velocities or acceleration constraint are saturated in some instant (making the trajectory as fast as possible).
-
+\subsection{Doubly Normalized Polynomials}
+This small section is about a fast way to define a trajectory over some constraints. One of the most usual case, is to define a trajectory for the joints $\mathbf q$ (or analogously, for the task vector $\mathbf r$, or the position $\mathbf p$) that satisfies 4 boundary conditions:\begin{align}
+    &\mathbf q(0)=\mathbf q_i \\ 
+    &\mathbf q(1)=\mathbf q_f \\ 
+    &\dq(0)=\mathbf v_i\\ 
+    &\dq(1)=\mathbf{v}_f
+\end{align}
+If $\mathbf q$ should perform the trajectory in time from $t=0$ to $t=T$, we can normalize the time variable by considering $\tau=\frac{t}{T}$, in such way, the trajectory $\mathbf q(\tau)$ is defined from $0$ to $1$. For these 4 conditions, a 3-degree polynomial is defined (we consider a single joint with the scalar variable $q(\tau)$):\begin{equation}
+    q(\tau)=q_i+\Delta q(a\tau^3+b\tau^2+c\tau+d)
+\end{equation}
+where $\Delta q=q_f-q_i$. The derivative of $q$ respect to $t$ is\begin{align}
+    &\frac{d}{dt}\left(q_i+\Delta q(a\tau^3+b\tau^2+c\tau+d)\right)=\\
+    &\frac{d}{dt}\left(q_i+\Delta q(a(\nicefrac{t}{T})^3+b(\nicefrac{t}{T})^2+c(\nicefrac{t}{T})+d)\right)=\\ 
+    &\Delta q\left(\frac{3a}{T^3}t^2+\frac{2b}{T^2}t+\frac{c}{T}\right)=\\ 
+    &\frac{\Delta q}{T}\left({3a}\tau^2+{2b}\tau+{c}\right)
+\end{align}
+We can solve the system of equations in $a,b,c,d$ to find the numerical values of the coefficients.\begin{align}
+    &\begin{cases}
+        q_i+\Delta qd=q_i\\ 
+        q_i+\Delta q(a+b+c+d)=q_f\\
+        \frac{\Delta q}{T}c=v_i\\ 
+        \frac{\Delta q}{T}\left({3a}+{2b}+{c}\right)=v_f
+    \end{cases}\implies\begin{cases}
+        d=0\\
+        c=\frac{Tv_i}{\Delta q}
+    \end{cases}
+\end{align}
+then we have a system in two variables with two equations:\begin{align}
+    \begin{cases}
+        \displaystyle 3a+2b=T\frac{v_f-v_i}{\Delta q}\\ \\
+        \displaystyle a+b=\frac{q_f-q_i-Tv_i}{\Delta q}\\
+    \end{cases}
+\end{align}
+the solution for the coefficients is\begin{align}
+&a = \frac{T(v_f + v_i) - 2\Delta q}{\Delta q} \\ 
+&b = \frac{3\Delta q - T(v_f + 2v_i)}{\Delta q}\\ 
+&c=\frac{Tv_i}{\Delta q}\\ &d=0
+\end{align}
+In the rest-to-rest case where $v_i=v_f=0$:\begin{align}
+&a = -2 \\ 
+&b = 3\\ 
+&c=0\\ &d=0
+\end{align}
+\subsubsection{Example}
+We have to plan a rest-to-rest trajectory for $q$ starting from $q_i=1$ to $q_f=4$ from $t=0$ to $t=2$ with continuity up to acceleration. We use the 3-degree normalized polynomial:\begin{align}
+    &\Delta q=q_f-q_i=3\\ 
+    &q(\tau)=1+3(-2\tau^3+3\tau^2) \ \ \tau\in [0,1]\\ 
+    &q(t)=1+3\left(-\frac{1}{4}t^3+\frac{3}{4}t^2\right) \ \ t\in[0,2]
+\end{align} 
+the velocity is\begin{equation}
+   \dot q(t)= -\frac{9}{4}t^2+\frac{9}{2}t
+\end{equation}
 \chapter{Kinematic Control}\label{kin_control}
 This chapter requires some basic knowledge in control theory.
 \section{Feedback Loop}
