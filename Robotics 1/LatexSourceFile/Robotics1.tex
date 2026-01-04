@@ -2945,7 +2945,7 @@ We discuss how a prismatic joint $q_i$ that is changing $\dot q_i\ne 0$ is relat
 \end{center}
 Let $\dot d_i$ to be the velocity of the joint $i$, the end effector will move at the same speed along the $i$-th joint axes, that we denote $\mathbf z_{i-1}$.\begin{itemize}
     \item $\mathbf z_0$ is the $z$ axis of the first joint, in the reference frame $RF_0$, is just $(0 \ 0 \ 1)^T$.
-    \item $\mathbf z_i$ is the $z$ axis of the second joint \item \dots 
+    \item $\mathbf z_1$ is the $z$ axis of the second joint \item \dots 
     \item $\mathbf z_{n-1}$ is  the $z$ axis of the $n$-th (last) joint.
 \end{itemize}
 In general, if ${}^{i-1}T_i$ is the homogeneous transformation derived from the DH assignment of frames, and ${}^{i-1}R_i$ is the related rotation matrix (the $3\times 3$ sub matrix), then, the $z$ axis of the $i$-th joint is given by\begin{equation}
@@ -3706,29 +3706,94 @@ After we define a parametrization for $\mathbf q(s)$ and a timing law $s(t)$ we 
     &\ddot{\mathbf q}(t)=\frac{d\mathbf q}{ds}\ddot s(t)+\frac{d^2\mathbf q}{ds}\dot s^2(t)=
     \mathbf q'\ddot s+\mathbf q''\dot s^2
 \end{align} 
-\subsection{Trajectory Bounds}
-In real case situations, the actuators can't provide an unbounded amount of joint velocity, we model this limit as bounds for each joint:\begin{equation}
-    |\dot q_j(t)|\le v_{j,max} \ \ j\in 1,\dots n \ \ t\in [0,T]
+\subsection{Bounds on the Joint's Velocity}
+In real case situations, the actuators can't provide an unbounded amount of joint velocity. Let's assume that we have planned a trajectory for each joint $q_i$ in the variable $s$.\begin{equation}
+    q_i(s) \ \ s\in [0,1], \ \ i=1,2\dots n
 \end{equation}
-this limit have to be represented for $q_j$ with the parametrization $s$, since \begin{align}
-    &\dot{ q_j}(t)= q_j'(s)\dot s(t)\implies \\ 
-    &|\dot{ q_j}(t)|= |q_j'(s)|\cdot |\dot s(t)|
-\end{align}
-the condition becomes:\begin{equation}
-    \max_{s\in[s_i,s_f], t\in[0,T]}|q_j'(s)|\cdot |\dot s(t)|\le  v_{j,max}, \ \ \ j\in 1,\dots,n
+and the timing law $s$ is shared between all the joints. As we already mentioned, in real case scenarios, each joint is limited in the maximum velocity that can produce:\begin{equation}
+    |\dot q_i(s)|\le v_{i,max}  \ \ i=1,2\dots n
 \end{equation}
-by doing some algebraic manipulation, we get:\begin{equation}
-    \max_{t\in[0,T]} |\dot{s}(t)| \le \min_{j=1,\dots,n} \frac{v_{j,\max}}{\max_{s\in[s_i,s_f]} |q'_j(s)|}
+The problem is the following: We have to choose a timing law that don't exceed that limit. Let's say that the trajectory is defined in $t\in[0,T]$. Since\begin{equation}
+    \dot q_i =\frac{dq_i}{dt} = \frac{dq_i}{ds}\dot s
 \end{equation}
-by denoting\begin{equation}
-    V=\min_{j=1,\dots,n} \frac{v_{j,\max}}{\max_{s\in[s_i,s_f]} |q'_j(s)|}
+We have the following inequality\begin{equation}\label{max_vel}
+    \max_{s\in[0,1], t\in [0,T]}\left|
+        \frac{dq_i}{ds}
+    \right|\cdot \left|
+        \dot s
+    \right| \le v_{i,max}
 \end{equation}
-we have\begin{equation}
-    |\dot s(t)|\le V
+So we have to compute the maximum value of $\displaystyle\left|
+        \frac{dq_i}{ds}
+\right|$ in the interval $s\in[0,1]$, this can be done by setting $\left|
+        \frac{d^2q_i}{ds^2}
+\right|$ to zero and solving for $s$. At the end, for each joint $q_i$, we get the maximum value for the derivative respect to $s$ that we denote ${\mathcal{M}\nu_i}$:\begin{equation}
+    {\mathcal{M}\nu_i}=\max_{s\in[0,1]}\left|
+        \frac{dq_i}{ds}
+    \right|
 \end{equation}
-If this condition is always satisfied, then we will never outrange the actuator limits.
-\\\redText{TODO:Acceleration limit slide 28}
+The inequality \eqref{max_vel} becomes:\begin{equation}
+    \max_{t\in[0,T]}|\dot s|\le \min_i \frac{v_{i,max}}{{\mathcal{M}\nu_i}}=V
+\end{equation}
+We call this value $V$, and when we define a timing law $s(t)$ we must satisfy this bound on the velocity.\bigskip
 
+The same argument can be applied by considering limits on the maximum acceleration that the joints can provide:
+\begin{equation}
+    |\ddot q_i(s)|\le a_{i,max}  \ \ i=1,2\dots n
+\end{equation}
+Since\begin{equation}
+    \ddot q_i=\frac{dq_i}{ds}\ddot s + \frac{d^2q_i}{ds^2}\dot s^2
+\end{equation}
+We have that\begin{equation}
+    \max_{s\in[0,1], t\in [0,T]} \left|
+    \frac{dq_i}{ds}\ddot s + \frac{d^2q_i}{ds^2}\dot s^2
+    \right|\le a_{i,max}
+\end{equation}
+We can't found a precise bound for $\ddot s$, but we can find a conservative upper bound by using the following series of inequalities:\begin{align}
+   & \left|
+    \frac{dq_i}{ds}\ddot s + \frac{d^2q_i}{ds^2}\dot s^2
+   \right|\le \\ 
+   &\left|
+    \frac{dq_i}{ds}\right| \left|\ddot s\right| +  \left|\frac{d^2q_i}{ds^2}  \right|\dot s^2
+ \le \\ 
+ &\left|
+    \frac{dq_i}{ds}\right| \left|\ddot s\right| +  \left|\frac{d^2q_i}{ds^2}  \right|V^2
+\end{align}
+So, for each joint we have to find the maximum value for the second derivative in the interval $s\in [0,1]$ (the maximum value for the first derivative ${\mathcal{M}\nu_i}$ has already been found to calculate $V$).\begin{equation}
+    {\mathcal{M}\alpha_i}=\max_{s\in[0,1]}\left|
+        \frac{d^2q_i}{ds^2}
+    \right|
+\end{equation}
+At the end, the maximum admissible value for $\ddot s$ will be:\begin{equation}
+    \max_{t\in [0,T]}|\ddot s|\le \min_i\frac{a_{i,max}-V^2{\mathcal{M}\alpha_i}}{{\mathcal{M}\nu_i}}
+\end{equation}
+\subsubsection{Example}
+We have the following trajectory for a 2R planar robot:\begin{equation}
+    \mathbf q(s)=\begin{cases}
+        q_1(s)=2s^2+1\\ 
+        q_2(s)=3s^2-2s 
+    \end{cases} \ \ \ s\in [0,1]
+\end{equation}
+We have to find the bounds on $|\dot s|$ knowing that\begin{align}
+&|\dot q_1|\le v_{1,max}=3 \\
+&|\dot q_2|\le  v_{2,max}=2\\
+\end{align}
+We compute the maximum value of $q'_i=\frac{dq_i}{ds}$:\begin{align}
+    &q'_1(s)=4s\\ 
+    &q'_2(s)=6s-2
+\end{align}
+Since they are linear function, for both the maximum value is reached on $s=1$, so\begin{align}
+    &\mathcal{M}\nu_1=4\\
+    &\mathcal{M}\nu_2=4
+\end{align}
+Then i consider\begin{align}
+   & \frac{v_{1,max}}{\mathcal{M}\nu_1}=\frac{3}{4}\\
+    & \frac{v_{2,max}}{\mathcal{M}\nu_2}=\frac{2}{4}=\frac{1}{2}
+\end{align}
+At the end\begin{equation}
+    |\dot s|\le \frac{1}{2}.
+\end{equation}
+So, when we decide a timing law for $s$, it is important to make its derivative bounded by $\frac{1}{2}$.
 \section{Trajectory Planning in the Joint Space}
 When we define a trajectory $\mathbf q(t)$ in time or $\mathbf q(s)$ with the timing law $s=s(t)$ we can work component wise for each $q_j$. In the common case, we define implicitly a trajectory by interpolating a set of points in the space with some boundary conditions, with a fixed class of template functions. 
 
