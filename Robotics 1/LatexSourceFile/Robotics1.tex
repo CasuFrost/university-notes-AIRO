@@ -3083,8 +3083,9 @@ We already called a ''singularity'' a case where the number of solutions for the
 A robot is ''close''  to a singularity if the determinant is really small and close to zero (the Jacobian matrix is almost singular), in that case, to realize some small end effector velocities we may need really large joint velocities (not feasible for the motors).
 
 It is required to analyze the mobility of a robot to avoid singularities and help during trajectory planning and motion control.\begin{itemize}
-    \item when $m=n$, a configuration $\mathbf q$ si singular if $\det J(\mathbf q)=0$
-    \item when $m<n$, a configuration $\mathbf q$ si singular if $\det (J(\mathbf q)J^T(\mathbf q))=0$
+    \item let $n$ to be the number of columns of $J$ and $m$ the number of rows.
+    \item when $m=n$, a configuration $\mathbf q$ is singular if $\det J(\mathbf q)=0$.
+    \item when $m<n$ or $m>b$, a configuration $\mathbf q$ is singular if $\det (J(\mathbf q)J^T(\mathbf q))=0$, this happens when the rank of $J$ is not maximal.
 \end{itemize}
 Let's consider a 2R planar robot, tha Jacobian matrix is\begin{equation}
     J(\mathbf q) = \begin{pmatrix}
@@ -3165,6 +3166,54 @@ The velocities that can be realized are\begin{equation}
     \includegraphics[width=0.25\textwidth ]{images/singular_conf.eps} 
 \end{center}
 the green plane on the image shows the realizable velocities.
+\subsection{Minors of the Jacobian}
+This section concerns a method specific to linear algebra to verify whether or not a given matrix has maximum rank. It can be used in the context of the Jacobian $J$ as it can be simpler and quicker than calculating the determinant of $JJ^T$.\bigskip 
+
+Let $J$ to be our Jacobian with $m$ rows and $n$ columns. The maximal rank is \begin{equation}
+    k=\min(n,m)
+\end{equation}
+We have to consider all the minors of $J$ with $k$ rows and $k$ columns. The matrix is singular if all the minors of order $k$ are singular. Let's consider the following example:\begin{equation}
+    J=\begin{pmatrix}
+        j_{11}&j_{12}&j_{13}\\
+         j_{21}&j_{22}&j_{23}
+    \end{pmatrix}
+\end{equation}
+we have 3 minors of order $k=\min(3,2)=2$\begin{equation}
+    \begin{pmatrix}
+        j_{12}&j_{13}\\
+       j_{22}&j_{23}
+    \end{pmatrix} \ \  
+    \begin{pmatrix}
+        j_{11}&j_{13}\\
+         j_{21}&j_{23}
+    \end{pmatrix} \ \  
+    \begin{pmatrix}
+        j_{11}&j_{12}\\
+         j_{21}&j_{22}
+    \end{pmatrix}
+\end{equation}
+Then we compute the determinant of each of these minors:\begin{align}
+    &\det\begin{pmatrix}
+        j_{12}&j_{13}\\
+       j_{22}&j_{23}
+    \end{pmatrix}=M_1 \\ 
+    &\det \begin{pmatrix}
+        j_{11}&j_{13}\\
+         j_{21}&j_{23}
+    \end{pmatrix}=M_2\\ 
+    &\det \begin{pmatrix}
+        j_{11}&j_{12}\\
+         j_{21}&j_{22}
+    \end{pmatrix}=M_3
+\end{align}
+$J$ don't have full rank if and only if:\begin{equation}
+    M_1=0 \land M_2=0 \land M_3=0
+\end{equation}
+In general, the number of minors is\begin{itemize}
+    \item $\binom{n}{m}$ if $n>m$
+    \item $\binom{m}{n}$ if $m>n$
+\end{itemize}
+The method is therefore useful in cases of $2\times 3$ matrices, but quickly becomes inapplicable as the degrees of freedom and coordinates of the task vector increase.
 \section{Inverse Differential Kinematics}
 We want to realize a desired end effector velocity $\mathbf v$, so, we need the corresponding joint's  velocities $\dot{\mathbf q}$, if the Jacobian $J$ is squared and non singular:\begin{equation}
     \dot{\mathbf q}=J^{-1}\mathbf v
