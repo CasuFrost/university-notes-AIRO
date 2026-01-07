@@ -3013,14 +3013,9 @@ The Jacobian matrix is involved also in the relations between the acceleration (
     &\text{jerk: }\dddot{\mathbf r}=J(\mathbf q)\dddot{\mathbf q}+2\dot J(\mathbf q)\ddot{\mathbf q}+\ddot J(\mathbf q)\dq&
     \\ &\text{and so on \dots}&
 \end{align}
-Note how the Jacobian matrix always ''weights'' the highest order derivative. The derivative of the Jacobian matrix is computed by differentiating each component, in particular:\begin{equation}
-    \dot J(\mathbf q)=\left(\frac{d^2f_i}{dq_j^2}\right)=\begin{pmatrix}
-        \frac{d^2f_1}{dq_1^2}&\frac{d^2f_1}{dq_2^2}&\dots & \frac{d^2f_1}{dq_n^2}\\ 
-        \vdots & \vdots & \ddots & \vdots\\ 
-        \frac{d^2f_m}{dq_1^2}&\frac{d^2f_m}{dq_2^2}&\dots & \frac{d^2f_m}{dq_n^2}
-    \end{pmatrix}
+Note how the Jacobian matrix always ''weights'' the highest order derivative. The derivative of the Jacobian matrix is the matrix of $m$ rows and $n$ columns where the component $ij$ is:\begin{equation}
+   \dot J_{ij}=\sum_{k=1}^{n}\frac{\partial J_{ij}}{\partial q_k}\dot q_k
 \end{equation}
-where $f(\mathbf q)$ is the direct kinematics.
 
 \subsection{Mobility Analysis}
 We will now consider the space of the torques of the joint's (a more detailed discussion will be given in the following sections). Let's say that $\tau_i$ is the scalar torque of the $i$-th joint, the vector $\boldsymbol{\tau}$ is in the torque space (a subset of $\R^n$, this depends on the capabilities of the motors).\bigskip 
