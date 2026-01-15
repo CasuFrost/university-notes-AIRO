@@ -5,24 +5,11 @@ Below is a list of the courses and links to the corresponding notes.
 <div align="center">
 
   
-| Course | CFU | Year | Semester |
-| ----- | ----- |  ----- | ----- | 
-| [Artificial Intelligence](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Artificial%20intelligence/LatexSourceFile/ArtificialIntelligence.pdf) | 6 | 1 | 1 |
-| [Machine Learning](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Machine%20Learning/LatexSourceFile/MachineLearning.pdf) | 6 |  1 | 1 |
-| [Robot Programming](https://github.com/CasuFrost/university-notes-AIRO/tree/main/Robot%20Programming) | 3 | 1 | 1 |
-| [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | 6 | 1 | 1 |
-| [ Robotics 2]() | 6 | 1 | 2 |
-| [Computer Vision]() | 6 | 1 | 2 |
-| [ Interactive Graphics]() | 6 | 1 | 2 |
-| [Medical Robots]() | 6 | 1 | 2 |
-| [Autonomus And Mobile Robotics]() | 6 | 2 | 1 |
-| [Probabilistic Robotics]() | 6 | 2 | 1 |
-| [Planning and Reasoning]() | 6 | 2 | 1 |
-| [Quantum Computing]() | 6 | 2 | 1 |
-| [Seminars in AI and Robotics]() | 3 | 2 | 2 |
-| [Elective in Robotics]() | 12 | 2 | 2 |
-| [Neuroengeneering]() | 6 | 2 | 2 |
-
-
+| Course | Status |
+| ----- | ----- | 
+| [Artificial Intelligence](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Artificial%20intelligence/LatexSourceFile/ArtificialIntelligence.pdf) | W.I.P. | 
+| [Machine Learning](https://github.com/Exyss/university-notes/raw/main/Master/Machine%20Learning/Machine%20Learning.pdf) | Written by [@Exyss](https://github.com/Exyss) |
+| [Robot Programming](https://github.com/CasuFrost/university-notes-AIRO/tree/main/Robot%20Programming) | 3 | 
+| [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | Completed | 
 
 </div>
