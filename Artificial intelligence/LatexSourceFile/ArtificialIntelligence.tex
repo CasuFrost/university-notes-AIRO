@@ -63,6 +63,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
+\newtheorem{lemma2}{Lemma}
 %==================INIZIO======================%
 \chapter{Introduzione}
 \section{Basic Definitions}
@@ -631,6 +632,132 @@ where
 \item $\epsilon>0$: minimal action cost.
 \end{itemize}
 \section{Informed Search}
+\begin{definition}
+    Let $\Pi$ to be a problem with $S$ the set of states, a \textbf{heuristic} $h$ is a function $$h:S\rightarrow\R^+\cup\{\infty,0\}$$ such that, if $s$ is a goal state, then $h(s)=0$.
+\end{definition}
+A heuristic function $h^*$ is perfect if $h^*(s)$ is exactly the cost of a cheapest path from $s$ to a goal state, and $h^*(s)=\infty$ if no such path exists. $h^*$ is also called the \textit{goal distance} of $s$.\bigskip
+
+$h$ depend only on the state $s$ and not on the search node (the path taken to reach $s$ don't affect $h(s)$). If $n$ is a search node, we usually write $h(n)$ instead of $h(n.State)$ as an abuse of notation.
+
+The purpose of $h$ is to estimate how far we are from a solution, clearly time is needed to calculate the value of $h$, ideally we would like a function $h$ that is very precise in the estimate, and which is quick to calculate, these two objectives are generally in conflict with each other.
+
+Given a problem $\Pi$, a heuristic function $h$ for $\Pi$ can be
+ obtained as goal distance within a simplified (relaxed) problem $\Pi'$. A classic example is using Euclidean distance as a heuristic function in a graph representing points on a map.
+ \begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/h_distance.png}
+\end{center}
+Another example is when we have to reach a goal in discrete grid with some ''pitfalls'' to avoid.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/pitfalls_1.png}
+\end{center}
+in each cell is presented the value of the perfect heuristic $h^*$. A reasonable and accurate heuristic may be the Manhattan distance. 
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/pitfalls_2.png}
+\end{center}
+For some specific grid configurations this  heuristic might be inaccurate:
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/pitfalls_3.png}
+\end{center}
+\begin{definition}
+    Let $h^*$ to be  a perfect heuristic. A heuristic $h$ is \textbf{admissible} if $\forall s\in S$ we have $h(s)\le h^*(s)$.
+\end{definition}
+An admissible heuristic function never overestimates the cost to reach the goal.\begin{definition}
+    A heuristic $h$ is \textbf{consistent} if, for all transition $s\xrightarrow{a} s'$ in $\Theta$, we have $h(s)-h(s')\le c(a)$. 
+\end{definition}
+The consistency is important,  when applying an action $a$, the heuristic value cannot
+ decrease by more than the cost of $a$.
+ \begin{proposition}
+    If $h$ is consistent then is admissible.
+ \end{proposition}
+ \textit{Proof}: The proof is done by induction.\begin{itemize}
+    \item Base case: let $s$ to be the goal state, so $h(s)=h^*(s)=0$, so $h(s)\le h^*(s)$ trivially holds.
+    \item Assume that the claim holds for all states $s'$ where the cheapest path to the goal state have length $n$. Let $s$ to be a state with goal length $n+1$, which have the first transition$$s\xrightarrow{a}s' $$ so\begin{eqnarray}
+        h(s)\le h(s')+c(a)
+    \end{eqnarray}
+    by the inductive hypothesis:\begin{eqnarray}
+        h(s')\le h^*(s')
+    \end{eqnarray}
+    by construction:\begin{equation}
+        h^*(s)=h^*(s')+c(a)
+    \end{equation}
+    by combining the equations:\begin{eqnarray}
+        \begin{cases}
+            h(s)\le h(s')+c(a)\\
+            h(s')\le h^*(s')\\ 
+            h^*(s)=h^*(s')+c(a)
+        \end{cases}\implies h(s)\le h^*(s)
+    \end{eqnarray}
+    \hfill$\blacksquare$
+ \end{itemize}
+ The Euclidean distance for the map-travel problem is consistent.
+ \subsubsection{Systematic search vs. local search:}
+\begin{itemize}
+    \item \textbf{Systematic search strategies:} No limit on the number of search nodes kept in memory at any point in time.
+    \begin{itemize}
+        \item[$\rightarrow$] Guarantee to consider all options at some point, thus complete.
+    \end{itemize}
+    \item \textbf{Local search strategies:} Keep only one (or a few) search nodes at a time.
+    \begin{itemize}
+        \item[$\rightarrow$] No systematic exploration of all options, thus incomplete.
+    \end{itemize}
+\end{itemize}
+\subsubsection{Tree search vs. graph search:}
+\begin{itemize}
+    \item For the systematic search strategies, we consider graph search algorithms exclusively, i.e., we use duplicate pruning.
+    \item There are tree search versions of these algorithms. These are easier to understand, but aren't used in practice. (Maintaining a complete open list, the search is memory-intensive anyway.)
+\end{itemize}
+The informed search uses problem-specific knowledge, by using an evaluation function $f$ at each node, that function estimate the ''desirability'' of expanding that node, and we choose to expand the most desirable unexpanded node $$\arg\max_{\text{unexpanded }n} f(n).$$
+We usually implement this with a sorted queue ordered based on the desirability of expansion, this queue is called \textbf{frontier}.
+\subsection{Greedy Best-First Search}
+We use the heuristic function $f$ as the evaluation function and we expand the node that is closest to the goal.
+\begin{algorithm}
+    \caption{Greedy Best-First Searcj}\label{alg:greedy-best-first}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ such that $n.State=\Pi.InitialState$
+    \State $frontier\leftarrow$ a priority queue ordered by ascending $h$
+    \State $explored\leftarrow $empty set of states
+    \While{\textbf{True}}
+    \State \textbf{If} $frontier$ is empty \textbf{Then Return} failure 
+    \State $n\leftarrow Pop(frontier)$
+    \State \textbf{If} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State $explored\leftarrow explored \cup n.State$
+    \For{each action $a$ in $\Pi.Actions(n.State)$}
+    \State $n'\leftarrow ChildNode(\Pi,n,a)$
+    \State \textbf{If} $n'.State\notin explored \cup States(frontier)$\textbf{ Then} $insert(n',h(n'),frontier)$ 
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+This algorithm is complete thanks to the assumption that the state space is finite, but is not optimal, there exists an algorithm that is optimal and complete.
+\subsection{The A* Algorithm}
+In A* the evaluation function is \begin{equation}
+    f(n)=h(n)+g(n)
+\end{equation}
+where $h$ is the heuristic and $g$ is the cost needed so far to reach the node, we consider a frontier ordered by ascending $g+h$.
+\begin{algorithm}
+    \caption{A*}\label{alg:A*}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ such that $n.State=\Pi.InitialState$
+    \State $frontier\leftarrow$ a priority queue ordered by ascending $g+h$
+    \State $explored\leftarrow $empty set of states
+    \While{\textbf{True}}
+    \State \textbf{if} $frontier$ is empty \textbf{Then Return} failure 
+    \State $n\leftarrow Pop(frontier)$
+    \State \textbf{if} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State $explored\leftarrow explored \cup n.State$
+    \For{each action $a$ in $\Pi.Actions(n.State)$}
+    \State $n'\leftarrow ChildNode(\Pi,n,a)$
+    \If{$n'.State\notin explored \cup States(frontier)$}
+    \State $insert(n',h(n')+g(n'),frontier)$ 
+    \Else{ \textbf{if} $\exists n''$ s.t. $n''.State=n'.State$ and $g(n')<g(n'')$}
+    \State Replace $n''$ in $frontier$ with $n'$
+    \EndIf
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
 \redText{TODO}
 \section{Local Search}
 \redText{TODO}
@@ -818,6 +945,8 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
     \end{algorithmic}
 \end{algorithm}
 %%%
+
+\newpage
 \subsection{Monte-Carlo Tree Search}
 \redText{TODO}
 
@@ -1046,7 +1175,7 @@ We define the following subroutine:
     \begin{algorithmic}
     \Require $\gamma,u\in V,v\in V$
     \For{ each $d\in D_u$}
-    \If{$\not\exists d'\in D_v$ such that $(d,d')\in C_{uv}$}
+    \If{$\lnot\exists d'\in D_v$ such that $(d,d')\in C_{uv}$}
     \State $D_u=D_u\backslash\{d\}$
     \EndIf
     \EndFor 
@@ -1169,4 +1298,779 @@ The following procedure use cutsets to find a solution for $\gamma$.
     \redText{TODO: Riscrivere questo algoritmo, l'identazione è ambigua}
 \end{center}
 The forward checking operation is required to ensure that $a\cup a'$ is consistent in $\gamma$, the runtime is exponential in $V_0$. It is true that finding an optimal cutset for a graph is $\mathsf{NP}$-hard, but practical approximated procedures exists.
-\end{document}
+
+
+
+\chapter{Propositional Logic}
+This chapter presents a brief summary of propositional logic. Let $\Sigma$ to be a set of boolean variables, also called \textit{Atoms}, the definition of a formula over the variables $\Sigma$ is recursive.\begin{definition}
+    Let $\Sigma$ to be a set of atoms, then\begin{enumerate}
+        \item $\top$ (True) and  $\bot$ (False) are $\Sigma$-formulas.
+        \item Each atom $P\in \Sigma$ is a $\Sigma$-formula. 
+        \item If $\varphi$ is a formula\footnote{
+            We abbreviate ''$\Sigma$-formula'' with ''formula'' leaving it implicit that the formula is on the set of variables defined in the context.
+        }, then $\lnot \varphi$ is a formula.
+    \end{enumerate}
+\end{definition}
+If $\varphi$ and $\psi$ are formulas then:\begin{enumerate}
+    \item $\varphi\land \psi$ is a formula (\textit{conjunction})
+    \item $\varphi\lor \psi$ is a formula (\textit{disjunction})
+    \item $\varphi\rightarrow \psi$ is a formula (\textit{implication})
+    \item $\varphi\leftrightarrow \psi$ is a formula (\textit{equivalence})
+\end{enumerate}
+We recall that \begin{align}
+    &\varphi\rightarrow \psi\equiv \lnot \varphi \lor \psi \\ 
+    &\varphi\leftrightarrow \psi \equiv (\varphi \land \psi)\lor(\lnot\varphi \land \lnot\psi)
+\end{align}
+\begin{definition}
+    An \textbf{interpretation} $I$ over $\Sigma$ is an assignment $I:\Sigma\rightarrow \{0,1\}$.
+\end{definition}
+We say that $I$ \textbf{satisfy} a formula $\varphi$, and we write $I\models \varphi$ if the assignment makes the formula true. We can also say that $I$ is a \textbf{model} of $\varphi$ and the set of all the models of $\varphi$ (all the assignments that satisfies $\varphi$) is denoted $M(\varphi)$.
+
+\textbf{Example}:\begin{equation}
+    \varphi = (P\lor Q)\iff (R\lor S) 
+\end{equation}
+the interpretation \begin{equation}
+    I=\begin{cases}
+        P=1\\ 
+        Q=0\\ 
+        R=1\\ 
+        S=1
+    \end{cases}
+\end{equation}
+is a model since $I\models \varphi$:\begin{equation}
+    (P\lor Q)\leftrightarrow (R\lor S)  \implies (1\lor 0)\leftrightarrow (0 \lor 0) \implies 1 \leftrightarrow 1 \implies \top
+\end{equation}
+A set of formulas $KB$ is called \textbf{Knowledge Base} and an interpretation $I$ models $KB$ if, for all $\varphi\in KB$ we have that $I\models \varphi$. We also say that $I$ is a model of $KB$.
+\begin{definition}
+    Let $\varphi$ to be a formula:\begin{itemize}
+        \item $\varphi$ is \textbf{satisfiable} if $\exists I$ such that $I\models \varphi$ 
+        \item $\varphi$ is \textbf{unsatisfiable} if is not satisfiable.
+        \item $\varphi$ is \textbf{falsifiable} if there exists $I$ that doesn't satisfy $\varphi$.
+        \item $\varphi$ is a \textbf{tautology} if $\forall I$, $I\models \varphi$ (it's not falsifiable).
+    \end{itemize}
+\end{definition}
+\begin{definition}
+    Two formulas $\varphi$ and $\psi$ are \textbf{equivalent}$$\varphi\equiv \psi $$ if $M(\varphi)=M(\psi)$ ($I$ models $\varphi$ if and only if models also $\psi$).
+\end{definition}
+\begin{definition}
+    Let $\Sigma$ to be a set of atoms, a knowledge base $KB$ over $\Sigma$ \textbf{entails} a formula $\varphi$ $$KB\models \varphi $$
+    if, all the models $I$ of $KB$, are models of $\varphi$. 
+    $$ M(\bigwedge_{\psi\in KB}\psi)\subseteq M(\varphi)$$
+\end{definition}
+We say that the formula $\varphi$ follows from $KB$, and would be redundant to include $\varphi$ in $KB$. It's also important to derive new logic formula form a given knowledge base.
+\begin{theorem}
+    $KB\models \varphi$ if and only if $KB\cup\{\lnot \varphi\}$ is unsatisfiable.
+\end{theorem}
+\textit{Proof $\implies$}: Let $KB\models \varphi$ for any $I\models KB$ we have $I\models \varphi$ so $I\not\models \lnot \varphi$.
+
+\noindent\textit{Proof $\impliedby$}: If $KB\cup\{\lnot \varphi\}$ is unsatisfiable then for any $I$ such that $I\models KB$ we have $I\not\models\lnot\varphi$ hence $I\models\varphi$.\bigskip 
+
+Given a formula with $n$ variables, the number of possible assignment is $2^n$, so it's hard to test the satisfiability of a formula by testing all the  interpretations.\begin{definition}
+    A formula is in \textbf{conjunctive normal form (CNF)} if is a conjunction of disjunction of literals.\footnote{A literal is an atom $P$ or the negation of an atom $\lnot P$.}.\begin{equation}
+        \bigwedge_i\left(\bigvee_j L_{i,j}\right)
+    \end{equation}
+\end{definition}
+\begin{definition}
+    A formula is in \textbf{disjunctive normal form (DNF)} if is a disjunction of conjunction of literals.\begin{equation}
+        \bigvee_i\left(\bigwedge_j L_{i,j}\right)
+    \end{equation}
+\end{definition}
+It is important to know that \textbf{every formula} can be expressed in CNF or DNF, or, for each formula $\varphi$, there exists an equivalent formula $\psi$ that is a CNF or a DNF. It is possible to construct the equivalent CNF (or DNF) from $\varphi$ by exploiting the equivalences such as\begin{itemize}
+    \item $\varphi \rightarrow \psi\equiv \lnot\varphi\lor\psi$
+    \item $\lnot(\varphi\lor \psi)\equiv \lnot \varphi\land \lnot \psi$
+    \item and so on...
+\end{itemize}
+$$\begin{aligned}
+& ((P \lor H) \land \neg H) \to P && \text{Eliminate } "\to" \\
+& \neg ((P \lor H) \land \neg H) \lor P && \text{Move } "\neg" \text{ inwards} \\
+& (\neg (P \lor H) \lor H) \lor P && \text{Move } "\neg" \text{ inwards} \\
+& ((\neg P \land \neg H) \lor H) \lor P && \text{Distribute } "\lor" \text{ over } "\land" \\
+& ((\neg P \lor H) \land (\neg H \lor H)) \lor P && \text{Distribute } "\lor" \text{ over } "\land" \\
+& (\neg P \lor H \lor P) \land (\neg H \lor H \lor P)
+\end{aligned}$$
+\section{Resolution}
+We can construct a simple algorithm that, given a CNF formula $\psi$, tests if is satisfiable or not, by trying to derive from $\psi$ new formulas: If it finds a derived  formula $\psi$ that is unsatisfiable then $\psi$ is unsatisfiable.\bigskip 
+
+We use a method called \textit{Calculus} that, given a single \textit{rule} (we will define a rule later), allows us to derive new formulas from a given one. If $\varphi$ is derived from $\psi$, we write $$\psi\vdash \varphi .$$
+\begin{definition}
+    A clause $C$ is a disjunction of literals, like:\begin{equation}
+        \lnot P \lor Q \lor R \lor \lnot Q
+    \end{equation}
+    To shrink the notation, we identify $C$ with the set of the literals included:\begin{equation}
+        P\lor \lnot Q \text{ became }C=\{P,\lnot Q\}
+    \end{equation}
+\end{definition}
+Since a CNF is a conjunction of disjunction we can identify each CNF with a set of clauses, usually denoted $\Delta$. For example, the CNF\begin{equation}
+    \Delta = \{\{P,\lnot Q\},\{R, Q\}\}
+\end{equation}
+is \begin{equation}
+    (P\lor \lnot Q)\land (R\lor Q)
+\end{equation}
+We denote the empty clause $\square$. An interpretation $I$ satisfies a single clause $C$ $$I\models C$$ if there exists a literal $l\in C$ such that $I\models l$. $I$ satisfies $\Delta$ 
+$$ I\models \Delta$$ 
+if, for all $C\in \Delta$ we have that $I\models C$.
+\begin{definition}
+    A \textbf{inference rule} is a rule that derive a new formula from a given one, the \textbf{resolution rule} is the following:\begin{equation}
+        \frac{C_1\dot\cup \{l\},C_2\dot\cup\{\lnot l\}}{C_1\cup C_2}
+    \end{equation}
+\end{definition}
+You may wonder what this formula means and how it is applied, the symbol $\dot\cup$ identify a disjoint union, so $C_1\dot\cup \{l\}$ is a union and is implied that $l\notin C_1$. $l$ is a literal. The formula is written as a fraction:\begin{itemize}
+    \item the term over the fraction line represents the clauses that we already have in our CNF 
+    \item the term under the fraction line represents a new formula that we derive 
+\end{itemize}
+In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cup\{\lnot l\}$ in $\Delta$, we can derive a disjunction $\phi = C_1\cup C_2$.\begin{quote}
+    if you have two clauses where the same literal appears, but in one it is affirmative ($l$) and in the other it is negated ($\bar{l}$), you can ''add them'' by eliminating $l$ and $\bar{l}$ and merging everything else.
+\end{quote}
+For example, if you have $\{P,\lnot R\}$ and $\{R,Q\}$, you can resolve them and find a new formula $\{P,Q\}$.
+\begin{theorem}\label{Teo:Soundness}
+    The \textbf{soundness theorem} affirms that, if $\Delta\vdash D$ (the formula $D$ can be derived by some clause in $\Delta$ with the resolution rule) then $\Delta\models D$ (the CNF $\Delta$ entails $D$).
+\end{theorem}
+In the definition of \textit{entailment}, is a knowledge base that ''entails'' a formula, and not a formula that ''entails'' another formula, but a knowledge base $KB$ is equivalent to a CNF by putting in conjunction all the formulas in $KB$.\bigskip 
+
+The resolution algorithm takes as an input a knowledge base $KB$ and a formula $\phi$ and guess if $KB\models \phi$ by the following steps:\begin{enumerate}
+    \item transform $KB$ in a CNF 
+    \item write the CNF as a set of clauses $\Delta$, by adding to $\Delta$ also the clause $\{\lnot \phi\}$
+    \item apply the resolution rule on $\Delta$ until it's derived the empty clause $\square$.
+\end{enumerate}
+\begin{center}
+    \includegraphics[width=0.8\textwidth ]{images/resolution.png}
+\end{center}
+It is important to notice that $\Delta\models \varphi$ doesn't implies that $\Delta\vdash\varphi$, but, by the contradiction theorem, if we run the resolution on $KB\cup\{\lnot \varphi\}$ and we derive the empty clause $\square$ ($KB\cup\{\lnot \varphi\}$ is unsatisfiable) then $KB\models \varphi$.\begin{theorem}
+    A CNF $\Delta$ is unsatisfiable if and only if $\Delta\vdash\square$.
+\end{theorem}
+\section{The DPLL procedure}
+The SAT problem is to decide whenever a given propositional formula $\varphi$ is satisfiable or not, as we well know, this is the most classic example of a problem $\mathsf{NP}$-complete. The SAT problem is a ''subset'' of the constraint satisfaction problem:\begin{itemize}
+    \item SAT can be viewed as a CSP problem in which all variable domains
+ are Boolean, and the constraints have unbounded arity.
+\end{itemize}
+Every CSP problem can be encoded as a SAT problem:\begin{itemize}
+    \item Given any constraint network $\gamma$, we can in low-order polynomial time
+ construct a CNF formula $\varphi(\gamma)$ that is satisfiable if and only if $\gamma$ is solvable.
+\end{itemize}
+This and many other problems can be ''encoded'' as a SAT formula through reduction.
+\bigskip 
+
+\noindent A \textbf{SAT solver} is an algorithm that, given a CNF $\Delta$, returns an interpretation $I$ (if exists) such that $I\models \Delta$. We consider the DPLL procedure: A complete SAT solver. A SAT solver can be use in different contexts:\begin{itemize}
+    \item We can use it to entail a new formula $\varphi$ from $\Delta$. 
+    \item We need an assignment $I$ that models $\Delta$.
+\end{itemize}
+
+\begin{algorithm}
+\caption{Davis-Putnam-Logemann-Loveland (DPLL)}
+\begin{algorithmic}[1]
+\Function{DPLL}{$\Delta, I$} 
+    \State \blueText{\textit{/* Unit Propagation (UP) Rule: */}}
+    \State $\Delta' := \text{a copy of } \Delta$; $I' := I$
+    \While{$\Delta'$ contains a \textbf{unit clause} $C = \{l\}$}
+        \State extend $I'$ with the respective truth value for the proposition underlying $l$
+        \State \blueText{\textit{/* remove false literals and true clauses */}}
+        \State simplify $\Delta'$ 
+    \EndWhile
+
+    \State \blueText{\textit{/* Termination Test: */}}
+    \If{$\square \in \Delta'$} 
+        \State \Return ''unsatisfiable"
+    \EndIf
+    \If{$\Delta' = \{\}$} 
+        \State \Return $I'$
+    \EndIf
+
+    \State \blueText{\textit{/* Splitting Rule: */}}
+    \State select some proposition $P$ for which $I'$ is not defined
+    \State $I'' := I'$ extended with one truth value for $P$; $\Delta'' := \text{a copy of } \Delta'$; simplify $\Delta''$
+    \If{$I''' := \text{DPLL}(\Delta'', I'') \neq \text{''unsatisfiable"}$}
+        \State \Return $I'''$
+    \EndIf
+    \State $I'' := I'$ extended with the other truth value for $P$; $\Delta'' := \Delta'$; simplify $\Delta''$
+    \State \Return \Call{DPLL}{$\Delta'', I''$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+The Unit Propagation (UP) section of the algorithm correspond to the application of the following rule.\begin{definition}
+    The \textbf{unit resolution} is the inference rule:\begin{equation}
+        \frac{C\dot\cup\{\lnot l\},\{l\}}{C}
+    \end{equation}
+\end{definition}
+That is, if $\Delta$ contains parent clauses of the form $C\dot\cup\{\lnot l\}$ and $\{l\}$ the rule
+ allows to add the resolvent clause $C$.
+
+ Does the UP rule have the soundness property of Theorem \ref{Teo:Soundness}? Yes, we have to show that if $\Delta'$ can be derived from $\Delta$ then $\Delta\models \Delta'$, this is true since any derivation made by unit resolution can also be done by the full resolution, which we already know has this property.
+
+ Is the UP rule complete? To be complete, we have to show that, if $\Delta\models\Delta'$, then $\Delta'$ can be derived from $\Delta$ by the UP rule, this is false, a counter example is given by the following CNF$$\Delta = 
+  \{\{P,Q\}, \{P,\lnot Q\}, \{\lnot P,Q\}, \{\lnot P,\lnot Q\}\}
+ $$
+ is unsatisfiable but the UP rule cannot derive the empty clause $\square$.\bigskip 
+\section{Conflict Analysis and Clause Learning}
+ The DPLL is a systematic way of searching for a resolution proof. We define the \textit{number of decisions} of a DPLL run as the total number
+ of times a truth value was set by either unit propagation or the splitting rule, the following relationship between the DPLL algorithm and the resolution procedure holds:\begin{quotation}
+    If DPLL returns ''unsatisfiable'' on $\Delta$, then $\Delta\models\square$ with a resolution
+ derivation whose length is at most the number of decisions.
+ \end{quotation}
+ So, DPLL is an effective practical method for conducting resolution proofs. The DPLL is a ''tree resolution'', this is a problem since there are some $\Delta$ whose shortest tree resolution proof is exponentially longer than their shortest (general) resolution proof.
+ In tree resolution, every time a clause is needed, it must be derived from scratch because results aren't stored, this makes DPLL ''make the same mistakes over and over again'', leading to proofs that are exponentially longer than they need to be. Modern SAT solvers use Clause Learning (CDCL). When the solver hits a conflict, it analyzes the cause, creates a new clause to "remember" that mistake, and adds it to the database so it never explores that specific failing path again.\bigskip 
+
+During the execution of the DPLL procedure, there are many branches of the recursive run, where for each branch we compute a partial interpretation, a literal during a branch can be\begin{itemize}
+    \item \textit{choice literals}: the value of an atom $P$ is set by the splitting rule, assigning $P=0$ or $P=1$. 
+    \item \textit{implied literal}: the value is set automatically by the UP rule. 
+    \item \textit{conflict literal}: when the UP rule derive an empty clause $\square$, the branch became unsatisfiable.
+\end{itemize}
+\begin{definition}
+    The \textbf{implication graph} for a branch $\beta$ is a directed graph $G^{impl}$ such that:
+\end{definition}
+    \begin{itemize}
+        \item the vertices $V(G^{impl})$ are the choice literals and implied literals of the branch, plus a special vertex $\square_C$ for each clause $C$ that becomes empty. 
+        \item the edges $E(G^{impl})$ are the following:\begin{itemize}
+            \item when a clause $C=\{l_1\dots l_k,l'\}\in \Delta$ becomes unit with the implied literal $l'$, there will be the edges\begin{align}
+                &\lnot l_1\rightarrow l'\\ &\vdots\\
+                &\lnot l_k\rightarrow l'
+            \end{align}
+            \item when  a clause $C=\{l_1\dots l_k\}$ becomes empty there will be the edges\begin{align}
+                &\lnot l_1\rightarrow \square_C\\ &\vdots\\
+                &\lnot l_k\rightarrow \square_C
+            \end{align}
+        \end{itemize} 
+    \end{itemize}
+\subsubsection{Example}
+Consider $$\Delta=\{\{P,Q,\lnot R\},
+\{\lnot P,\lnot Q\},
+\{R\},
+\{P,\lnot Q\}
+\}$$
+\begin{enumerate}
+    \item First step: Apply the UP rule on $R$ with the clause $\{P,Q,\lnot R\}$, and get the set:\begin{equation}\{\{P,Q,\lnot R\},
+\{\lnot P,\lnot Q\},
+\{R\},
+\{P,\lnot Q\}
+\}\text{ becomes }
+        \{\{P,Q\},
+\{\lnot P,\lnot Q\},
+\{P,\lnot Q\}
+\}
+    \end{equation}
+    the literal $R$ is an implied literal and becomes a vertex in the graph.
+    \item Second step: We apply the splitting rule on $P$, creating two branches, one with $P=0$ and the other with $P=1$, we continue with the branch with $P=0$. The literal $\lnot P$ becomes a choice literal so there are the vertex $\lnot P$ in the graph.
+    \begin{equation}
+        \{\{P,Q\},
+\{\lnot P,\lnot Q\},
+\{P,\lnot Q\}
+\}
+\text{ becomes }
+        \{\{Q\},
+\{\lnot Q\}
+\}
+    \end{equation}
+
+\item We apply the UP rule on $Q$ and $Q$ becomes an implied literal, the edges
+\begin{align}
+    & R\rightarrow Q\\ 
+    & \lnot P \rightarrow Q 
+\end{align}
+are added to the graph. After the UP rule it remains the empty clause$$ \{\square\}$$
+So we add the conflict literal $\square_{P,\lnot Q}$ and the edges
+\begin{align}
+    & Q \rightarrow \square_{P,\lnot Q}\\ 
+    & \lnot P \rightarrow \square_{P,\lnot Q} 
+\end{align}
+\end{enumerate}
+the final graph of this branch is:
+\begin{center}
+    \includegraphics[width=0.2\textwidth ]{images/impl_graph.eps}
+\end{center}
+An implication graph cannot have cycle because it keeps track of chronological behavior
+ along the current DPLL search branch $\beta$. Unit propagation cannot derive $l'$
+ whose value was already set beforehand.
+ The implication graph it is used to visualize and trace the logical path that led the algorithm to assign certain truth values to the variables.
+
+ There is another tool used to capture ''what went wrong'' in a failed node (when a branch return ''unsatisfiable'').
+ \begin{definition}
+    Let $\Delta$ to be a set of clauses and  $G^{impl}$ the implication graph relative to a branch of the DPLL algorithm, a \textbf{conflict graph} $G^{conf}$ is a sub-graph of $G^{impl}$ such that:\begin{itemize}
+        \item $G^{conf}$ contains exactly one conflict vertex $\square_C$
+        \item if $l'$ is a vertex in $^{confl}$, then, all the parents of $l'$ that are vertices $\lnot l_i$ with the arc $(\lnot l_i,l')\in E(G^{impl})$ are also vertices in $G^{conf}$.
+        \item all the vertices in  $G^{conf}$ have a path to $\square_C$,
+    \end{itemize}
+ \end{definition}
+ We can construct the conflict graph by starting from a conflict vertex and going back through the
+ implication graph until reaching choice literals.
+ \begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/conflict_graph.eps}
+\end{center}
+Let $choiceList(G^{conf})$ to be the set of all the choice literals in the conflict graph, given $\Delta$, if we set as true\footnote{
+    We recall that a literal $l$ can be an atom or a negated atom. If $l=P$ where $P$ is an atom, setting $l$ to true means $l=P=1$, if $l=\lnot P$, setting $l$ to true means $l=1=\lnot P\implies P=0$. 
+} all the literals in $choiceList(G^{conf})$ we will have a false statement:\begin{equation}
+    \Delta\models \left( \bigwedge_{l\in 
+    choiceList(G^{conf})} l \right)\rightarrow \bot
+\end{equation}
+This can be rewritten as\begin{equation}
+    \Delta\models \bigwedge_{l\in 
+    choiceList(G^{conf} )\lnot l}
+\end{equation}
+\begin{proposition}[Clause Learning]
+    Let $\Delta$ to be a set of clauses and let $G^{conf}$ be a conflict graph at some time point during a run of DPLL on $\Delta$. Let $choiceList(G^{conf})$ to be the set of all the choice literals in the conflict graph, then\begin{equation}
+        \Delta\models\{\lnot l \ | \ l\in choiceList(G^{conf})\}
+    \end{equation}
+    The negation of the choice literals in a conflict graph is a valid clause.
+\end{proposition}
+So during the execution of the DPLL we can analyze a conflict graph and derive a new clause \begin{equation}
+    C=\{\lnot l \ | \ l\in choiceList(G^{conf})\}
+\end{equation}
+we can add $C$ into $\Delta$ and retract the last choice literal $l'$.
+\subsubsection{Example}
+Let $$\Delta=\{\{\lnot A,\lnot B\},\{\lnot A,B\}\}$$
+we apply the DPLL and set in a branch $A=1$ so
+$$\{\{\lnot B\},\{B\}\}$$
+we have a conflict and the new clause derived by negating the choice literals is\begin{equation}
+    C=\{\lnot A\}
+\end{equation}
+Now we add this to the set of clauses and we have 
+$$\Delta=\{\{\lnot A,\lnot B\},\{\lnot A,B\}, \{\lnot A\}\}$$
+Now the algorithm instantly knows that $A$ must be False and will no longer waste time proving $A = 1$.\bigskip 
+
+After adding the new clause $C$, the process follows three fundamental logical phases to avoid repeating the same mistake:\begin{enumerate}
+    \item The algorithm retracts the last choice made, denoted as $l'$ ( the truth value assigned to $l'$ is removed and it becomes an unassigned literal again). This is necessary because the combination of previous choices ($l_1, \dots, l_k$) together with $l'$ has just been shown to be inconsistent.
+    \item  once $C$ is added and the $l'$ choice is cancelled, the $C$ clause becomes a unit clause (only one unassigned literal remains). In this case, $\lnot l'$ is no longer a "free choice" of the algorithm, but becomes a literal implied by Unit Propagation (UP).
+    \item The algorithm reruns Unit Propagation and continues the analysis. If a new conflict were to occur, the learned clause will be even more ''powerful'' because it will only contain the even older choices ($l_1, \dots, l_k$), allowing you to move up the decision hierarchy.
+\end{enumerate}
+We saw how the original DPLL algorithm generates proof  exponentially
+ longer than their shortest (general) resolution proof. This is not true with clause learning, that renders DPLL equivalent to full resolution.
+
+ \chapter{Predicate Logic (FOL)}
+A logic is a family of formal languages, which has the purpose of \textit{representing} information and 
+\textit{manipulate} knowledge. Each logic is provided with a \textbf{syntax} and a \textbf{semantics}, the syntax 
+defines a series of symbols and the structure that the formulas must take on to be considered valid, the semantics 
+defines the meaning of these formulas.\acc 
+In classical logic, each formula, based on the ''world'' to which it is applied, can be true or false. 
+To define the syntax I must establish:\begin{itemize}
+    \item What symbols can I use (the alphabet)
+    \item Which finite sequences of symbols can compose a formula
+\end{itemize}
+Semantics, on the other hand, establishes the \textit{truth} of formulas in the so-called possible ''worlds'', i.e 
+the \textbf{interpretations}. In first-order logic, also called \textbf{FOL}, one establishes\begin{itemize}
+    \item Syntax 
+    \item Semantics \begin{itemize}
+        \item Interpretation 
+        \item Variable assignment 
+        \item Model 
+        \item Evaluating a formula 
+    \end{itemize}
+    \item Satisfaction 
+    \item Unsatisfiability
+    \item Validity
+\end{itemize}
+ \section{Syntax}
+In a FOL formula there are:\begin{itemize}
+    \item Variables: $x,x_1,x_2,x',x''\dots$
+    \item True ($\top$) or False $(\bot)$ symbols 
+    \item Operators: $\lnot,\land,\lor,\rightarrow,\leftrightarrow$
+    \item Quantifiers: $\forall,\exists$
+\end{itemize}
+We can have constant symbols that represents an object\begin{equation}
+    BlockA, BlockB, a, b
+\end{equation}
+predicate symbols that returns true or false taking an object as an input:\begin{equation}
+    Block(.), Above(.,.)
+\end{equation}
+The arity (number of argument) can be $\ge 1$. For example:\begin{equation}
+    Chase(Cat,Mouse)=\top 
+\end{equation}
+Means that the cat chase the mouse. Then we have the function symbols:\begin{equation}
+    WeightOf(.), Succ(.), Sum(.,.)
+\end{equation}
+these functions returns an object and not a truth value\begin{equation}
+    Sum(3,4)=7
+\end{equation}
+where $3,4$ and $7$ are constant symbols. Constant symbols are just function symbols of arity zero.\begin{definition}[Signature]
+    A signature $\Sigma$ in predicate logic is a finite set
+ of constant symbols, predicate symbols, and function symbols.
+\end{definition}
+Another example of formula is\begin{equation}
+    \forall x[Dog(x)\rightarrow \exists y Chase(x,y)]
+\end{equation}
+Means: For every $x$ such that $x$ is a dog, there exists something ($y$) such that $x$ chase $y$, in a few words: Every
+ dog chases something.\begin{definition}[Term]
+    Let $\Sigma$ to be a signature:\begin{itemize}
+        \item every variable and every constant symbol is a term.
+        \item if $t_1\dots,t_n$ are terms and $f$ is a $n$-ary function symbol, then $f(t_1\dots,t_n)$ is a term.
+    \end{itemize}
+ \end{definition}
+ \begin{definition}[Atoms]
+     Let $\Sigma$ to be a signature:\begin{itemize}
+        \item $\top$ and $\bot$ are atoms
+        \item if $t_1\dots,t_n$ are terms and $P$ is a $n$-ary predicate symbol, then $P(t_1\dots,t_n)$ is an atom.
+     \end{itemize}
+ \end{definition}
+ \begin{definition}[Formula]
+     Let $\Sigma$ to be a signature:\begin{itemize}
+        \item each atom is a formula. 
+        \item if $\varphi$ is a formula, $\lnot \varphi$ is a formula 
+        \item if $\varphi$ and $\psi$ are formulas then\begin{itemize}
+    \item $\varphi\land \psi$ is a formula (\textit{conjunction})
+    \item $\varphi\lor \psi$ is a formula (\textit{disjunction})
+    \item $\varphi\rightarrow \psi$ is a formula (\textit{implication})
+    \item $\varphi\leftrightarrow \psi$ is a formula (\textit{equivalence})
+\end{itemize}
+    \item if $\varphi$ is a formula and $x$ a variable then\begin{itemize}
+        \item $\forall x\varphi$ is a formula
+        \item $\exists x\varphi$ is a formula
+    \end{itemize}
+     \end{itemize}
+ \end{definition}
+ Generally:\begin{itemize}
+    \item terms represents object 
+    \item predicates represents relations on the universe
+ \end{itemize}
+ \begin{definition}[Interpretation]
+    Let $\Sigma$ be a signature. A $\Sigma$-interpretation is a pair $(U, I)$ where $U$, the universe, is an arbitrary non-empty set $$U = \{o_1, o_2, \dots\}$$ and $I$ is a function, notated as superscript, so that:\begin{enumerate}
+
+
+    \item$I$ maps constant symbols to elements of $U$: $c^I \in U $ $$ Lassie^I = o_1$$
+    \item$I$ maps $n$-ary predicate symbols to $n$-ary relations over $U$:$P^I \subseteq U^n $ $$ Dog^I = \{o_1, o_3\}$$
+    \item$I$ maps $n$-ary function symbols to $n$-ary functions over $U$:$f^I \in [U^n \mapsto U]$ $$FoodOf^I = \{(o_1 \mapsto o_4), (o_2 \mapsto o_5), \dots\}$$\end{enumerate} 
+    
+    We will often refer to $I$ as the interpretation, omitting $U$. Note that $U$ may be infinite.
+ \end{definition}
+ \begin{definition}[Ground Term Interpretation]
+    The interpretation of a ground term under $I$ is $$(f(t_1, \dots, t_n))^I = f^I(t_1^I, \dots, t_n^I)$$
+ \end{definition}
+ \begin{definition}[Ground Atom Satisfaction]
+    Let $\Sigma$ be a signature and $I$ a $\Sigma$-interpretation. We say that $I$ satisfies a ground atom $P(t_1, \dots, t_n)$, written $I \models P(t_1, \dots, t_n)$, iff $(t_1^I, \dots, t_n^I) \in P^I$. We also call $I$ a model of $P(t_1, \dots, t_n)$.
+$$ 
+I \models Dog(Lassie) \text{ because } Lassie^I = o_1 \in Dog^I
+$$
+ \end{definition}
+ \textbf{Example} ''Integers'': $$U = \{1, 2, 3, \dots\}$$ $$1^I = 1, 2^I = 2, 3^I = 3, \dots$$$$Even^I = \{2, 3, 4, 6, \dots\}$$ $$Equals^I = \{\langle 1, 1 \rangle, \langle 2, 2 \rangle, \dots\}$$ $$Succ^I = \{(1 \mapsto 2), (2 \mapsto 3), \dots\}$$
+ \begin{definition}[Variable Assignment]
+    Let $\Sigma$ be a signature and $(U,I)$ an interpretation. Let $X$ be the set of all variables. A variable assignment $\alpha$ is a
+ function $\alpha : X\mapsto U$. 
+ \end{definition}
+\begin{definition}[Term Interpretation]
+The interpretation of a term under $I$ and $\alpha$ is:
+\begin{enumerate}
+    \item $x^{I,\alpha} = \alpha(x) \quad [x^{I,\alpha} = o_1]$
+    \item $c^{I,\alpha} = c^I \quad [Lassie^{I,\alpha} = Lassie^I]$
+    \item $(f(t_1, \dots, t_n))^{I,\alpha} = f^I(t_1^{I,\alpha}, \dots, t_n^{I,\alpha})$ 
+\end{enumerate}
+\end{definition}
+\begin{definition}[Atom Satisfaction]
+Let $\Sigma$ be a signature, $I$ a $\Sigma$-interpretation, and $\alpha$ a variable assignment. We say that $I$ and $\alpha$ satisfy an atom $P(t_1, \dots, t_n)$, written $I, \alpha \models P(t_1, \dots, t_n)$, if and only if $(t_1^{I,\alpha}, \dots, t_n^{I,\alpha}) \in P^I$. We also call $I$ and $\alpha$ a model of $P(t_1, \dots, t_n)$.
+\end{definition}
+From now, we write $\alpha\frac{x}{o}$ to overwrite $x$ with $o$ in $\alpha$.
+\begin{definition}[Formula Satisfaction]
+Let $\Sigma$ be a signature, $I$ a $\Sigma$-interpretation, and $\alpha$ a variable assignment. We set:
+\begin{align*}
+    &I, \alpha \models \top \quad \text{and} \quad I, \alpha \not\models \bot \\
+    &I, \alpha \models \neg \varphi \quad \text{iff} \quad I, \alpha \not\models \varphi \\
+    &I, \alpha \models \varphi \wedge \psi \quad \text{iff} \quad I, \alpha \models \varphi \text{ and } I, \alpha \models \psi \\
+    &I, \alpha \models \varphi \vee \psi \quad \text{iff} \quad I, \alpha \models \varphi \text{ or } I, \alpha \models \psi \\
+    &I, \alpha \models \varphi \rightarrow \psi \quad \text{iff} \quad \text{if } I, \alpha \models \varphi, \text{ then } I, \alpha \models \psi \\
+    &I, \alpha \models \varphi \leftrightarrow \psi \quad \text{iff} \quad I, \alpha \models \varphi \text{ if and only if } I, \alpha \models \psi \\
+    &I, \alpha \models \forall x \varphi \quad \text{iff} \quad \text{for all } o \in U \text{ we have } I, \alpha \frac{x}{o} \models \varphi \\
+    &I, \alpha \models \exists x \varphi \quad \text{iff} \quad \text{there exists } o \in U \text{ so that } I, \alpha \frac{x}{o} \models \varphi
+\end{align*}
+If $I, \alpha \models \varphi$, we say that $I$ and $\alpha$ satisfy $\varphi$ (are a model of $\varphi$).
+\end{definition}
+Like the propositional logic, a formula can be\begin{itemize}
+    \item  satisfiable if there exist $I,\alpha$ that satisfy $\varphi$.
+    \item unsatisfiable if $\varphi$ is not satisfiable.
+    \item falsifiable if there exist $I,\alpha$ that do not satisfy $\varphi$.
+    \item valid if $I,\alpha\models\varphi$ holds for all I and $\alpha$. We also call $\varphi$ a tautology.
+\end{itemize}
+\begin{definition}
+    Given two formulas $\varphi,\psi$, we say that $\varphi$ \textbf{entails} $\psi$ $$ \varphi\models\psi$$ if every model of $\varphi$ is also a model of $\psi$. If $$\varphi\models\psi\land \psi\models\varphi $$
+    then the two formulas are \textbf{equivalent}:$$ \varphi\equiv\psi$$
+\end{definition}
+Let's consider the formula:\begin{equation}
+    \varphi=\forall x [R(x,y)]
+\end{equation}
+the variable $y$ is called \textit{free}, so the formula is not closed and cannot be evaluated in a truth value. We define the \textbf{Knowledge Base} as a set $KB$ of closed formulas.
+\\\redText{TODO:  Normal Forms and all the  slide chapter 12}
+
+\chapter{Planning}
+
+Planning (or automatic planning) is a branch of artificial intelligence that deals with generating a strategy or sequence of actions to allow an intelligent agent (such as a robot or software) to achieve an objective starting from an initial state. It's a general way to define a problem solving procedure.
+\section{STRIPS}
+STRIPS (acronym for STanford Research Institute Problem Solver) is one of the most important automatic planning languages and systems in the history of artificial intelligence.
+
+Developed in 1971 by Richard Fikes and Nils Nilsson, it was used to control the actions of Shakey, one of the first mobile robots with logical reasoning. In modern terms, STRIPS represents the standard for so-called classic planning.\bigskip 
+
+STRIPS has only boolean variables, the preconditions and the goals are conjunctions of positive atoms, the effects are conjunctions of literals (positive or negated atoms).
+\begin{definition}[STRIPS Planning Task]
+A \textit{STRIPS planning task}, short \textit{planning task}, is a 4-tuple $\Pi = (P, A, I, G)$ where:
+
+\begin{itemize}
+    \item $P$ is a finite set of \textbf{facts} (aka \textbf{propositions}).
+    \item $A$ is a finite set of \textbf{actions}; each $a \in A$ is a triple $a = (pre_a, add_a, del_a)$ of subsets of $P$ referred to as the action's \textbf{precondition}, \textbf{add list}, and \textbf{delete list} respectively; we require that $add_a \cap del_a = \emptyset$.
+    \item $I \subseteq P$ is the \textbf{initial state}.
+    \item $G \subseteq P$ is the \textbf{goal}.
+\end{itemize}
+\end{definition}
+We will often give each action $a \in A$ a \textbf{name} (a string), and identify $a$ with that name.\bigskip
+
+\noindent\textbf{Example: Australian Logistics Planning Task}
+\begin{itemize}
+    \item \textbf{Facts} $P$: $\{at(x), visited(x) \mid x \in \{Sydney, Adelaide, Brisbane, Perth, Darwin\}\}$.
+    \item \textbf{Initial state} $I$: $\{at(Sydney), visited(Sydney)\}$.
+    \item \textbf{Goal} $G$: $\{at(Sydney)\} \cup \{visited(x) \mid x \in \{Sydney, Adelaide, Brisbane, Perth, Darwin\}\}$.
+    \item \textbf{Actions} $a \in A$: $drive(x, y)$ where $x, y$ have a road.
+    \begin{itemize}
+        \item \textbf{Precondition} $pre_a$: $\{at(x)\}$.
+        \item \textbf{Add list} $add_a$: $\{at(y), visited(y)\}$.
+        \item \textbf{Delete list} $del_a$: $\{at(x)\}$.
+    \end{itemize}
+    \item \textbf{Plan:} $\langle drive(Sydney, Brisbane), drive(Brisbane, Sydney), drive(Sydney, Adelaide),$ 
+    $drive(Adelaide, Perth), drive(Perth, Adelaide), drive(Adelaide, Darwin),$
+    $drive(Darwin, Adelaide), drive(Adelaide, Sydney)\rangle$.
+\end{itemize}
+ \begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/strips_example.png}
+\end{center}
+\begin{definition}[STRIPS State Space]\label{STRIPS_state_space}
+    Let $\Pi = (P, A, c, I, G)$ be a \textit{STRIPS planning task}. The \textit{state space} of $\Pi$ is $\Theta_{\Pi} = (S, A, T, I, S^G)$ where:
+\begin{itemize}
+    \item The states (also \textbf{world states}) $S = 2^P$ are the subsets of $P$.
+    \item $A$ is $\Pi$'s action set.
+    \item The transitions are $T = \{s \xrightarrow{a} s' \mid pre_a \subseteq s, s' = (\quadBrack{s}, a)\}$. \\
+    If $pre_a \subseteq s$, then $a$ is \textbf{applicable} in $s$ and $$(\quadBrack{s}, a) := (s \cup add_a) \setminus del_a$$ 
+    If $pre_a \not\subseteq s$, then $(\quadBrack{s}, a)$ is undefined.
+    \item $I$ is $\Pi$'s initial state.
+    \item The goal states $S^G = \{s \in S \mid G \subseteq s\}$ are those that satisfy $\Pi$'s goal.
+\end{itemize}
+\end{definition}
+A \textbf{plan} for $s\in S$ is a path from $s$ to $s'\in S^G$, a plan for $I$ is a \textbf{solution} and is called \textit{plan for $\Pi$}, if such plan exists, $\Pi$ is \textbf{solvable}.
+ \begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/strips_example2.png}
+\end{center}
+These planning examples draw heavily on the research problems presented in previous chapters, as in this case, it is possible to define a heuristic function that estimates the distance (or cost) between a current state $s$ and the goal state $G$.
+
+It is important to perform a complexity analysis of the problems that we face to identify special cases that can be solved in polynomial time, relax the input into the special case to obtain a heuristic
+function.\bigskip
+\subsection{Only-Adds STRIPS Tasks}
+Let's consider the following example:
+\begin{itemize}
+    \item \textbf{Facts $P$}: $\{truck(x) \mid x \in \{A, B, C, D\}\} \cup$ \\
+    $\{pack(x) \mid x \in \{A, B, C, D, T\}\}$.
+    
+    \item \textbf{Initial state $I$}: $\{truck(A), pack(C)\}$.
+    
+    \item \textbf{Goal $G$}: $\{truck(A), pack(D)\}$.
+    
+    \item \textbf{Actions $A$}: (Notated as ''precondition $\Rightarrow$ adds, $\neg$ deletes'')
+    \begin{itemize}
+        \item $drive(x, y)$, where $x, y$ have a road: \\
+        ''$truck(x) \Rightarrow truck(y), \neg truck(x)$''.
+        
+        \item $load(x)$: ''$truck(x), pack(x) \Rightarrow pack(T), \neg pack(x)$''.
+        
+        \item $unload(x)$: ''$truck(x), pack(T) \Rightarrow pack(x), \neg pack(T)$''.
+    \end{itemize}
+\end{itemize}
+ \begin{center}
+    \includegraphics[width=0.34\textwidth ]{images/truck.png}
+\end{center}
+It is clear that this STRIPS planning task models a truck that must collect a package and deposit it in a designated place. One simple relaxation is the following:\begin{quotation}
+    \textbf{Only-Adds Relaxation}: Drop the preconditions and deletes on the actions.
+\end{quotation}
+We want to use this to generate a heuristic function. The general problem is\begin{itemize}
+    \item Given a STRIPS task $\Pi = (P, A, I, G)$, we want to find an action sequence $\vec a$ leading from $I$ to a state that contains $G$ when pretending that preconditions and deletes are empty.
+\end{itemize}
+The simplest possible approach is the following:
+\begin{algorithm}
+\caption{Solution 1}
+\begin{algorithmic}[1]
+\State $\vec a=\langle \ \rangle$
+\While{$G\ne\emptyset$}
+\State select $a\in A$
+\State $G=G\backslash add_a$ \blueText{\#Subtract from the remaining objectives anything that the chosen action adds}
+\State $\vec a = \vec a \circ \langle a\rangle $
+\State $A=A\backslash\{a\}$
+\EndWhile
+\State\Return $h=|\vec a|$
+\end{algorithmic}
+\end{algorithm}
+This algorithm is applied for each state $s$ and calculates the value of $h$.
+This heuristic is not admissible,
+admissibility is only guaranteed if we find a
+ shortest possible $\vec a$; else, $\vec a$ might be longer than a plan for $\Pi$ itself.
+ Selecting an arbitrary action each time, $\vec a$  may be longer than needed. Another solution might be:
+
+ \begin{algorithm}
+\caption{Solution 2}
+\begin{algorithmic}[1]
+\State $\vec a=\langle \ \rangle$
+\While{$G\ne\emptyset$}
+\State select $a\in A$ such that $|add_a|$ is maximal.
+\State $G=G\backslash add_a$ 
+\State $\vec a = \vec a \circ \langle a\rangle $
+\State $A=A\backslash\{a\}$
+\EndWhile
+\State\Return $h=|\vec a|$
+\end{algorithmic}
+\end{algorithm}
+
+$h$ is not admissible yet,  large $add_a$ doesn't help if the intersection with $G$ is small. 
+
+
+ \begin{algorithm}
+\caption{Solution 3}
+\begin{algorithmic}[1]
+\State $\vec a=\langle \ \rangle$
+\While{$G\ne\emptyset$}
+\State select $a\in A$ such that $|add_a\cap G|$ is maximal.
+\State $G=G\backslash add_a$ 
+\State $\vec a = \vec a \circ \langle a\rangle $
+\State $A=A\backslash\{a\}$
+\EndWhile
+\State\Return $h=|\vec a|$
+\end{algorithmic}
+\end{algorithm}
+\bigskip 
+
+Also this is not admissible. To have an admissible (and optimal) heuristic in the relaxed world, we should find the shortest possible sequence of actions ($\text{optimal } \vec{a}$). But finding this sequence is equivalent to solving the Minimum Cover problem, since Minimum Cover is an $\mathsf{NP}$-complete problem, finding the optimal heuristic even for a relaxed problem is computationally expensive.\bigskip 
+
+We call \textbf{PlanEx} the problem of deciding, given a STRIPS planning task $\Pi$, whether or not there exists a plan for  $\Pi$.
+\begin{lemma2}
+    PlanEx is $\mathsf{PSPACE}$-hard.
+\end{lemma2}
+\textit{Proof Sketch}:
+Given a Turing machine with \textbf{space bounded by polynomial $p(|w|)$}, we can in polynomial time (in the size of the machine) generate an equivalent STRIPS planning task. Say the possible symbols in tape cells are $x_1, \dots, x_m$ and the internal states are $s_1, \dots, s_n$, accepting state $s_{acc}$.
+\begin{itemize}
+    \item The contents of the tape cells: $in(1, x_1), \dots, in(p(|w|), x_1), \dots, in(1, x_m), \dots, in(p(|w|), x_m)$.
+    \item The position of the R/W head: $at(1), \dots, at(p(|w|))$.
+    \item The internal state of the machine: $state(s_1), \dots, state(s_n)$.
+    \item Transitions rules $\mapsto$ STRIPS actions; accepting state $\mapsto$ STRIPS goal $\{state(s_{acc})\}$; initial state obvious.
+    \item This reduction to STRIPS runs in polynomial-time because we need only polynomially many facts.
+\end{itemize}
+\begin{lemma2}
+    PlanEx is in $\mathsf{PSPACE}$.
+\end{lemma2}
+It is easy and sufficient to prove that PlanEx is in $\mathsf{NPSPACE}$, since $\mathsf{PSPACE}=\mathsf{NPSPACE}$. From the two lemmas, the following theorems follows.
+\begin{theorem}
+    PlanEx is $\mathsf{PSPACE}$-complete.
+\end{theorem}
+\subsection{Transition System}
+The state space of a planning task, like the one described in Definition \ref{STRIPS_state_space}, is generalized in the following definition.\begin{definition}[Transition Systems]
+    A transition system is a 6-tuple $\Theta=(S,L,c,T,I,S^G)$ where:\begin{itemize}
+        \item $S$ is a finite set of states 
+        \item $L$ is a finite set of transition labels (a generalization of an action) 
+        \item $c:L\mapsto \R^+\cup\{0\}$ is the cost function
+        \item $T\subseteq S\times L\times S$ is the transition relation 
+        \item $S^G\subseteq S$ is the set of the goal states.
+        \item $I\in S$ is the initial state.
+    \end{itemize}
+\end{definition}
+The size of $\Theta$ is $|S|$. If $\Theta$ has the transition $(s,l,s')\in T$ we write \begin{align*}
+    &s\xrightarrow{l}s'
+\end{align*}
+or \begin{align*}
+    &s\xrightarrow{}s'
+\end{align*}
+if we are not interested in the label $l$. $\Theta$ has unit cost if $c$ is the constant function $c(l)=1, \forall l$.
+The classic definitions already addressed follow:\begin{itemize}
+    \item $s'$ is a successor of $s$ if $s\rightarrow s'\in T$
+    \item $s'$ is a predecessor of $s$ if $s'\rightarrow s\in T$
+    \item a path from $s$ to $s'$ is a sequence of transitions:\begin{equation}
+        s\xrightarrow{l_1}s_1\xrightarrow{l_2}s_2\dots \xrightarrow{l_n}s_n=s'
+    \end{equation}
+    and the cost of the path is \begin{equation}
+        \sum_{i=1}^nc(l_i)
+    \end{equation}
+    we say that $s$ is reachable (without specifying the origin) meaning that is reachable from $I$.
+\end{itemize}
+A solution for $\Theta$ is a path from $I$ to a state $s\in S^G$. If such path exists, $\Theta$ is solvable.
+ \begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/trans_syst.png}
+\end{center}
+We are interested in solving \textbf{huge} transition systems (unfeasible to apply Dijkstra), represented in a compact way as planning tasks.
+\section{FDR}
+STRIPS and FDR (Finite Domain Representation) are two different formalisms for describing planning tasks, both aimed at defining how an agent should move from an initial state to a goal. FDR is a more modern and often more efficient evolution for automatic solvers (like Fast Downward):\begin{itemize}
+    \item Finite Domain Variables: Instead of having many Boolean facts (e.g. $truck\_in\_A$, $truck\_in\_B$), use a single multivariate variable (e.g. $TruckPosition$) that can take a value in a finite set $\{A, B, C, D\}$ 
+    \item State: A function that assigns a value to each variable.\item Advantage: Reduces the number of "mutually exclusive" facts the planner must explicitly handle, making the problem structure clearer.
+\end{itemize}
+
+
+\begin{definition}[FDR  Planning Task]
+    A \textit{finite-domain representation planning task}, short \textit{FDR planning task}, is a 5-tuple $\Pi = (V, A, c, I, G)$ where:
+
+\begin{itemize}
+    \item $V$ is a finite set of \textit{state variables}, each $v \in V$ with a \textit{finite domain} $D_v$. \\
+    We refer to (partial) functions on $V$, mapping each $v \in V$ into a member of $D_v$, as (partial) \textit{variable assignments}.
+    
+    \item $A$ is a finite set of \textit{actions}; each $a \in A$ is a pair $(pre_a, eff_a)$ of \textit{partial variable assignments} referred to as the action's \textit{precondition} and \textit{effects}.
+    
+    \item $c: A \mapsto \mathbb{R}^+\cup\{0\}$ is the \textit{cost function}.
+    
+    \item $I$ is a complete variable assignment called the \textit{initial state}.
+    
+    \item $G$ is a partial variable assignment called the \textit{goal}.
+\end{itemize}
+\end{definition}
+We say that $\Pi$ has \textit{unit costs} if, for all $a \in A$, $c(a) = 1$. In the FDR context we call \textbf{fact} an assignment$$(v,d)\text{ or }v=d$$
+we mean that the variable $v$ assumes the value $d$. 
+If $p$ is a partial variable assignment, we write $$ V[p]=\{v\in V \ | \ p(v)\text{ is defined}\}$$
+to refers to all variables where $p$ is defined.
+For the map example in Australia:
+ \begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/strips_example.png}
+\end{center}
+\begin{itemize}
+    \item \textbf{Variables $V$}: $at : \{Sydney, Adelaide, Brisbane, Perth, Darwin\}$; $visited(x) : \{T, F\}$ per ogni città $x$.
+    \item \textbf{Initial state $I$}: $at = Sydney, visited(Sydney) = T, visited(x) = F$ per $x \neq Sydney$.
+    \item \textbf{Goal $G$}: $at = Sydney, visited(x) = T$ per ogni $x$.
+    \item \textbf{Actions $a \in A$}: $drive(x, y)$ dove $x, y$ hanno una strada.
+    \begin{itemize}
+        \item Precondizione $pre_a$: $at = x$.
+        \item Effetto $eff_a$: $at = y, visited(y) = T$.
+    \end{itemize}
+    \item \textbf{Cost function $c$}: 
+    \[
+    c(drive(x, y)) = 
+    \begin{cases} 
+    1 & \{x, y\} = \{Sydney, Brisbane\} \\
+    1.5 & \{x, y\} = \{Sydney, Adelaide\} \\
+    3.5 & \{x, y\} = \{Adelaide, Perth\} \\
+    4 & \{x, y\} = \{Adelaide, Darwin\} 
+    \end{cases}
+    \]
+\end{itemize}
+\begin{definition}[FDR State Space]
+    Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, the \textbf{task space} of $\Pi$ is the labeled transition system $\Theta_\Pi=(S,L,c,T,I,S^G)$ where\begin{itemize}
+        \item the states $S$ are all the possible complete variable assignments.
+        \item the labels $L=A$ are the actions of $\Pi$, hence, the cost $c$ of $\Pi$ defined on $A$ is equal of the cost $c$ of $\Theta_\Pi$ defined on $L$.
+        \item The transitions are\begin{equation}
+            T=\{
+                s\xrightarrow{a}s' \ | \ a\in A[s], s'= s\quadBrack{a}
+            \}
+        \end{equation}
+        where\begin{itemize}
+            \item $A[s]=\{a\in A \ | \ pre_a\subseteq s\}$ are the actions that can be applied in $s$.
+            $s\quadBrack{a}$  represents the resulting state after applying the $a$ action.
+            $$s\quadBrack{a}=\begin{cases}
+                \text{undefined} \text{ if }a\notin A[s]\\ 
+                eff_a(v) \text{ if }v\in V[eff_a]\\ 
+                s(v) \text{ if }v\notin  V[eff_a]
+            \end{cases}$$
+        \end{itemize}
+    \end{itemize}
+\end{definition}
+
+Although the STRIPS language is still used for historical convenience, modern planning systems (such as Fast Downward) prefer to translate everything internally into FDR for reasons of practical efficiency. The FDR format is superior because it reduces unnecessary states, allows you to better map dependencies via causal graphs, and facilitates the creation of more powerful heuristics, offering a much more natural and compact way of modeling reality than the rigid Boolean variables of STRIPS.
+\subsection{Conversion between FDR and STRIPS}
+An easy way to convert an FDR planning task in a STRIPS planning task is the following\begin{itemize}
+    \item for each variable $v$ with domain $\{d_1\dots d_k\}$, we make $k$ STRIPS facts \begin{align*}
+        &v=d_1\\ 
+        &\vdots \\ 
+        &v=d_k
+    \end{align*}
+\end{itemize}
+\begin{definition}
+    Let $\Theta=(S,L,c,T,I,S^G)$ and $\Theta'=(S',L',c',T',I',{S'}^G)$ to be two transition systems. We say that $\Theta$ is \textbf{isomorphic} to $\Theta'$ $$ \Theta\sim \Theta'$$
+    if there exists two bijective functions $\varphi:S\mapsto S'$ and $\psi:L\mapsto L'$ such that\begin{itemize}
+        \item $\varphi(I)=I'$
+        \item $s\in S^G$ if and only if $\varphi(s)\in {S'}^G$
+        \item $(s,l,t)\in T$ if and only if $(\varphi(s),\psi(l),\varphi(t))\in T'$
+        \item for all $l\in L$, $c(l)=c'(\psi(l))$
+    \end{itemize}
+\end{definition}
+Isomorphisms typically result from compilations between different
+ formalisms (see later this chapter); we will also sometimes use them as a
+ technical device.
+\end{document} 
