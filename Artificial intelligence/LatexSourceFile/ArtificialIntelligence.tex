@@ -948,7 +948,79 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
 
 \newpage
 \subsection{Monte-Carlo Tree Search}
-\redText{TODO}
+The Alpha-Beta search have two issues\begin{itemize}
+    \item it needs an accurate and fast evaluation function 
+    \item it doesn't explore so much in problems with a large branching factor like \textit{Go}.
+\end{itemize}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{State Value Estimation:} The value of a state is estimated by calculating the average utility across multiple \textbf{playouts} (complete game simulations starting from that specific state).
+    \item \textbf{Playout Policy:} During a playout, a policy is used to bias move selection toward "good" moves rather than purely random ones. For complex games like Go, these policies are often learned via \textbf{self-play} using neural networks.
+    \item \textbf{Pure Monte Carlo Search:} This approach runs simulations from the current game state and tracks which possible moves yield the highest win percentage.
+    \item \textbf{Selection Policy:} This policy optimizes computation by focusing on the most important branches of the game tree. Its primary function is to balance the trade-off between:
+    \begin{itemize}
+        \item \textbf{Exploration:} Searching less-visited parts of the tree to find potentially better moves.
+        \item \textbf{Exploitation:} Deepening the search in branches already known to have high win rates.
+    \end{itemize}
+\end{itemize}
+In the Monte Carlo Sampling we evaluate actions through sampling:\begin{itemize}
+    \item Exploitation: play in the machine that returns the best reward.
+    \item Exploration: play machines that have not been tried a lot yet.
+\end{itemize}
+The \textbf{UBC} (Upper Confidence Bound) is a formula that automatically balances
+ exploration and exploitation to maximize total gains. The procedure of the search is described in the following steps:
+\begin{enumerate}
+    \item \textbf{Selection:} Starting at the root, traverse the tree by applying the \textit{selection policy} to choose successors until a leaf node that has not been fully expanded is reached.
+    \item \textbf{Expansion:} Grow the search tree by generating a new child of the selected leaf node by applying a new action.
+    \item \textbf{Simulation:} Perform a complete run of the game (a \textit{playout}) starting from the newly generated child node. Moves for both players are selected according to the \textit{playout policy} to obtain a final reward.
+    \item \textbf{Back-propagation:} Use the result of the simulation to update the value estimates of all search tree nodes along the path back up to the root.
+\end{enumerate}
+Once the computational time or resources are exhausted, the algorithm chooses the ''best'' move based on the accumulated statistics and plays it.
+We have to define a formula that balances exploration and exploitation, a formula  Inspired by Multi-Armed
+ Bandit problems is the following\begin{equation}
+    UBC1(n)=\frac{U(n)}{N(n)}+C\times\sqrt{\frac{\log N(PARENT(n))}{N(n)}}
+ \end{equation}
+where\begin{itemize}
+    \item $U(n)$ is the total utility of all playouts that went through the node $n$
+    \item $N(n)$ is the number of playouts through node $n$ 
+    \item $PARENT(n)$ is the parent of $n$ in the tree. 
+\end{itemize}
+the left side of the sum represent the exploitation factor and the right side the exploration.
+\begin{itemize}
+    \item MTCS is chosen when branching factor becomes very high and the
+     evaluation function is difficult.
+     \item  MTCS is more robust than Alpha-Beta search (it is also possible to
+ combine MCTS and evaluation functions).
+ \item MTCS can be applied to unknown games. 
+ \item  MTCS is a form of reinforcement learning.
+\end{itemize}
+
+\begin{algorithm}
+    \caption{Monte-Carlo-Tree-Search}\label{alg:MTCS}
+    \begin{algorithmic}
+    \Require $state$
+    \State $tree\leftarrow$Node($state$)
+    \While{Is-Time-Remaining()}
+    \State $leaf\leftarrow$Select($tree$)
+    \State $child\leftarrow$Expand($leaf$)
+    \State$result\leftarrow$Simulate($child$)
+    \State Back-Propagate($result$,$child$)
+    \EndWhile
+    \State\Return the move in Actions($state$) whose node has highest number of playouts.
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \chapter{Constraint Satisfaction Problems}
 \begin{definition}
@@ -1301,7 +1373,8 @@ The forward checking operation is required to ensure that $a\cup a'$ is consiste
 
 
 
-\chapter{Propositional Logic}
+\chapter{Logic and Knowledge Representation}
+\section{Propositional Logic}
 This chapter presents a brief summary of propositional logic. Let $\Sigma$ to be a set of boolean variables, also called \textit{Atoms}, the definition of a formula over the variables $\Sigma$ is recursive.\begin{definition}
     Let $\Sigma$ to be a set of atoms, then\begin{enumerate}
         \item $\top$ (True) and  $\bot$ (False) are $\Sigma$-formulas.
@@ -1388,7 +1461,7 @@ $$\begin{aligned}
 & ((\neg P \lor H) \land (\neg H \lor H)) \lor P && \text{Distribute } "\lor" \text{ over } "\land" \\
 & (\neg P \lor H \lor P) \land (\neg H \lor H \lor P)
 \end{aligned}$$
-\section{Resolution}
+\subsection{Resolution}
 We can construct a simple algorithm that, given a CNF formula $\psi$, tests if is satisfiable or not, by trying to derive from $\psi$ new formulas: If it finds a derived  formula $\psi$ that is unsatisfiable then $\psi$ is unsatisfiable.\bigskip 
 
 We use a method called \textit{Calculus} that, given a single \textit{rule} (we will define a rule later), allows us to derive new formulas from a given one. If $\varphi$ is derived from $\psi$, we write $$\psi\vdash \varphi .$$
@@ -1438,7 +1511,7 @@ The resolution algorithm takes as an input a knowledge base $KB$ and a formula $
 It is important to notice that $\Delta\models \varphi$ doesn't implies that $\Delta\vdash\varphi$, but, by the contradiction theorem, if we run the resolution on $KB\cup\{\lnot \varphi\}$ and we derive the empty clause $\square$ ($KB\cup\{\lnot \varphi\}$ is unsatisfiable) then $KB\models \varphi$.\begin{theorem}
     A CNF $\Delta$ is unsatisfiable if and only if $\Delta\vdash\square$.
 \end{theorem}
-\section{The DPLL procedure}
+\subsection{The DPLL procedure}
 The SAT problem is to decide whenever a given propositional formula $\varphi$ is satisfiable or not, as we well know, this is the most classic example of a problem $\mathsf{NP}$-complete. The SAT problem is a ''subset'' of the constraint satisfaction problem:\begin{itemize}
     \item SAT can be viewed as a CSP problem in which all variable domains
  are Boolean, and the constraints have unbounded arity.
@@ -1500,7 +1573,7 @@ That is, if $\Delta$ contains parent clauses of the form $C\dot\cup\{\lnot l\}$ 
   \{\{P,Q\}, \{P,\lnot Q\}, \{\lnot P,Q\}, \{\lnot P,\lnot Q\}\}
  $$
  is unsatisfiable but the UP rule cannot derive the empty clause $\square$.\bigskip 
-\section{Conflict Analysis and Clause Learning}
+\subsection{Conflict Analysis and Clause Learning}
  The DPLL is a systematic way of searching for a resolution proof. We define the \textit{number of decisions} of a DPLL run as the total number
  of times a truth value was set by either unit propagation or the splitting rule, the following relationship between the DPLL algorithm and the resolution procedure holds:\begin{quotation}
     If DPLL returns ''unsatisfiable'' on $\Delta$, then $\Delta\models\square$ with a resolution
@@ -1633,7 +1706,7 @@ After adding the new clause $C$, the process follows three fundamental logical p
 We saw how the original DPLL algorithm generates proof  exponentially
  longer than their shortest (general) resolution proof. This is not true with clause learning, that renders DPLL equivalent to full resolution.
 
- \chapter{Predicate Logic (FOL)}
+ \section{Predicate Logic (FOL)}
 A logic is a family of formal languages, which has the purpose of \textit{representing} information and 
 \textit{manipulate} knowledge. Each logic is provided with a \textbf{syntax} and a \textbf{semantics}, the syntax 
 defines a series of symbols and the structure that the formulas must take on to be considered valid, the semantics 
@@ -1656,7 +1729,7 @@ the \textbf{interpretations}. In first-order logic, also called \textbf{FOL}, on
     \item Unsatisfiability
     \item Validity
 \end{itemize}
- \section{Syntax}
+ \subsection{Syntax}
 In a FOL formula there are:\begin{itemize}
     \item Variables: $x,x_1,x_2,x',x''\dots$
     \item True ($\top$) or False $(\bot)$ symbols 
@@ -2073,4 +2146,465 @@ An easy way to convert an FDR planning task in a STRIPS planning task is the fol
 Isomorphisms typically result from compilations between different
  formalisms (see later this chapter); we will also sometimes use them as a
  technical device.
+
+ Now we consider a systematic way co convert an FDR planning task in a STRIPS planning task.
+ \begin{definition}[FDR to STRIPS]\label{FDR2STRIPS}
+    Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, the \textbf{STRIPS conversion} is the STRIPS planning task $\Pi^{STR}=(P_V,A^{STR},c,I,G)$ where \end{definition}\begin{itemize}
+        \item $P_V=\{v=d \ | \ v\in V,d\in D_v\}$ is the set of STRIPS facts. 
+        \item $A^{STR}=\{a^{STR} \ | \ a\in A\}$ where $pre_{a^{STR}}=pre_a$, $add_{a^{STR}}=eff_a$ and\begin{equation}
+            del_{a^{STR}}=\bigcup_{(v=d)\in eff_a}\begin{cases}
+                \{v=pre_a(v)\} \text{ if }pre_a(v) \text{ is defined }\\ 
+                \{v=d' \ | \ d'\in D_v\backslash \{d\}\} \text{ otherwise}
+            \end{cases}
+        \end{equation}
+        \item the cost function $c$ is defined by $$c(a^{STR})=c(a),\ \forall a^{STR}\in A^{STR} $$
+        \item $I$ and $G$ are identical to those in $\Pi$.
+    \end{itemize}
+Note how a STRIPS fact is a pair variable/value in FDR:\begin{itemize}
+    \item If a variable in $FDR$ can be $$ Weather=\{sunny, rainy\}$$
+    \item then there will be two STRIPS facts\begin{align*}
+        &Weather=sunny\\ 
+        &Weather=rainy
+    \end{align*}
+\end{itemize}
+\begin{proposition}
+    Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task and $\Pi^{STR}=(P_V,A^{STR},c,I,G)$ it's STRIPS conversion as in Definition \ref{FDR2STRIPS}. Let $\Theta_\Pi$ to be the transition system (state  space) of $\Pi$, and $\Theta_{\Pi^{STR}}$ the transition system with the states $s\subseteq P_v$ where, for each $v\in V$, $s$ contains exactly one fact of the form $v=d$, with all other states in $\Theta_{\Pi^{STR}}$ unreachable. Then, $\Theta_\Pi$ is isomorphic to  $\Theta_{\Pi^{STR}}$.
+\end{proposition}
+In the proposition it is important to note that, in each state, for each FDR variable $v$, there must be exactly one fact $v=d$ for some $d\in D_v$, therefore, if there are $n$ variables in the FDR planning task $$v_1,v_2\dots v_n $$, a state of the state space of the STRIPS conversion is of the type\begin{align*}
+    &v_1=d_1\\ &v_2=d_2\\ &\vdots \\ &v_n=d_n
+\end{align*}
+That is, each variable must have a single assignment.
+\begin{itemize}
+    \item FDR $V$: $at : \{Sydney, Adelaide, Brisbane\}$; $visited(x) : \{T, F\}$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
+    \item STRIPS $P$: $at(x), visited(x, T), visited(x, F)$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
+    \item FDR $dr(x, y)$: $pre = \{at = x\}$, $eff = \{at = y, v(y) = T\}$.
+    \item STRIPS $dr(x, y)$: $pre = \{at(x)\}$, $add = \{at(y), v(y, T)\}$, $del = \{at(x), v(y, F)\}$.
+\end{itemize}
+\begin{definition}[STRIPS to FDR]\label{STRIPS2FDR}
+    Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task, the \textbf{FDR conversion} is the FDR planning task $\Pi^{FDR}=(V_P,A^{FDR},c,I^{FDR},G^{FDR})$ where
+\end{definition}\begin{itemize}
+    \item $V_P=\{v_p \ | p\in P\}$ is the set of variables, all boolean
+    \item $A^{FDR}=\{a^{FDR} \ | \ a\in A\}$ where\begin{itemize}
+        \item $pre_{a^{FDR}}=\{v_p=True \ | \ p\in pre_a\}$
+        \item $eff_{a^{FDR}}=\{v_p=True \ | p \in add_a\}\cup\{v_p=False \ | \ p\in del_a\}$
+    \end{itemize}
+    \item the cost function $c$ is defined by $$c(a^{FDR})=c(a),\ \forall a^{FDR}\in A^{FDR} $$
+    \item $I=\{v_p=True \ | \ p\in I\}$
+    \item $G=\{v_p=True \ | \ p\in G\}$
+\end{itemize}
+This conversion is simple, hence is called \textit{Na\"{\i}ve translation}, all the variables of the conversion is boolean, so this does not benefit at all
+ from the added expressivity of FDR.\begin{proposition}
+    Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task and\\  
+    $\Pi^{FDR}=(V_P,A^{FDR},c,I^{FDR},G^{FDR})$ it's FDR conversion as in Definition \ref{STRIPS2FDR}. Let $\Theta_\Pi$ to be the transition system (state  space) of $\Pi$, and $\Theta_{\Pi^{FDR}}$ the transition system (state  space) of $\Pi^{FDR}$, then $\Theta_{\Pi^{FDR}}$ are isomorphic to $\Theta_\Pi$.
+ \end{proposition}
+ \begin{itemize}
+    \item STRIPS $P$: $at(x), visited(x)$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
+    \item FDR $V$: $at(x), visited(x) : \{T, F\}$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
+    \item STRIPS $dr(x, y)$: $pre = \{at(x)\}, add = \{at(y), v(y)\}, del = \{at(x)\}$.
+    \item FDR $dr(x, y)$: $pre = \{at(x) = T\}$, $eff = \{at(y) = T, v(y) = T, at(x) = F\}$.
+\end{itemize}
+There is other conversion method that are more effective and exploit the true expressivity of FDR, but we don't cover these methods here.
+
+\section{Planning Domain Definition Language}
+The Planning Domain Definition Language (PDDL) is an input language used in the planning area as a standard, like FOL, PDDL describes the world in a schematic way relative to a
+ set of objects. This makes the encoding much smaller and easier to write.
+ 
+In a few words, the PDDL is used to explain to a computer:\begin{enumerate}
+\item What are the ''rules of the world'' (what can be done).
+\item How is the current situation.
+\item What is the objective to be achieved.
+\end{enumerate}
+The schematic encoding of the PDDL use \textit{predicates} instead of the STRIPS propositions, and \textit{action schemas} instead of the STRIPS actions.\bigskip
+
+\noindent A PDDL planner takes as an input two different files:\begin{itemize}
+    \item \texttt{domain.pddl}: It defines the ''universe'' of the problem. It is the constant part that does not change between different exercises of the same type. Contains predicates, types, action schemas.
+    \item \texttt{problem.pddl}: Defines the specific instance you want to resolve, contains the objects, the initial state and the goal.
+ \end{itemize}
+
+ \subsection{The Domain File}
+ This file contains a requirements definition (by default simply write at the beginning of the file \texttt{:adl :typing}), the definition of the types for the variables, the definition of the predicates and the action schemas. An example is the following:
+
+ \begin{lstlisting}
+(define (domain Blocksworld)
+  (:requirements :adl :typing)
+  (:types block - object
+          blueblock smallblock - block)
+  (:predicates (on ?x - smallblock ?y - block)
+               (ontable ?x - block)
+               (clear ?x - block))
+)
+\end{lstlisting}
+An action schema require a list of parameter
+ \begin{lstlisting}
+(:action <name>
+(?x- type1 ?y- type2 ?z- type3)
+\end{lstlisting}
+a precondition written as a formula 
+\begin{lstlisting}
+<predicate>
+ (and <formula> ... <formula>)
+ (or <formula> ... <formula>)
+ (not <formula>)
+ (forall (?x1- type1 ... ?xn- typen) <formula>)
+ (exists (?x1- type1 ... ?xn- typen) <formula>)
+\end{lstlisting}
+and the effect of the action as a combination of literals,  conjunction, conditional
+ effects, and quantification over effects:
+ \begin{lstlisting}
+ <predicate>
+ (not <predicate>)
+ (and <effect> ... <effect>)
+ (when <formula> <effect>)
+ (forall (?x1- type1 ... ?xn- typen) <effect>)
+ \end{lstlisting}
+ \subsection{The Problem File}
+ A PDDL problem file consists of:\begin{itemize}
+    \item the definition of the problem name and the relative domain:
+ \end{itemize}
+  \begin{lstlisting}
+(define (problem <name>)
+(:domain <name>)
+ \end{lstlisting}\begin{itemize}
+    \item the definitions of objects belonging to each type 
+    \item definition of the initial state (list of ground predicates initially true)
+    \item  definition of the goal (a formula like action preconditions).
+ \end{itemize}
+ An example of a problem file is the following\begin{lstlisting}
+(define (problem example)
+ (:domain Blocksworld)
+ (:objects a b c- smallblock)
+ d e- block
+ f- blueblock)
+ (:init (clear a) (clear b) (clear c)
+ (clear d) (clear e) (clear f)
+ (ontable a) (ontable b) (ontable c)
+ (ontable d) (ontable e) (ontable f))
+ (:goal (and (on a d) (on b e) (on c f)))
+ )
+ \end{lstlisting}
+ So a PDDL program is a ''translation'' for the computer of a STRIPS planning task.
+ \subsection{Syntax}
+We give a brief and intuitive explanation of the PDDL syntax. In the domain file, the first thing to do is to define the types:\begin{lstlisting}
+(:types
+    vehicle - object 
+    truck car - vehicle
+    pack
+)
+\end{lstlisting}
+When you write on a single line\begin{lstlisting}
+    obj1 obj2 ... objn - root_obj 
+\end{lstlisting}
+you are defining the objects \texttt{ obj1 obj2 ... objn } and declaring that they are of the type \texttt{ root\_obj }. If not specified, each object inheritance the root type \texttt{ object.}
+
+When you define actions that require a certain object type \texttt{ x }, you can also pass an object of a type that inherit that type \texttt{ x.}
+\bigskip
+
+After defining the types, it is necessary to define the predicates, these describe properties and relations of the world that can be true or false.
+The PDDL adopts the Closed World Assumption:
+\begin{itemize}
+\item If a predicate is listed in its current state, it is TRUE.
+\item If a predicate is NOT listed, it is automatically considered FALSE.
+\end{itemize}
+There is no such thing as ''unknown'' status. A predicate can only go from true to false (or vice versa) through the effects of actions. A predicates is written as follows:\begin{lstlisting}
+(:predicates
+    (pred_name ?var1 - typ1 ?var2 - typ2 ... ?varn - typn)    
+)
+\end{lstlisting}
+The strings with \texttt{ ? } as the prefix are the variables, in the problem file we will use the predicates to assign relations between the objects. An example is\begin{lstlisting}
+(:predicates
+  (has-key ?r - robot)       
+  (door-open ?p - door)    
+  (is_close_to ?r - robot ?p - door) 
+)
+\end{lstlisting}
+In the problem file, you can define several robot-type objects and a door-type object, and then declare that some robots are near the door using the appropriate predicate. An example is the following:\begin{lstlisting}
+(:objects 
+    r2d2 c3po - robot  ;; Lets define two specific robots
+)
+(:init 
+    (has-key r2d2)  ;; r2d2 has the key, c3po doesnt
+)
+\end{lstlisting}
+An action scheme use the predicates for the precondition and the effect as follows:\begin{lstlisting}
+(:action key pass
+    :parameters (?A - robot ?B - robot)
+    :precondition (has-key ?A)
+    :effect (and (not (has-key ?A)) (has-key ?B))
+)   
+\end{lstlisting}
+In the action it is specified that, if a robot \texttt{?A} has the key (as specified by the pre-conditions) it can pass it to a robot \texttt{?B}, and in the effects it is specified that, after the action, \texttt{has-key ?A} will be false (the object that passed the key will no longer have the key) while \texttt{has-key ?B} will be true.\bigskip 
+
+\noindent
+In a problem file it is necessary to define a series of objects and assign them the relative types, to then define the initial conditions through the predicates, and the goal state to always be reached through the use of the predicates. The solver will take care of using the actions to verify whether the goal is reachable and possibly provide a resolution strategy.\begin{lstlisting}
+(define (problem key mission)
+  (:domain robot-world) 
+  (:objects 
+    r2d2 c3po - robot         
+    golden_key - key       
+    room_a room_b - place
+  )
+  (:init 
+    (at r2d2 room_a)
+    (at c3po room_b)
+    (at golden_key room_a)
+    (has-key r2d2 golden_key)
+  )
+  (:goal 
+    (and 
+      (at c3po room_b)
+      (has-key c3po golden_key)
+    )
+  )
+)
+\end{lstlisting}
+\subsection{Example}
+A classic and intuitive example for PDDL is the Logistics Problem. In this scenario, we have a robot that needs to move packages between different locations.\bigskip
+
+\noindent\textbf{The Scenario}\begin{itemize}
+    \item  Locations: A Warehouse and a Store.
+    \item Objects: One Package and one Robot.
+    \item Goal: Move the package from the Warehouse to the Store.
+    \item Actions: The robot can move between locations, pick-up a package, and drop-off a package.
+\end{itemize}
+The domain file is the following:\begin{lstlisting}
+(define (domain logistics-study)
+
+(:requirements :strips :typing)
+
+(:types 
+    location item robot
+)
+
+(:predicates 
+    (at ?obj - object ?loc - location)
+    (carrying ?robot - robot ?item - item)
+    (empty ?robot - robot)
+)
+\end{lstlisting}
+the predicate \texttt{at} is needed to model the fact that a generic object can be in relation with an object of type \texttt{location}, obviously the meaning is that that object is in that location. The meaning of the predicate \texttt{carrying} is also obvious, as for \texttt{empty}, which serves to identify when a robot is not carrying anything.
+\begin{lstlisting}
+(:action move
+    :parameters (?r - robot ?from - location ?to - location)
+    :precondition (at ?r ?from)
+    :effect (and 
+        (at ?r ?to)
+        (not (at ?r ?from))
+    )
+)
+\end{lstlisting}
+This action serves to specify when a robot moves from one location to another, as is obvious and understandable from the preconditions and effects.
+\begin{lstlisting}
+(:action pick-up
+    :parameters (?r - robot ?i - item ?l - location)
+    :precondition (and (at ?r ?l) (at ?i ?l) (empty ?r))
+    :effect (and 
+        (carrying ?r ?i)
+        (not (at ?i ?l))
+        (not (empty ?r))
+    )
+)
+
+(:action drop-off
+    :parameters (?r - robot ?i - item ?l - location)
+    :precondition (and (at ?r ?l) (carrying ?r ?i))
+    :effect (and 
+        (at ?i ?l)
+        (empty ?r)
+        (not (carrying ?r ?i))
+    )
+)
+)
+\end{lstlisting}
+The problem file is the following:\begin{lstlisting}
+(define (problem move-package-01)
+(:domain logistics-study)
+
+(:objects 
+    warehouse store - location
+    package1 - item
+    bot1 - robot
+)
+
+(:init 
+    (at bot1 warehouse)
+    (at package1 warehouse)
+    (empty bot1)
+)
+
+(:goal 
+    (at package1 store)
+)
+)
+\end{lstlisting}
+The solver will take care of finding the right sequence of actions (navigating in the state space) to achieve the goal starting from the defined initial state.
+\section{Causal Graph}
+\begin{definition}
+    Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, the \textbf{causal graph} of $\Pi$ is the directed graph $CG(\Pi)$ where\begin{itemize}
+        \item the vertices of $CG(\Pi)$ are the variables $V$ of $\Pi$.
+        \item there exists an arc $(u,v)$ with $u\ne v$ if there exists an action $a\in A$ such that\begin{itemize}
+            \item $pre_a(u)$ and $eff_a(v)$ are both defined, OR 
+            \item $eff_a(u)$ and $eff_a(v)$ are both defined.
+        \end{itemize}
+    \end{itemize}
+\end{definition}
+The causal graph capture the dependencies from the variables, the first type of arc have the following meaning\begin{quotation}
+    we may have to change $u$ to be able to change $v$
+\end{quotation}
+the second type of arc have the following meaning\begin{quotation}
+    changing $u$ may (as a side effect) change $v$ as well (and viceversa)
+\end{quotation}
+this second type of arc create a cycle between the two variables. Let's consider the truck example.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/truck2.png}
+\end{center}
+\begin{itemize}
+    \item State variables $V$: $truck : \{A, B, C, D\}; pack1, pack2 : \{A, B, C, D, T\}$.
+    \item Initial state $I$: $truck = A, pack1 = C, pack2 = D$.
+    \item Goal $G$: $truck = A, pack1 = D$.
+    \item Actions $A$ \\(unit costs): $drive(x,y), load(p,x), unload(p,x)$.
+\end{itemize}
+we notice how the action $unload$ have in the preconditions the truck (it must have a pack) and in it's side effect, one of the packs (since their location will change) so the causal graph is the following: 
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/causal_graph.png}
+\end{center}
+\subsubsection{Second Example (Australian Cities/Visiting)}
+\begin{itemize}
+    \item Variables $V$: $at : \{Sy, Ad, Br, Pe, Da\}; v(x) : \{T, F\}$ for $x \in \{Sy, Ad, Br, Pe, Da\}$.
+    \item Initial state $I$: $at = Sy, v(Sy) = T, v(x) = F$ for $x \neq Sy$.
+    \item Goal $G$: $at = Sy, v(x) = T$ for all $x$.
+    \item Actions $A$: $drive(x,y)$ where $x,y$ have a road; pre $at = x$, eff $at = y, v(y)$.
+    \item Cost function $c$: $Sy \leftrightarrow Br : 1, Sy \leftrightarrow Ad : 1.5, Ad \leftrightarrow Pe : 3.5, Ad \leftrightarrow Da : 4$.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/strips_example.png}
+\end{center}
+In the action $drive(x,y)$ we notice how\begin{itemize}
+    \item the variable $at$ is in the precondition and the variable $v(x)$ is in the effects, so there will be an arc from $at$ to $v(x)$.
+    \item either $at$ and $v(x)$ are in the effect of the same action, so there will be a bi-directed arc between these two variables. 
+\end{itemize}
+The causal graph is:\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/causal_graph2.png}
+\end{center}
+So, we defined two types of arc, the class 1 (precondition-effect) and the class 2 (effect-effect). In the causal graph, an ''arc'' of class two is in fact a couple of directed arc forming a cycle between two variables,  occur whenever an action
+ has more than one effect.
+
+ A cycle of class 1 (precondition-effect) occur when there
+ are ''cyclic support dependencies'', where moving variable $x$ requires a
+ precondition on $y$ which (transitively) requires a precondition on $x$.\bigskip 
+
+ A causal graph don't depend on the initial state $I$ or the goal state $G$, this is a main weakness of causal graphs, they capture only the
+ structure of the variables and actions, and can by design not account for
+ the influence of different initial states and goals.\bigskip 
+
+ \noindent\textbf{Why FDR and not STRIPS}?
+ \begin{itemize}
+    \item \textbf{Richness of Variables:} FDR uses multi-valued variables instead of binary propositions, leading to a more compact and readable graph.
+    \item \textbf{Structural Clarity:} Causal Graphs in FDR explicitly show dependencies between state variables, which are often hidden or fragmented in STRIPS.
+    \item \textbf{Heuristic Efficiency:} Modern planners use FDR Causal Graphs to identify cycles and hierarchical dependencies, facilitating more effective state-space search.
+\end{itemize}
+\subsection{Domain Transition Graphs}
+\begin{definition}
+    Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $v \in V$. The domain transition graph (DTG) of $v$ is the labeled directed graph $DTG(v, \Pi)$ with vertices $D_v$ and an arc $(d, d')$ labeled with action $a \in A$ whenever either:
+\begin{itemize}
+    \item[(i)] $pre_a(v) = d$ and $eff_a(v) = d'$, or 
+    \item[(ii)] $pre_a(v)$ is not defined and $eff_a(v) = d'$.
+\end{itemize}\end{definition}
+We refer to $(d, d')$ as a value transition of $v$. We write $d \xrightarrow{a}_{\varphi} d'$ where $\varphi = pre_a \setminus \{v = d\}$ is the (outside) condition. Where not relevant, we omit ``$a$'' and/or ``$\varphi$''.
+
+A DTG capture ''where'' a variable can go and how, and which values can assume.
+\begin{definition}[Invertible Value Transition]
+    Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $v \in V$, and let $d \rightarrow_{\varphi} d'$ to be a value transition of $v$. We say that $d \rightarrow_{\varphi} d'$ is \textbf{invertible} it there exists a value transition  $d' \rightarrow_{\varphi'} d$ where $\varphi'\subseteq\varphi$.
+\end{definition}
+With this definition we emphasize the fact that the DTG captures whether a variable can ''go back''.
+\subsection{Task Decomposition and Task  Simplification}
+The following fact:\begin{quote}
+    Unconnected parts of the task can be solved separately
+\end{quote}
+is true and is modeled by the following lemma.\begin{lemma2}
+    Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $V_1,V_2$ to be a partition of $V$ such that $CG(\Pi)$ contains no arc between the two sets. Let\begin{itemize}
+        \item $\Pi_1$ to be an FDR identical to $\Pi$ except that includes only the variables $V_1$, $I$ and $G$ are restricted on $V_1$ and for without all the actions $a$ where either $pre_a$ or $eff_a$ are defined on a variable in $V_2$.
+        \item $\Pi_2$ to be an FDR identical to $\Pi$ except that includes only the variables $V_2$, $I$ and $G$ are restricted on $V_2$ and for without all the actions $a$ where either $pre_a$ or $eff_a$ are defined on a variable in $V_1$.
+    \end{itemize}
+    then, if\begin{itemize}
+        \item $\vec a_1$ is an optimal plan for $\Pi_1$ 
+        \item $\vec a_2$ is an optimal plan for $\Pi_2$
+    \end{itemize}
+    then $\vec a_1\circ \vec a_2$ is an optimal plan for $\Pi$.
+\end{lemma2}
+Any plan for $\Pi$ can be separated into independent sub-sequences
+ touching $V_1$ respectively $V_2$, corresponding to plans for $\Pi_1$ respectively $\Pi_2$. The Lemma also holds for non-optimal plan. 
+ \begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/TG_dec.eps}
+\end{center}
+Let's now consider an FDR task planning $\Pi$ where the causal graph have a vertex $v$ such that\begin{itemize}
+   \item $v$ is a leaf in the causal graph
+   \item $G(v)$ is not defined, so the value of $v$ is independent from the goal 
+\end{itemize}
+Since $v$ is a leaf in $CG(\Pi)$, the actions that do affect $v$ affect no other
+ variables, and the actions that do not affect $v$ do not have preconditions on $v$.
+ So $v$ is a ''client'': it moves only for its own purpose.
+ But if $v$ has no own goal, then it has no ''purpose''. Thus, denoting by $\Pi'$ the
+ modified task where $v$ has been removed, any (optimal) plan for $\Pi'$ is an
+ (optimal) plan for $\Pi$.\bigskip 
+
+Let's now consider a variable with a domain transition graph that is invertible and connected (so the variable $v$ can ''move'' around and assume any value), and is a root vertex in the causal graph, we can remove $v$ from $\Pi$ and obtain a smaller problem $\Pi'$ to solve, with an optimal plan $\vec a$ for $\Pi'$, then extend $\vec a$ with a move sequence for $v$ that achieves all preconditions on $v$ needed to moves the variable to their goal value (if any).
+
+Such variable $v$ is called ''servant'', thanks to its connected and invertible DTG, it can always go wherever it is needed. The optimal plan for $\Pi'$
+ ignores the cost of moving $v$ so may incur unnecessarily high costs on $v$. This idea is expressed in the following Lemma.\begin{lemma2}
+     Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $v\in V$ to be a root vertex in $CG(\Pi)$ such that $DTG(v,\Pi)$ is connected and all value transitions of $v$ is invertible. Let $\Pi'$ to be identical to $\Pi$ except that\begin{itemize}
+        \item we remove $v$
+        \item we restrict $I$ and $G$ to $V\backslash\{v\}$
+        \item remove any  assignment to $v$ from all action
+ preconditions
+        \item remove all actions $a$ where $eff_a(v)$ is defined
+     \end{itemize}
+     then, for any plan $\vec a$ for $\Pi'$, a plan $\Pi$ can be obtained in polynomial time in $|\Pi|$ and $|\vec a|$.
+ \end{lemma2}
+ \begin{theorem}
+    If an FDR have an acyclic causal graph and all the variables have all value transitions invertible, the task of finding a path can be decided in polynomial time.
+ \end{theorem}
+ \chapter{Advanced Search Techniques and Heuristics}
+ We treat the planning as a classical search problem, there are three independent choice to make, the first one is  the search Space:\begin{itemize}
+    \item Progression: search forward from initial state to goal. Search states = world states.
+    \item Regression: Search backward from goal to initial state.
+   Search states = sub-goals we would need to achieve.
+ \end{itemize}
+ Then, we have to choose the search algorithm:\begin{itemize}
+    \item Blind search: DFS, BFS ecc\dots
+    \item Heuristic search (systematic): A* 
+    \item Heuristic search (local): hill-climbing
+ \end{itemize}
+ The last choice is on the search control:\begin{itemize}
+    \item Heuristic function (for heuristic cases): Critical-path heuristics, delete-relaxation heuristics, abstraction
+ heuristics, landmarks heuristics, \dots 
+ \item Pruning techniques: Helpful actions pruning, symmetry elimination, dominance
+ pruning, partial-order reduction.
+ \end{itemize}
+ \section{Progression and Regression}
+ A classical search space is defined by the initial state, the goal state, and the transitions between the states generated by an applicable action.
+ \begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task, the \textbf{progression search space} of $\Pi$ is given by\begin{itemize}
+        \item $InitialState() = I$
+        \item $GoalState(s)=\begin{cases}
+            true \text{ if }G\subseteq s \\ 
+            false \text{ otherwise}
+        \end{cases}$
+        \item $ChildState(s,a)=\{s' \ | \ \Theta_\Pi \text{ has the transition }s\xrightarrow{a}s'\}$
+    \end{itemize}
+ \end{definition}
+ The same definition applies to FDR tasks.
+ Start from initial state, and apply actions until a goal state is reached.
+ \begin{definition}
+     Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task, the \textbf{regression search space} of $\Pi$ is given by\begin{itemize}
+        \item $InitialState() = G$
+        \item $GoalState(g)=\begin{cases}
+            true \text{ if }g\subseteq I \\ 
+            false \text{ otherwise}
+        \end{cases}$
+         \item $ChildState(g,a)=\{g' \ | \ \blueText{g'=regr(g,a)}\}$
+     \end{itemize}
+ \end{definition}
+ The same definition applies to FDR tasks. The $\blueText{g'=regr(g,a)}$ means that\begin{align}
+ g'=regr(g,a)\implies \forall s' \text{ s.t. }s'\models g' \text{ we have } s'\quadBrack{a}=s \text{ where }s\models g.
+ \end{align}
 \end{document} 
