@@ -631,7 +631,7 @@ where
 \item $g^*$ : optimal solution cost
 \item $\epsilon>0$: minimal action cost.
 \end{itemize}
-\section{Informed Search}
+\section{Informed Search}\label{InformedSearch}
 \begin{definition}
     Let $\Pi$ to be a problem with $S$ the set of states, a \textbf{heuristic} $h$ is a function $$h:S\rightarrow\R^+\cup\{\infty,0\}$$ such that, if $s$ is a goal state, then $h(s)=0$.
 \end{definition}
@@ -711,7 +711,7 @@ We usually implement this with a sorted queue ordered based on the desirability 
 \subsection{Greedy Best-First Search}
 We use the heuristic function $f$ as the evaluation function and we expand the node that is closest to the goal.
 \begin{algorithm}
-    \caption{Greedy Best-First Searcj}\label{alg:greedy-best-first}
+    \caption{Greedy Best-First Search}\label{alg:greedy-best-first}
     \begin{algorithmic}
     \Require A problem $\Pi$
     \State $n\leftarrow$ a node $n$ such that $n.State=\Pi.InitialState$
@@ -954,7 +954,7 @@ The Alpha-Beta search have two issues\begin{itemize}
 \end{itemize}
 \begin{itemize}[leftmargin=*]
     \item \textbf{State Value Estimation:} The value of a state is estimated by calculating the average utility across multiple \textbf{playouts} (complete game simulations starting from that specific state).
-    \item \textbf{Playout Policy:} During a playout, a policy is used to bias move selection toward "good" moves rather than purely random ones. For complex games like Go, these policies are often learned via \textbf{self-play} using neural networks.
+    \item \textbf{Playout Policy:} During a playout, a policy is used to bias move selection toward ''good'' moves rather than purely random ones. For complex games like Go, these policies are often learned via \textbf{self-play} using neural networks.
     \item \textbf{Pure Monte Carlo Search:} This approach runs simulations from the current game state and tracks which possible moves yield the highest win percentage.
     \item \textbf{Selection Policy:} This policy optimizes computation by focusing on the most important branches of the game tree. Its primary function is to balance the trade-off between:
     \begin{itemize}
@@ -1542,7 +1542,7 @@ This and many other problems can be ''encoded'' as a SAT formula through reducti
 
     \State \blueText{\textit{/* Termination Test: */}}
     \If{$\square \in \Delta'$} 
-        \State \Return ''unsatisfiable"
+        \State \Return ''unsatisfiable''
     \EndIf
     \If{$\Delta' = \{\}$} 
         \State \Return $I'$
@@ -1551,7 +1551,7 @@ This and many other problems can be ''encoded'' as a SAT formula through reducti
     \State \blueText{\textit{/* Splitting Rule: */}}
     \State select some proposition $P$ for which $I'$ is not defined
     \State $I'' := I'$ extended with one truth value for $P$; $\Delta'' := \text{a copy of } \Delta'$; simplify $\Delta''$
-    \If{$I''' := \text{DPLL}(\Delta'', I'') \neq \text{''unsatisfiable"}$}
+    \If{$I''' := \text{DPLL}(\Delta'', I'') \neq \text{''unsatisfiable''}$}
         \State \Return $I'''$
     \EndIf
     \State $I'' := I'$ extended with the other truth value for $P$; $\Delta'' := \Delta'$; simplify $\Delta''$
@@ -1580,7 +1580,7 @@ That is, if $\Delta$ contains parent clauses of the form $C\dot\cup\{\lnot l\}$ 
  derivation whose length is at most the number of decisions.
  \end{quotation}
  So, DPLL is an effective practical method for conducting resolution proofs. The DPLL is a ''tree resolution'', this is a problem since there are some $\Delta$ whose shortest tree resolution proof is exponentially longer than their shortest (general) resolution proof.
- In tree resolution, every time a clause is needed, it must be derived from scratch because results aren't stored, this makes DPLL ''make the same mistakes over and over again'', leading to proofs that are exponentially longer than they need to be. Modern SAT solvers use Clause Learning (CDCL). When the solver hits a conflict, it analyzes the cause, creates a new clause to "remember" that mistake, and adds it to the database so it never explores that specific failing path again.\bigskip 
+ In tree resolution, every time a clause is needed, it must be derived from scratch because results aren't stored, this makes DPLL ''make the same mistakes over and over again'', leading to proofs that are exponentially longer than they need to be. Modern SAT solvers use Clause Learning (CDCL). When the solver hits a conflict, it analyzes the cause, creates a new clause to ''remember'' that mistake, and adds it to the database so it never explores that specific failing path again.\bigskip 
 
 During the execution of the DPLL procedure, there are many branches of the recursive run, where for each branch we compute a partial interpretation, a literal during a branch can be\begin{itemize}
     \item \textit{choice literals}: the value of an atom $P$ is set by the splitting rule, assigning $P=0$ or $P=1$. 
@@ -1700,7 +1700,7 @@ Now the algorithm instantly knows that $A$ must be False and will no longer wast
 
 After adding the new clause $C$, the process follows three fundamental logical phases to avoid repeating the same mistake:\begin{enumerate}
     \item The algorithm retracts the last choice made, denoted as $l'$ ( the truth value assigned to $l'$ is removed and it becomes an unassigned literal again). This is necessary because the combination of previous choices ($l_1, \dots, l_k$) together with $l'$ has just been shown to be inconsistent.
-    \item  once $C$ is added and the $l'$ choice is cancelled, the $C$ clause becomes a unit clause (only one unassigned literal remains). In this case, $\lnot l'$ is no longer a "free choice" of the algorithm, but becomes a literal implied by Unit Propagation (UP).
+    \item  once $C$ is added and the $l'$ choice is cancelled, the $C$ clause becomes a unit clause (only one unassigned literal remains). In this case, $\lnot l'$ is no longer a ''free choice'' of the algorithm, but becomes a literal implied by Unit Propagation (UP).
     \item The algorithm reruns Unit Propagation and continues the analysis. If a new conflict were to occur, the learned clause will be even more ''powerful'' because it will only contain the even older choices ($l_1, \dots, l_k$), allowing you to move up the decision hierarchy.
 \end{enumerate}
 We saw how the original DPLL algorithm generates proof  exponentially
@@ -2056,7 +2056,7 @@ We are interested in solving \textbf{huge} transition systems (unfeasible to app
 \section{FDR}
 STRIPS and FDR (Finite Domain Representation) are two different formalisms for describing planning tasks, both aimed at defining how an agent should move from an initial state to a goal. FDR is a more modern and often more efficient evolution for automatic solvers (like Fast Downward):\begin{itemize}
     \item Finite Domain Variables: Instead of having many Boolean facts (e.g. $truck\_in\_A$, $truck\_in\_B$), use a single multivariate variable (e.g. $TruckPosition$) that can take a value in a finite set $\{A, B, C, D\}$ 
-    \item State: A function that assigns a value to each variable.\item Advantage: Reduces the number of "mutually exclusive" facts the planner must explicitly handle, making the problem structure clearer.
+    \item State: A function that assigns a value to each variable.\item Advantage: Reduces the number of ''mutually exclusive'' facts the planner must explicitly handle, making the problem structure clearer.
 \end{itemize}
 
 
@@ -2604,7 +2604,422 @@ Such variable $v$ is called ''servant'', thanks to its connected and invertible 
          \item $ChildState(g,a)=\{g' \ | \ \blueText{g'=regr(g,a)}\}$
      \end{itemize}
  \end{definition}
- The same definition applies to FDR tasks. The $\blueText{g'=regr(g,a)}$ means that\begin{align}
+ The definition of the regression $\blueText{regr(g,a)}$ for an action depends on whether you consider FDR or STRIPS and will be given later.
+ The following condition on $\blueText{g'=regr(g,a)}$ is required\begin{align}\label{regr_cond}
  g'=regr(g,a)\implies \forall s' \text{ s.t. }s'\models g' \text{ we have } s'\quadBrack{a}=s \text{ where }s\models g.
  \end{align}
+ we recall the previous definition:
+ $$s\quadBrack{a}=\begin{cases}
+                \text{undefined} \text{ if }a\notin A[s]\\ 
+                eff_a(v) \text{ if }v\in V[eff_a]\\ 
+                s(v) \text{ if }v\notin  V[eff_a]
+            \end{cases}$$
+\begin{definition}[FDR Regression]
+    Let $(V,A,c,I,G)$ be an FDR planning task, let $g$ to be a partial variable assignment and $a\in A$ an action, we say that $g$ is \textbf{regressable} over $a$ if 
+\end{definition}\begin{enumerate}[label=(\roman*)]\label{FDR_regr}
+    \item $eff_a\cap g\ne \emptyset$
+    \item there is no $v\in V$ such that $v\in V[eff_a]\cap V[g]$ and $eff_a(v)\ne g(v)$
+    \item there is no $v\in V$ such that $v\notin V[eff_a]$, $v\in V[pre_a]$ and $pre_a(v)\ne g(v)$.
+\end{enumerate}
+if these conditions are met, then the \textbf{regression} of $g$ over $a$ is\begin{equation}
+    regr(g,a)=\{g\backslash eff_a\}\cup pre_a
+\end{equation}
+otherwise the regression is undefined:
+\begin{equation}
+    regr(g,a)=\bot.
+\end{equation}
+The three conditions of Definition \ref{FDR_regr} affirms that\begin{enumerate}[label=(\roman*)]
+    \item The action must serve some purpose. There must be at least one variable in common between the effects of the action ($eff_a$) and the goal $g$ ($eff_a \cap g \neq \emptyset$). If the action doesn't accomplish any part of the goal, there's no point in regressing on it.
+    \item The action must not destroy the goal. If the action assigns a value to a variable that is also present in the target $g$, that value must be identical. You can't use an action that makes a variable ''red'' if the goal is for it to be ''blue''.
+    \item There must be no internal conflicts. If a variable appears in both the action's preconditions ($pre_a$) and the goal $g$, but the action does not change that variable, then the two values must match. Otherwise, you would ask the variable to have two different values at the same time at the same instant in time before the action.
+\end{enumerate}
+\begin{proposition}
+    The regression of Definition \ref{FDR_regr} satisfies the condition on Equation \eqref{regr_cond}.
+\end{proposition}
+\begin{definition}[STRIPS Regression]\label{STRIPS_regression}
+    Let $(P,A,c,I,G)$ be a STRIPS planning
+ task, let $g\subseteq P$ and $a\in A$, we say that $g$ is \textbf{regressable} over $a$ if 
+\end{definition}
+
+\begin{enumerate}[label=(\roman*)]
+    \item $add_a\cap g \ne \emptyset$ :  The action must add at least one facts/proposition that is part of $g$
+    \item $del_a\cap g=\emptyset$. The action must not delete anything required in $g$.
+ \end{enumerate}
+
+In that case the regression of $g$ over $a$ is\begin{equation}
+    regr(g,a)= \{ g\backslash add_a \}\cup pre_a
+\end{equation}
+otherwise the regression is undefined:
+\begin{equation}
+    regr(g,a)=\bot.
+\end{equation}
+\begin{proposition}
+    The regression of Definition \ref{STRIPS_regression} satisfies the condition on Equation \eqref{regr_cond}.
+\end{proposition}
+We want to emphasize the difference between the STRIPS regression and the FDR regression\begin{itemize}
+    \item the condition (ii) of the FDR regression prevents there from being assignments of variables that contradict those of the objective, whereas for STRIPS regression, only immediate cancellations of the action are considered.
+    \item the condition (iii) in the STRIPS regression is missing  because in STRIPS there is no
+ possibility for a subgoal to be ''self-contradictory''.
+\end{itemize}
+STRIPS regression is ''weaker'' because it cannot see certain logical conflicts that FDR instead captures naturally thanks to the finite domains of the variables.\bigskip 
+
+Observe how the progression  doesn't know what's ''relevant'' to what
+ contributes to reaching the goal.
+ \begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/buy_milk.png}
+\end{center}
+So a heuristic function is needed in such case. Differently, regression explores only solvable states, but may explore unreachable ones.  Regression doesn't know what's ''reachable'', i.e. what 
+contributes to reaching the initial state. Also in this case a heuristic function is needed to guide the search towards the initial state.\bigskip 
+
+Given that, for the rest of this course we will use \textit{progression}, since:\begin{itemize}
+    \item Regression has in the past often had serious trouble getting lost in
+ a lot of solvable but unreachable states.
+ Reachable dead end states tend to be less frequent in practice.
+    \item Progression allows easy formulation of searches for more complex planning
+ formalisms (numbers, durations, uncertainty).
+ \item Basically all current heuristic search planners, including Fast Downward use progression.
+\end{itemize}
+\section{Heuristic Search}
+We already know that a heuristic function $h$ for a search space estimates the cost of an optimal path from a given state  $s$ to the goal, given such function $h$, we might search among the states by expanding the node with the smallest value on $h$.
+
+The reader is advised to review the definitions of a heuristic function given in the \ref{InformedSearch} section.
+We will see later also  inadmissible heuristics, that typically arise as approximations of admissible
+ heuristics that are too costly to compute.
+ \begin{definition}[Domination]
+    Let $\Pi$  be a planning task, and let $h$ and $h'$ to be two admissible heuristic functions, we say that $h'$ \textbf{dominates} $h$ if $$ h(s)\le h'$$ for all the states $s$.
+ \end{definition}
+ If $h'$ dominates $h$ then, $h'$  provides a lower bound at least as good as $h$.
+ \begin{definition}[Additivity]
+    Let $\Pi$  be a planning task, and let $h_1,h_2\dots h_n$ to be $n$ admissible heuristic functions. The functions $h_1,h_2\dots h_n$ are additive if $$ h=h_1+h_2+\dots+ h_n$$
+    is an admissible function, i.e. we have:\begin{equation}
+        h_1(s)+h_2(s)+\dots+ h_n(s)\le h^*(s) \ \ \  \forall s
+    \end{equation}
+    where $h^*$ is the perfect heuristic.
+ \end{definition}
+ It's clearly better to consider the sum of a sequence of heuristic since it always dominates any heuristic of the sum.
+
+ There exists a modified version of the A* algorithm \ref{alg:A*}, called \textbf{Weighted A*}.
+
+ \begin{algorithm}
+    \caption{Weighted-A*}\label{alg:WA*}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ such that $n.State=\Pi.InitialState$
+    \State $frontier\leftarrow$ a priority queue ordered by ascending $g+\blueText{W}\cdot h$
+    \State $explored\leftarrow $empty set of states
+    \While{\textbf{True}}
+    \State \textbf{if} $frontier$ is empty \textbf{Then Return} failure 
+    \State $n\leftarrow Pop(frontier)$
+    \State \textbf{if} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State $explored\leftarrow explored \cup n.State$
+    \For{each action $a$ in $\Pi.Actions(n.State)$}
+    \State $n'\leftarrow ChildNode(\Pi,n,a)$
+    \If{$n'.State\notin explored \cup States(frontier)$}
+    \State $insert(n',\blueText{W}\cdot h(n')+g(n'),frontier)$ 
+    \Else{ \textbf{if} $\exists n''$ s.t. $n''.State=n'.State$ and $g(n')<g(n'')$}
+    \State Replace $n''$ in $frontier$ with $n'$
+    \EndIf
+    \EndFor
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+This algorithm explores the states by increasing weighted-plan-cost
+ estimate $g+\blueText{W}\cdot h$. The weight $W\in \R^+\cup\{0\}$ is an algorithm parameter:\begin{itemize}
+    \item if $W=0$ we are not using the heuristic function 
+    \item if $W=1$ the algorithm is A* 
+    \item for $W\rightarrow \infty$ the algorithm tends to behave like the greedy best-first search algorithm \ref{alg:greedy-best-first}.
+ \end{itemize} 
+
+ We recall the hill climbing algorithm:
+
+\begin{algorithm}
+    \caption{Hill-Climbing}\label{alg:HC}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ with $n.State=\Pi.InitialState$
+    \While{True}
+    \State\textbf{if} $n.State$ is the goal state \textbf{then return} $n$ 
+    \State $N\leftarrow$ set of all child nodes of $n$
+    \State $n\leftarrow \arg\min_{n\in N} h(n)$
+    \State\textbf{if} stopping condition are met \textbf{then return} $n$ 
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}\bigskip
+
+The Hill climbing algorithm \ref{alg:HC} can easily get stuck in a local minima where immediate improvements of $h(n)$ are not possible. A possible improvement is to perform a BFS to find the node on which $h$ decreases:
+
+ \begin{algorithm}
+    \caption{Enforced Hill-Climbing}\label{alg:EHC}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ with $n.State=\Pi.InitialState$
+    \While{True}
+    \State\textbf{if} $n.State$ is the goal state \textbf{then return} $n$ 
+    \State perform a BFS to find $n'$ s.t. $h(n')<h(n)$
+    \State $n\leftarrow n'$
+    \State\textbf{if} stopping condition are met \textbf{then return} $n$ 
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}\bigskip
+
+This algorithm \ref{alg:EHC} is still not optimal:\begin{itemize}
+    \item If the problem contains dead ends that are not recognized by the heuristic, the algorithm may crash without finding a solution.
+    \item It is only complete if it is guaranteed that no such states exist and that a goal is always reachable with a lower heuristic value.
+\end{itemize}
+\subsection{Computing the Heuristic Function}
+In general, how do we choose the function $h$? \begin{itemize}
+    \item Let $\mathcal P$ to be a class of problems that we want to solve, whose perfect heuristic is denoted $h^*_{\mathcal P}$. 
+    \item It can be defined a class $\mathcal P'$ of simpler problems that are a relaxation of $\mathcal P$, whose perfect heuristic is $h^*_{\mathcal P'}$.
+    \item We define a \textbf{relaxation mapping} $\mathcal R$ that maps instances of $\Pi\in \mathcal P$ into instances of $\Pi'\in \mathcal P'$.
+    \item Given a problem $\Pi\in \mathcal P$, we let $\Pi'=\mathcal R(\Pi)$ and we use the function $h^*_{\mathcal P'}(\Pi')$ to estimate 
+    \ $h^*_{\mathcal P}(\Pi)$.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/relaxation.png}
+\end{center}
+\begin{itemize}
+    \item Problem class $\mathcal{P}$: Route finding.
+    \item Perfect heuristic $h_{\mathcal{P}}^{*}$ for $\mathcal{P}$: Length of a shortest route.
+    \item Simpler problem class $\mathcal{P}'$: Route finding on an empty map.
+    \item Perfect heuristic $h_{\mathcal{P}'}^{*}$ for $\mathcal{P}'$: Straight-line distance.
+    \item Transformation $\mathcal{R}$: Throw away the map.
+\end{itemize}
+\section{Critical Path Heuristics}
+Critical path heuristics are a family of methods to relax planning
+ tasks, and thus automatically compute heuristic functions $h$.
+ \begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, the \textbf{perfect regression heuristic} $r^*$ for $\Pi$ is the function $r^*(s,g)$ where
+    \begin{equation}
+        r^*(s,g)=\begin{cases}
+            0&\text{ if }g\subseteq s \\ 
+            \displaystyle \min_{a\in A^*}c(a)+r^*(s,regr(g,a)) &\text{ otherwise}
+        \end{cases}
+    \end{equation}
+    where $A^*=\{a\in A \ : \ regr(g,a)\ne \bot\}$.
+ \end{definition}
+ Is omitted that this is the perfect heuristic when $g=G$ (the goal) and is evaluated by letting $g=G$ fixed.
+The heuristic $r^*$ is defined as the cost of reaching a set of goals $g$ starting from a state $s$: \begin{itemize}
+    \item Base case: If the goal $g$ is already contained in the state $s$, the cost is 0.
+    \item Recursive case: If the objective is not satisfied, the cost is given by choosing the best action $a$ (the one that minimizes the sum) among all those that can ''generate'' a part of the objective through regression. The total cost is the cost of action $c(a)$ plus the cost of achieving the new subgoals needed to apply that action.
+\end{itemize}
+\begin{proposition}
+    For a STRIPS planning task $\Pi$ the perfect heuristic $h^*$ is $r^*$.
+\end{proposition}
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, the \textbf{critical path heuristic} $h^1$ for $\Pi$ is the function $h^1(s,g)$ defined as follows \begin{equation}
+        h^1(s,g)=\begin{cases}
+            0&\text{ if }g\subseteq s \\ 
+            \displaystyle \min_{a\in A^*}c(a)+h^1(s,regr(g,a)) &\text{ if }|g|=1 \\
+            \displaystyle \max_{g'\in g} h^1(s,\{g'\})&\text{ if }|g|>
+        \end{cases}
+    \end{equation}
+     where $A^*=\{a\in A \ : \ regr(g,a)\ne \bot\}$.
+\end{definition}
+ Is omitted that this is the perfect heuristic when $g=G$ (the goal) and is evaluated by letting $g=G$ fixed. This function is similar to $h^*$:\begin{itemize}
+    \item For singleton subgoals $g$, use regression as in $h^*$. 
+    \item For subgoal sets $g$,
+ use the cost of the most costly singleton subgoal $g'\in g$.
+ \end{itemize}
+ It follows the critical path, defined as the cheapest path trough the most costly sub goal $g'$. This heuristic can be generalized by considering the critical path as the cheapest path trough the most costly $m$ sub goals.
+ \begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, the \textbf{critical path heuristic} $h^m$ for $\Pi$ is the function $h^m(s,g)$ defined as follows \begin{equation}
+        h^m(s,g)=\begin{cases}
+            0&\text{ if }g\subseteq s \\ 
+            \displaystyle \min_{a\in A^*}c(a)+h^m(s,regr(g,a)) &\text{ if }|g|\le m \\
+            \displaystyle \max_{g'\subseteq g, |g'|=m} h^m(s,\{g'\})&\text{ if }|g|>m 
+        \end{cases}
+    \end{equation}
+     where $A^*=\{a\in A \ : \ regr(g,a)\ne \bot\}$.
+\end{definition}
+For a fixed $m$, the value of $h^m(s,g)$ can be computed in polynomial time in the size of $\Pi$.
+\begin{proposition}
+    $h^m$ is consistent and goal-aware, hence is admissible and safe.
+\end{proposition}
+\begin{quote}
+    Intuition: $h^m$ is admissible because it is always more difficult to achieve
+ larger subgoals (so $m$-subsets can only be cheaper)
+\end{quote}
+\begin{proposition}
+    $h^{m+1}$ dominates $h^m$, $h^m$ gets more accurate as $m$ grows.
+\end{proposition}
+\begin{proposition}
+    There exists $m$ such that $h^m=r^*$.
+\end{proposition}
+\textit{Proof}: Let $m=|P|$, in that case since $g\subseteq P$ we have $|g|\le m$ so $h^m=r^*$.
+\subsection{Computing $h^m$}
+The function $h^m$ can be computed in polynomial time through dynamic programming, but we have to give an iterative definition. We will denote $h^m_i$ the value of the iterative $h^m$ at the iteration $i$. This function is defined as follows:\begin{equation}
+    h_0^m(s,g)=\begin{cases}
+        0 & \text{ if }g\subseteq s \\ 
+        \infty &\text{ otherwise}
+    \end{cases}
+\end{equation}
+Given $h_i^m(s,g)$, the next iteration is:\begin{equation}
+    h_{i+1}^m(s, g) = 
+\begin{cases} 
+\displaystyle\min \left\{ h_i^m(s, g), \min_{a \in A, \text{regr}(g, a) \neq \perp} c(a) + h_i^m(s, \text{regr}(g, a)) \right\} & \text{ if }|g| \leq m \\ \\
+\displaystyle\max_{g' \subseteq g, |g'| = m} h_{i+1}^m(s, g') & \text{ if }|g| > m 
+\end{cases}
+\end{equation}
+\begin{proposition}
+    the series $\{h_i^m\}$ converges to $h^m$.
+\end{proposition}
+We give a proof sketch, if $h_{i+1}^m(s,g)\ne h_i^m(s,g)$ then 
+$h_{i+1}^m(s,g)< h_i^m(s,g)$, since there exists $\epsilon\in \R^+$ such that \begin{equation}
+    h_i^m(s,g)-h_{i+1}^m(s,g)\ge \epsilon 
+\end{equation} 
+at some point $h^m_i$ will stop decreasing. If $h_{i+1}^m(s,g)= h_i^m(s,g)$ then $h_i^m$ satisfy the $h^m$ definition, and no other function greater than $h_i^m$ at any point can satisfy that definition.\bigskip 
+
+To compute $h_i^m$ dynamic programming is involved. 
+With \textit{dynamic programming}, we mean that paradigm of algorithm design, which,
+ in order to find a final solution to a problem, it considers a series of sub-problems
+ minors who will then be useful in deciding the aforementioned final solution.
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/iterative_hm.png}
+\end{center}
+It is easy to prove that $h_i^m(s,g)=Cost_i(g)$ for all $i$. This table computation always first finds the shortest path to achieve a subgoal
+ $g$. Hence, with unit action costs, the value of $g$ is fixed once it becomes less than $\infty$, and
+ equals the $i$ where that happens. With non-unit action costs, neither is true.\begin{quote}
+    For any fixed $m$, $h_m$ can be computed in polynomial time.
+ \end{quote}
+ In practice, only $m=1,2$ are used, higher values of $m$ are infeasible.
+\subsection{Graphplan Representation}
+The critical path heuristic $h^m$ can be computed with a planning graph, we consider the case $m=1$ and the Algorithm \ref{alg:1PG}.
+
+\begin{algorithm}
+\caption{1-Planning-Graph}\label{alg:1PG}
+\begin{algorithmic}[1]
+\State $F_0=s$, $i=0$
+\While{$G\subseteq F_i$}
+\State $A_i=\{a\in A \ | \ pre_a\subseteq F_i\}$
+\State $\displaystyle F_{i+1}=F_i\cup \left\{ \bigcup_{a\in A_i}add_a \right\}$
+\If{$F_{i+1}=F_i$}
+\State\Return 
+\EndIf
+\State $i=i+1$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+This algorithm computes a sequence $\{F_i\}$, this induce a function $h^1_{PG}$ called \textbf{1-planning graph heuristic} defined as follows\begin{equation}
+    h^1_{PG}=\min\{i \ | \ s\subseteq F_i\}.
+\end{equation}
+
+\begin{enumerate}\item \textbf{Initialization}: Set the initial fact layer $F_0$ to the initial state $s$. Initialize the layer counter $i = 0$.\item \textbf{Goal Check}: Determine if the goal set $G$ is a subset of the current fact layer $F_i$ ($G \subseteq F_i$). If it is, the algorithm terminates successfully.\item \textbf{Action Selection ($A_i$)}: Identify the set of all actions $A_i$ whose preconditions are satisfied by the facts in the current layer:$$A_i := \{a \in A \mid pre_a \subseteq F_i\}$$\item \textbf{Fact Expansion ($F_{i+1}$)}: Generate the next fact layer by taking the union of the current facts and all additive effects of the actions in $A_i$:$$F_{i+1} := F_i \cup \bigcup_{a \in A_i} add_a$$\item \textbf{Fixed-Point Check}: Check for convergence. If $F_{i+1} = F_i$, the graph has ''leveled off''. If the goal has not been reached by this point, it is unreachable, and the algorithm stops.\item \textbf{Iteration}: Increment $i$ and repeat from Step 2.\end{enumerate}
+
+\begin{proposition}
+    For a STRIPS planning task with unit cost, $h^1_{PG}=h^1$.
+\end{proposition}
+
+The algorithm \ref{alg:mPG} is the generalization of a generic $m\in \N$.
+
+\begin{algorithm}
+\caption{$m$-Planning-Graph}\label{alg:mPG}
+\begin{algorithmic}[1]
+\State $F_0=s$, $i=0$, $M=\emptyset$
+\Statex 
+
+\Function{Reached}{$i, g$}
+    \If{$g\subseteq F_i \ \land \ \exists g'\in M_i$ such that $g'\subseteq g$}
+    \State\Return True
+    \EndIf 
+    \State\Return False
+\EndFunction
+
+\Statex
+\While{not \Call{Reached}{$i, G$}}
+\State $A_i=\{a\in A \ | \ $\Call{Reached}{$i,pre_a$}$\}$
+\State $\displaystyle F_{i+1}=F_i\cup \left\{ \bigcup_{a\in A_i}add_a \right\}$
+\State $M_{i+1}=\{g\subseteq P \ : \ |g|\le m \ \land \ 
+\forall a\in A_i, $ not \Call{Reached}{$i,regr(g,a)$}$ \}$
+\If{$F_{i+1}=F_i$ and $M_{i+1}=M_i$}
+\State\Return 
+\EndIf
+\State $i=i+1$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\begin{quote}
+    Intuition: all $m$-subsets $g$ of $F_i$  are reachable within $i$ steps, except for those
+ $g$ listed in $M_i$.
+\end{quote}
+
+\noindent All the algorithms and arguments presented applies also for FDR.
+
+\section{Delete Relaxation Heuristics}
+We will present some formal definition and states some
+simple properties that immediately result in a simple ''greedy'' heuristic.
+\begin{definition}[Delete Relaxation]
+    For a STRIPS action $a$, we denote $a^+$ the \textbf{delete relaxed action} (or short \textbf{relaxed action}), defined as follows:\begin{align*}
+        &pre_{a^+}=pre_a\\ 
+         &add_{a^+}=add_a\\ 
+          &del_{a^+}=\emptyset
+    \end{align*}
+    Given a set of action $A$, the relaxed actions $A^+$ are\begin{equation}
+        A^+=\{a^+ \ | \ a\in A\}
+    \end{equation} 
+    and we denote $\vec{a^+}$ a sequence of relaxed actions \begin{equation}
+        \vec{a}^+=\langle a_1^+\dots a_n^+ \rangle
+    \end{equation}
+    relative to the sequence of actions\begin{equation}
+        \vec{a}=\langle a_1\dots a_n \rangle
+    \end{equation}
+    Given a STRIPS planning task $\Pi=(P,A,c,I,G)$, we denote $\Pi^+=(P,A^+,c,I,G)$ the corresponding \textbf{relaxed planning task}.
+\end{definition}
+
+A delete relaxed planning task (denoted as $\Pi^+$) is a simplified version of a standard planning problem where actions are modified to never remove facts from the current state.
+
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ to be a state. An optimal \textbf{relaxed plan} for $s$ is an optimal plan for $\Pi^+_s$ where $\Pi_s=(P,A,c,s,G)$ so $\Pi^+_s=(P,A^+,c,s,G)$.
+\end{definition}
+
+\begin{definition}
+    A state $s'$ for a STRIPS planning task \textbf{dominates} $s$ if $s\subseteq s'$.
+\end{definition}
+A state (set of facts) dominates another state if it has ''more facts true''.
+
+\begin{proposition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s,s'$ be states where $s'$ dominates $s$, then\begin{enumerate}
+        \item if $s$ is a goal then $s'$ is a goal as well. 
+        \item if $\vec a$ is applicable in $s$ then is applicable in $s'$. 
+        \item $s'\quadBrack{\vec a}$ dominates $s\quadBrack{\vec a}$.
+    \end{enumerate}
+\end{proposition}
+The proof is trivial. This proposition says that ''it is  always better to have more facts true''. The following proposition is crucial.\begin{proposition}
+     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, let $s\subseteq P$ be a state and $a\in A$ an action applicable in $s$, then\begin{itemize}
+        \item $s\quadBrack{a^+}$ dominates $s$
+        \item if $s'$ dominates $s$, then $s'\quadBrack{a^+}$ dominates  $s\quadBrack{a}$
+     \end{itemize}
+\end{proposition}
+The first follows from the facts that $a^+$ doesn't delete any fact from $s$, so it can only add facts. The second is more trivial, since $s'$ already have all the facts in $s$
+$$ s\subseteq s'$$
+and $s'\quadBrack{a^+}$ dominates $s'$, so 
+$$s\subseteq s'\subseteq  s'\quadBrack{a^+}$$
+then, $s\quadBrack{a}$ may loose some facts and get added more, but all the facts that it loses are in $s'$, and all the facts that it obtain are in $s'\quadBrack{a^+}$, so the proposition holds. The meaning of the proposition is\begin{quotation}
+    \textit{any real plan also works in the relaxed world.}
+\end{quotation}
+
+\begin{proposition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, let $s\subseteq P$ be a state and $\vec a$ a plan for $\Pi_s$. Then, $\vec a^+$ is a relaxed plan for $s$.
+\end{proposition}
+So, if we apply a relaxed action we can only have more facts true, and that cannot render the task unsolvable, so we can keep applying relaxed actions until the goal is reached to get a relaxed plan $\vec a^+$, as done in algorithm \ref{alg:relaxed_planning}.
+
+
+\begin{algorithm}
+\caption{Greedy Relaxed Planning}\label{alg:relaxed_planning}
+\begin{algorithmic}[1]
+\State $s^+=s$, $\vec a^+=\langle \ \rangle$
+\While{$G\not\subseteq s^+$}
+\If{$\exists a \in A$ such that $pre_a\subseteq s^+$ and $s^+\quadBrack{a^+}\ne s^+$}
+\State select one such $a$
+\State $s^+=s^+\quadBrack{a^+}$
+\State $\vec a^+=\vec a^+\circ \langle a^+\rangle$
+\Else
+\State\Return $\Pi^+_s$ is unsolvable
+\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+This algorithm is sound,  complete and terminates in polynomial time in the size of $\Pi$. It is easy to decide whether a relaxed plan exists.
 \end{document} 

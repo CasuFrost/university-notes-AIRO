@@ -5,11 +5,15 @@
         "Cutsets",
         "DPLL",
         "Farkas",
+        "Graphplan",
         "Hirsh",
         "iperpiani",
         "iperpiano",
         "l'iperpiano",
+        "regressable",
         "satisfiability",
+        "subgoal",
+        "subgoals",
         "Tecnicalità",
         "Unsatisfiability"
     ]
