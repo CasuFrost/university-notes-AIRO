@@ -731,10 +731,24 @@ We use the heuristic function $f$ as the evaluation function and we expand the n
 \end{algorithm}
 This algorithm is complete thanks to the assumption that the state space is finite, but is not optimal, there exists an algorithm that is optimal and complete.
 \subsection{The A* Algorithm}
-In A* the evaluation function is \begin{equation}
-    f(n)=h(n)+g(n)
-\end{equation}
-where $h$ is the heuristic and $g$ is the cost needed so far to reach the node, we consider a frontier ordered by ascending $g+h$.
+A* is an informed search algorithm used for path finding and graph traversal. It finds the shortest path from a starting node to a target goal by combining the benefits of Dijkstra's algorithm and Greedy Best-First Search.
+
+
+The core of A* is the evaluation function $f(n)$, which determines the priority of each node $n$ in the search frontier:
+\[ f(n) = g(n) + h(n) \]
+\begin{itemize}
+    \item \textbf{$g(n)$ (The Path Cost):} The actual cost of the path from the start node to the current node $n$. This ensures the algorithm doesn't ignore the distance already traveled.
+    \item \textbf{$h(n)$ (The Heuristic):} An estimated cost to get from node $n$ to the goal. This ''educated guess'' allows the algorithm to prioritize nodes that appear to lead directly toward the target.
+    \item \textbf{$f(n)$ (The Total Estimated Cost):} The estimated cost of the cheapest solution passing through node $n$.
+\end{itemize}
+
+
+The algorithm maintains a \textbf{frontier} (priority queue) of nodes to be explored, ordered by ascending $f(n)$ values.
+\begin{enumerate}
+    \item It always expands the node with the \textbf{lowest $f(n)$} first.
+    \item If $h(n)$ is \textit{admissible} (never overestimates the actual cost), A* is guaranteed to find the optimal (shortest) path.
+    \item By balancing $g(n)$ and $h(n)$, A* avoids expanding paths that are already too expensive while remaining focused on the goal.
+\end{enumerate}
 \begin{algorithm}
     \caption{A*}\label{alg:A*}
     \begin{algorithmic}
@@ -2805,12 +2819,12 @@ The heuristic $r^*$ is defined as the cost of reaching a set of goals $g$ starti
 \begin{proposition}
     For a STRIPS planning task $\Pi$ the perfect heuristic $h^*$ is $r^*$.
 \end{proposition}
-\begin{definition}
+\begin{definition}\label{def:h1}
     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, the \textbf{critical path heuristic} $h^1$ for $\Pi$ is the function $h^1(s,g)$ defined as follows \begin{equation}
         h^1(s,g)=\begin{cases}
             0&\text{ if }g\subseteq s \\ 
             \displaystyle \min_{a\in A^*}c(a)+h^1(s,regr(g,a)) &\text{ if }|g|=1 \\
-            \displaystyle \max_{g'\in g} h^1(s,\{g'\})&\text{ if }|g|>
+            \displaystyle \max_{g'\in g} h^1(s,\{g'\})&\text{ if }|g|>1
         \end{cases}
     \end{equation}
      where $A^*=\{a\in A \ : \ regr(g,a)\ne \bot\}$.
@@ -2970,7 +2984,9 @@ simple properties that immediately result in a simple ''greedy'' heuristic.
 A delete relaxed planning task (denoted as $\Pi^+$) is a simplified version of a standard planning problem where actions are modified to never remove facts from the current state.
 
 \begin{definition}
-    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ to be a state. An optimal \textbf{relaxed plan} for $s$ is an optimal plan for $\Pi^+_s$ where $\Pi_s=(P,A,c,s,G)$ so $\Pi^+_s=(P,A^+,c,s,G)$.
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ to be a state. A \textbf{relaxed plan} for $s$ is a plan\footnote{
+        this plan may be optimal or not. If the plan is optimal, also the relaxed plan is optimal.
+    } for $\Pi^+_s$ where $\Pi_s=(P,A,c,s,G)$ so $\Pi^+_s=(P,A^+,c,s,G)$.
 \end{definition}
 
 \begin{definition}
@@ -3021,5 +3037,249 @@ So, if we apply a relaxed action we can only have more facts true, and that cann
 \end{algorithmic}
 \end{algorithm}
 
-This algorithm is sound,  complete and terminates in polynomial time in the size of $\Pi$. It is easy to decide whether a relaxed plan exists.
+This algorithm is sound,  complete and terminates in polynomial time in the size of $\Pi$. It is easy to decide whether a relaxed plan exists.\bigskip
+
+This kind of relaxation is an over-approximation of the problem, in fact, if we use a greedy relaxed plan to generate a heuristic function $h$, we wouldn't have an accurate function.\begin{itemize}
+    \item In the search state $s$, during forward search, we run the greedy relaxed planning for $\Pi_s^+$
+    \item we set $h(s)$ to the cost of $\vec a ^+$, or $\infty$ if $\Pi_s^+$ is unsolvable.
+\end{itemize}
+TO be accurate, a heuristic function needs to approximate the minimum effort needed to reach the goal, the greedy relaxed plan may select arbitrary actions
+ that aren't relevant at all, over-estimating dramatically. 
+The next definition describes the function we need.
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task with state space $\theta_\Pi=(S,A,c,T,I,G)$. The \textbf{optimal delete relaxation heuristic} $h^+$ for $\Pi$ is the function $h^+:S\rightarrow\R^+\cup\{0,\infty\}$ where $h^+(s)$ is defined as the cost of an optimal relaxed plan for $s$.
+\end{definition}
+$h^+$ defines the minimum effort to reach the goal under delete relaxation.
+\begin{proposition}
+   The optimal delete relaxation heuristic $h^+$ for a state space is consistent, and thus admissible, safe and goal aware.
+\end{proposition}
+\begin{proposition}
+    For the task to find the shortest path between two nodes in a graph, the optimal delete relaxation heuristic is the perfect heuristic.
+\end{proposition}
+\begin{definition}
+    By $PlanOpt^+$ we denote the problem of
+ deciding, given a STRIPS planning task $\Pi=(P,A,c,I,G)$ and $B\in \R^+\cup\{0\}$ whether there exists a relaxed plan for $\Pi$ whose cost is at most $B$.
+\end{definition}
+It is true that, by computing $h^+$, we would solve $PlanOpt^+$.
+\begin{theorem}
+    $PlanOpt^+$ is $\mathsf{NP}$-complete. 
+\end{theorem}
+From the theorem follows that computing $h^+$ is an hard task, so instead of directly computing it, we may consider an approximation.\begin{quotation}
+    \textit{
+        The delete relaxation heuristic we want is $h^+$. Unfortunately, this is
+ hard to compute so the computational overhead is very likely to be
+ prohibitive. All implemented systems using the delete relaxation
+ approximate $h^+$ in one or the other way.
+    }
+\end{quotation}
+\subsection{The Additive and Max Heuristic}
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task, the \textbf{additive heuristic} $h^{\text{add}}$ for $\Pi$ is the function $h^{\text{add}}(s,g)$ where $s,g$ are set of facts and\begin{equation}
+        h^{\text{add}}(s,g)=\begin{cases}
+            0&\text{ if }g\subseteq s  \\
+            \displaystyle\min_{a\in A,g'\in add_a}c(a)+h^{\text{add}}(s,pre_a)&\text{ if }g=\{g'\}\\
+           \displaystyle\sum_{g'\in g}h^{\text{add}}(s,\{g'\}) &\text{ if }|g|>1
+        \end{cases}
+    \end{equation}
+\end{definition}
+
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ to be a STRIPS planning task, the \textbf{max heuristic} $h^{\max}$ for $\Pi$ is the function $h^{\max}(s,g)$ where $s,g$ are set of facts and\begin{equation}
+        h^{\max}(s,g)=\begin{cases}
+            0&\text{ if }g\subseteq s  \\
+            \displaystyle\min_{a\in A,g'\in add_a}c(a)+h^{\max}(s,pre_a)&\text{ if }g=\{g'\}\\
+           \displaystyle\max_{g'\in g}h^{\max}(s,\{g'\}) &\text{ if }|g|>1
+        \end{cases}
+    \end{equation}
+\end{definition}
+The provided definitions describe two common relaxation-based heuristics used in STRIPS automated planning to estimate the cost of reaching a goal state $G$ from a current state $s$. Both functions decompose the planning problem into achieving individual subgoals but handle the combination of those costs differently.\bigskip
+
+\noindent\textbf{Additive Heuristic} ($h^{\text{add}}$): This function estimates the total cost by \textbf{summing} the individual costs of achieving every atom in the goal set. It assumes subgoals are independent, which often leads to overestimation (making it non-admissible) because it ignores ''positive interactions'' where one action might satisfy multiple subgoals simultaneously.\bigskip
+
+\noindent\textbf{Max Heuristic} ($h^{\text{max}}$): This function estimates the cost by taking the \textbf{maximum} cost among all individual subgoals. It represents the cost of the most ''difficult'' subgoal to achieve. Unlike $h^{\text{add}}$, $h^{\text{max}}$ is admissible (it never overestimates the true cost) because the total plan cost must be at least as great as the cost to reach its hardest component, but it is often less informative (less ''informed'') than the additive version.
+
+Both heuristics share a recursive structure for single goals ($g = \{g'\}$), where the cost is determined by the cheapest action $a$ that can achieve $g'$, added to the cost of achieving that action's preconditions $pre_a$.
+
+\begin{proposition}
+    The function $h^{\max}$ is optimistic:\begin{align}
+        &h^{\max}\le h^+\implies\\ &h^{\max}\le h^*
+    \end{align}
+\end{proposition}
+ $h^{\max}$ simplifies relaxed planning by assuming that, to achieve a set $g$
+ of subgoals, it suffices to achieve the single most costly $g' \in g$. Actual relaxed
+ planning, i.e. $h^+$, can only be more expensive.
+ \begin{proposition}
+    The function $h^{\text{add}}$ is pessimistic:\begin{align}
+        &h^{\text{add}}\ge h^+\implies
+    \end{align}
+    there exists a $\Pi$ and $s$ such that $h^{\text{add}}(s)>h^*(s)$.
+\end{proposition}
+$h^{\text{add}}$ simplifies relaxed planning by assuming that, to achieve a set $g$
+ of subgoals, we must achieve every $g'\in g$ separately. Actual relaxed planning,
+ i.e. $h^+$, can only be less expensive.\bigskip 
+
+ Both $h^{\max}$ and $h^{\text{add}}$ approximate $h^+$ by assuming that singleton subgoal
+ facts are achieved independently. $h^{\max}$ estimates optimistically by the most
+ costly singleton subgoal, $h^{\text{add}}$ estimates pessimistically by summing over all
+ singleton subgoals.
+ \begin{proposition}
+    For all STRIPS planning task $\Pi$, given $h^+,h^{\max}$ and $h^{\text{add}}$, let $s$ to be a state, it holds that:\begin{equation}
+        h^+(s)=\infty\iff h^{\max}(s)=\infty \iff h^{\text{add}}(s)=\infty
+    \end{equation}
+ \end{proposition}
+ \textit{Proof}: The proof is structured into two main observations:
+
+\begin{enumerate}
+    \item \textit{Equivalence between $h^{\max}$ and $h^{\text{add}}$ regarding infinity:}
+    The values $h^{\max}$ and $h^{\text{add}}$ agree on states with infinite heuristic value because their only operational difference lies in the choice of the \textit{max} vs. \textit{$\sum$} (summation) operators. 
+    \begin{itemize}
+        \item If any component of a sum is $\infty$, the sum is $\infty$.
+        \item If any component of a set is $\infty$, the maximum is $\infty$.
+    \end{itemize}
+    Therefore, the use of these different operators does not affect the property of being infinite.
+
+    \item \textit{Equivalence with $h^+$:}
+    \begin{itemize}
+        \item \textit{Direction ($\implies$):} $h^+(s) < \infty$ implies $h^{\max}(s) < \infty$ because $h^{\max}$ is an admissible heuristic for the relaxed task, meaning $h^{\max} \le h^+$.
+        \item \textit{Direction ($\impliedby$):} Conversely, $h^{\max}(s) < \infty$ implies $h^+(s) < \infty$. If $h^{\max}$ is finite, it can be used to generate a \textit{closed, well-founded best-supporter function}. From this function, a valid relaxed plan can be extracted, ensuring that $h^+(s)$ is also finite.\hfill$\blacksquare$
+    \end{itemize}
+\end{enumerate}
+States for which no relaxed plan exists are easy to recognize, and that is
+done by both $h^{\max}$ and $h^{\text{add}}$. Approximation is needed only for the cost of an optimal relaxed plan, if it exists.
+\bigskip
+
+Consider the Definition \ref{def:h1} of the function $h^1$, its easy to notice that\begin{equation}
+    h^1=h^{\max}
+\end{equation}
+We already know how to compute $h^1$ by dynamic programming (we saw the general algorithm for any $h^m$), so we already know how to compute $h^{\max}$. To compute $h^{\text{add}}$ we use the following (similar) algorithm:
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/iterative_hadd.png}
+\end{center}
+Both $h^{\text{add}}$ and $h^{\max}$ can be computed quickly, but in practice, there are some issues:\begin{itemize}
+    \item $h^{\max}$ is admissible, but is typically far too optimistic.
+    \item $h^{\text{add}}$ is not admissible, but is typically a lot more informed than $h^{\max}$
+    \item $h^{\text{add}}$  is sometimes better informed than $h^+$, but ''for the wrong reasons'', rather than accounting for deletes, it overcounts by ignoring
+ positive interactions, i.e., sub-plans shared between subgoals.
+\end{itemize}
+\subsection{The Relaxed Plan Heuristic}
+We will define the \textbf{best supporters functions} for the additive and max heuristic, that are two functions which, for every fact $p\in P$  returns an action that is deemed to be the cheapest achiever of $p$
+ (within the relaxation). Then extract a relaxed plan from that function,
+ by applying it to singleton subgoals and collecting all the actions.\bigskip
+
+ The best-supporter function can be based directly on $h^{\max}$ or $h^{\text{add}}$,
+ simply selecting an action a achieving $p$ that minimizes [$c(a)$ plus the
+ cost estimate for $pre_a$].
+\begin{definition}[Best Supporters]
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ be a state:\begin{itemize}
+        \item The $h^{\max}$ \textbf{supporter function} $bs_s^{\max}$ is the function \begin{equation}
+            bs_s^{\max} : \{p\in P \ | \ 0<h^{\max}(s,\{p\})<\infty\}\mapsto A
+        \end{equation}
+        defined as follows:\begin{equation}
+            bs_s^{\max}(p)=\arg\min_{
+                a\in A, p\in add_a
+            }c(a)+h^{\max}(s,pre_a)
+        \end{equation}
+        \item The $h^{\text{add}}$ \textbf{supporter function} $bs_s^{\text{add}}$ is the function \begin{equation}
+            bs_s^{\text{add}} : \{p\in P \ | \ 0<h^{\text{add}}(s,\{p\})<\infty\}\mapsto A
+        \end{equation}
+        defined as follows:\begin{equation}
+            bs_s^{\text{add}}(p)=\arg\min_{
+                a\in A, p\in add_a
+            }c(a)+h^{\text{add}}(s,pre_a)
+        \end{equation}
+    \end{itemize}
+\end{definition}
+
+The following algorithm is used to construct a relaxed plan ($RPlan$) given a best-supporter function ($bs$). A best-supporter function simply identifies which action is ''best'' (cheapest) to achieve a specific fact.
+\begin{center}
+    \includegraphics[width=0.9\textwidth ]{images/rplan_exctraction.png}
+\end{center}
+Essentially, the algorithm works backward from the goals to the initial state, picking the best actions to satisfy each requirement until every precondition is accounted for. The number of iterations of this algorithm is bounded by $|P|$. To make the algorithm works is important that the following three conditions are met\begin{enumerate}
+    \item The chosen action must actually produce the desired goal. Formally, for each goal $g$, the action indicated as its best supporter must contain $g$ among its added effects ($g \in add_{bs(g)}$).
+    \item The function must always be defined for the necessary objectives. In other words, $bs(g)$ must not be ''undefined'' to avoid errors in the algorithm.
+    \item The support must be well-founded. This means that there must be no circular dependencies where support for a goal $g$ ultimately requires $g$ itself as a precondition. If this condition is not satisfied, the algorithm would fail to generate a valid plan.
+\end{enumerate}
+The general definition of a best supporter function is the following.
+\begin{definition}
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ be a state, a \textbf{best supporter function} for $s$ is the partial function\begin{equation}
+        bs: P\backslash\{s\}\mapsto A 
+    \end{equation}
+    such that $p\in add_a$ whenever $a=bs(p)$.
+\end{definition}
+From this definition of $bs$ we can construct a \textbf{support graph} where the vertices are 
+\[ \{P\backslash \{s\}\}\cup A \]
+and the edges are
+\[
+    \{(a,p) \ | \ a=bs(p)\}\cup\{(p,a) \ | \ p\in pre_a\}
+\]
+\begin{itemize}
+    \item We say that $bs$ is \textbf{closed} if $bs(p)$ is defined for every $p\in P\backslash\{s\}$ that has a path to a goal $g\in G$ in the support graph.
+    \item We say that $bs$ is \textbf{well-founded} if the support graph is acyclic.
+\end{itemize}
+A support function $bs$ defined in that way that is closed and well founded satisfies the three conditions to make the \textit{\texttt{Relaxed Plan Extraction}} algorithm works.
+\begin{proposition}
+    The best supporters $bs_s^{\text{add}}$ and $bs_s^{\max}$ are closed well-founded supporter functions for $s$.
+\end{proposition}
+\begin{proposition}
+    If $bs$ is closed well-founded supporter function the $RPlan$ returned by the \texttt{Relaxed Plan Extraction} algorithm can be sequenced into a relaxed plan $\vec a^+$ for $s$.
+\end{proposition}
+\begin{definition}
+    A heuristic function is called \textbf{relaxed plan heuristic}, and is denoted $h^{FF}$ if, given a state $s$,  it returns $\infty$ if no relaxed plan
+ exists, and otherwise returns $\sum_{a\in RPlan}c(a)$ where $Rplan$ is the action set returned by the \texttt{Relaxed Plan Extraction} algorithm on a closed well-founded best-supporter
+ function for $s$.
+\end{definition}
+\begin{proposition}
+For all STRIPS planning tasks $\Pi$:
+\begin{itemize}
+    \item $h^{\text{FF}} \geq h^+$
+    \item For all states $s$, $h^+(s) = \infty$ if and only if $h^{\text{FF}}(s) = \infty$.
+    \item There exist $\Pi$ and $s$ so that $h^{\text{FF}}(s) > h^*(s)$.
+\end{itemize}
+\end{proposition}
+\textit{Proof}: The proof consists of three observations:
+\begin{itemize}
+    \item {$h^{\text{FF}} \geq h^+$:} follows directly from the previous slide (since $h^{\text{FF}}$ generates a valid relaxed plan, its cost must be at least that of the optimal relaxed plan $h^+$).
+    \item {Agrees with $h^+$ on $\infty$:} Direct from definition.
+    \item {Inadmissibility:} Occurs whenever the best-supporter function $bs$ makes sub-optimal choices.
+\end{itemize}
+ In practice, $h^{FF}$ typically does not over-estimate $h^*$ (or not by a large
+ amount, anyway), may be inadmissible just like $h^{add}$, but for more subtle reasons. $h^{FF}$ does not over count, i.e., count sub-plans shared between subgoals more
+ than once. This is due to the set union in $RPlan=RPlan\cup\{bs(g)\}$.
+\begin{definition}[Helpful Actions]
+Let $h^{\text{FF}}$ be a relaxed plan heuristic, let $s$ be a state, and let $RPlan$ be the action set returned by the \texttt{Relaxed Plan Extraction}  on the closed well-founded best-supporter function for $s$ which underlies $h^{\text{FF}}$. Then an action $a$ applicable to $s$ is called \textbf{helpful} if it is contained in $RPlan$.
+\end{definition}
+What about the FDR language?\begin{definition}
+    Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, we call $P_V=\{v=d \ | \ v\in V,d\in D_v\}$ the set of ''FDR facts''. The \textbf{relaxed state space} of $\Pi$ is the labeled transition system $\Theta_\Pi^+=(S^+,L,c,T,I,{S^{G}}^+)$ where\begin{itemize}
+        \item the (relaxed) states $S^+$ are the subsets $s^+\in \mathcal P(P_V)$.
+        \item the labels $L=A$ are the actions of $\Pi$, and the cost function $c$ is the same of $\Pi$.
+        \item The transitions are $$T=\{s^+\xrightarrow{a}{s'}^+ \ | \ pre_a\subseteq s^+, \ {s'}^+=s^+\cup eff_a\} $$
+        \item the initial state $I$ is the same of that in $\Pi$
+        \item the goal states are $${S^{G}}^+=\{s^+ \in S^+ \ | \ G\subseteq s^+\} $$
+    \end{itemize}
+\end{definition}
+A solution for $s^+$ in $\Theta_\Pi^+$ is a \textbf{relaxed plan}\footnote{if the solution is optimal, the relaxed plan is optimal} for $s^+$.
+
+Let $\Theta_\Pi=(S,A,c,T,I,G)$ be the state space of $\Pi$. The optimal delete
+ relaxation heuristic $h^+$ for $\Pi$ is the function $$h^+:S\mapsto \R^+\cup\{0,\infty\} $$ where $h^+(s)$ is defined as the cost of an optimal relaxed plan for $s$.
+
+FDR states contain exactly one fact for each variable $v\in V$ . There is no such restriction on FDR relaxed states. We recall the following proposition:
+\begin{proposition}
+Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $\Pi^{\text{STR}}$ be its STRIPS translation. Then $\Theta_{\Pi}$ is isomorphic to the sub-system of $\Theta_{\Pi^{\text{STR}}}$ induced by those $s \subseteq P_{V}$ where, for each $v \in V$, $s$ contains exactly one fact of the form $v = d$. All other states in $\Theta_{\Pi^{\text{STR}}}$ are unreachable.
+\end{proposition}
+Observe how $\Theta_\Pi^+$ has transition $s^+\xrightarrow{a}{s'}^+$ if and only if $s^+\quadBrack{a^{\text{STR}+}}={s'}^+$ in $\Pi^{\text{STR}}$ (because $s^+\quadBrack{a^{\text{STR}+}}=s^+\cup eff_a$).
+
+\begin{proposition}
+Denote by $h^*_\Pi$ and $h^+_\Pi$ the perfect heuristic and the optimal delete relaxation heuristic in $\Pi$, and denote by $h^*_{\Pi^{\text{STR}}}$ and $h^+_{\Pi^{\text{STR}}}$ these heuristics in $\Pi^{\text{STR}}$. Then, for all states $s$ of $\Pi$, $h^*_\Pi(s) = h^*_{\Pi^{\text{STR}}}(s)$ and $h^+_\Pi(s) = h^+_{\Pi^{\text{STR}}}(s)$.
+\end{proposition}
+
+Given an FDR task $\Pi$, everything we have done here can be done for $\Pi$ by doing it within $\Pi^{\text{STR}}$. As a summary:
+
+\begin{itemize}
+    \item The delete relaxation simplifies STRIPS by removing all delete effects of the actions.
+    \item The cost of optimal relaxed plans yields the heuristic function $h^+$, which is admissible but hard to compute.
+    \item We can approximate $h^+$ optimistically by $h^{\max}$, and pessimistically by $h^{\text{add}}$. $h^{\max}$ is admissible, $h^{\text{add}}$ is not. $h^{\text{add}}$ is typically much more informative, but can suffer from over-counting.
+    \item Either of $h^{\max}$ or $h^{\text{add}}$ can be used to generate a closed well-founded best-supporter function, from which we can extract a relaxed plan.
+    \item The resulting relaxed plan heuristic $h^{\text{FF}}$ does not do over-counting, but otherwise has the same theoretical properties as $h^{\text{add}}$; in practice, it typically does not over-estimate $h^*$.
+    \item The delete relaxation can be applied to FDR simply by accumulating variable values, rather than over-writing them. This is formally equivalent to treating variable/value pairs like STRIPS facts.
+\end{itemize}
 \end{document} 
