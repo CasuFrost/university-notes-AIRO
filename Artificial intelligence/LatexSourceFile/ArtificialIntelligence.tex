@@ -64,6 +64,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma2}{Lemma}
+\newtheorem{corollary}{Corollary}
 %==================INIZIO======================%
 \chapter{Introduzione}
 \section{Basic Definitions}
@@ -772,9 +773,159 @@ The algorithm maintains a \textbf{frontier} (priority queue) of nodes to be expl
     \EndWhile
     \end{algorithmic}
 \end{algorithm}
-\redText{TODO}
+Now we want to prove the optimality of A*.
+\begin{definition}
+    Let $\Pi$ to be a problem with state space $\Theta=(S,A,c,T,I,S^G)$ and let $h$ to be a consistent heuristic function for $\Pi$. We define the \textbf{$h$-weighted state space} as $$\Theta=(S,A^h,c^h,T^h,I,S^G)$$
+    where\begin{itemize}
+        \item $A^h=\{a[s,s'] \ | \ a\in A, s\in S, s'\in S, (s,a,s')\in T  \}$
+        \item $c^h:A^h\rightarrow \R^+\cup\{0\}$ is the function $$ 
+        c^h(a[s,s'])=c(a)-[h(s)-h(s')]
+        $$
+        \item $T^h=\{(s,a[s,s,'],s') \ | \ (s,a,s')\in T\}$
+    \end{itemize}
+\end{definition}
+In this \textit{weighted state space}, from each action cost, we subtract the ''gain in heuristic value''. This $\Theta^h$ is well defined since 
+$$c(a)-[h(s)-h(s')]\ge 0. $$
+\begin{lemma2}\label{lemmaA}
+    $\Theta$ and $\Theta^h$ have the same optimal solutions.
+\end{lemma2}
+\textit{Proof:} \begin{itemize}
+    \item \textit{Let $I$} be a solution path in $\Theta$ ending in a goal state $s_n \in S^G$:
+    \[
+    I = s_0 \xrightarrow{a_1} s_1, \dots, s_{n-1} \xrightarrow{a_n} s_n
+    \]
+    \item \textit{The cost of the same path in $\Theta^h$} is defined by the sum of the modified transition costs:
+    \begin{align*}
+    & [-h(s_0) + c(a_1) + h(s_1)] + \\
+    & [-h(s_1) + c(a_2) + h(s_2)] + \dots + \\
+    & [-h(s_{n-1}) + c(a_n) + h(s_n)]
+    \end{align*}
+    \item \textit{Simplifying the telescoping sum}, we see that all intermediate heuristic terms $h(s_i)$ for $0 < i < n$ cancel out:
+    \[
+    \sum_{i=1}^{n} c(a_i) - h(s_0) + h(s_n)
+    \]
+    \item \textit{Substituting constants}, where $h(I)$ denotes the heuristic of the initial state $h(s_0)$, and noting that $h(s_n) = 0$ for goal states:
+    \[
+    \left[ \sum_{i=1}^{n} c(a_i) \right] - h(I)
+    \]
+    \item \textit{Conclusion:} Thus, the costs of solution paths in $\Theta^h$ are those of $\Theta$, minus a constant. The claim follows.\hfill$\blacksquare$
+\end{itemize}
+\begin{lemma2}\label{lemmaB}
+    The search space of A* on $\Theta$ is isomorphic to the search space of the uniform-cost-search on $\Theta^h$.
+\end{lemma2}
+\textit{Proof}: \begin{itemize}
+    \item Let $I = s_0 \xrightarrow{a_1} s_1, \dots, s_{n-1} \xrightarrow{a_n} s_n$ be any path in $\Theta$.
+    \item The $g + h$ value, used by $A^*$, is:
+    \[ \left[\sum_{i=1}^{n} c(a_i)\right] + h(s_n) \]
+    \item The $g$ value in $\Theta^h$, used by uniform-cost search on $\Theta^h$, is:
+    \[ \left[\sum_{i=1}^{n} c(a_i)\right] - h(I) + h(s_n) \]
+    (see previous proof).
+    \item The difference $-h(I)$ is constant, so the ordering of the open list is the same.
+    \item The duplicate elimination is identical.\hfill$\blacksquare$
+\end{itemize}
+\begin{theorem}[Optimality of A*]
+    Let $\Pi$ be a problem and $h$ a heuristic function for $\Pi$. If $h$ is consistent, the solution returned by A* (if any) is optimal.
+\end{theorem}
+\textit{Proof}: Let $\vec s(\text{A*},\Theta)$ be the sequence of states (solution) returned by A* on $\Theta$, we denote $\vec S(UCS,\Theta^h)$ the set of solutions that could in principle be returned by uniform-cost-search run on $\Theta^h$. By the Lemma \ref{lemmaB}, we have 
+\begin{equation}
+    \vec s(\text{A*},\Theta)\in\vec S(UCS,\Theta^h)
+\end{equation}
+since the uniform cost search is optimal, every element of $\vec S(UCS,\Theta^h)$ is an optimal solution for $\Theta^h$, thus $ \vec s(\text{A*},\Theta)$ is optimal for $\Theta^h$, by the Lemma \ref{lemmaA}, this implies that $ \vec s(\text{A*},\Theta)$ is an optimal solution for $\Theta$.\hfill$\blacksquare$
 \section{Local Search}
-\redText{TODO}
+In local search, we takes decisions based on the values of the heuristic function $h$ only on the immediate neighbor states. In many optimization problems, the path is irrelevant, and the goal state itself is the solution, in these cases the state space is a set of ''complete'' configurations and the task is to find the optimal configuration. Let's consider the example of the $n$-queens:
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/nQueens.png}
+\end{center}
+We have a $n\times n$ board and we have to put $n$ queens with no two queens on the same row, column or diagonal. 
+A local search strategy is to move one single queen at time to reduce the number of conflicts. So the algorithm explores all the boards deriving from the movement of one single queen (this simple method is in fact very effective and solve the problem almost always for very large $n$). 
+\bigskip 
+
+\noindent Local search algorithms are \textit{not systematic}, the advantages are\begin{itemize}
+    \item they use very little memory, typically a constant space. 
+    \item find reasonable solutions in large or infinite state space where systematic search is unsuitable.
+\end{itemize}
+Is useful to solve pure mathematical optimization problems. 
+\subsection{Hill Climbing}
+The \textbf{hill-climbing} Algorithm \ref{alg:hillClimbing} keeps  choosing actions leading to a direct successor
+ state with best heuristic value. It stops when no more immediate
+ improvements can be made.
+
+ \begin{algorithm}
+    \caption{Hill-Climbing}\label{alg:hillClimbing}
+    \begin{algorithmic}
+    \Require A problem $\Pi$
+    \State $n\leftarrow$ a node $n$ with $n.State=\Pi.InitialState$
+    \While{True}
+    \State\textbf{if} $n.State$ is the goal state \textbf{then return} $n$ 
+    \State $N\leftarrow$ set of all child nodes of $n$
+    \State $n\leftarrow \arg\min_{n\in N} h(n)$
+    \State\textbf{if} stopping condition are met \textbf{then return} $n$ 
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+One stopping condition may be: If the neighbor node that minimize $h$ have a value for $h$ bigger than the current node, stop. 
+The \textit{Gradient Descent} is an interpretation of this algorithm.
+
+
+This algorithm is not complete neither optimal. Usually the hill climbing algorithm get stuck in local minima, where all the neighbors look worse than the current node, if all the neighbors have the same value of $h$, the next move will be chosen at random.\bigskip
+
+A possible strategy is to perform different runs of the algorithm, by re-starting it every time we reach a local minimum, or when we have spent a certain amount of time without ''making progress'' (without finding a node that decreases on $h$). A way to avoid local minima is to do random walks in the hope that these will lead out of them.\bigskip 
+
+A variant of the hill climbing is the \textbf{Local Beam Search},  where $k$ states are kept im memory instead of 1, and at each step, we generate all the successors of these $k$ states and we update our current state with the best $k$ among these successors.
+\subsection{Simulated Annealing}
+The idea is to escape local maxima by allowing some ''bad'' moves but gradually decrease their size and frequency.\bigskip 
+
+The Algorithm \ref{alg:SimAnn} shows how the probability of accepting a ''bad'' move decreases exponentially with the ''badness'' of the move and the ''temperature'' going down.
+
+But, what is the temperature in this context? We consider a scalar function that assigns to each time step $t$ a value of ''temperature'', this function is called $schedule$, and usually decreases over time. Bigger is the temperature, and bigger is the probability to accept bad moves, so it defines how this probability of doing ''bad moves'' decreases over time.
+
+\begin{algorithm}
+    \caption{Simulated-Annealing}\label{alg:SimAnn}
+    \begin{algorithmic}
+    \Require A problem $\Pi$, a map from time to temperature $schedule$
+    \State $current\leftarrow$ a node $current$ with $current.State=\Pi.InitialState$
+    \For{$t=1$ to $\infty$}
+    \State $T\leftarrow schedule(t)$
+    \State \textbf{if} $T=0$ \textbf{then return} $current$
+    \State $next\leftarrow $a randomly selected successor of $current$
+    \State $\Delta E=h(next)-h(current)$
+    \State \textbf{if} $\Delta E>0$ \textbf{then} $current\leftarrow next$\blueText{ /*the successor is actually better*/}
+    \State\textbf{else} $current\leftarrow next$ with probability $\exp(\nicefrac{\Delta E}{T})$\blueText{ /*do a bad move*/}
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Genetic Algorithms}
+The key idea of a \textlatin{genetic algorithm} is the following\begin{itemize}
+    \item we generate a starting \textbf{population} of $k$ randomly selected states 
+    \item each individual state is represented by a string on a finite alphabet
+    \item the next generation of states is generated as follows:\begin{enumerate}
+        \item we consider a \textbf{fitness function} that should assigns higher values to better states 
+        \item we select random pairs of states from the population, and we generate a new state by making these two \textbf{reproduce}
+        \item the probability of being chosen is proportional to the fitness value 
+    \end{enumerate}
+    \item we add some \textbf{random mutations} with small probability.
+\end{itemize}
+Making two states reproduce: Create a new state by selecting some characteristics from the parent states. An example is\begin{align*}
+    &S1 = \langle \blueText{a} \ s \ \blueText{w} \ j\rangle\\
+    &S2 = \langle f \ \blueText{h} \ d \ \blueText{e}\rangle\\ 
+    &\text{the results of their reproduction is:}\\ 
+    &S3 = \langle a \ h \ w \ e\rangle\\
+\end{align*}
+
+\begin{algorithm}
+    \caption{ GENETIC-ALGORITHM}\label{alg:GenAlg}
+    \begin{algorithmic}
+    \Require A starting $population$ of states
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}
+    \item Genetic algorithms combine an uphill tendency with random exploration and exchange of information among parallel search threads.
+    \item Their primary advantage comes from the crossover operation.
+    \item Crossover helps iff substrings are meaningful components: we combine large blocks of letters that have evolved independently to perform useful functions.
+    \item Much work remains to be done to identify the conditions under which genetic algorithms perform well.
+\end{itemize}
 \section{Adversarial Search}
 One of the oldest sub-areas of AI is \textit{Game Planning}, we model games as search problems that takes in account the competition between two opponents (such as chess). We consider simple games that satisfies the following restrictions:\begin{itemize}
     \item the set of game states is discrete 
@@ -1869,10 +2020,366 @@ Let's consider the formula:\begin{equation}
     \varphi=\forall x [R(x,y)]
 \end{equation}
 the variable $y$ is called \textit{free}, so the formula is not closed and cannot be evaluated in a truth value. We define the \textbf{Knowledge Base} as a set $KB$ of closed formulas.
-\\\redText{TODO:  Normal Forms and all the  slide chapter 12}
+\subsection{Normal Forms}
+It is convenient to express the FOL formulas in normal forms to describe the problem. \bigskip
+
+\noindent The \textbf{Prenex normal form} move all the quantifiers at the beginning of the formula, the following rules must be applied (STEP 1):\begin{enumerate}
+    \item Eliminate $\leftrightarrow$: $(\varphi\leftrightarrow\psi)\equiv [(\varphi\rightarrow\psi)\land(\psi\rightarrow\varphi)]$
+    \item Eliminate $\rightarrow$: $(\varphi\rightarrow\psi)\equiv (\lnot\varphi\lor\psi)$
+    \item Apply De Morgan: \begin{itemize}
+        \item $\lnot(\varphi\land\psi)\equiv (\lnot \varphi\lor\lnot\psi)$
+        \item $\lnot(\varphi\lor\psi)\equiv (\lnot \varphi\land\lnot\psi)$
+    \end{itemize}
+    \item Move $\lnot$ inwards: \begin{itemize}
+        \item $\lnot \forall x \varphi \equiv \exists x \lnot \varphi$
+        \item $\lnot\exists x \varphi\equiv \forall x \lnot \varphi$
+    \end{itemize}
+\end{enumerate}
+Let's see an example of application:\begin{align*}
+    &\lnot\forall x[(\forall x P(x))\blueText{\rightarrow} R(x)]\equiv\\
+    &\blueText{\lnot\forall} x[\lnot(\forall x P(x))\lor R(x)]\equiv\\
+    &\exists x \blueText{\lnot}[\lnot (\forall xP(x))\lor R(x) ]\equiv\\
+    &\exists x [ (\forall xP(x))\land \lnot R(x) ]
+\end{align*}
+The general form of a Prenex normal form formula is\begin{equation}
+    Qx_1Qx_2\dots Qx_n\varphi 
+\end{equation}
+where $Q\in \{\forall,\exists\}$ is a generic quantifier. After applying the first set of rules, the following must be applied (STEP 2):\begin{itemize}
+    \item if $x$ is not free in $\psi$: $$ 
+    (\forall x\varphi)\land \psi \equiv \forall x(\varphi\land\psi)
+    $$
+    $$ 
+    (\forall x\varphi)\lor \psi \equiv \forall x(\varphi\lor\psi)
+    $$
+    $$ 
+    (\exists x\varphi)\land \psi \equiv \exists x(\varphi\land\psi)
+    $$
+    $$ 
+    (\exists x\varphi)\lor \psi \equiv \exists x(\varphi\lor\psi)
+    $$
+\end{itemize}
+\begin{definition}
+    If $x$ is a variable, $t$ a term and $\varphi$ a formula, then the \textbf{instantiation} of $x$ with $t$ in $\varphi$, written $ \varphi\frac{x}{t}$, replace all free appearances of $x$ in $\varphi$ by $t$. If $t=y$ is a variable, then $\varphi\frac{x}{y}$ just renames the variable $x$ with $y$.
+\end{definition}
+\begin{lemma2}
+    if $y$ is a variable that doesn't appears in $\varphi$, then\begin{align*}
+        &\forall x \varphi\equiv \forall y \varphi\tfrac{x}{y}\\ 
+        &\exists x \varphi\equiv \exists y \varphi\tfrac{x}{y}
+    \end{align*}
+\end{lemma2}
+This Lemma is useful to move outwards the variable like in the following example:\begin{align*}
+    &\exists x [ (\blueText{\forall xP(x)})\land \lnot R(x) ]\equiv\\ 
+     &\exists x [ (\blueText{\forall yP(y)})\land \lnot R(x) ]\equiv\\
+     &\exists x\forall y [ P(y)\land \lnot R(x) ]
+\end{align*}
+\begin{theorem}
+    There exists an algorithm that, for any FOL formula $\varphi$, calculates in polynomial time an equivalent formula in Prenex normal form.
+\end{theorem}
+The \textbf{Skolem normal form} is a formula (that is also in Prenex normal form) where each quantifier is universal:\begin{equation}
+    \forall x_1\forall x_2\dots\forall x_n\varphi
+\end{equation}
+Each formula in Prenex normal form can be easily transformed, consider the following theorem.\begin{theorem}[Skolem]
+    Let $\varphi=\forall x_1\forall x_2\dots \forall x_k\exists y\psi$ to be a closed FOL formula in Prenex normal form such that, all the variables are pairwise distinct
+    $$x_i\ne x_j, \ \forall i\ne j $$
+    let $f$ to be a $k$-ary function symbol ($k$ can also be zero i.e. $f$ is constant) that doesn't appear in $\varphi$. $\varphi$ is satisfiable if and only if the formula\begin{equation}
+       \forall x_1\forall x_2\dots \forall x_k\psi\tfrac{y}{f(x_1\dots x_k)}
+    \end{equation}
+\end{theorem}
+Let's see an example of application of the theorem. We consider 
+$$ \exists x\forall y \exists z R(x,y,z)$$
+we remove $\exists x$ using the theorem:\begin{align*}
+     &\exists x\forall y \exists z R(x,y,z)\equiv  \blueText{\exists x}[\forall y \exists z R(x,y,z)]\equiv
+\end{align*}
+Now the formula have the form $\exists x\varphi$ so we can substitute $x$ with a $0$-arity function (a constant).
+\begin{align*}
+      &\forall y \exists z R(\blueText{f},y,z)
+\end{align*}
+By applying the theorem again we can substitute $z$ with a function $g$ of arity 1 in the variable $y$:
+\begin{align*}
+      &\forall y R(f,y,\blueText{g(y)})
+\end{align*}
+In this way a Prenex formula can be transformed in a Skolem formula.
+\begin{theorem}
+    There exists an algorithm that, for any closed FOL formula $\varphi$, efficiently calculates a Skolem normal form formula that is satisfiable if and only if $\varphi$ is satisfiable.
+\end{theorem}
+If $\varphi$ is a FOL formula, their relative Skolem formula is denoted $\varphi^*$. The theorem says that:\begin{quotation}
+    \textit{Satisfying existential quantifier for universally quantified variables $x_1\dots x_k$ is equivalent to choose a value for a function of $x_1\dots x_k$.}
+\end{quotation}
+Like the Skolem normal form it is a specialization of the Prenex normal form, the \textbf{Clausal normal form} is a specialization of the Skolem normal form. A formula is in this normal form if has the following structure:\begin{equation}
+    \forall x_1\forall x_2\dots \forall x_n(l_1\lor \dots \lor l_n)
+\end{equation}
+where $l_i$ are literals that (may) depends on $x_1\dots x_n$ (the formula must be closed). Any Skolem formula can be transformed in a Clausal formula\begin{enumerate}
+    \item consider $ \forall x_1\forall x_2\dots \forall x_n \varphi$
+    \item transform $\varphi$ to a SAT-equivalent CNF formula $\psi$
+    \item write a set of clauses, one for each disjunction in $\psi$
+    \item renames the variables so that each occurs in at most one clause.
+\end{enumerate} 
+\begin{theorem}
+    There exists an algorithm that, for any closed FOL formula $\varphi$,
+ efficiently calculates a formula in clausal normal form that is satisfiable if and only if
+ $\varphi$ is satisfiable.
+\end{theorem}
+\subsection{FOL Via Propositional Logic}
+In this section we consider a way to reason about FOL using propositional logic, in particular, we bring a FOL formula in SNF (Skolem normal form) and then we generate a \textit{Herbrand expansion}\footnote{We will define it later} to use propositional reasoning.\bigskip
+
+For any finite set of FOL formulas $\theta^*$, we denote $CF(\theta^*)$ the set of constant symbols and function occurring in $\theta^*$. If no constant symbols occurs in $\theta^*$ we add a new ''virtual'' symbol $c$ in $CF(\theta^*)$.
+\begin{definition}[Herbrand Universe]
+    Given a set of FOL formulas $\theta^*$ in SNF, the Herbrand Universe $HU(\theta^*)$ over $\theta^*$ is the set of all the \textbf{ground terms} that can be formed from $CF(\theta^*)$. 
+\end{definition}
+We recall what is a ground term:\begin{itemize}
+    \item if $a$ is a constant term (function of arity $0$), then $a$ is a ground term 
+    \item if $a_1,\dots a_k$ are ground terms and $f$ is a function of arity $k$, then $f(a_1,\dots a_k)$ is a ground term.
+\end{itemize}
+For example let\begin{equation}
+    \theta^*=\{\forall x[\lnot Dog(x)\lor Chases(x,f(x))]\}
+\end{equation}
+then $CF(\theta^*)=\{c,f\}$ and\begin{equation}
+    HU(\theta^*)=\{c,f(c),f(f(c)), f(f(f(c)))\dots \}
+\end{equation}
+Notice how $HU(\theta^*)$ is infinite in general.
+\begin{definition}[Herbrand Expansion]
+    Given a set of FOL formulas $\theta^*$ in SNF, the Herbrand expansion $HE(\theta^*)$ is the following set of formulas:\begin{equation}
+        HE(\theta^*)=\left\{
+            \varphi\tfrac{x_1}{t_1}\dots \tfrac{x_n}{t_n} \ | \ (\forall x_1\dots \forall x_n\varphi)\in \theta^* \ \land \ t_i\in HU(\theta^*)
+        \right\}
+    \end{equation}
+\end{definition}
+We are instantiating each possible formula $\varphi$ from the terms in $HU(\theta^*)$ that contains ground terms, so it can be interpreted as propositional logic.
+\begin{theorem}[Herbrand]\label{teo:Herbrand}
+    A set of FOL formulas in SNF $\theta^*$ is satisfiable\footnote{
+       A set of formulas is said to be satisfiable if there exists at least one interpretation (called model) which simultaneously makes all the formulas in the set true.
+    }
+    if and only if the entire set $HE(\theta^*)$ is satisfiable (all the propositional logic formulas in $HE(\theta^*)$ can be satisfied simultaneously by a model.)
+\end{theorem}
+Notice how, without function symbols of arity greater than 0, the Herbrand expansion is finite, and the FOL reasoning is \textit{equivalent} to propositional reasoning.
+\begin{theorem}[Compactness of Propositional Logic]\label{propCompact}
+Any set $\theta$ of
+propositional logic formulas is unsatisfiable if and only if at least one
+finite subset of $\theta$ is unsatisfiable.
+\end{theorem}
+We can enumerate all finite subsets $\theta_1$ of the Herbrand expansion $HE(\theta^*)$ and test propositional satisfiable of $\theta_1$, $\theta$ is unsatisfiable if and only if one of the subsets $\theta_1$ is unsatisfiable.\begin{quote}
+    \textit{
+        If the Herbrand expansion is infinite, to show unsatisfiability, we must somehow choose a ''relevant'' finite subset thereof.
+    }
+\end{quote}
+\begin{theorem}
+    The set of unsatisfiable FOL formulas is recursively
+ enumerable.
+\end{theorem}
+\textit{Proof}:  Enumerate all FOL formulas $\varphi$. Incrementally for all of these in parallel,
+enumerate all finite subsets $\theta_1$ of the Herbrand expansion $HE(\theta^*)$. Test
+propositional satisfiability of each  $\theta_1$. By compactness of propositional logic, if
+$HE(\theta^*)$ is unsatisfiable then one of the  $\theta_1$ is.
+\hfill$\blacksquare$
+\begin{theorem}
+    The problem of establishing whether a FOL formula is satisfiable or not is undecidable.
+\end{theorem}
+\begin{corollary}
+    The set of satisfiable FOL formulas is not recursively enumerable.
+\end{corollary}
+\begin{quotation}
+    \textit{
+        If a FOL formula is unsatisfiable, then we can confirm this. Otherwise, we might end up in an infinite loop.
+    }
+\end{quotation}
+\section{FOL Resolution}
+\subsection{Substitution and Unification}
+Consider the Clausal normal form\begin{equation}
+    \forall x_1\forall x_2\dots \forall x_n(l_1\lor \dots \lor l_n)
+\end{equation}
+we can write a form of that structure by omitting the quantifiers in the following notation:\begin{equation}
+    \{l_1,\dots l_n\}
+\end{equation}
+The idea is to ''adapt'' the propositional resolution rule 
+\begin{equation}
+    \frac{C_1\dot\cup\{l\},C_2\dot\cup\{\lnot l\}}{C_1\cup C_2}
+\end{equation}
+to the first order logic.
+\begin{definition}[Substitution]
+    A \textbf{Substitution} $s=\{\tfrac{x_1}{t_1}\dots \tfrac{x_n}{t_n}\}$ is a function that substitutes the variables $x_i$ for terms $t_i$ where $x_i\ne t_i$ for all $i$. Given a formula $\varphi$, we denote $\varphi s$ the application of $s$ on $\varphi$, which is $\varphi$ with all occurrences of $x_i$ simultaneously replaced by $t_i$.
+\end{definition}
+\begin{quotation}
+    Variable instantiation and renaming, as used in the prenex and Skolem
+ transformations as well as in the Herbrand expansion, is a special case of
+ substitution.
+\end{quotation}
+for example, given $s=\{\tfrac{x}{y},\tfrac{y}{h(a,b)}\}$:\begin{equation}
+    P(x,y)s=P(y,h(a,b))
+\end{equation}
+\begin{definition}[Composition]
+    Given two substitutions $s_1,s_2$ we denote $s_1s_2$ the \textbf{composed substitution} that is the single subsection identical to $s_2\circ s_1$ (apply $s_1$ then $s_2$).
+\end{definition}
+For example, given $s_1=\{\tfrac{z}{g(x,y)},\tfrac{v}{w}\}$ and $s_2=\{\tfrac{x}{a},\tfrac{y}{b},\tfrac{w}{v},\tfrac{z}{d}\}$ we have\begin{equation}
+    P(x,y,z,v)s_1s_2=P(x,y,g(x,y),w)s_2=P(a,b,g(a,b),v)
+\end{equation}
+Given $s_1$ and $s_2$ to get $s_1s_2$ we can\begin{enumerate}
+\item replace all the terms $t_i$ in $s_1$ by applying $s_2$\item then for any variable $x_i$ replaced by $s_2$ but not by $s_1$, apply the
+respective variable/term pair $\tfrac{x_i}{t_i}$ of $s_2$\item remove any pairs of variable $x$ and term $t$ where $x=t$.\end{enumerate} 
+For any formula $\varphi$ and triplets of substitutions $s_1,s_2,s_3$, the following properties holds:\begin{enumerate}
+    \item $(\varphi s_1)s_2=\varphi(s_1s_2)$
+    \item $(s_1s_2)s_3=s_1(s_2s_3)$
+    \item $s_1s_2\ne s_2s_1$ in general.
+\end{enumerate}
+A substitution $s=\{\tfrac{x_1}{t_1}\dots \tfrac{x_n}{t_n}\}$ is idempotent $$\varphi ss=\varphi s$$ if $t_i$ does not contain $x_j$ for all $i,j$.
+\begin{definition}[Unifier]
+    A substitution $s$ is a \textbf{unifier} for a set of expressions $\{E_i\}=\{E_1\dots E_k\}$ if $E_is=E_js$ forall $i,j$.
+\end{definition}
+\begin{definition}
+    A substitution $g$ that is a unifier for $\{E_i\}$ is the \textbf{most general unifier (mgu)} if, for any $s$ unifier for $\{E_i\}$, there exists an other $s'$ unifier for $\{E_i\}$ such that \begin{equation}
+        \{E_i\}s=\{E_i\}gs'.
+    \end{equation}
+\end{definition}
+\begin{proposition}
+    If any unifier exists, then an idempotent mgu exists.
+\end{proposition}
+We want to define an algorithm that finds the mgu for a set of expressions $\{E_i\}$.
+\begin{proposition}
+    If the only way to unify $\{E_i\}$ is to unify a variable $x$ with a term $t$ that contains $x$, then, $\{E_i\}$  cannot be unified.
+\end{proposition}
+We call a \textbf{disagreement set} of a set of expressions $\{E_i\}$, the set of sub-expressions $\{t_i\}\subseteq \{E_i\}$ at the first position of  $\{E_i\}$ for which some of the $\{E_i\}$ disagree. For example with 
+
+\[ P(x,c,f(y)), P(x,z,z) \text{ have the disagreement set: }\{c,z\}\]
+since $c$ and $z$ are the first terms on which the expressions in $\{E_i\}$ disagree. Another example is 
+\[\{P(x,a,f(y)),P(y,a,f(y))\}\]
+the expressions disagree on the first term\begin{align*}
+    &P(\blueText{x},a,f(y))\\
+    &P(\blueText{y},a,f(y))\implies\\
+    &\text{disagreement set: }\{x,y\}
+\end{align*}
+We use this definition to build an algorithm that returns a unifier for a set of expressions (if any).
+\begin{theorem}
+    The Algorithm \ref{alg:mgu} succeeds if and only if there is a unifier for $\{E_i\}$. In the positive case, the algorithm returns an idempotent mgu of $\{E_i\}$.
+\end{theorem}
+\begin{algorithm}
+\caption{Find-MGU}\label{alg:mgu}
+\begin{algorithmic}[1]
+\State given $\{E_i\}$
+\State $k\leftarrow 0, \ T_k\leftarrow \{E_i\}, \ s_k\leftarrow \{\}, \ $
+\While{$T_k$ is not a singleton}
+\State Let $D_k$ be the disagreement set of $T_k$
+\State \blueText{/*if $t_k$ contains $x_k$ the unification is impossible*/}
+\State Let $x_k,t_k\in D_k$ be a variable and term such that $t_k$ does not contain $x_k$
+\If{such $x_k,t_k$ does not exists} 
+\State\Return failure
+\EndIf
+\State $s_{k+1}\leftarrow s_k\{\tfrac{x_k}{t_k}\}$ \blueText{/*$t_k$ does not contain any of $x_1\dots x_k$*/}
+\State $T_{k+1}\leftarrow T_k\{\tfrac{x_k}{t_k}\}$ \blueText{/*$x_k$ does not occur in $T_{k+1}$*/}
+\State $k\leftarrow k+1$
+\EndWhile 
+\State\Return $s_k$
+\end{algorithmic}
+\end{algorithm}
+Let's see an example of application, the input set is\[\{P(x,f(y),y),P(z,f(b),b)\}\]
+At the first iteration with $k=0$ we have \begin{align*}
+    &D_0=\{x,z\}\\ 
+    &\text{select $x$ and $z$ in $D_0$ since $z$ does not contain $x$}\\
+    &s_1=\{\tfrac{x}{z}\}\\ 
+    &\text{we substitute $x$ with $z$ in the set of expressions}\\ 
+    &\{P(\blueText{x},f(y),y),P(z,f(b),b)\}\implies \{P(\blueText{z},f(y),y),P(z,f(b),b)\}\\ 
+    &T_1=\{P(z,f(y),y),P(z,f(b),b)\}
+\end{align*}
+at the second iteration with $k=1$ we have \begin{align*}
+    &D_1=\{y,b\}\\
+    &s_2=s_1\{\tfrac{y}{b}\}=\{\tfrac{x}{z},\tfrac{y}{b}\}\\
+    &T_2=\{P(z,f(b),b),P(z,f(b),b)\}=\{P(z,f(b),b)\}
+\end{align*}
+at this point $T_2$ contains a single element so the output will be $s_2=\{\tfrac{x}{z},\tfrac{y}{b}\}$.\bigskip 
+
+Now we explain in the details the FOL resolution, we assume that the formulas are in Clausal normal form:\begin{equation}
+    \forall x_1\dots \forall x_n(l_1\lor \dots \lor l_n)
+\end{equation}
+written\begin{equation}
+    \{l_1,\dots l_n\}
+\end{equation}
+we recall that a clause is a set of disjunction of literal, a set of clause is denoted $\Delta$, the empty clause is denoted $\square$ and a \textit{calculus} is a set of inference rules.
+\begin{definition}[Derivation]
+    Given a set of clause $\Delta$ we say that a clause $C$ can be \textbf{derived} from $\Delta$ using a calculus $\mathcal R$, written \[\Delta\models_{\mathcal R}C\]
+    if, starting from $\Delta$ we can apply a sequence of rule from $\mathcal R$ ending in $C$.
+\end{definition}
+We recall the following properties\begin{itemize}
+    \item A calculus $\mathcal R$ is \textbf{sound} if $\Delta\models_{\mathcal R}C\implies \Delta\models C$. Soundness assures you that the derivation system $\mathcal R$  is ''reliable'', and that the clause it derives are logically correct with respect to $\Delta$.
+    \item A calculus $\mathcal R$ is \textbf{resolution complete} if $\Delta\models \bot$ implies $\Delta\models_{\mathcal R}\square$, i.e. if $\Delta$ is unsatisfiable is possible to derive the empty clause from it with $\mathcal R$.
+\end{itemize}
+We remind that to decide whenever $KB\models \varphi$ we can check the satisfiability of $\psi = KB\cup\{\varphi\}$. If this is unsatisfiable then $KB\models \varphi$. So the idea is\begin{itemize}
+    \item to check if $KB\models \varphi$ we consider $KB\cup\{\varphi\}$
+    \item we try to derive the empty clause $\square$ from $KB\cup\{\varphi\}$.
+\end{itemize}
+Now let's see our resolution rule.
+\begin{definition}[Propositional Resolution]
+    The resolution uses the following resolution rule:\begin{equation}
+        \frac{C_1\dot\cup\{l\},C_2\dot\cup\{\lnot l\}}{C_1\cup C_2}
+    \end{equation}
+\end{definition}
+So, if $\Delta$ contains two clauses of the form\[C_1\dot\cup\{l\},C_2\dot\cup\{\lnot l\}\]
+the rule derive the new clause $C_1\cup C_2$, $l$ and $\lnot l$ are called resolution literals. 
+\begin{definition}[Binary FOL Resolution]
+    The resolution uses the following resolution rule:\begin{equation}
+        \frac{C_1\dot\cup\{P_1\},C_2\dot\cup\{\lnot P_2\}}{[C_1\cup C_2]g}
+    \end{equation}
+    where $g$ is the mgu.
+\end{definition}
+If $\Delta$ contains two clauses of the form 
+$$\{C_1\dot\cup\{P_1\},C_2\dot\cup\{\lnot P_2\}\}$$
+where $P_1$ and $P_2$ \textbf{can be unified} and $g$ is an mgu for them, the rule allows to derive the clause $[C_1\cup C_2]g$ (the union of $C_1$ and $C_2$ where we apply the unification). $P$ and $\lnot P$ are called resolution literals. The two rules presented satisfies the properties of soundness.
+\begin{theorem}
+    The calculus with only the binary FOL resolution is not complete.
+\end{theorem}
+As a proof consider the following example:\begin{equation}
+    \Delta=\{
+        \{P(x_1,x_2),P(x_2,x_1)\},
+        \{\lnot P(y_1,y_2),\lnot P(y_2,y_1)\}
+    \}
+\end{equation}
+this $\Delta$ is not satisfiable, the variables in FOL clauses are universally quantified, to satisfy $\Delta$ we would have to satisfy $P(o,o)$ and $\lnot P(o,o)$ for all the objects $o$ in the universe. We notice that we can't derive the empty clause $\square$ from $\Delta$ using the binary FOL resolution.\bigskip
+
+
+Now we present two rules that forms a sound and complete calculus.
+
+\begin{definition}[Full FOL Resolution]
+    The resolution uses the following resolution rule:
+    \begin{equation}
+        \frac{C_1\dot\cup\{P_1^1\dots P_1^n\},C_2\dot\cup\{\lnot P_2^1\dots \lnot P_2^n\}}{[C_1\cup C_2]g}
+    \end{equation}
+    where $\{P_1^1,\dots P_1^n,P_2^1,\dots \lnot P_2^n\}$ can be unified and  $g$ is an mgu for them.
+\end{definition}
+\begin{definition}[Factoring]
+    The resolution uses the following resolution rule:\begin{equation}
+        \frac{C_1\dot\cup\{l_1\}\dot\cup\{l_2\}}{
+            [C_1\cup\{l_1\}]g
+        }
+    \end{equation}
+    where $l_1$ and $l_2$ can be unified and $g$ is an mgu for them. $[C_1\cup\{l_1\}]g$ is a \textbf{factor} of the parent clause.
+\end{definition}
+We denote $\mathcal{R}_{FactBin}$ the calculus with the factoring rule and $\mathcal{R}_{Full}$ the calculus with the full FOL resolution.
+\begin{lemma2}[Lifting Lemma]\label{lemma:lifting}
+    Let $C_1$ and $C_2$ be two clauses with no shared variables, and let $C_1^g$ and $C_2^g$ be ground instances of $C_1$ and $C_2$. Say that $C^g$ is a resolvent of $C_1^g$ and $C_2^g$. Then there exists a clause $C$ such that $C^g$ is a ground instance of $C$, and:
+\begin{enumerate}
+    \item$C$ can be derived from $C_1$ and $C_2$ using $\mathcal{R}_{Full}$.
+    \item$C$ can be derived from $C_1$ and $C_2$ using $\mathcal{R}_{FactBin}$.
+\end{enumerate}
+\end{lemma2}
+\begin{theorem}
+    The calculus with the full FOL resolution and with the factoring resolution is sound and complete.
+\end{theorem}
+A sketch of the proof is presented through previous intermediate results:\begin{itemize}
+    \item Any set $\theta$ of FOL formula s can be represented in clausal form $\Delta$
+    \item we assume that $\Delta$ is unsatisfiable 
+    \item we use the \textit{Herbrand} Theorem \ref{teo:Herbrand} and the propositional compactness Proposition \ref{propCompact}, so the (assumed) unsatisfiability of $\Delta$ translates to: some finite set $\Delta'$ of ground instances is unsatisfiable.
+    \item by compactness of propositional resolution, we can derive $\square$ from $\Delta'$
+    \item $\square$ can also be derived directly from $\Delta$ with the full FOL resolution and the factoring resolution by the lifting Lemma \ref{lemma:lifting}.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
 
 \chapter{Planning}
-
 Planning (or automatic planning) is a branch of artificial intelligence that deals with generating a strategy or sequence of actions to allow an intelligent agent (such as a robot or software) to achieve an objective starting from an initial state. It's a general way to define a problem solving procedure.
 \section{STRIPS}
 STRIPS (acronym for STanford Research Institute Problem Solver) is one of the most important automatic planning languages and systems in the history of artificial intelligence.
