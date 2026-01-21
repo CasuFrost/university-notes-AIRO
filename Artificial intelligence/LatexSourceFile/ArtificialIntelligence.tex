@@ -54,7 +54,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================FOOTER e HEADER=======================%
 \fancyhf{}
 \fancyhead[L]{\nouppercase{\leftmark}}
-\fancyhead[R]{Sezione \thesection}
+\fancyhead[R]{Section \thesection}
 \fancyfoot[C]{\thepage}
 \fancyfoot[L]{\titolo}
 \fancyfoot[R]{ Marco Casu}
@@ -66,7 +66,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{lemma2}{Lemma}
 \newtheorem{corollary}{Corollary}
 %==================INIZIO======================%
-\chapter{Introduzione}
+\chapter{Introduction}
 \section{Basic Definitions}
 In the context of the artificial intelligence, an \textbf{agent} is an entity that can\begin{itemize}
     \item Perceive the environment through \textit{sensors} (percepts)
@@ -916,7 +916,22 @@ Making two states reproduce: Create a new state by selecting some characteristic
 \begin{algorithm}
     \caption{ GENETIC-ALGORITHM}\label{alg:GenAlg}
     \begin{algorithmic}
-    \Require A starting $population$ of states
+    \Require A starting $population$ of states, the $fitness$ function 
+    \While{True}
+    \State $new_population\leftarrow$ empty set
+    \For{$i=1\dots Size(population)$}
+    \State $x\leftarrow $ random individual from $population$
+    \State $y\leftarrow $ random individual from $population$
+    \State\blueText{/*Reproduction*/}
+    \State $n\leftarrow Length(x)$
+    \State $c\leftarrow $Random number from 1 to $n$
+    \State $child\leftarrow Append(Substring(x,1,c),Substring(y,c+1,n))$
+    \State\textbf{if} small random probability \textbf{then} $child\leftarrow Mutate(child)$
+    \EndFor 
+    \State\textbf{if} stopping condition \textbf{then return} best individual in $population$
+    \EndWhile
+  
+    
     \end{algorithmic}
 \end{algorithm}
 
@@ -1110,8 +1125,6 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
     \end{algorithmic}
 \end{algorithm}
 %%%
-
-\newpage
 \subsection{Monte-Carlo Tree Search}
 The Alpha-Beta search have two issues\begin{itemize}
     \item it needs an accurate and fast evaluation function 
@@ -1200,14 +1213,13 @@ In SuDoKu, the variables are the content of the cells, the domain of each cell i
         \item $D=\{D_{v_1},D_{v_2}\dots D_{v_n}\}$ is a corresponding set of finite domains.
         \item $C$ is a set of binary relations that models the constraints. A relation is denoted $C_{uv}$ with $u,v$ variables in $V$. $$C_{uv}\subseteq D_u\times D_v$$If $C_{uv}\in C$ and $C_{xy}\in C$, then $\{u,v\}\ne \{x,y\}$ (no redundancy).
     \end{itemize}
-    $C_{uv}$ defines the permissible combined assignments to $u$ and $v$. For example, if\begin{align}
+    $C_{uv}$ defines the permissible combined assignments to $u$ and $v$. For example, let\begin{align}
         &u,v\in V\\
         &v'\in D_{v}\\ 
         &u' \in D_{u}\\ 
         & C_{uv}\subseteq D_{v}\times D_{u} \in C\\
-        &(v',u')\notin C_{uv}
     \end{align}
-the assignment $v=v', u=u'$ violates the constraints. Let's see an example, we consider the map of australia show in figure \ref{fig:australia}. We want to colorate each state with one of 3 possible colors, without having two adjacent state with the same color.\bigskip
+if $(v',u')\notin C_{uv}$ the assignment $v=v', u=u'$ violates the constraint, so $C_{uv}$ contains the permissible combined assignments for two variables. Let's see an example, we consider the map of australia show in figure \ref{fig:australia}. We want to colorate each state with one of 3 possible colors, without having two adjacent state with the same color.\bigskip
 
 \begin{figure}[h!]
     \centering
@@ -1216,13 +1228,13 @@ the assignment $v=v', u=u'$ violates the constraints. Let's see an example, we c
     \label{fig:australia}
 \end{figure}
 
-The variables are the states 
+\noindent The variables are the states 
 $$ V=\{WA,NT,SA,Q,NSW,V,T\}$$
 The domain for each variable $v\in V$ is $D_v=\{red,green,blue\}$.
 If all the variables have the same domain \begin{equation}
     \forall v\ne u, D_v=D_u
 \end{equation}
-we do an notation abuse saying that the domain of the problem is $D=\{red,green,blue\}$.
+as a notation abuse we say that the domain of the problem is $D=\{red,green,blue\}$.
 For each adjacent couple of states $u,v$, there is a constraint
 $$C_{uv}=\{(d,d')\in D\times D \ : \ d\ne d'\}.$$
 Constraint Networks can be extended\begin{itemize}
@@ -1237,7 +1249,7 @@ There exists CSP solvers, generic algorithms that find assignment for constraint
         \item $V'\subseteq V$
         \item $a(v)\in D_v$ for all $v\in V'$
     \end{itemize}
-    if $V'=V$ is a \textbf{total assignment} (or just assignment). A partial assignment assigns some variables to values from their
+if $V'=V$ is a \textbf{total assignment} (or just assignment). A partial assignment assigns a value to some variables from their
 respective domains. A total assignment is defined on all variables.
 \end{definition}
 \begin{definition}
@@ -1265,7 +1277,7 @@ Given a constraint network $\gamma=(V,D,C)$, if $n=|V|$ and $\forall D_v\in D$, 
     The problem to decide if a constraint network $\gamma=(V,D,C)$, is solvable is  $\mathsf{NP}$-complete.
 \end{theorem}
 \section{Naive Backtracking}
-The following algorithm is simple and used to find a solution for a constraint network. The method is recursive, the first step given assignment $a$ is the empty assignment.
+The following algorithm is simple and used to find a solution for a constraint network. The method is recursive, the initial assignment $a$ to start the algorithm is the empty assignment.
  \begin{algorithm}
     \caption{NaiveBacktracking}\label{alg:NaiveBacktracking}
     \begin{algorithmic}
@@ -1273,11 +1285,11 @@ The following algorithm is simple and used to find a solution for a constraint n
     \If{$a$ is inconsistent} \State\Return inconsistent\EndIf
     \If{$a$ is a total assignment} \State\Return $a$\EndIf
     \State let $V'$ to be the domain of $a$
-    \State select \color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
+    \State select \color{blue} some  \color{black} $v\in V-V'$ \greenText{/*select a variable for which $a$ is not defined*/}
     \For{ each $d\in D_v$ in \color{blue} some order \color{black}}
     \State $a'=a\cup \{v=d\}$
     \State $a''=$NaiveBacktracking($\gamma$,$a'$)
-    \If{$a''$ is not inconsistent} \State\Return $a''$\EndIf
+    \If{$a''$ is consistent} \State\Return $a''$\EndIf
     \EndFor
     \State\Return inconsistent
     \end{algorithmic}
@@ -1296,15 +1308,15 @@ This algorithm can't predict if an assignment $a$ can't be extended to a solutio
 \subsection{About the Order}
 The ordering in the for loop of algorithm \ref{alg:NaiveBacktracking} can  influences the search space size. If no solution exists below current node, the order doesn't matter, the algorithm will search the whole sub-tree anyway, otherwise, if a solution does exist below current node, by choosing the ''correct'' value, then no backtracking is needed.\bigskip 
 
-A common strategy is to consider the variable ''most constrained'', at each recursion step, we pick the variable $v$ that minimize the size of the set\begin{equation}
+A common strategy is to consider the variable ''most constrained'' (the variable with the greatest number of assignments that make $a$ inconsistent), at each recursion step, we pick the variable $v$ that minimize the size of the set\begin{equation}
     \{d\in D_v \ : \ a\cup\{v=d\} \text{ is consistent }\}
 \end{equation}
 by choosing a most constrained variable $v$ first, we reduce the
 branching factor (number of sub-trees generated for $v$) and thus reduce
 the size of our search tree.\bigskip 
 
-Another common heuristic is to choose the variable that is the ''most constraining'', we choose $v$ that maximize the size of the set\begin{equation}
-    \{u\in V \ : \ a(u)\text{ is undefined }\land C_{uv}\in C \}
+Another common heuristic is to choose the variable that is the ''most constraining'' (the most frequent variable in constraints), we choose $v$ that maximize the size of the set\begin{equation}
+    \{u\in V \ : \ a(u)\text{ is undefined }\land \left(C_{uv}\in C \lor C_{vu}\in C\right) \}
 \end{equation}
 by choosing a most constraining variable first, we detect
 inconsistencies earlier on and thus reduce the size of our search tree.\bigskip 
@@ -1315,7 +1327,7 @@ For the order of the value in the for loop, we can choose the least constraining
 by choosing a least constraining value first, we increase the chances
 to not rule out the solutions below the current node. 
 \section{Inference}
-Given a constraint networks, we would like to obtain an equivalent network with more constraint, without losing any feasible solution, in such case, we are giving a tighter description of the problem, and we obtain a network with a smaller number of
+Given a constraint network, we would like to obtain an equivalent network with more constraint, without losing any feasible solution, in such case, we are giving a tighter description of the problem, and we obtain a network with a smaller number of
 consistent partial assignments. Already known constraints may implies additional (unary or binary) constraints.\begin{definition}
     Let $\gamma=(V,D,C)$ and $\gamma'=(V,D',C')$ to be two constraint networks, sharing the same set of variables. We say that $\gamma$ are \textbf{equivalent} to $\gamma'$, and we denote $$ \gamma\equiv\gamma' $$
     if every solution (assignment of variables) of $\gamma$ is a solution of $\gamma'$ and vice versa.
@@ -1372,7 +1384,8 @@ With the function \color{orange}Inference \color{black} we denote any procedure 
     \Require $\gamma,a$
     \For{ each $v$ where $a(v)=d'$ is defined }
     \For{ each $u$ where $a(u)$ is undefined and $C_{uv}\in C$}
-    \State $D_u=\{d \ | \ d\in D_u, (d,d')\in C_{uv}\}$
+    \State $D'_u=\{d \ | \ d\in D_u, (d,d')\in C_{uv}\}$
+    \State $D_u\leftarrow D'_u$ \greenText{/*We update the domain of $u$*/}
     \EndFor 
     \EndFor 
      \State\Return $\gamma$
@@ -1385,7 +1398,7 @@ The forward checking algorithm tightens the constraints without ruling out any s
 \end{itemize}
 
 \subsection{Arc Consistency for Stronger Inference}
-We now describe a properties between two variables that can be used to describe a stronger inference method than the forward checking.\begin{definition}
+We now describe a property between two variables that can be used to describe a stronger inference method than forward checking.\begin{definition}
     Let $\gamma=(V,D,C)$ to be a constraint network, a variable $u\in V$ is \textbf{arc consistent} to another variable $v\in V$ if \begin{itemize}
             \item either $C_{uv}\notin  C$ 
             \item or for every $d\in D_u$ there exists $d'\in D_v$ such that $(d,d')\in C_{uv}$.
@@ -1393,7 +1406,7 @@ We now describe a properties between two variables that can be used to describe 
 \end{definition}
 When two variables in a constraint network are arc consistent, it means that the domain  of each variable contains at least one value that is compatible with at least one value in the domain of the other variable, according to the constraint between them.
 
-As an example, let's say the variable $v$ describes the color of your shirt, that can be red, blue, yellow or green, and the variable $u$ define the color of your pants, that can be black, white, gray or brown. The constraint is that the shirt and the pants cannot be the same color, the variable $v$ is  arc consistent to $u$ because for every shirt color you can find a pant color and vice versa.\begin{quote}
+As an example, let's say the variable $v$ describes the color of your shirt, that can be red, blue, yellow or green, and the variable $u$ define the color of your pants, that can be black, white, gray or brown. The constraint is that the shirt and the pants cannot be the same color, the variable $v$ is  arc consistent to $u$ because for every shirt color you can find a pants color and vice versa.\begin{quote}
     \textbf{Note}: Arc consistency is a non commutative relation, if $v$ is  arc consistent to $u$, it's not implied directly that $u$ is  arc consistent to $v$.
 \end{quote}
 \begin{definition}
@@ -1401,7 +1414,7 @@ As an example, let's say the variable $v$ describes the color of your shirt, tha
 \end{definition}
 We can define an inference procedure that aims to make the network $\gamma$ arc consistent, by removing variable domain values. Let's say that AC($\gamma$) is a procedure that makes $\gamma$ arc consistent, in such case:\begin{itemize}
     \item is guaranteed that AC($\gamma$) returns an equivalent network.
-    \item AC($\gamma$) is more powerful (more general) tha forward checking, in details:\begin{equation}
+    \item AC($\gamma$) is more powerful (more general) the forward checking, in details:\begin{equation}
         \text{AC}(\gamma)\sqsubseteq \text{ForwardChecking}(\gamma)
     \end{equation}
 \end{itemize}
@@ -1426,11 +1439,11 @@ We apply pairwise Revisions in algorithm \ref{alg:AC1} and define the first vers
     \caption{AC\_1}\label{alg:AC1}
     \begin{algorithmic}
     \Require $\gamma$
-    changes = False
+    \State changes = False
     \While{changes = False }
     \For{ each $C_{uv}\in C$}
-    \State\textbf{If } $D_u$ after applying Revise($\gamma,u,v$ reduces) \textbf{ then } changes = True
-    \State\textbf{If } $D_v$ after applying Revise($\gamma,v,u$ reduces) \textbf{ then } changes = True
+    \State\textbf{If } $D_u$ after applying Revise($\gamma,u,v$) is reduced \textbf{ then } changes = True
+    \State\textbf{If } $D_v$ after applying Revise($\gamma,v,u$) is reduced \textbf{ then } changes = True
     \EndFor
     \EndWhile
     \end{algorithmic}
@@ -1450,7 +1463,7 @@ haven't changed since the last time.\bigskip
      \State $M=M\cup\{(u,v),(v,u)\}$
      \EndFor
       \While{$M\ne\emptyset$ }
-      \State remove any element $(u,v)$ from $M$
+      \State remove a random single element $(u,v)$ from $M$
       \State Revise($\gamma,u,v$)
       \If{ $D_u$ has changed in the call Revise}
       \For{ each $C_{wu}\in C$ where $w\ne v$}
@@ -1500,7 +1513,7 @@ Note how this graph is composed by two connected sub-graph, since the variable $
      (u,v)\notin \mathcal E(G)\\ 
       (v,u)\notin \mathcal E(G)
     \end{matrix} \implies C_{uv}\notin C$$
-    so the components of the partition are disconnected from each other. Let $a_i$ to be an feasible assignment (solution) for the variables $V_i$, then \begin{equation}
+    so the components of the partition are disconnected from each other. Let $a_i$ to be a feasible assignment (solution) for the variables $V_i$, then \begin{equation}
         a=\cup_i a_i 
     \end{equation}
     is a solution to $\gamma$.
@@ -1513,13 +1526,14 @@ The theorem states that if two parts of $\gamma$ are not connected (in term of h
 The procedure is the following (assuming that a constraint network is connected, if not, we can apply the procedure to each connected component).\begin{enumerate}
     \item We consider the constraint graph of $\gamma$, denoted $G$. We choose an arbitrary node $v\in \mathcal V(G)=V$, and we consider the BFS spanning tree $G'$ starting from $v$. 
     \item $G'$ is a directed graph, we consider a topological ordering $v_1\dots, v_n$ of the variables.
-    \item we iterate through the variables $v_i$ in the opposite order respect to the topological ordering: for each $i=n,n-1,n-2,\dots, 3,2$ (except for $v_1$)\begin{enumerate}
+    \item we iterate through the variables $v_i$ in the opposite order respect to the topological ordering: for each $i=n-1,n-2,\dots, 3,2$ (except for $v_1$)\begin{enumerate}
         \item we perform the procedure Revise($\gamma$, parent($v_i$), $v_i$)
         \item if $D_{\text{parent($v_i$)}}\ne \emptyset$, return inconsistent
     \end{enumerate}
     at this point,  every variable is arc consistent relative to its children
     \item We perform the algorithm \ref{alg:BacktrackingWithInference} using the variable order $v_1,v_2\dots , v_n$.
 \end{enumerate}
+We call this procedure $AcyclicCG(\gamma)$.
 \subsection{Cutsets}
 \begin{definition}
     Let $\gamma=(V,D,C)$ to be a constraint network. Let $G$ to be the constraint graph, a \textbf{cutset} $V_0\subseteq V$ is a set such that, the graph $G'$ where $\mathcal V(G')=V\backslash V_0$ is acyclic.
@@ -1529,11 +1543,60 @@ graph acyclic. The graph of the ''coloring Australia'' problem is \textit{almost
     \includegraphics[width=0.6\textwidth ]{images/australia_graph2.png}
 \end{center}
 The following procedure use cutsets to find a solution for $\gamma$.
-\begin{center}
-    \includegraphics[width=0.8\textwidth ]{images/cutset.png}\bigskip
 
-    \redText{TODO: Riscrivere questo algoritmo, l'identazione è ambigua}
-\end{center}
+\begin{algorithm}
+    \caption{CutsetConditioning}\label{alg:CutsetConditioning}
+    \begin{algorithmic}
+    \Require $\gamma,V_0,a$
+    \State $\gamma'=$ a copy of $\gamma$
+    \State $\gamma'=$ Forward Checking($\gamma'$,a)
+    \State\textbf{if} $\exists v$ with $D'_v=\emptyset$ \textbf{then return} inconsistent 
+    \If{ $\exists v\in V_0$ such that $a(v)$ is undefined}
+    \State select such \blueText{$v$} \greenText{/*used after this if-else block*/}
+    \Else  
+    \State $a'=AcyclicCG(\gamma')$
+    \State\textbf{if} $a'\ne$inconsistent \textbf{then return} $a\cup a'$ 
+    \State\textbf{else return} inconsistent 
+    \EndIf 
+    \State we consider the selected \blueText{$v$}
+    \For{each $d\in$ copy of $D'_v$ in some order}
+    \State $a'=a\cup\{v=d\}$
+    \State $D'_v=\{d\}$
+    \State $a''=$CutsetConditioning($\gamma',V_0,a'$)
+    \State\textbf{if} $a''\ne$inconsistent \textbf{then return} $a''$.  
+    \EndFor 
+    \State\Return inconsistent 
+    \end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Algorithm explanation}:
+\begin{itemize}[label=\textbullet]
+    \item \textbf{Initialization and Propagation}: 
+    The algorithm begins by creating a local copy of the network ($\gamma'$) and applying \textbf{Forward Checking}. This ensures that the current assignments ($a$) are consistent with the remaining domains. If any domain $D'_v$ becomes empty, the current branch is deemed \textit{inconsistent}.
+
+    \item \textbf{Cycle Cutset Processing ($V_0$)}:
+    The algorithm prioritizes variables belonging to the cutset $V_0$.
+    \begin{itemize}
+        \item If there are unassigned variables in $V_0$, the algorithm selects one ($v$) to branch on.
+        \item It enters a recursive search where it tries every possible value $d$ from the domain $D'_v$. 
+        \item By assigning values to all variables in $V_0$, the algorithm effectively ''breaks'' the cycles in the constraint graph.
+    \end{itemize}
+
+    \item \textbf{Base Case: Solving the Acyclic Subproblem}:
+    Once all variables in the cutset $V_0$ are assigned, the remaining network is \textbf{acyclic}. 
+    \begin{itemize}
+        \item The algorithm calls \texttt{AcyclicCG($\gamma'$)}.
+        \item Because tree-structured CSPs can be solved in linear time (using arc consistency algorithms like AC-3 or specialized directional consistency), this step is highly efficient.
+        \item If the acyclic solver finds a valid assignment $a'$, it is merged with the cutset assignments $a$ and returned as the solution.
+    \end{itemize}
+
+    \item \textbf{Backtracking Search}:
+    If the recursive call \texttt{CutsetConditioning} or the \texttt{AcyclicCG} call returns \textit{inconsistent}, the algorithm backtracks, picks the next value in the domain of $v$, and tries again.
+
+    \item \textbf{Termination}:
+    The algorithm returns a complete, consistent assignment $a \cup a'$ if one exists; otherwise, after exhausting all possibilities for the cutset variables, it returns \textit{inconsistent}.
+\end{itemize}
+
 The forward checking operation is required to ensure that $a\cup a'$ is consistent in $\gamma$, the runtime is exponential in $V_0$. It is true that finding an optimal cutset for a graph is $\mathsf{NP}$-hard, but practical approximated procedures exists.
 
 
@@ -1576,9 +1639,9 @@ the interpretation \begin{equation}
     \end{cases}
 \end{equation}
 is a model since $I\models \varphi$:\begin{equation}
-    (P\lor Q)\leftrightarrow (R\lor S)  \implies (1\lor 0)\leftrightarrow (0 \lor 0) \implies 1 \leftrightarrow 1 \implies \top
+    (P\lor Q)\leftrightarrow (R\lor S)  \implies (1\lor 0)\leftrightarrow (1 \lor 1) \implies 1 \leftrightarrow 1 \implies \top
 \end{equation}
-A set of formulas $KB$ is called \textbf{Knowledge Base} and an interpretation $I$ models $KB$ if, for all $\varphi\in KB$ we have that $I\models \varphi$. We also say that $I$ is a model of $KB$.
+Notation-wise, 0 and $\bot$ are interchangeable, like 1 and $\top$. A set of formulas $KB$ is called \textbf{Knowledge Base} and an interpretation $I$ models $KB$ if, for all $\varphi\in KB$ we have that $I\models \varphi$. We also say that $I$ is a model of $KB$.
 \begin{definition}
     Let $\varphi$ to be a formula:\begin{itemize}
         \item $\varphi$ is \textbf{satisfiable} if $\exists I$ such that $I\models \varphi$ 
@@ -1595,7 +1658,7 @@ A set of formulas $KB$ is called \textbf{Knowledge Base} and an interpretation $
     if, all the models $I$ of $KB$, are models of $\varphi$. 
     $$ M(\bigwedge_{\psi\in KB}\psi)\subseteq M(\varphi)$$
 \end{definition}
-We say that the formula $\varphi$ follows from $KB$, and would be redundant to include $\varphi$ in $KB$. It's also important to derive new logic formula form a given knowledge base.
+We say that the formula $\varphi$ follows from $KB$, and would be redundant to include $\varphi$ in $KB$. It's also important to derive new logic formula from a given knowledge base.
 \begin{theorem}
     $KB\models \varphi$ if and only if $KB\cup\{\lnot \varphi\}$ is unsatisfiable.
 \end{theorem}
@@ -1604,13 +1667,15 @@ We say that the formula $\varphi$ follows from $KB$, and would be redundant to i
 \noindent\textit{Proof $\impliedby$}: If $KB\cup\{\lnot \varphi\}$ is unsatisfiable then for any $I$ such that $I\models KB$ we have $I\not\models\lnot\varphi$ hence $I\models\varphi$.\bigskip 
 
 Given a formula with $n$ variables, the number of possible assignment is $2^n$, so it's hard to test the satisfiability of a formula by testing all the  interpretations.\begin{definition}
-    A formula is in \textbf{conjunctive normal form (CNF)} if is a conjunction of disjunction of literals.\footnote{A literal is an atom $P$ or the negation of an atom $\lnot P$.}.\begin{equation}
-        \bigwedge_i\left(\bigvee_j L_{i,j}\right)
+    A formula is in \textbf{conjunctive normal form (CNF)} if is a conjunction of disjunction of literals.\footnote{A literal is an atom $P$ or the negation of an atom $\lnot P$.
+    If $l=\lnot P$ where $P$ is an atom, the literal $\lnot l$ is equal to $P$.
+    }.\begin{equation}
+        \bigwedge_i\left(\bigvee_j l_{i,j}\right)
     \end{equation}
 \end{definition}
 \begin{definition}
     A formula is in \textbf{disjunctive normal form (DNF)} if is a disjunction of conjunction of literals.\begin{equation}
-        \bigvee_i\left(\bigwedge_j L_{i,j}\right)
+        \bigvee_i\left(\bigwedge_j l_{i,j}\right)
     \end{equation}
 \end{definition}
 It is important to know that \textbf{every formula} can be expressed in CNF or DNF, or, for each formula $\varphi$, there exists an equivalent formula $\psi$ that is a CNF or a DNF. It is possible to construct the equivalent CNF (or DNF) from $\varphi$ by exploiting the equivalences such as\begin{itemize}
@@ -1656,13 +1721,15 @@ You may wonder what this formula means and how it is applied, the symbol $\dot\c
     \item the term over the fraction line represents the clauses that we already have in our CNF 
     \item the term under the fraction line represents a new formula that we derive 
 \end{itemize}
-In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cup\{\lnot l\}$ in $\Delta$, we can derive a disjunction $\phi = C_1\cup C_2$.\begin{quote}
+In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cup\{\lnot l\}$ in $\Delta$, we can derive a disjunction (i.e. a new clause) $\phi = C_1\cup C_2$. The two starting clauses $C'_1$ and $C'_2$ are called parent clauses.\begin{quote}
     if you have two clauses where the same literal appears, but in one it is affirmative ($l$) and in the other it is negated ($\bar{l}$), you can ''add them'' by eliminating $l$ and $\bar{l}$ and merging everything else.
 \end{quote}
 For example, if you have $\{P,\lnot R\}$ and $\{R,Q\}$, you can resolve them and find a new formula $\{P,Q\}$.
 \begin{theorem}\label{Teo:Soundness}
     The \textbf{soundness theorem} affirms that, if $\Delta\vdash D$ (the formula $D$ can be derived by some clause in $\Delta$ with the resolution rule) then $\Delta\models D$ (the CNF $\Delta$ entails $D$).
 \end{theorem}
+In practice, a resolution rule is \textbf{sound} if it derives formulas that are logically consistent with the parent clauses.\bigskip
+
 In the definition of \textit{entailment}, is a knowledge base that ''entails'' a formula, and not a formula that ''entails'' another formula, but a knowledge base $KB$ is equivalent to a CNF by putting in conjunction all the formulas in $KB$.\bigskip 
 
 The resolution algorithm takes as an input a knowledge base $KB$ and a formula $\phi$ and guess if $KB\models \phi$ by the following steps:\begin{enumerate}
@@ -1688,7 +1755,7 @@ Every CSP problem can be encoded as a SAT problem:\begin{itemize}
 This and many other problems can be ''encoded'' as a SAT formula through reduction.
 \bigskip 
 
-\noindent A \textbf{SAT solver} is an algorithm that, given a CNF $\Delta$, returns an interpretation $I$ (if exists) such that $I\models \Delta$. We consider the DPLL procedure: A complete SAT solver. A SAT solver can be use in different contexts:\begin{itemize}
+\noindent A \textbf{SAT solver} is an algorithm that, given a CNF $\Delta$, returns an interpretation $I$ (if exists) such that $I\models \Delta$. We consider the DPLL procedure: A complete SAT solver. A SAT solver can be used in different contexts:\begin{itemize}
     \item We can use it to entail a new formula $\varphi$ from $\Delta$. 
     \item We need an assignment $I$ that models $\Delta$.
 \end{itemize}
@@ -1798,7 +1865,7 @@ Consider $$\Delta=\{\{P,Q,\lnot R\},
 \}
     \end{equation}
 
-\item We apply the UP rule on $Q$ and $Q$ becomes an implied literal, the edges
+\item We apply the UP rule on $\{Q\}$ and $\{\lnot Q\}$ becomes an implied literal, the edges
 \begin{align}
     & R\rightarrow Q\\ 
     & \lnot P \rightarrow Q 
@@ -2382,7 +2449,7 @@ A sketch of the proof is presented through previous intermediate results:\begin{
 \chapter{Planning}
 Planning (or automatic planning) is a branch of artificial intelligence that deals with generating a strategy or sequence of actions to allow an intelligent agent (such as a robot or software) to achieve an objective starting from an initial state. It's a general way to define a problem solving procedure.
 \section{STRIPS}
-STRIPS (acronym for STanford Research Institute Problem Solver) is one of the most important automatic planning languages and systems in the history of artificial intelligence.
+STRIPS (acronym for STanford Research Institute Problem Solver) is one of the most important automatic planning language and system in the history of artificial intelligence.
 
 Developed in 1971 by Richard Fikes and Nils Nilsson, it was used to control the actions of Shakey, one of the first mobile robots with logical reasoning. In modern terms, STRIPS represents the standard for so-called classic planning.\bigskip 
 
@@ -2411,7 +2478,7 @@ We will often give each action $a \in A$ a \textbf{name} (a string), and identif
         \item \textbf{Delete list} $del_a$: $\{at(x)\}$.
     \end{itemize}
     \item \textbf{Plan:} $\langle drive(Sydney, Brisbane), drive(Brisbane, Sydney), drive(Sydney, Adelaide),$ 
-    $drive(Adelaide, Perth), drive(Perth, Adelaide), drive(Adelaide, Darwin),$
+    $drive(Adelaide, Perth),$\\$ drive(Perth, Adelaide), drive(Adelaide, Darwin),$
     $drive(Darwin, Adelaide), drive(Adelaide, Sydney)\rangle$.
 \end{itemize}
  \begin{center}
@@ -2520,9 +2587,9 @@ $h$ is not admissible yet,  large $add_a$ doesn't help if the intersection with 
 
 Also this is not admissible. To have an admissible (and optimal) heuristic in the relaxed world, we should find the shortest possible sequence of actions ($\text{optimal } \vec{a}$). But finding this sequence is equivalent to solving the Minimum Cover problem, since Minimum Cover is an $\mathsf{NP}$-complete problem, finding the optimal heuristic even for a relaxed problem is computationally expensive.\bigskip 
 
-We call \textbf{PlanEx} the problem of deciding, given a STRIPS planning task $\Pi$, whether or not there exists a plan for  $\Pi$.
+We call $\mathsf{PlanEx}$ the problem of deciding, given a STRIPS planning task $\Pi$, whether or not there exists a plan for  $\Pi$.
 \begin{lemma2}
-    PlanEx is $\mathsf{PSPACE}$-hard.
+    $\mathsf{PlanEx}$ is $\mathsf{PSPACE}$-hard.
 \end{lemma2}
 \textit{Proof Sketch}:
 Given a Turing machine with \textbf{space bounded by polynomial $p(|w|)$}, we can in polynomial time (in the size of the machine) generate an equivalent STRIPS planning task. Say the possible symbols in tape cells are $x_1, \dots, x_m$ and the internal states are $s_1, \dots, s_n$, accepting state $s_{acc}$.
@@ -2534,11 +2601,11 @@ Given a Turing machine with \textbf{space bounded by polynomial $p(|w|)$}, we ca
     \item This reduction to STRIPS runs in polynomial-time because we need only polynomially many facts.
 \end{itemize}
 \begin{lemma2}
-    PlanEx is in $\mathsf{PSPACE}$.
+    $\mathsf{PlanEx}$ is in $\mathsf{PSPACE}$.
 \end{lemma2}
-It is easy and sufficient to prove that PlanEx is in $\mathsf{NPSPACE}$, since $\mathsf{PSPACE}=\mathsf{NPSPACE}$. From the two lemmas, the following theorems follows.
+It is easy and sufficient to prove that $\mathsf{PlanEx}$ is in $\mathsf{NPSPACE}$, since $\mathsf{PSPACE}=\mathsf{NPSPACE}$. From the two lemmas, the following theorems follows.
 \begin{theorem}
-    PlanEx is $\mathsf{PSPACE}$-complete.
+    $\mathsf{PlanEx}$ is $\mathsf{PSPACE}$-complete.
 \end{theorem}
 \subsection{Transition System}
 The state space of a planning task, like the one described in Definition \ref{STRIPS_state_space}, is generalized in the following definition.\begin{definition}[Transition Systems]
@@ -2606,15 +2673,15 @@ For the map example in Australia:
     \includegraphics[width=0.3\textwidth ]{images/strips_example.png}
 \end{center}
 \begin{itemize}
-    \item \textbf{Variables $V$}: $at : \{Sydney, Adelaide, Brisbane, Perth, Darwin\}$; $visited(x) : \{T, F\}$ per ogni città $x$.
-    \item \textbf{Initial state $I$}: $at = Sydney, visited(Sydney) = T, visited(x) = F$ per $x \neq Sydney$.
-    \item \textbf{Goal $G$}: $at = Sydney, visited(x) = T$ per ogni $x$.
-    \item \textbf{Actions $a \in A$}: $drive(x, y)$ dove $x, y$ hanno una strada.
+    \item \textbf{Variables $V$}: $at : \{Sydney, Adelaide, Brisbane, Perth, Darwin\}$; $visited(x) : \{T, F\}$ for each city $x$.
+    \item \textbf{Initial state $I$}: $at = Sydney, visited(Sydney) = T, visited(x) = F$ for $x \neq Sydney$.
+    \item \textbf{Goal $G$}: $at = Sydney, visited(x) = T$ for each $x$.
+    \item \textbf{Actions $a \in A$}: $drive(x, y)$ where $x, y$ have a road connecting them.
     \begin{itemize}
-        \item Precondizione $pre_a$: $at = x$.
-        \item Effetto $eff_a$: $at = y, visited(y) = T$.
+        \item Preconditions $pre_a$: $at = x$.
+        \item Effects $eff_a$: $at = y, visited(y) = T$.
     \end{itemize}
-    \item \textbf{Cost function $c$}: 
+    \item \textbf{Cost function $c$} (might be a measure of the distance): 
     \[
     c(drive(x, y)) = 
     \begin{cases} 
@@ -2668,7 +2735,7 @@ Isomorphisms typically result from compilations between different
  formalisms (see later this chapter); we will also sometimes use them as a
  technical device.
 
- Now we consider a systematic way co convert an FDR planning task in a STRIPS planning task.
+ Now we consider a systematic way to convert an FDR planning task in a STRIPS planning task.
  \begin{definition}[FDR to STRIPS]\label{FDR2STRIPS}
     Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, the \textbf{STRIPS conversion} is the STRIPS planning task $\Pi^{STR}=(P_V,A^{STR},c,I,G)$ where \end{definition}\begin{itemize}
         \item $P_V=\{v=d \ | \ v\in V,d\in D_v\}$ is the set of STRIPS facts. 
@@ -2691,10 +2758,10 @@ Note how a STRIPS fact is a pair variable/value in FDR:\begin{itemize}
 \begin{proposition}
     Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task and $\Pi^{STR}=(P_V,A^{STR},c,I,G)$ it's STRIPS conversion as in Definition \ref{FDR2STRIPS}. Let $\Theta_\Pi$ to be the transition system (state  space) of $\Pi$, and $\Theta_{\Pi^{STR}}$ the transition system with the states $s\subseteq P_v$ where, for each $v\in V$, $s$ contains exactly one fact of the form $v=d$, with all other states in $\Theta_{\Pi^{STR}}$ unreachable. Then, $\Theta_\Pi$ is isomorphic to  $\Theta_{\Pi^{STR}}$.
 \end{proposition}
-In the proposition it is important to note that, in each state, for each FDR variable $v$, there must be exactly one fact $v=d$ for some $d\in D_v$, therefore, if there are $n$ variables in the FDR planning task $$v_1,v_2\dots v_n $$, a state of the state space of the STRIPS conversion is of the type\begin{align*}
+In the proposition it is important to note that, in each state, for each FDR variable $v$, there must be exactly one fact $v=d$ for some $d\in D_v$, therefore, if there are $n$ variables in the FDR planning task $$v_1,v_2\dots v_n $$a state of the state space of the STRIPS conversion is of the type\begin{align*}
     &v_1=d_1\\ &v_2=d_2\\ &\vdots \\ &v_n=d_n
 \end{align*}
-That is, each variable must have a single assignment.
+that is, each variable must have a single assignment.
 \begin{itemize}
     \item FDR $V$: $at : \{Sydney, Adelaide, Brisbane\}$; $visited(x) : \{T, F\}$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
     \item STRIPS $P$: $at(x), visited(x, T), visited(x, F)$ for $x \in \{Sydney, Adelaide, Brisbane\}$.
@@ -2793,9 +2860,9 @@ and the effect of the action as a combination of literals,  conjunction, conditi
  An example of a problem file is the following\begin{lstlisting}
 (define (problem example)
  (:domain Blocksworld)
- (:objects a b c- smallblock)
- d e- block
- f- blueblock)
+ (:objects a b c- smallblock
+           d e- block
+           f- blueblock)
  (:init (clear a) (clear b) (clear c)
  (clear d) (clear e) (clear f)
  (ontable a) (ontable b) (ontable c)
@@ -2815,9 +2882,9 @@ We give a brief and intuitive explanation of the PDDL syntax. In the domain file
 When you write on a single line\begin{lstlisting}
     obj1 obj2 ... objn - root_obj 
 \end{lstlisting}
-you are defining the objects \texttt{ obj1 obj2 ... objn } and declaring that they are of the type \texttt{ root\_obj }. If not specified, each object inheritance the root type \texttt{ object.}
+you are defining the objects \texttt{ obj1 obj2 ... objn } and declaring that they are of the type \texttt{ root\_obj}. If not specified, each object inheritance the root type \texttt{object.}
 
-When you define actions that require a certain object type \texttt{ x }, you can also pass an object of a type that inherit that type \texttt{ x.}
+When you define actions that require a certain object type \texttt{x}, you can also pass an object of a type that inherit that type \texttt{x.}
 \bigskip
 
 After defining the types, it is necessary to define the predicates, these describe properties and relations of the world that can be true or false.
@@ -2831,7 +2898,7 @@ There is no such thing as ''unknown'' status. A predicate can only go from true 
     (pred_name ?var1 - typ1 ?var2 - typ2 ... ?varn - typn)    
 )
 \end{lstlisting}
-The strings with \texttt{ ? } as the prefix are the variables, in the problem file we will use the predicates to assign relations between the objects. An example is\begin{lstlisting}
+The strings with \texttt{?} as the prefix are the variables, in the problem file we will use the predicates to assign relations between the objects. An example is\begin{lstlisting}
 (:predicates
   (has-key ?r - robot)       
   (door-open ?p - door)    
@@ -2856,7 +2923,7 @@ An action scheme use the predicates for the precondition and the effect as follo
 In the action it is specified that, if a robot \texttt{?A} has the key (as specified by the pre-conditions) it can pass it to a robot \texttt{?B}, and in the effects it is specified that, after the action, \texttt{has-key ?A} will be false (the object that passed the key will no longer have the key) while \texttt{has-key ?B} will be true.\bigskip 
 
 \noindent
-In a problem file it is necessary to define a series of objects and assign them the relative types, to then define the initial conditions through the predicates, and the goal state to always be reached through the use of the predicates. The solver will take care of using the actions to verify whether the goal is reachable and possibly provide a resolution strategy.\begin{lstlisting}
+In a problem file it is necessary to define a series of objects and assign them the relative types, to then define the initial conditions through the predicates, and the goal state to always be reached through the use of the action schemas. The solver will take care of using the actions to verify whether the goal is reachable and possibly provide a resolution strategy.\begin{lstlisting}
 (define (problem key mission)
   (:domain robot-world) 
   (:objects 
@@ -3084,7 +3151,7 @@ Such variable $v$ is called ''servant'', thanks to its connected and invertible 
  \begin{theorem}
     If an FDR have an acyclic causal graph and all the variables have all value transitions invertible, the task of finding a path can be decided in polynomial time.
  \end{theorem}
- \chapter{Advanced Search Techniques and Heuristics}
+ \chapter{Search Techniques and Heuristics}
  We treat the planning as a classical search problem, there are three independent choice to make, the first one is  the search Space:\begin{itemize}
     \item Progression: search forward from initial state to goal. Search states = world states.
     \item Regression: Search backward from goal to initial state.
@@ -3192,7 +3259,7 @@ Observe how the progression  doesn't know what's ''relevant'' to what
 So a heuristic function is needed in such case. Differently, regression explores only solvable states, but may explore unreachable ones.  Regression doesn't know what's ''reachable'', i.e. what 
 contributes to reaching the initial state. Also in this case a heuristic function is needed to guide the search towards the initial state.\bigskip 
 
-Given that, for the rest of this course we will use \textit{progression}, since:\begin{itemize}
+\noindent Given that, for the rest of this course we will use \textit{progression}, since:\begin{itemize}
     \item Regression has in the past often had serious trouble getting lost in
  a lot of solvable but unreachable states.
  Reachable dead end states tend to be less frequent in practice.
@@ -3207,7 +3274,7 @@ The reader is advised to review the definitions of a heuristic function given in
 We will see later also  inadmissible heuristics, that typically arise as approximations of admissible
  heuristics that are too costly to compute.
  \begin{definition}[Domination]
-    Let $\Pi$  be a planning task, and let $h$ and $h'$ to be two admissible heuristic functions, we say that $h'$ \textbf{dominates} $h$ if $$ h(s)\le h'$$ for all the states $s$.
+    Let $\Pi$  be a planning task, and let $h$ and $h'$ to be two admissible heuristic functions, we say that $h'$ \textbf{dominates} $h$ if $$ h(s)\le h'(s)$$ for all the states $s$.
  \end{definition}
  If $h'$ dominates $h$ then, $h'$  provides a lower bound at least as good as $h$.
  \begin{definition}[Additivity]
@@ -3251,8 +3318,6 @@ This algorithm explores the states by increasing weighted-plan-cost
     \item for $W\rightarrow \infty$ the algorithm tends to behave like the greedy best-first search algorithm \ref{alg:greedy-best-first}.
  \end{itemize} 
 
- We recall the hill climbing algorithm:
-
 \begin{algorithm}
     \caption{Hill-Climbing}\label{alg:HC}
     \begin{algorithmic}
@@ -3267,7 +3332,7 @@ This algorithm explores the states by increasing weighted-plan-cost
     \end{algorithmic}
 \end{algorithm}\bigskip
 
-The Hill climbing algorithm \ref{alg:HC} can easily get stuck in a local minima where immediate improvements of $h(n)$ are not possible. A possible improvement is to perform a BFS to find the node on which $h$ decreases:
+Let's consider the Hill climbing algorithm \ref{alg:HC}. This can easily get stuck in a local minima where immediate improvements of $h(n)$ are not possible. A possible improvement is to perform a BFS to find the node on which $h$ decreases:
 
  \begin{algorithm}
     \caption{Enforced Hill-Climbing}\label{alg:EHC}
@@ -3283,7 +3348,7 @@ The Hill climbing algorithm \ref{alg:HC} can easily get stuck in a local minima 
     \end{algorithmic}
 \end{algorithm}\bigskip
 
-This algorithm \ref{alg:EHC} is still not optimal:\begin{itemize}
+\noindent This algorithm \ref{alg:EHC} is still not optimal:\begin{itemize}
     \item If the problem contains dead ends that are not recognized by the heuristic, the algorithm may crash without finding a solution.
     \item It is only complete if it is guaranteed that no such states exist and that a goal is always reachable with a lower heuristic value.
 \end{itemize}
@@ -3336,7 +3401,7 @@ The heuristic $r^*$ is defined as the cost of reaching a set of goals $g$ starti
     \end{equation}
      where $A^*=\{a\in A \ : \ regr(g,a)\ne \bot\}$.
 \end{definition}
- Is omitted that this is the perfect heuristic when $g=G$ (the goal) and is evaluated by letting $g=G$ fixed. This function is similar to $h^*$:\begin{itemize}
+This function is similar to $h^*$:\begin{itemize}
     \item For singleton subgoals $g$, use regression as in $h^*$. 
     \item For subgoal sets $g$,
  use the cost of the most costly singleton subgoal $g'\in g$.
@@ -3391,15 +3456,13 @@ $h_{i+1}^m(s,g)< h_i^m(s,g)$, since there exists $\epsilon\in \R^+$ such that \b
 at some point $h^m_i$ will stop decreasing. If $h_{i+1}^m(s,g)= h_i^m(s,g)$ then $h_i^m$ satisfy the $h^m$ definition, and no other function greater than $h_i^m$ at any point can satisfy that definition.\bigskip 
 
 To compute $h_i^m$ dynamic programming is involved. 
-With \textit{dynamic programming}, we mean that paradigm of algorithm design, which,
- in order to find a final solution to a problem, it considers a series of sub-problems
- minors who will then be useful in deciding the aforementioned final solution.
+The \textit{dynamic programming} is a paradigm of algorithm design, which,
+in order to find a final solution to a problem, it considers a series of sub-problems who will then be useful in deciding the aforementioned final solution.
 \begin{center}
     \includegraphics[width=0.9\textwidth ]{images/iterative_hm.png}
 \end{center}
 It is easy to prove that $h_i^m(s,g)=Cost_i(g)$ for all $i$. This table computation always first finds the shortest path to achieve a subgoal
- $g$. Hence, with unit action costs, the value of $g$ is fixed once it becomes less than $\infty$, and
- equals the $i$ where that happens. With non-unit action costs, neither is true.\begin{quote}
+ $g$. Hence, with unit action costs, the value of $g$ is fixed once it becomes less than $\infty$, and equals to $i$ at the iteration when $g$ is first reached. With non-unit action costs, neither is true.\begin{quote}
     For any fixed $m$, $h_m$ can be computed in polynomial time.
  \end{quote}
  In practice, only $m=1,2$ are used, higher values of $m$ are infeasible.
@@ -3499,7 +3562,7 @@ A delete relaxed planning task (denoted as $\Pi^+$) is a simplified version of a
 \begin{definition}
     A state $s'$ for a STRIPS planning task \textbf{dominates} $s$ if $s\subseteq s'$.
 \end{definition}
-A state (set of facts) dominates another state if it has ''more facts true''.
+A state (set of facts) dominates another state if it has ''more true facts''.
 
 \begin{proposition}
     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s,s'$ be states where $s'$ dominates $s$, then\begin{enumerate}
@@ -3508,7 +3571,7 @@ A state (set of facts) dominates another state if it has ''more facts true''.
         \item $s'\quadBrack{\vec a}$ dominates $s\quadBrack{\vec a}$.
     \end{enumerate}
 \end{proposition}
-The proof is trivial. This proposition says that ''it is  always better to have more facts true''. The following proposition is crucial.\begin{proposition}
+The proof is trivial. This proposition says that ''it is  always better to have more true facts''. The following proposition is crucial.\begin{proposition}
      Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, let $s\subseteq P$ be a state and $a\in A$ an action applicable in $s$, then\begin{itemize}
         \item $s\quadBrack{a^+}$ dominates $s$
         \item if $s'$ dominates $s$, then $s'\quadBrack{a^+}$ dominates  $s\quadBrack{a}$
@@ -3525,7 +3588,7 @@ then, $s\quadBrack{a}$ may loose some facts and get added more, but all the fact
 \begin{proposition}
     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, let $s\subseteq P$ be a state and $\vec a$ a plan for $\Pi_s$. Then, $\vec a^+$ is a relaxed plan for $s$.
 \end{proposition}
-So, if we apply a relaxed action we can only have more facts true, and that cannot render the task unsolvable, so we can keep applying relaxed actions until the goal is reached to get a relaxed plan $\vec a^+$, as done in algorithm \ref{alg:relaxed_planning}.
+So, if we apply a relaxed action we can only have more true facts , and that cannot render the task unsolvable, so we can keep applying relaxed actions until the goal is reached to get a relaxed plan $\vec a^+$, as done in algorithm \ref{alg:relaxed_planning}.
 
 
 \begin{algorithm}
@@ -3564,12 +3627,12 @@ $h^+$ defines the minimum effort to reach the goal under delete relaxation.
     For the task to find the shortest path between two nodes in a graph, the optimal delete relaxation heuristic is the perfect heuristic.
 \end{proposition}
 \begin{definition}
-    By $PlanOpt^+$ we denote the problem of
+    By $\mathsf{PlanOpt}^+$ we denote the problem of
  deciding, given a STRIPS planning task $\Pi=(P,A,c,I,G)$ and $B\in \R^+\cup\{0\}$ whether there exists a relaxed plan for $\Pi$ whose cost is at most $B$.
 \end{definition}
-It is true that, by computing $h^+$, we would solve $PlanOpt^+$.
+It is true that, by computing $h^+$, we would solve $\mathsf{PlanOpt}^+$.
 \begin{theorem}
-    $PlanOpt^+$ is $\mathsf{NP}$-complete. 
+    $\mathsf{PlanOpt}^+$ is $\mathsf{NP}$-complete. 
 \end{theorem}
 From the theorem follows that computing $h^+$ is an hard task, so instead of directly computing it, we may consider an approximation.\begin{quotation}
     \textit{
@@ -3653,7 +3716,6 @@ $h^{\text{add}}$ simplifies relaxed planning by assuming that, to achieve a set 
 \end{enumerate}
 States for which no relaxed plan exists are easy to recognize, and that is
 done by both $h^{\max}$ and $h^{\text{add}}$. Approximation is needed only for the cost of an optimal relaxed plan, if it exists.
-\bigskip
 
 Consider the Definition \ref{def:h1} of the function $h^1$, its easy to notice that\begin{equation}
     h^1=h^{\max}
