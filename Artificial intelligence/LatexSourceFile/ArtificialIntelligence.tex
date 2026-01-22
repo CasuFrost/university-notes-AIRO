@@ -240,7 +240,7 @@ Starting from Zurigo, we would like to find a route to Zagabria. We have an init
     \label{img:tiles}
 \end{figure}
 
-In the classical search context, we restrict the agent's environment to a very simple setting, with a finite number of states and actions, a single agent, a fully observable stati environment that doesn't evolve, given that assumption, the classical search problems are the simplest one, despite that, are very important problems in practice.\bigskip
+In the classical search context, we restrict the agent's environment to a very simple setting, with a finite number of states and actions, a single agent and a fully observable state environment that doesn't evolve, given that assumption, the classical search problems are the simplest one, despite that, are very important problems in practice.\bigskip
 
 \noindent Every problem specifies a state space.
 
@@ -257,7 +257,7 @@ In the classical search context, we restrict the agent's environment to a very s
 A transition $(s,a,s')$ can be denoted $s \xrightarrow{a} s'$, we say that $s\rightarrow s'$ if $\exists a$ such that $(s,a,s')\in T$ . We say that $\Theta$ has \textit{unit costs} if $\forall a\in A, \ \ c(a)=1$. A state space can be illustrated as a directed labeled graph. \begin{definition}
     Let $\Theta=(S,A,c,T,I,S^G)$ to be a state space, we say that\begin{itemize}
         \item $s'$ is a \textbf{successor} of $s$ if $s\rightarrow s'$
-        \item $s'$ is a \textbf{predecessor} of $s$ if $s'\rightarrow sT$
+        \item $s'$ is a \textbf{predecessor} of $s$ if $s'\rightarrow s$
         \item we say that $s'$ is \textbf{reachable from} $s$ if\begin{align}
             &\exists (a_1\dots, a_n)\subseteq A\\
             &\exists (s_2\dots, s_{n-1})\subseteq S\\
@@ -390,7 +390,7 @@ In the search context the following terminology is used
     \item Open list: Set of all nodes that currently are candidates for expansion. Also called frontier.
     \item Closed list: Set of all states that were already expanded. Used only in graph search, not in tree search (up next). Also called explored set.
 \end{itemize}
-When we explore the state space of a problem we can maintain a closed list of all the node that has been already searched, to check for each generated new node if is already in the list (if so, we discard it). If such list is used, the search is called \textbf{graph search}, else, if the same state may appear in many search nodes, is called \textbf{tree search}. The tree search doesn't use a list so require less memory.\bigskip
+When we explore the state space of a problem we can maintain a closed list of all the node that has been already searched, to check for each generated new node if is already in the list (if so, we discard it). If such list is used, the search is called \textbf{graph search}, else, if the same state may appear in many search nodes, is called \textbf{tree search}. The tree search doesn't use a list so it require less memory.\bigskip
 
 When we analyze a search algorithm, we are interested in various properties\begin{itemize}
     \item \textbf{Completeness}: the algorithm is guaranteed to find a solution (it there are one).
@@ -531,7 +531,7 @@ About the space complexity, this methods stores only a single path of actions, f
     \If{\texttt{GoalTest}($n$.State)}
     \State\Return Solution($n$)
     \EndIf
-    $explored\leftarrow explored\cup n$.State
+    \State$explored\leftarrow explored\cup n$.State
     \For{each $action$ in \texttt{Actions}($node$.\texttt{State})}
     \State $n'\leftarrow${ChildNode}($n$,$a$)
     \If{$n'$.State$\notin explored\cup$States($frontier$)}
@@ -544,7 +544,7 @@ About the space complexity, this methods stores only a single path of actions, f
     \end{algorithmic}
 \end{algorithm}
 \begin{theorem}
-    The Uniform-Cost search algorithm is optimal, since the Dijkstra's algorithm is optimal, and Uniform-cost search is equivalent to Dijkstra's algorithm on the state space graph.and 
+    The Uniform-Cost search algorithm is optimal, since the Dijkstra's algorithm is optimal, and Uniform-cost search is equivalent to Dijkstra's algorithm on the state space graph. 
 \end{theorem}
 
 The algorithm is complete if we assume that, the costs are strictly positive and the state space is finite. The time and space complexity are\begin{equation}
@@ -640,10 +640,10 @@ A heuristic function $h^*$ is perfect if $h^*(s)$ is exactly the cost of a cheap
 
 $h$ depend only on the state $s$ and not on the search node (the path taken to reach $s$ don't affect $h(s)$). If $n$ is a search node, we usually write $h(n)$ instead of $h(n.State)$ as an abuse of notation.
 
-The purpose of $h$ is to estimate how far we are from a solution, clearly time is needed to calculate the value of $h$, ideally we would like a function $h$ that is very precise in the estimate, and which is quick to calculate, these two objectives are generally in conflict with each other.
+The purpose of $h$ is to estimate how far we are from a solution, clearly, some time is needed to calculate the value of $h$, ideally we would like a function $h$ that is very precise in the estimation, and which is quick to calculate, these two objectives are generally in conflict with each other.
 
 Given a problem $\Pi$, a heuristic function $h$ for $\Pi$ can be
- obtained as goal distance within a simplified (relaxed) problem $\Pi'$. A classic example is using Euclidean distance as a heuristic function in a graph representing points on a map.
+obtained as goal distance within a simplified (relaxed) problem $\Pi'$. A classic example is using Euclidean distance as a heuristic function in a graph representing points on a map.
  \begin{center}
     \includegraphics[width=0.7\textwidth ]{images/h_distance.png}
 \end{center}
@@ -930,8 +930,6 @@ Making two states reproduce: Create a new state by selecting some characteristic
     \EndFor 
     \State\textbf{if} stopping condition \textbf{then return} best individual in $population$
     \EndWhile
-  
-    
     \end{algorithmic}
 \end{algorithm}
 
@@ -1072,7 +1070,7 @@ There is a way to save time during the computation, we can cut-off some branches
     \label{fig:alphaPruning}
 \end{figure}
 
-THe left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the left branch and continue with the right one.\bigskip
+The left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the left branch and continue with the right one.\bigskip
 
 We consider two additional variables $\alpha,\beta$ defined on each node during the search, such that:\begin{itemize}
     \item for each node $n$, $\alpha$ is the highest utility that search has already found for $Max$ on its path to $n$.\begin{itemize}
