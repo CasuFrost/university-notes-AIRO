@@ -231,7 +231,7 @@ It follows a classification of some areas in terms of the attributes we discusse
 Let's consider two basic example of classical search problems, the first one is the following:\begin{center}
     \includegraphics[width=0.5\textwidth ]{images/map_search.png}
 \end{center}
-Starting from Zurigo, we would like to find a route to Zagabria. We have an initial state (Zurigo), and we have to apply actions (drive) to reach the goal state (Zagabria). Another example is the following, we want to solve the tiles-puzzle game, shown in figure \ref{img:tiles}, to reach the left state, starting from the right one, the actions to perform is the move of the tiles. A performance measure could be to minimize the summed-up action costs.
+Starting from Zurigo, we would like to find a route to Zagabria. We have an initial state (Zurigo), and we have to apply actions (drive) to reach the goal state (Zagabria). Another example is the following, we want to solve the tiles-puzzle game, shown in figure \ref{img:tiles}, to reach the right state, starting from the left one, the actions to perform is the move of the tiles. A performance measure could be to minimize the summed-up action costs.
 
 \begin{figure}[h!]
     \centering
@@ -333,8 +333,9 @@ We can think about it in a programming-way, given a problem described by $\Theta
 \end{itemize}
 We \textbf{specify} a search problem if we can program/access to such an \textit{API}. There are a declarative description too.
 \begin{definition}
+    We have a \textbf{declarative description} of the problem if is described by the following sets:
 \end{definition}
-We have a \textbf{declarative description} of the problem if is described by the following sets:\begin{itemize}
+\begin{itemize}
     \item $P$ is a set of boolean variables (\textit{propositions})
     \item $I\subseteq P$ is the subset of $P$ indicating which propositions are true in the initial states.
     \item $G\subset P$ is the subset of $P$ describing the goal states in the following way\begin{itemize}
@@ -392,7 +393,7 @@ In the search context the following terminology is used
 \end{itemize}
 When we explore the state space of a problem we can maintain a closed list of all the node that has been already searched, to check for each generated new node if is already in the list (if so, we discard it). If such list is used, the search is called \textbf{graph search}, else, if the same state may appear in many search nodes, is called \textbf{tree search}. The tree search doesn't use a list so it require less memory.\bigskip
 
-When we analyze a search algorithm, we are interested in various properties\begin{itemize}
+\noindent When we analyze a search algorithm, we are interested in various properties\begin{itemize}
     \item \textbf{Completeness}: the algorithm is guaranteed to find a solution (it there are one).
     \item \textbf{Optimality}: the returned solution is guaranteed to be optimal. 
     \item \textbf{Time Complexity}: How long does it take to find a solution? (Measured
@@ -400,7 +401,7 @@ in generated states).
     \item \textbf{Space Complexity}: How much memory does the search require?
 (Measured in states).
     \item \textbf{Branching Factor}: The number $b$ of how many successor a state may have.
-    \item \textbf{Gal depth}: the number $d$ of action required to reach the shallowest (nearest to the initial state) goal state.
+    \item \textbf{Goal depth}: the number $d$ of action required to reach the shallowest (nearest to the initial state) goal state.
 \end{itemize}
 \section{Blind Search}
 We talk about \textit{blind search} if the problem does not require any input beyond the problem API. Does not require any additional work from the programmer. For each node $n$ in the search context, we define the following data structure:\begin{itemize}
@@ -507,17 +508,17 @@ The algorithm is not complete since it may take infinite time, since there is no
 \end{algorithm}
 
 \noindent With $action \ \circ$ result is denoted the concatenation of actions. 
-About the space complexity, this methods stores only a single path of actions, from the root to a leaf node, since once a
+About the space complexity, this method stores only a single path of actions, from the root to a leaf node, since once a
  node has been expanded, it can be removed from memory as soon as all its
  descendants have been fully explored.
 
  If $m$ is the maximal depth reached, the space occupied is in $O(bm)$. About the time complexity, in the worst case the nodes generated is in $O(b^m)$.
  \subsection{Uniform-Cost Search}
- This methods is equivalent to the well known Dijkstra's algorithm. We expand the node with the lowest path cost $g(n)$, the frontier is ordered by the path cost, with the lowest first. It differs from the BFS since a test is added to check if a better path is found to a node currently
+ This method is equivalent to the well known Dijkstra's algorithm. We expand the node with the lowest path cost $g(n)$, the frontier is ordered by the path cost, with the lowest first. It differs from the BFS since a test is added to check if a better path is found to a node currently
  on the frontier.
 
  \begin{algorithm}
-    \caption{Uniform-Cost Search}\label{alg:DFS}
+    \caption{Uniform-Cost Search}\label{alg:Uniform-Cost-Search}
     \begin{algorithmic}
     \Require $problem$
     \State $node\leftarrow$\texttt{InitialState()}
@@ -536,7 +537,7 @@ About the space complexity, this methods stores only a single path of actions, f
     \State $n'\leftarrow${ChildNode}($n$,$a$)
     \If{$n'$.State$\notin explored\cup$States($frontier$)}
     \State $frontier\leftarrow$insert($n'$,$frontier$)
-    \Else{ \textbf{if} $\exists n''\in frontier \ : \ n''.$State=$n'$.State$ \land \ g(n')<g(n'')$}
+    \Else{ \textbf{if} $\exists n''\in frontier \ : \ n''.$State=$n'$.State $\land \ g(n')<g(n'')$}
     \State replace $n''$ with $n'$ in $frontier$
     \EndIf
     \EndFor
@@ -548,7 +549,7 @@ About the space complexity, this methods stores only a single path of actions, f
 \end{theorem}
 
 The algorithm is complete if we assume that, the costs are strictly positive and the state space is finite. The time and space complexity are\begin{equation}
-    O(b^{1+\lfloor\nicefrac{g^*}{*}\rfloor})
+    O(b^{1+\lfloor\nicefrac{g^*}{\epsilon}\rfloor})
 \end{equation}where\begin{itemize}
     \item $g^*$ is the cost of an optimal solution 
     \item $\epsilon=\min c$ is the positive cost of the cheapest action, the minimum of the function $c$.
@@ -582,7 +583,7 @@ We split the algorithm in three different function.
     \end{algorithmic}
 \end{algorithm}
 
-The algorithm is complete since we are keep searching until a solution is found, is also optimal if all the cost are unitary, the space complexity is $O(bd)$. The time complexity is in $O(b^d)$, this methods combines the advantages of breadth-first and depth-first search. It is the preferred blind search method in large state spaces with unknown solution depth.\bigskip
+The algorithm is complete since we are keep searching until a solution is found, is also optimal if all the cost are unitary, the space complexity is $O(bd)$. The time complexity is in $O(b^d)$, this method combines the advantages of breadth-first and depth-first search. It is the preferred blind search method in large state spaces with unknown solution depth.\bigskip
 
  \begin{algorithm}
     \caption{Recursive DLS}\label{alg:EDLS}
@@ -918,7 +919,6 @@ Making two states reproduce: Create a new state by selecting some characteristic
     \begin{algorithmic}
     \Require A starting $population$ of states, the $fitness$ function 
     \While{True}
-    \State $new_population\leftarrow$ empty set
     \For{$i=1\dots Size(population)$}
     \State $x\leftarrow $ random individual from $population$
     \State $y\leftarrow $ random individual from $population$
@@ -927,6 +927,8 @@ Making two states reproduce: Create a new state by selecting some characteristic
     \State $c\leftarrow $Random number from 1 to $n$
     \State $child\leftarrow Append(Substring(x,1,c),Substring(y,c+1,n))$
     \State\textbf{if} small random probability \textbf{then} $child\leftarrow Mutate(child)$
+    \State $population$ = $population\cup child$
+    \State remove from $population$ the individual with lowest fitness
     \EndFor 
     \State\textbf{if} stopping condition \textbf{then return} best individual in $population$
     \EndWhile
@@ -936,7 +938,7 @@ Making two states reproduce: Create a new state by selecting some characteristic
 \begin{itemize}
     \item Genetic algorithms combine an uphill tendency with random exploration and exchange of information among parallel search threads.
     \item Their primary advantage comes from the crossover operation.
-    \item Crossover helps iff substrings are meaningful components: we combine large blocks of letters that have evolved independently to perform useful functions.
+    \item Crossover helps if and only if substrings are meaningful components: we combine large blocks of letters that have evolved independently to perform useful functions.
     \item Much work remains to be done to identify the conditions under which genetic algorithms perform well.
 \end{itemize}
 \section{Adversarial Search}
@@ -1063,13 +1065,6 @@ For example, in Chess, if a piece exchange is underway, the search continues pas
 \subsection{Alpha-Beta Pruning}
 There is a way to save time during the computation, we can cut-off some branches of the search for which we know at priori that will not lead to the solution. Consider the tree in figure \ref{fig:alphaPruning}.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.3\textwidth ]{images/alphapruning.png}
-    \caption{Let's say $n>m$}
-    \label{fig:alphaPruning}
-\end{figure}
-
 The left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the left branch and continue with the right one.\bigskip
 
 We consider two additional variables $\alpha,\beta$ defined on each node during the search, such that:\begin{itemize}
@@ -1081,7 +1076,13 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
     \end{itemize}
 \end{itemize}
 
-%%%
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/alphapruning.png}
+    \caption{Let's say $n>m$}
+    \label{fig:alphaPruning}
+\end{figure}
+
  \begin{algorithm}
     \caption{AlphaBetaPruning}\label{alg:alphabetapruning}
     \begin{algorithmic}
@@ -1122,7 +1123,7 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
     \State\Return $v$
     \end{algorithmic}
 \end{algorithm}
-%%%
+
 \subsection{Monte-Carlo Tree Search}
 The Alpha-Beta search have two issues\begin{itemize}
     \item it needs an accurate and fast evaluation function 
@@ -1217,7 +1218,7 @@ In SuDoKu, the variables are the content of the cells, the domain of each cell i
         &u' \in D_{u}\\ 
         & C_{uv}\subseteq D_{v}\times D_{u} \in C\\
     \end{align}
-if $(v',u')\notin C_{uv}$ the assignment $v=v', u=u'$ violates the constraint, so $C_{uv}$ contains the permissible combined assignments for two variables. Let's see an example, we consider the map of australia show in figure \ref{fig:australia}. We want to colorate each state with one of 3 possible colors, without having two adjacent state with the same color.\bigskip
+if $(v',u')\notin C_{uv}$ the assignment $v=v', u=u'$ violates the constraint, so $C_{uv}$ contains the permissible combined assignments for two variables. Let's see an example, we consider the map of australia shown in figure \ref{fig:australia}. We want to colorate each state with one of 3 possible colors, without having two adjacent state with the same color.\bigskip
 
 \begin{figure}[h!]
     \centering
@@ -1241,7 +1242,7 @@ Constraint Networks can be extended\begin{itemize}
 \end{itemize}
 A constraint may be \textbf{unary}: $C_v\subseteq D_v$, in this case the domain of a single variable is restricted, equivalently to setting $D_v=C_v$.\bigskip 
 
-There exists CSP solvers, generic algorithms that find assignment for constraints problem, by taking in input a constraint network as the generic language to describe the problem. The core exercise in this context is to model a problem with a constraint network.
+There exists CSP solvers, generic algorithms that find an assignment for constraints problems, by taking in input a constraint network as the generic language to describe the problem. The core exercise in this context is to model a problem with a constraint network.
 \begin{definition}
     Let $\gamma=(V,D,C)$ to be a constraint network, a \textbf{partial assignment} is a function $$a:V'\rightarrow \bigcup_{v\in V}D_v$$ where \begin{itemize}
         \item $V'\subseteq V$
@@ -1272,7 +1273,7 @@ If a partial assignment is not inconsistent, is \textbf{consistent}. An assignme
     if $a$ can be extended to a solution, then it's consistent (the opposite doesn't necessary holds).
 \end{proposition}
 Given a constraint network $\gamma=(V,D,C)$, if $n=|V|$ and $\forall D_v\in D$, $|D_v|=k$, the number of total assignments is $k^n$. There are at most $n^2$ constraints, each constraint have size at most $k^2$, the number of assignments is \textit{exponentially bigger} than the size of $\gamma$.\begin{theorem}
-    The problem to decide if a constraint network $\gamma=(V,D,C)$, is solvable is  $\mathsf{NP}$-complete.
+    The problem to decide if a constraint network $\gamma=(V,D,C)$ is solvable is  $\mathsf{NP}$-complete.
 \end{theorem}
 \section{Naive Backtracking}
 The following algorithm is simple and used to find a solution for a constraint network. The method is recursive, the initial assignment $a$ to start the algorithm is the empty assignment.
@@ -1304,7 +1305,7 @@ will find it.
 \end{itemize}
 This algorithm can't predict if an assignment $a$ can't be extended to a solution unless $a$ is already inconsistent.
 \subsection{About the Order}
-The ordering in the for loop of algorithm \ref{alg:NaiveBacktracking} can  influences the search space size. If no solution exists below current node, the order doesn't matter, the algorithm will search the whole sub-tree anyway, otherwise, if a solution does exist below current node, by choosing the ''correct'' value, then no backtracking is needed.\bigskip 
+The ordering in the for loop of Algorithm \ref{alg:NaiveBacktracking} can  influences the search space size. If no solution exists below current node, the order doesn't matter, the algorithm will search the whole sub-tree anyway, otherwise, if a solution does exist below current node, by choosing the ''correct'' value, then no backtracking is needed.\bigskip 
 
 A common strategy is to consider the variable ''most constrained'' (the variable with the greatest number of assignments that make $a$ inconsistent), at each recursion step, we pick the variable $v$ that minimize the size of the set\begin{equation}
     \{d\in D_v \ : \ a\cup\{v=d\} \text{ is consistent }\}
@@ -1325,7 +1326,7 @@ For the order of the value in the for loop, we can choose the least constraining
 by choosing a least constraining value first, we increase the chances
 to not rule out the solutions below the current node. 
 \section{Inference}
-Given a constraint network, we would like to obtain an equivalent network with more constraint, without losing any feasible solution, in such case, we are giving a tighter description of the problem, and we obtain a network with a smaller number of
+Given a constraint network, we would like to obtain an equivalent network with more constraints, without losing any feasible solution, in such case, we are giving a tighter description of the problem, and we obtain a network with a smaller number of
 consistent partial assignments. Already known constraints may implies additional (unary or binary) constraints.\begin{definition}
     Let $\gamma=(V,D,C)$ and $\gamma'=(V,D',C')$ to be two constraint networks, sharing the same set of variables. We say that $\gamma$ are \textbf{equivalent} to $\gamma'$, and we denote $$ \gamma\equiv\gamma' $$
     if every solution (assignment of variables) of $\gamma$ is a solution of $\gamma'$ and vice versa.
@@ -1345,7 +1346,7 @@ If at least one of these inclusions is strict, we say that  $\gamma'$ is \textbf
     then $\gamma'$ has the same solutions as $\gamma$ but fewer consistent partial
 assignments than $\gamma$. In such case, $\gamma'$ is a \textbf{better encoding} of the problem.
 \end{theorem}
-We define \textit{inference} the procedure to derive a tighter equivalent network. We want to use it to define an algorithm that finds a solution for a constraint network. We will incorporate inference in the  backtracking algorithm, at every recursive call, a complex inference procedure leads to\begin{itemize}
+We define as \textit{inference} the procedure to derive a tighter equivalent network. We want to use it to define an algorithm that finds a solution for a constraint network. We will incorporate inference in the  backtracking algorithm, at every recursive call, a complex inference procedure leads to\begin{itemize}
     \item a smaller  number of search nodes 
     \item larger runtime needed at each node
 \end{itemize} 
@@ -1382,8 +1383,8 @@ With the function \color{orange}Inference \color{black} we denote any procedure 
     \Require $\gamma,a$
     \For{ each $v$ where $a(v)=d'$ is defined }
     \For{ each $u$ where $a(u)$ is undefined and $C_{uv}\in C$}
-    \State $D'_u=\{d \ | \ d\in D_u, (d,d')\in C_{uv}\}$
-    \State $D_u\leftarrow D'_u$ \greenText{/*We update the domain of $u$*/}
+    \State $D'_u=\{d \ | \ d\in D_u, (d,d')\in C_{uv}\}$\greenText{/*We restrict the domain to the admissible assignments*/}
+    \State $D_u\leftarrow D'_u$ 
     \EndFor 
     \EndFor 
      \State\Return $\gamma$
@@ -1404,7 +1405,7 @@ We now describe a property between two variables that can be used to describe a 
 \end{definition}
 When two variables in a constraint network are arc consistent, it means that the domain  of each variable contains at least one value that is compatible with at least one value in the domain of the other variable, according to the constraint between them.
 
-As an example, let's say the variable $v$ describes the color of your shirt, that can be red, blue, yellow or green, and the variable $u$ define the color of your pants, that can be black, white, gray or brown. The constraint is that the shirt and the pants cannot be the same color, the variable $v$ is  arc consistent to $u$ because for every shirt color you can find a pants color and vice versa.\begin{quote}
+As an example, let's say the variable $v$ describes the color of your shirt, that can be red, blue, yellow or green, and the variable $u$ define the color of your pants, that can be black, white, gray or brown. The constraint is that the shirt and the pants cannot be the same color, the variable $v$ is  arc consistent to $u$ because for every shirt color, you can find a pants color and vice versa.\begin{quote}
     \textbf{Note}: Arc consistency is a non commutative relation, if $v$ is  arc consistent to $u$, it's not implied directly that $u$ is  arc consistent to $v$.
 \end{quote}
 \begin{definition}
@@ -1424,7 +1425,7 @@ We define the following subroutine:
     \Require $\gamma,u\in V,v\in V$
     \For{ each $d\in D_u$}
     \If{$\lnot\exists d'\in D_v$ such that $(d,d')\in C_{uv}$}
-    \State $D_u=D_u\backslash\{d\}$
+    \State $D_u=D_u\backslash\{d\}$ \greenText{ /*We remove the value that makes $v$ NOT arc consistent with $u$*/}
     \EndIf
     \EndFor 
      \State\Return $\gamma$
@@ -1474,7 +1475,7 @@ haven't changed since the last time.\bigskip
 
 In the algorithm, we check the constraints where $w\ne v$ because $v$ is the reason why $D_u$ just changed, if $v$ was arc consistent to $u$ before, that continues to hold, the values just removed from $D_u$ did not match any values from $D_v$ anyway.
 \begin{theorem}
-    Let $\gamma$ to be a constraint network with $m$ constraint and maximal domain size $k$. The algorithm AC3 showed in \ref{alg:AC3} have a time complexity in $O(mk^3)$.
+    Let $\gamma$ to be a constraint network with $m$ constraints and maximal domain size $k$. The algorithm AC3 showed in \ref{alg:AC3} have a time complexity of $O(mk^3)$.
 \end{theorem}
 \textit{Proof}: Each Revise call takes $O(k^2)$, it is sufficient to prove that at most $O(mk)$ calls to revise are made. 
 The number of calls to Revise is the number of iterations of the
@@ -1489,7 +1490,7 @@ most $2k$ times
 \end{itemize}
 
 \section{Decomposition}
-If $\gamma$ is a network with $n$ variables and maximal domain size $k$, we may search a feasible assignment by checking among all the possible ones, this will require to check $O(k^n)$ assignments in the worst case. We saw how the inference help to shrink the search space, another useful methods is called \textit{decomposition}.\begin{quote}
+If $\gamma$ is a network with $n$ variables and maximal domain size $k$, we may search a feasible assignment by checking among all the possible ones, this will require to check $O(k^n)$ assignments in the worst case. We saw how the inference help to shrink the search space, another useful method is called \textit{decomposition}.\begin{quote}
     \textbf{decomposition}: exploit the structure of a network to decompose it into smaller (and easier to solve) independent networks.
 \end{quote}
 \begin{definition}
@@ -1498,7 +1499,7 @@ If $\gamma$ is a network with $n$ variables and maximal domain size $k$, we may 
 For example, the graph for the ''coloring Australia'' problem shown in figure \ref{fig:australia} is the following:\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/australia_graph.png}
 \end{center}
-Note how this graph is composed by two connected sub-graph, since the variable $T$ (Tasmania) is disconnected from the other variables. The idea is to separate a network in function of his connected sub-graphs.  
+Observe how this graph is composed by two connected sub-graph, since the variable $T$ (Tasmania) is disconnected from the other variables. The idea is to separate a network in function of his connected sub-graphs.  
 \begin{theorem}
     Let $\gamma=(V,D,C)$ to be a constraint network. Let $G$ to be the constraint graph, we denote $\mathcal V(G)$ the vertices of $G$ and $\mathcal E(G)$ the edges of $G$, we know that $\mathcal V(G)=V $. We consider a partition of $\mathcal V(G)$\begin{equation}
         \mathcal V(G)=\bigcup_i V_i
@@ -1512,7 +1513,7 @@ Note how this graph is composed by two connected sub-graph, since the variable $
       (v,u)\notin \mathcal E(G)
     \end{matrix} \implies C_{uv}\notin C$$
     so the components of the partition are disconnected from each other. Let $a_i$ to be a feasible assignment (solution) for the variables $V_i$, then \begin{equation}
-        a=\cup_i a_i 
+        a=\bigcup_i a_i 
     \end{equation}
     is a solution to $\gamma$.
 \end{theorem}
@@ -1676,7 +1677,7 @@ Given a formula with $n$ variables, the number of possible assignment is $2^n$, 
         \bigvee_i\left(\bigwedge_j l_{i,j}\right)
     \end{equation}
 \end{definition}
-It is important to know that \textbf{every formula} can be expressed in CNF or DNF, or, for each formula $\varphi$, there exists an equivalent formula $\psi$ that is a CNF or a DNF. It is possible to construct the equivalent CNF (or DNF) from $\varphi$ by exploiting the equivalences such as\begin{itemize}
+It is important to know that \textbf{every formula} can be expressed in CNF or DNF, i.e. for each formula $\varphi$, there exists an equivalent formula $\psi$ that is a CNF or a DNF. It is possible to construct the equivalent CNF (or DNF) from $\varphi$ by exploiting the equivalences such as\begin{itemize}
     \item $\varphi \rightarrow \psi\equiv \lnot\varphi\lor\psi$
     \item $\lnot(\varphi\lor \psi)\equiv \lnot \varphi\land \lnot \psi$
     \item and so on...
@@ -1690,7 +1691,7 @@ $$\begin{aligned}
 & (\neg P \lor H \lor P) \land (\neg H \lor H \lor P)
 \end{aligned}$$
 \subsection{Resolution}
-We can construct a simple algorithm that, given a CNF formula $\psi$, tests if is satisfiable or not, by trying to derive from $\psi$ new formulas: If it finds a derived  formula $\psi$ that is unsatisfiable then $\psi$ is unsatisfiable.\bigskip 
+We can construct a simple algorithm that, given a CNF formula $\psi$, tests if is satisfiable or not, by trying to derive from $\psi$ new formulas: If it finds a derived  formula that is unsatisfiable then $\psi$ is unsatisfiable.\bigskip 
 
 We use a method called \textit{Calculus} that, given a single \textit{rule} (we will define a rule later), allows us to derive new formulas from a given one. If $\varphi$ is derived from $\psi$, we write $$\psi\vdash \varphi .$$
 \begin{definition}
@@ -1719,7 +1720,7 @@ You may wonder what this formula means and how it is applied, the symbol $\dot\c
     \item the term over the fraction line represents the clauses that we already have in our CNF 
     \item the term under the fraction line represents a new formula that we derive 
 \end{itemize}
-In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cup\{\lnot l\}$ in $\Delta$, we can derive a disjunction (i.e. a new clause) $\phi = C_1\cup C_2$. The two starting clauses $C'_1$ and $C'_2$ are called parent clauses.\begin{quote}
+In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cup\{\lnot l\}$ in $\Delta$, we can derive a disjunction (i.e. a new clause) $\varphi = C_1\cup C_2$. The two starting clauses $C'_1$ and $C'_2$ are called parent clauses.\begin{quote}
     if you have two clauses where the same literal appears, but in one it is affirmative ($l$) and in the other it is negated ($\bar{l}$), you can ''add them'' by eliminating $l$ and $\bar{l}$ and merging everything else.
 \end{quote}
 For example, if you have $\{P,\lnot R\}$ and $\{R,Q\}$, you can resolve them and find a new formula $\{P,Q\}$.
@@ -1730,9 +1731,9 @@ In practice, a resolution rule is \textbf{sound} if it derives formulas that are
 
 In the definition of \textit{entailment}, is a knowledge base that ''entails'' a formula, and not a formula that ''entails'' another formula, but a knowledge base $KB$ is equivalent to a CNF by putting in conjunction all the formulas in $KB$.\bigskip 
 
-The resolution algorithm takes as an input a knowledge base $KB$ and a formula $\phi$ and guess if $KB\models \phi$ by the following steps:\begin{enumerate}
+The resolution algorithm takes as an input a knowledge base $KB$ and a formula $\varphi$ and guess if $KB\models \varphi$ by the following steps:\begin{enumerate}
     \item transform $KB$ in a CNF 
-    \item write the CNF as a set of clauses $\Delta$, by adding to $\Delta$ also the clause $\{\lnot \phi\}$
+    \item write the CNF as a set of clauses $\Delta$, by adding to $\Delta$ also the clause $\{\lnot \varphi\}$
     \item apply the resolution rule on $\Delta$ until it's derived the empty clause $\square$.
 \end{enumerate}
 \begin{center}
@@ -1824,15 +1825,18 @@ During the execution of the DPLL procedure, there are many branches of the recur
         \item the vertices $V(G^{impl})$ are the choice literals and implied literals of the branch, plus a special vertex $\square_C$ for each clause $C$ that becomes empty. 
         \item the edges $E(G^{impl})$ are the following:\begin{itemize}
             \item when a clause $C=\{l_1\dots l_k,l'\}\in \Delta$ becomes unit with the implied literal $l'$, there will be the edges\begin{align}
-                &\lnot l_1\rightarrow l'\\ &\vdots\\
-                &\lnot l_k\rightarrow l'
+                &\lnot l_1\longrightarrow l'\\ &\vdots\\
+                &\lnot l_k\longrightarrow l'
             \end{align}
             \item when  a clause $C=\{l_1\dots l_k\}$ becomes empty there will be the edges\begin{align}
-                &\lnot l_1\rightarrow \square_C\\ &\vdots\\
-                &\lnot l_k\rightarrow \square_C
+                &\lnot l_1\longrightarrow \square_C\\ &\vdots\\
+                &\lnot l_k\longrightarrow \square_C
             \end{align}
         \end{itemize} 
     \end{itemize}
+If the clause $\{l_1\dots l_k,l'\}$ became unit: $\{l'\}$, it means that the other literals $l_1\dots l_k$ have been set to false\footnote{
+    we recall that, if a literal $l$ is set to false, we don't mean that $l=0$, but that the truth value of the literal $l$ (that might be a negated atom) is 0, so if $l=\lnot P$ with $P$ atom, then $l=0\implies P=1$.
+}, and $l'$ since is the only literal in the clause (that we remind that is included in a conjunction) must be true.
 \subsubsection{Example}
 Consider $$\Delta=\{\{P,Q,\lnot R\},
 \{\lnot P,\lnot Q\},
@@ -1851,7 +1855,7 @@ Consider $$\Delta=\{\{P,Q,\lnot R\},
 \}
     \end{equation}
     the literal $R$ is an implied literal and becomes a vertex in the graph.
-    \item Second step: We apply the splitting rule on $P$, creating two branches, one with $P=0$ and the other with $P=1$, we continue with the branch with $P=0$. The literal $\lnot P$ becomes a choice literal so there are the vertex $\lnot P$ in the graph.
+    \item Second step: We apply the splitting rule on $P$, creating two branches, one with $P=0$ and the other with $P=1$, we continue with the branch with $P=0$. The literal $\lnot P$ becomes a choice literal so there will be the vertex $\lnot P$ in the graph.
     \begin{equation}
         \{\{P,Q\},
 \{\lnot P,\lnot Q\},
@@ -1888,7 +1892,7 @@ An implication graph cannot have cycle because it keeps track of chronological b
  \begin{definition}
     Let $\Delta$ to be a set of clauses and  $G^{impl}$ the implication graph relative to a branch of the DPLL algorithm, a \textbf{conflict graph} $G^{conf}$ is a sub-graph of $G^{impl}$ such that:\begin{itemize}
         \item $G^{conf}$ contains exactly one conflict vertex $\square_C$
-        \item if $l'$ is a vertex in $^{confl}$, then, all the parents of $l'$ that are vertices $\lnot l_i$ with the arc $(\lnot l_i,l')\in E(G^{impl})$ are also vertices in $G^{conf}$.
+        \item if $l'$ is a vertex in $^{confl}$, then, all the parents of  $l'$ that are vertices $\lnot l_i$ with the arc $(\lnot l_i,l')\in E(G^{impl})$ are also vertices in $G^{conf}$.
         \item all the vertices in  $G^{conf}$ have a path to $\square_C$,
     \end{itemize}
  \end{definition}
@@ -2035,7 +2039,7 @@ Means: For every $x$ such that $x$ is a dog, there exists something ($y$) such t
     The interpretation of a ground term under $I$ is $$(f(t_1, \dots, t_n))^I = f^I(t_1^I, \dots, t_n^I)$$
  \end{definition}
  \begin{definition}[Ground Atom Satisfaction]
-    Let $\Sigma$ be a signature and $I$ a $\Sigma$-interpretation. We say that $I$ satisfies a ground atom $P(t_1, \dots, t_n)$, written $I \models P(t_1, \dots, t_n)$, iff $(t_1^I, \dots, t_n^I) \in P^I$. We also call $I$ a model of $P(t_1, \dots, t_n)$.
+    Let $\Sigma$ be a signature and $I$ a $\Sigma$-interpretation. We say that $I$ satisfies a ground atom $P(t_1, \dots, t_n)$, written $I \models P(t_1, \dots, t_n)$, if and only if $(t_1^I, \dots, t_n^I) \in P^I$. We also call $I$ a model of $P(t_1, \dots, t_n)$.
 $$ 
 I \models Dog(Lassie) \text{ because } Lassie^I = o_1 \in Dog^I
 $$
@@ -2702,8 +2706,10 @@ For the map example in Australia:
         where\begin{itemize}
             \item $A[s]=\{a\in A \ | \ pre_a\subseteq s\}$ are the actions that can be applied in $s$.
             $s\quadBrack{a}$  represents the resulting state after applying the $a$ action.
-            $$s\quadBrack{a}=\begin{cases}
-                \text{undefined} \text{ if }a\notin A[s]\\ 
+            $$
+            s\quadBrack{a}=\text{undefined} \text{ if }a\notin A[s]
+            \ \ \text{ and } \ \ 
+            s\quadBrack{a}(v)=\begin{cases}
                 eff_a(v) \text{ if }v\in V[eff_a]\\ 
                 s(v) \text{ if }v\notin  V[eff_a]
             \end{cases}$$
@@ -2711,7 +2717,7 @@ For the map example in Australia:
     \end{itemize}
 \end{definition}
 
-Although the STRIPS language is still used for historical convenience, modern planning systems (such as Fast Downward) prefer to translate everything internally into FDR for reasons of practical efficiency. The FDR format is superior because it reduces unnecessary states, allows you to better map dependencies via causal graphs, and facilitates the creation of more powerful heuristics, offering a much more natural and compact way of modeling reality than the rigid Boolean variables of STRIPS.
+Although the STRIPS language is still used for historical convenience, modern planning systems (such as Fast Downward) prefer to translate everything internally into FDR for reasons of practical efficiency. The FDR format is superior because it reduces unnecessary states, allows you to better map dependencies via causal graphs (Section \ref{sec:CausalGraph}), and facilitates the creation of more powerful heuristics, offering a much more natural and compact way of modeling reality than the rigid Boolean variables of STRIPS.
 \subsection{Conversion between FDR and STRIPS}
 An easy way to convert an FDR planning task in a STRIPS planning task is the following\begin{itemize}
     \item for each variable $v$ with domain $\{d_1\dots d_k\}$, we make $k$ STRIPS facts \begin{align*}
@@ -3023,7 +3029,7 @@ The problem file is the following:\begin{lstlisting}
 )
 \end{lstlisting}
 The solver will take care of finding the right sequence of actions (navigating in the state space) to achieve the goal starting from the defined initial state.
-\section{Causal Graph}
+\section{Causal Graph}\label{sec:CausalGraph}
 \begin{definition}
     Let $\Pi=(V,A,c,I,G)$ to be an FDR planning task, the \textbf{causal graph} of $\Pi$ is the directed graph $CG(\Pi)$ where\begin{itemize}
         \item the vertices of $CG(\Pi)$ are the variables $V$ of $\Pi$.
@@ -3220,7 +3226,7 @@ The three conditions of Definition \ref{FDR_regr} affirms that\begin{enumerate}[
     \item There must be no internal conflicts. If a variable appears in both the action's preconditions ($pre_a$) and the goal $g$, but the action does not change that variable, then the two values must match. Otherwise, you would ask the variable to have two different values at the same time at the same instant in time before the action.
 \end{enumerate}
 \begin{proposition}
-    The regression of Definition \ref{FDR_regr} satisfies the condition on Equation \eqref{regr_cond}.
+    The regression of Definition \ref{FDR_regr} satisfies the condition of Equation \eqref{regr_cond}.
 \end{proposition}
 \begin{definition}[STRIPS Regression]\label{STRIPS_regression}
     Let $(P,A,c,I,G)$ be a STRIPS planning
@@ -3240,7 +3246,7 @@ otherwise the regression is undefined:
     regr(g,a)=\bot.
 \end{equation}
 \begin{proposition}
-    The regression of Definition \ref{STRIPS_regression} satisfies the condition on Equation \eqref{regr_cond}.
+    The regression of Definition \ref{STRIPS_regression} satisfies the condition of Equation \eqref{regr_cond}.
 \end{proposition}
 We want to emphasize the difference between the STRIPS regression and the FDR regression\begin{itemize}
     \item the condition (ii) of the FDR regression prevents there from being assignments of variables that contradict those of the objective, whereas for STRIPS regression, only immediate cancellations of the action are considered.
@@ -3429,7 +3435,7 @@ For a fixed $m$, the value of $h^m(s,g)$ can be computed in polynomial time in t
 \begin{proposition}
     There exists $m$ such that $h^m=r^*$.
 \end{proposition}
-\textit{Proof}: Let $m=|P|$, in that case since $g\subseteq P$ we have $|g|\le m$ so $h^m=r^*$.
+\textit{Proof}: Let $m=|P|$, in that case since $g\subseteq P$ we have $|g|\le m$ so $h^m=r^*$.\hfill$\blacksquare$
 \subsection{Computing $h^m$}
 The function $h^m$ can be computed in polynomial time through dynamic programming, but we have to give an iterative definition. We will denote $h^m_i$ the value of the iterative $h^m$ at the iteration $i$. This function is defined as follows:\begin{equation}
     h_0^m(s,g)=\begin{cases}
@@ -3529,7 +3535,7 @@ The algorithm \ref{alg:mPG} is the generalization of a generic $m\in \N$.
 \noindent All the algorithms and arguments presented applies also for FDR.
 
 \section{Delete Relaxation Heuristics}
-We will present some formal definition and states some
+We will present some formal definition and state some
 simple properties that immediately result in a simple ''greedy'' heuristic.
 \begin{definition}[Delete Relaxation]
     For a STRIPS action $a$, we denote $a^+$ the \textbf{delete relaxed action} (or short \textbf{relaxed action}), defined as follows:\begin{align*}
@@ -3586,7 +3592,7 @@ then, $s\quadBrack{a}$ may loose some facts and get added more, but all the fact
 \begin{proposition}
     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, let $s\subseteq P$ be a state and $\vec a$ a plan for $\Pi_s$. Then, $\vec a^+$ is a relaxed plan for $s$.
 \end{proposition}
-So, if we apply a relaxed action we can only have more true facts , and that cannot render the task unsolvable, so we can keep applying relaxed actions until the goal is reached to get a relaxed plan $\vec a^+$, as done in algorithm \ref{alg:relaxed_planning}.
+So, if we apply a relaxed action we can only have more true facts, and that cannot render the task unsolvable, so we can keep applying relaxed actions until the goal is reached to get a relaxed plan $\vec a^+$, as done in algorithm \ref{alg:relaxed_planning}.
 
 
 \begin{algorithm}
@@ -3611,11 +3617,11 @@ This kind of relaxation is an over-approximation of the problem, in fact, if we 
     \item In the search state $s$, during forward search, we run the greedy relaxed planning for $\Pi_s^+$
     \item we set $h(s)$ to the cost of $\vec a ^+$, or $\infty$ if $\Pi_s^+$ is unsolvable.
 \end{itemize}
-TO be accurate, a heuristic function needs to approximate the minimum effort needed to reach the goal, the greedy relaxed plan may select arbitrary actions
+To be accurate, a heuristic function needs to approximate the minimum effort needed to reach the goal, the greedy relaxed plan may select arbitrary actions
  that aren't relevant at all, over-estimating dramatically. 
 The next definition describes the function we need.
 \begin{definition}
-    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task with state space $\theta_\Pi=(S,A,c,T,I,G)$. The \textbf{optimal delete relaxation heuristic} $h^+$ for $\Pi$ is the function $h^+:S\rightarrow\R^+\cup\{0,\infty\}$ where $h^+(s)$ is defined as the cost of an optimal relaxed plan for $s$.
+    Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task with state space $\Theta_\Pi=(S,A,c,T,I,G)$. The \textbf{optimal delete relaxation heuristic} $h^+$ for $\Pi$ is the function $h^+:S\rightarrow\R^+\cup\{0,\infty\}$ where $h^+(s)$ is defined as the cost of an optimal relaxed plan for $s$.
 \end{definition}
 $h^+$ defines the minimum effort to reach the goal under delete relaxation.
 \begin{proposition}
@@ -3734,7 +3740,7 @@ We will define the \textbf{best supporters functions} for the additive and max h
  by applying it to singleton subgoals and collecting all the actions.\bigskip
 
  The best-supporter function can be based directly on $h^{\max}$ or $h^{\text{add}}$,
- simply selecting an action a achieving $p$ that minimizes [$c(a)$ plus the
+ simply selecting an action achieving $p$ that minimizes [$c(a)$ plus the
  cost estimate for $pre_a$].
 \begin{definition}[Best Supporters]
     Let $\Pi=(P,A,c,I,G)$ be a STRIPS planning task, and let $s$ be a state:\begin{itemize}
