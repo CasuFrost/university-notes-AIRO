@@ -72,19 +72,19 @@ In the context of the artificial intelligence, an \textbf{agent} is an entity th
     \item Perceive the environment through \textit{sensors} (percepts)
     \item Act upon the environment through \textit{actuators} (actions).
 \end{itemize}
-We say that an agent is \textbf{rational} if he selects the action that maximize a given \textit{performance measure}, informally, he attempts to do ''the right thing''. The best case is hypothetical and often unattainable, because the agent usually can't perform all the actions needed, and can't perceive all the information about the environment.\bigskip
+We say that an agent is \textbf{rational} if he selects the action that maximizes a given \textit{performance measure}, informally, he attempts to do ''the right thing''. The best case is hypothetical and often unattainable, because the agent usually can't perform all the actions needed, and can't perceive all the information about the environment.\bigskip
 
 An agent has a performance measure $M$ and a set $A$ of all possible actions, given percept a sequence $A$ and knowledge $K$ (data), he has to select the next action $a\in A$, is a map\begin{equation}
     M\times P\times K \longrightarrow A.
 \end{equation} 
-An action $a$ is optimal if it maximize the expected value of $M$, given the sequence $P$ and the knowledge $K$. An agent is rational if he always chooses the optimal action. More specifically, an agent consists in two components:\begin{itemize}
+An action $a$ is optimal if it maximizes the expected value of $M$, given the sequence $P$ and the knowledge $K$. An agent is rational if he always chooses the optimal action. More specifically, an agent consists in two components:\begin{itemize}
     \item an architecture which provides an interface to the environment
     \item a program executed on that architecture.
 \end{itemize}
-There are some limitation that we aren't considering, such as the fact that determining the optimal choice could take too much time or memory on the architecture.
+There are some limitations that we aren't considering, such as the fact that determining the optimal choice could take too much time or memory on the architecture.
 
 \subsection{Types of Agents}
-There are different kinds of agents, a \textbf{Table Driven Agent} is the simplest form of agent architecture. It's essentially a look-up table that maps every possible sequence of percepts (what the agent has sensed so far) to a corresponding action the agent should take. His behavior can be resumed in the algorithm \ref{alg:table_agent}.
+There are different kinds of agents, a \textbf{Table Driven Agent} is the simplest form of agent architecture. It's essentially a look-up table that maps every possible sequence of percepts (what the agent has sensed so far) to a corresponding action the agent should take. Its behavior can be summarized in the algorithm \ref{alg:table_agent}.
 
 \begin{algorithm}
     \caption{Table Driven Agent}\label{alg:table_agent}
@@ -159,7 +159,7 @@ An environment can be classified in terms of different attributes:\begin{itemize
     \item An environment can be \textbf{fully observable} if all the relevant information are accessible to the sensors, otherwise is \textbf{partially observable}.
     \item If there are no uncertainty, the environment is \textbf{deterministic}. An environment is \textbf{stochastic} if uncertainty is quantified by using probabilities, otherwise is \textbf{non deterministic} if uncertainty is managed as actions with multiple outcomes.
     \item An environment is \textbf{episodic} if the correctness of an action can be evaluated instantly, otherwise if are evaluated in the future developments, is \textbf{sequential}. 
-    \item An environment can be \textbf{static} or \textbf{dynamic}, if itdoes not change, but the agent's performance
+    \item An environment can be \textbf{static} or \textbf{dynamic}, if it does not change, but the agent's performance
 score changes, the environment is called \textbf{semi-dynamic}.
     \item An environment can be perceived as \textbf{discrete} or \textbf{continuous}.
     \item In a single environment there may be multiple agent, that can be \textbf{competitive} or \textbf{cooperative}.
@@ -231,7 +231,7 @@ It follows a classification of some areas in terms of the attributes we discusse
 Let's consider two basic example of classical search problems, the first one is the following:\begin{center}
     \includegraphics[width=0.5\textwidth ]{images/map_search.png}
 \end{center}
-Starting from Zurigo, we would like to find a route to Zagabria. We have an initial state (Zurigo), and we have to apply actions (drive) to reach the goal state (Zagabria). Another example is the following, we want to solve the tiles-puzzle game, shown in figure \ref{img:tiles}, to reach the right state, starting from the left one, the actions to perform is the move of the tiles. A performance measure could be to minimize the summed-up action costs.
+Starting from Zurigo, we would like to find a route to Zagabria. We have an initial state (Zurigo), and we have to apply actions (drive) to be performed to reach the goal state (Zagabria). Another example is the following, we want to solve the tiles-puzzle game, shown in figure \ref{img:tiles}, to reach the right state, starting from the left one, the actions to perform are the move of the tiles. A performance measure could be to minimize the summed-up action costs.
 
 \begin{figure}[h!]
     \centering
@@ -617,7 +617,7 @@ The algorithm is complete since we are keep searching until a solution is found,
 The following table is a summary of the methods that we considered in this section, confronting the time and space complexity.\begin{center}
     \begin{tabular}{|c|c|c|c|c|c|}
 \hline
-Criterion                                                  & BFS                                                                 & \begin{tabular}[c]{@{}c@{}}Uniform\\ Cost\end{tabular}                                             & DFS      & \begin{tabular}[c]{@{}c@{}}Depth\\ Limited\end{tabular} & \begin{tabular}[c]{@{}c@{}}Iterative\\ Deeping\end{tabular}         \\ \hline
+Criterion                                                  & BFS                                                                 & \begin{tabular}[c]{@{}c@{}}Uniform\\ Cost\end{tabular}                                             & DFS      & \begin{tabular}[c]{@{}c@{}}Depth\\ Limited\end{tabular} & \begin{tabular}[c]{@{}c@{}}Iterative\\ Deepening\end{tabular}         \\ \hline
 Completness                                                & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\end{tabular}    & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\\ and action costs \\ is positive\end{tabular} & No       & No                                                      & \begin{tabular}[c]{@{}c@{}}Yes, if \\ $a$ is finite\end{tabular}    \\ \hline
 Optimality                                                 & \begin{tabular}[c]{@{}c@{}}Yes if action\\ costs are 1\end{tabular} & Yes                                                                                                & No       & No                                                      & \begin{tabular}[c]{@{}c@{}}Yes if action\\ costs are 1\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Time\\ Complexity\end{tabular}  & $O(b^d)$                                                            & $O(b^{1+\lfloor \nicefrac{g^*}{\epsilon} \rfloor})$                                                & $O(b^m)$ & $O(b^l)$                                                & $O(b^d)$                                                            \\ \hline
@@ -870,7 +870,7 @@ The \textit{Gradient Descent} is an interpretation of this algorithm.
 
 This algorithm is not complete neither optimal. Usually the hill climbing algorithm get stuck in local minima, where all the neighbors look worse than the current node, if all the neighbors have the same value of $h$, the next move will be chosen at random.\bigskip
 
-A possible strategy is to perform different runs of the algorithm, by re-starting it every time we reach a local minimum, or when we have spent a certain amount of time without ''making progress'' (without finding a node that decreases on $h$). A way to avoid local minima is to do random walks in the hope that these will lead out of them.\bigskip 
+A possible strategy is to perform different runs of the algorithm, by restarting it every time we reach a local minimum, or when we have spent a certain amount of time without ''making progress'' (without finding a node that decreases on $h$). A way to avoid local minima is to do random walks in the hope that these will lead out of them.\bigskip 
 
 A variant of the hill climbing is the \textbf{Local Beam Search},  where $k$ states are kept im memory instead of 1, and at each step, we generate all the successors of these $k$ states and we update our current state with the best $k$ among these successors.
 \subsection{Simulated Annealing}
@@ -1127,11 +1127,11 @@ We consider two additional variables $\alpha,\beta$ defined on each node during 
 \subsection{Monte-Carlo Tree Search}
 The Alpha-Beta search have two issues\begin{itemize}
     \item it needs an accurate and fast evaluation function 
-    \item it doesn't explore so much in problems with a large branching factor like \textit{Go}.
+    \item it doesn't explore so much in problems with a large branching factor such as \textit{Go}.
 \end{itemize}
 \begin{itemize}[leftmargin=*]
     \item \textbf{State Value Estimation:} The value of a state is estimated by calculating the average utility across multiple \textbf{playouts} (complete game simulations starting from that specific state).
-    \item \textbf{Playout Policy:} During a playout, a policy is used to bias move selection toward ''good'' moves rather than purely random ones. For complex games like Go, these policies are often learned via \textbf{self-play} using neural networks.
+    \item \textbf{Playout Policy:} During a playout, a policy is used to bias move selection toward ''good'' moves rather than purely random ones. For complex games such as Go, these policies are often learned via \textbf{self-play} using neural networks.
     \item \textbf{Pure Monte Carlo Search:} This approach runs simulations from the current game state and tracks which possible moves yield the highest win percentage.
     \item \textbf{Selection Policy:} This policy optimizes computation by focusing on the most important branches of the game tree. Its primary function is to balance the trade-off between:
     \begin{itemize}
@@ -1631,10 +1631,10 @@ We say that $I$ \textbf{satisfy} a formula $\varphi$, and we write $I\models \va
 \end{equation}
 the interpretation \begin{equation}
     I=\begin{cases}
+        S=1\\
         P=1\\ 
         Q=0\\ 
-        R=1\\ 
-        S=1
+        R=1
     \end{cases}
 \end{equation}
 is a model since $I\models \varphi$:\begin{equation}
@@ -1654,7 +1654,7 @@ Notation-wise, 0 and $\bot$ are interchangeable, like 1 and $\top$. A set of for
 \end{definition}
 \begin{definition}
     Let $\Sigma$ to be a set of atoms, a knowledge base $KB$ over $\Sigma$ \textbf{entails} a formula $\varphi$ $$KB\models \varphi $$
-    if, all the models $I$ of $KB$, are models of $\varphi$. 
+    if, all the models $I$ of $KB$ (the assignments that makes true all the formulas in $KB$ simultaneously), are models of $\varphi$. 
     $$ M(\bigwedge_{\psi\in KB}\psi)\subseteq M(\varphi)$$
 \end{definition}
 We say that the formula $\varphi$ follows from $KB$, and would be redundant to include $\varphi$ in $KB$. It's also important to derive new logic formula from a given knowledge base.
@@ -1712,7 +1712,7 @@ We denote the empty clause $\square$. An interpretation $I$ satisfies a single c
 $$ I\models \Delta$$ 
 if, for all $C\in \Delta$ we have that $I\models C$.
 \begin{definition}
-    A \textbf{inference rule} is a rule that derive a new formula from a given one, the \textbf{resolution rule} is the following:\begin{equation}
+    An \textbf{inference rule} is a rule that derive a new formula from a given one, the \textbf{resolution rule} is the following:\begin{equation}
         \frac{C_1\dot\cup \{l\},C_2\dot\cup\{\lnot l\}}{C_1\cup C_2}
     \end{equation}
 \end{definition}
@@ -1811,7 +1811,7 @@ That is, if $\Delta$ contains parent clauses of the form $C\dot\cup\{\lnot l\}$ 
  derivation whose length is at most the number of decisions.
  \end{quotation}
  So, DPLL is an effective practical method for conducting resolution proofs. The DPLL is a ''tree resolution'', this is a problem since there are some $\Delta$ whose shortest tree resolution proof is exponentially longer than their shortest (general) resolution proof.
- In tree resolution, every time a clause is needed, it must be derived from scratch because results aren't stored, this makes DPLL ''make the same mistakes over and over again'', leading to proofs that are exponentially longer than they need to be. Modern SAT solvers use Clause Learning (CDCL). When the solver hits a conflict, it analyzes the cause, creates a new clause to ''remember'' that mistake, and adds it to the database so it never explores that specific failing path again.\bigskip 
+ In tree resolution, every time a clause is needed, it must be derived from scratch because results aren't stored, this leads the DPLL to ''make the same mistakes over and over again'', leading to proofs that are exponentially longer than they need to be. Modern SAT solvers use Clause Learning (CDCL). When the solver hits a conflict, it analyzes the cause, creates a new clause to ''remember'' that mistake, and adds it to the database so it never explores that specific failing path again.\bigskip 
 
 During the execution of the DPLL procedure, there are many branches of the recursive run, where for each branch we compute a partial interpretation, a literal during a branch can be\begin{itemize}
     \item \textit{choice literals}: the value of an atom $P$ is set by the splitting rule, assigning $P=0$ or $P=1$. 
@@ -2298,6 +2298,9 @@ A substitution $s=\{\tfrac{x_1}{t_1}\dots \tfrac{x_n}{t_n}\}$ is idempotent $$\v
         \{E_i\}s=\{E_i\}gs'.
     \end{equation}
 \end{definition}
+ \begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/unifier.eps}
+\end{center}
 \begin{proposition}
     If any unifier exists, then an idempotent mgu exists.
 \end{proposition}
@@ -2369,7 +2372,7 @@ We recall the following properties\begin{itemize}
     \item A calculus $\mathcal R$ is \textbf{sound} if $\Delta\models_{\mathcal R}C\implies \Delta\models C$. Soundness assures you that the derivation system $\mathcal R$  is ''reliable'', and that the clause it derives are logically correct with respect to $\Delta$.
     \item A calculus $\mathcal R$ is \textbf{resolution complete} if $\Delta\models \bot$ implies $\Delta\models_{\mathcal R}\square$, i.e. if $\Delta$ is unsatisfiable is possible to derive the empty clause from it with $\mathcal R$.
 \end{itemize}
-We remind that to decide whenever $KB\models \varphi$ we can check the satisfiability of $\psi = KB\cup\{\varphi\}$. If this is unsatisfiable then $KB\models \varphi$. So the idea is\begin{itemize}
+We remind that to decide whenever $KB\models \varphi$ we can check the satisfiability of $\psi = KB\cup\{\lnot\varphi\}$. If this is unsatisfiable then $KB\models \varphi$. So the idea is\begin{itemize}
     \item to check if $KB\models \varphi$ we consider $KB\cup\{\varphi\}$
     \item we try to derive the empty clause $\square$ from $KB\cup\{\varphi\}$.
 \end{itemize}
@@ -2431,7 +2434,7 @@ We denote $\mathcal{R}_{FactBin}$ the calculus with the factoring rule and $\mat
     The calculus with the full FOL resolution and with the factoring resolution is sound and complete.
 \end{theorem}
 A sketch of the proof is presented through previous intermediate results:\begin{itemize}
-    \item Any set $\theta$ of FOL formula s can be represented in clausal form $\Delta$
+    \item Any set $\theta$ of FOL formulas can be represented in clausal form $\Delta$
     \item we assume that $\Delta$ is unsatisfiable 
     \item we use the \textit{Herbrand} Theorem \ref{teo:Herbrand} and the propositional compactness Proposition \ref{propCompact}, so the (assumed) unsatisfiability of $\Delta$ translates to: some finite set $\Delta'$ of ground instances is unsatisfiable.
     \item by compactness of propositional resolution, we can derive $\square$ from $\Delta'$
@@ -2886,7 +2889,7 @@ We give a brief and intuitive explanation of the PDDL syntax. In the domain file
 When you write on a single line\begin{lstlisting}
     obj1 obj2 ... objn - root_obj 
 \end{lstlisting}
-you are defining the objects \texttt{ obj1 obj2 ... objn } and declaring that they are of the type \texttt{ root\_obj}. If not specified, each object inheritance the root type \texttt{object.}
+you are defining the objects \texttt{ obj1 obj2 ... objn } and declaring that they are of the type \texttt{ root\_obj}. If not specified, each object inheritance the root default type \texttt{object}.
 
 When you define actions that require a certain object type \texttt{x}, you can also pass an object of a type that inherit that type \texttt{x.}
 \bigskip
@@ -3077,14 +3080,14 @@ In the action $drive(x,y)$ we notice how\begin{itemize}
 The causal graph is:\begin{center}
     \includegraphics[width=0.5\textwidth ]{images/causal_graph2.png}
 \end{center}
-So, we defined two types of arc, the class 1 (precondition-effect) and the class 2 (effect-effect). In the causal graph, an ''arc'' of class two is in fact a couple of directed arc forming a cycle between two variables,  occur whenever an action
+So, we defined two types of arc, the class 1 (precondition-effect) and the class 2 (effect-effect). In the causal graph, an ''arc'' of class 2 is in fact a couple of directed arc forming a cycle between two variables,  occur whenever an action
  has more than one effect.
 
  A cycle of class 1 (precondition-effect) occur when there
  are ''cyclic support dependencies'', where moving variable $x$ requires a
  precondition on $y$ which (transitively) requires a precondition on $x$.\bigskip 
 
- A causal graph don't depend on the initial state $I$ or the goal state $G$, this is a main weakness of causal graphs, they capture only the
+ A causal graph doesn't depend on the initial state $I$ or the goal state $G$, this is a main weakness of causal graphs, they capture only the
  structure of the variables and actions, and can by design not account for
  the influence of different initial states and goals.\bigskip 
 
@@ -3095,7 +3098,7 @@ So, we defined two types of arc, the class 1 (precondition-effect) and the class
     \item \textbf{Heuristic Efficiency:} Modern planners use FDR Causal Graphs to identify cycles and hierarchical dependencies, facilitating more effective state-space search.
 \end{itemize}
 \subsection{Domain Transition Graphs}
-\begin{definition}
+\begin{definition}[DTG]
     Let $\Pi = (V, A, c, I, G)$ be an FDR planning task, and let $v \in V$. The domain transition graph (DTG) of $v$ is the labeled directed graph $DTG(v, \Pi)$ with vertices $D_v$ and an arc $(d, d')$ labeled with action $a \in A$ whenever either:
 \begin{itemize}
     \item[(i)] $pre_a(v) = d$ and $eff_a(v) = d'$, or 
@@ -3152,6 +3155,7 @@ Such variable $v$ is called ''servant'', thanks to its connected and invertible 
      \end{itemize}
      then, for any plan $\vec a$ for $\Pi'$, a plan $\Pi$ can be obtained in polynomial time in $|\Pi|$ and $|\vec a|$.
  \end{lemma2}
+ As we already said, if the plan for $\Pi'$ is optimal, is not directly implied that also the plan for $\Pi$ is optimal.
  \begin{theorem}
     If an FDR have an acyclic causal graph and all the variables have all value transitions invertible, the task of finding a path can be decided in polynomial time.
  \end{theorem}
@@ -3206,9 +3210,9 @@ Such variable $v$ is called ''servant'', thanks to its connected and invertible 
                 eff_a(v) \text{ if }v\in V[eff_a]\\ 
                 s(v) \text{ if }v\notin  V[eff_a]
             \end{cases}$$
-\begin{definition}[FDR Regression]
+\begin{definition}[FDR Regression]\label{FDR_regr}
     Let $(V,A,c,I,G)$ be an FDR planning task, let $g$ to be a partial variable assignment and $a\in A$ an action, we say that $g$ is \textbf{regressable} over $a$ if 
-\end{definition}\begin{enumerate}[label=(\roman*)]\label{FDR_regr}
+\end{definition}\begin{enumerate}[label=(\roman*)]
     \item $eff_a\cap g\ne \emptyset$
     \item there is no $v\in V$ such that $v\in V[eff_a]\cap V[g]$ and $eff_a(v)\ne g(v)$
     \item there is no $v\in V$ such that $v\notin V[eff_a]$, $v\in V[pre_a]$ and $pre_a(v)\ne g(v)$.
@@ -3274,7 +3278,7 @@ contributes to reaching the initial state. Also in this case a heuristic functio
 \section{Heuristic Search}
 We already know that a heuristic function $h$ for a search space estimates the cost of an optimal path from a given state  $s$ to the goal, given such function $h$, we might search among the states by expanding the node with the smallest value on $h$.
 
-The reader is advised to review the definitions of a heuristic function given in the \ref{InformedSearch} section.
+The reader is advised to review the definitions of a heuristic function given in Section \ref{InformedSearch}.
 We will see later also  inadmissible heuristics, that typically arise as approximations of admissible
  heuristics that are too costly to compute.
  \begin{definition}[Domination]
@@ -3354,7 +3358,7 @@ Let's consider the Hill climbing algorithm \ref{alg:HC}. This can easily get stu
 
 \noindent This algorithm \ref{alg:EHC} is still not optimal:\begin{itemize}
     \item If the problem contains dead ends that are not recognized by the heuristic, the algorithm may crash without finding a solution.
-    \item It is only complete if it is guaranteed that no such states exist and that a goal is always reachable with a lower heuristic value.
+    \item It is only complete if it is guaranteed that no such states exist and a goal is always reachable with a lower heuristic value.
 \end{itemize}
 \subsection{Computing the Heuristic Function}
 In general, how do we choose the function $h$? \begin{itemize}
@@ -3498,7 +3502,7 @@ This algorithm computes a sequence $\{F_i\}$, this induce a function $h^1_{PG}$ 
     For a STRIPS planning task with unit cost, $h^1_{PG}=h^1$.
 \end{proposition}
 
-The algorithm \ref{alg:mPG} is the generalization of a generic $m\in \N$.
+The algorithm \ref{alg:mPG} is the generalization for a generic $m\in \N$.
 
 \begin{algorithm}
 \caption{$m$-Planning-Graph}\label{alg:mPG}
