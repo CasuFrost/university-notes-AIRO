@@ -720,13 +720,13 @@ We use the heuristic function $f$ as the evaluation function and we expand the n
     \State $frontier\leftarrow$ a priority queue ordered by ascending $h$
     \State $explored\leftarrow $empty set of states
     \While{\textbf{True}}
-    \State \textbf{If} $frontier$ is empty \textbf{Then Return} failure 
+    \State \textbf{if} $frontier$ is empty \textbf{then Return} failure 
     \State $n\leftarrow Pop(frontier)$
-    \State \textbf{If} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State \textbf{if} $n.State$ is the goal state \textbf{then Return} $Solution(s)$
     \State $explored\leftarrow explored \cup n.State$
     \For{each action $a$ in $\Pi.Actions(n.State)$}
     \State $n'\leftarrow ChildNode(\Pi,n,a)$
-    \State \textbf{If} $n'.State\notin explored \cup States(frontier)$\textbf{ Then} $insert(n',h(n'),frontier)$ 
+    \State \textbf{if} $n'.State\notin explored \cup States(frontier)$\textbf{ then} $insert(n',h(n'),frontier)$ 
     \EndFor
     \EndWhile
     \end{algorithmic}
@@ -759,9 +759,9 @@ The algorithm maintains a \textbf{frontier} (priority queue) of nodes to be expl
     \State $frontier\leftarrow$ a priority queue ordered by ascending $g+h$
     \State $explored\leftarrow $empty set of states
     \While{\textbf{True}}
-    \State \textbf{if} $frontier$ is empty \textbf{Then Return} failure 
+    \State \textbf{if} $frontier$ is empty \textbf{then Return} failure 
     \State $n\leftarrow Pop(frontier)$
-    \State \textbf{if} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State \textbf{if} $n.State$ is the goal state \textbf{then Return} $Solution(s)$
     \State $explored\leftarrow explored \cup n.State$
     \For{each action $a$ in $\Pi.Actions(n.State)$}
     \State $n'\leftarrow ChildNode(\Pi,n,a)$
@@ -979,7 +979,7 @@ imperfect play has already occurred on one or both sides.
 \end{itemize}
 Computing a strategy is often unfeasible, the number of reachable states are big, in chess, there are $10^{40}$ possibile board states. We will consider a \textit{Black Box} description of the games.
 \subsection{Minimax Search}
-This is the canonical algorithm to solving games, by computing an optimal strategy. Remember that the player $Max$ attempts to maximize the utility function $u(s)$ of the terminal state that will be reached during play, when $Min$ attempts to minimize it.\bigskip 
+This is the canonical algorithm for solving games, by computing an optimal strategy. Remember that the player $Max$ attempts to maximize the utility function $u(s)$ of the terminal state that will be reached during play, when $Min$ attempts to minimize it.\bigskip 
 
 We describe the algorithm playing as $Max$, and we assume that the opponents will play by trying always to minimize the utility function. Starting from the actual state, the algorithm explores all the possible outcomes from all possible feasible sequences of moves, expanding a tree.
 
@@ -1065,9 +1065,9 @@ For example, in Chess, if a piece exchange is underway, the search continues pas
 \subsection{Alpha-Beta Pruning}
 There is a way to save time during the computation, we can cut-off some branches of the search for which we know at priori that will not lead to the solution. Consider the tree in figure \ref{fig:alphaPruning}.
 
-The left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the left branch and continue with the right one.\bigskip
+The left branch leads to a utility at least $n$, the right branch have one sub-branch with utility value $m<n$, so we can say for sure that the left tree will not provide values for the utility grater than $m$ (since it's the $Min$ turn), at this point we can discard the right branch (and stop checking for the other nodes) and continue with the left one.\bigskip
 
-We consider two additional variables $\alpha,\beta$ defined on each node during the search, such that:\begin{itemize}
+\noindent We consider two additional variables $\alpha,\beta$ defined on each node during the search, such that:\begin{itemize}
     \item for each node $n$, $\alpha$ is the highest utility that search has already found for $Max$ on its path to $n$.\begin{itemize}
         \item In a $Min$ node, if one of the successors has a utility value less or equal than $\alpha$, we can stop considering $n$ and cutting it off  (pruning out its remaining successors).
     \end{itemize}
@@ -1170,7 +1170,6 @@ the left side of the sum represent the exploitation factor and the right side th
  \item MTCS can be applied to unknown games. 
  \item  MTCS is a form of reinforcement learning.
 \end{itemize}
-
 \begin{algorithm}
     \caption{Monte-Carlo-Tree-Search}\label{alg:MTCS}
     \begin{algorithmic}
@@ -1287,7 +1286,7 @@ The following algorithm is simple and used to find a solution for a constraint n
     \State select \color{blue} some  \color{black} $v\in V-V'$ \greenText{/*select a variable for which $a$ is not defined*/}
     \For{ each $d\in D_v$ in \color{blue} some order \color{black}}
     \State $a'=a\cup \{v=d\}$
-    \State $a''=$NaiveBacktracking($\gamma$,$a'$)
+    \State $a''=$ NaiveBacktracking($\gamma$,$a'$)
     \If{$a''$ is consistent} \State\Return $a''$\EndIf
     \EndFor
     \State\Return inconsistent
@@ -1362,20 +1361,20 @@ We encode partial assignments as unary constraints\begin{itemize}
     \If{$a$ is inconsistent} \State\Return inconsistent\EndIf
     \If{$a$ is a total assignment} \State\Return $a$\EndIf
     \State $\gamma'=$ copy of $\gamma$
-    \State \color{orange}$\gamma'=$ Inference$(\gamma')$\color{black}
-    \State\textbf{If} $\exists v \ : \ D'_v=\emptyset$ \textbf{ then return } inconsistent
+    \State \color{sapienza}$\gamma'=$ Inference$(\gamma')$\color{black}
+    \State\textbf{if} $\exists v \ : \ D'_v=\emptyset$ \textbf{ then return } inconsistent
     \State let $V'$ to be the domain of $a$
     \State select \color{blue} some  \color{black} $v\in V-V'$ (select a variable for which $a$ is not defined)
     \For{ each $d\in D'_v$ in \color{blue} some order \color{black}}
     \State $a'=a\cup \{v=d\}$
     \State $D'_v=\{d\}$
-    \State $a''=$NaiveBacktracking($\gamma'$,$a'$)
+    \State $a''=$ BacktrackingWithInference($\gamma'$,$a'$)
     \If{$a''$ is not inconsistent} \State\Return $a''$\EndIf
     \EndFor
     \State\Return inconsistent
     \end{algorithmic}
 \end{algorithm}
-With the function \color{orange}Inference \color{black} we denote any procedure deriving a tighter equivalent network. One simple inference procedure called \textit{forward checking} is described in algorithm \ref{alg:FWCH}.\bigskip 
+With the function \color{sapienza}Inference \color{black} we denote any procedure deriving a tighter equivalent network. One simple inference procedure called \textit{forward checking} is described in Algorithm \ref{alg:FWCH}.\bigskip 
 
 \begin{algorithm}
     \caption{Forward Checking}\label{alg:FWCH}
@@ -1391,7 +1390,7 @@ With the function \color{orange}Inference \color{black} we denote any procedure 
     \end{algorithmic}
 \end{algorithm}
 
-The forward checking algorithm tightens the constraints without ruling out any solutions, it guarantees to deliver an equivalent network. The computation can be done incrementally, instead of performing the first loop, we may run only the second loop every time a new assignment $a(v)=d'$ is added.\begin{itemize}
+The forward checking Algorithm \ref{alg:FWCH} tightens the constraints without ruling out any solutions, it guarantees to deliver an equivalent network. The computation can be done incrementally, instead of performing the first loop, we may run only the second loop every time a new assignment $a(v)=d'$ is added.\begin{itemize}
     \item The forward checking procedure is cheap and useful 
     \item In rare situations is not a good idea to use it, there are stronger inference methods, but in many cases, forward checking is the best choice.
 \end{itemize}
@@ -1413,8 +1412,8 @@ As an example, let's say the variable $v$ describes the color of your shirt, tha
 \end{definition}
 We can define an inference procedure that aims to make the network $\gamma$ arc consistent, by removing variable domain values. Let's say that AC($\gamma$) is a procedure that makes $\gamma$ arc consistent, in such case:\begin{itemize}
     \item is guaranteed that AC($\gamma$) returns an equivalent network.
-    \item AC($\gamma$) is more powerful (more general) the forward checking, in details:\begin{equation}
-        \text{AC}(\gamma)\sqsubseteq \text{ForwardChecking}(\gamma)
+    \item AC($\gamma$) is more powerful (more general) than the forward checking, i.e.:\begin{equation}
+        \text{AC}(\gamma)\sqsubseteq \text{ForwardChecking}(\gamma).
     \end{equation}
 \end{itemize}
 We define the following subroutine:
@@ -1428,7 +1427,7 @@ We define the following subroutine:
     \State $D_u=D_u\backslash\{d\}$ \greenText{ /*We remove the value that makes $v$ NOT arc consistent with $u$*/}
     \EndIf
     \EndFor 
-     \State\Return $\gamma$
+    \State\Return $\gamma$
     \end{algorithmic}
 \end{algorithm}
 
@@ -1441,8 +1440,8 @@ We apply pairwise Revisions in algorithm \ref{alg:AC1} and define the first vers
     \State changes = False
     \While{changes = False }
     \For{ each $C_{uv}\in C$}
-    \State\textbf{If } $D_u$ after applying Revise($\gamma,u,v$) is reduced \textbf{ then } changes = True
-    \State\textbf{If } $D_v$ after applying Revise($\gamma,v,u$) is reduced \textbf{ then } changes = True
+    \State\textbf{if } $D_u$ after applying Revise($\gamma,u,v$) is reduced \textbf{ then } changes = True
+    \State\textbf{if } $D_v$ after applying Revise($\gamma,v,u$) is reduced \textbf{ then } changes = True
     \EndFor
     \EndWhile
     \end{algorithmic}
@@ -1472,8 +1471,12 @@ haven't changed since the last time.\bigskip
       \EndWhile
     \end{algorithmic}
 \end{algorithm}
-
-In the algorithm, we check the constraints where $w\ne v$ because $v$ is the reason why $D_u$ just changed, if $v$ was arc consistent to $u$ before, that continues to hold, the values just removed from $D_u$ did not match any values from $D_v$ anyway.
+\noindent\textbf{Algorithm Breakdown}\begin{itemize}
+    \item At the beginning, we create a set $M$, in which we add all the pair of variables to check (in both directions), this is due to the fact that, if $(u,v)\in M$, we want to make $u$ arc consistent to $v$, but this relation is not commutative, so to make $v$ arc consistent to $v$ we also add $(v,u)\in M$.
+    \item in te main \textbf{while} loop we remove a pair $(u,v)$ 
+    \item we \texttt{Revise} $u,v$: if for a value of $u$ there is no valid option in $v$, that value is deleted from the domain of $u$, in this way, $u$ becomes arc consistent with $v$.
+    \item since we reduced the domain of $u$, for all the other variables $w\ne v$, it might be that some values that were valid for the constraints, aren't valid anymore, so for each $w\ne v$ we add $(w,u)$ in $M$.
+\end{itemize}
 \begin{theorem}
     Let $\gamma$ to be a constraint network with $m$ constraints and maximal domain size $k$. The algorithm AC3 showed in \ref{alg:AC3} have a time complexity of $O(mk^3)$.
 \end{theorem}
@@ -1724,9 +1727,9 @@ In practice, if we have two clauses $C'_1=C_1\dot\cup\{l\}$ and $C'_2=C_2\dot\cu
     if you have two clauses where the same literal appears, but in one it is affirmative ($l$) and in the other it is negated ($\bar{l}$), you can ''add them'' by eliminating $l$ and $\bar{l}$ and merging everything else.
 \end{quote}
 For example, if you have $\{P,\lnot R\}$ and $\{R,Q\}$, you can resolve them and find a new formula $\{P,Q\}$.
-\begin{theorem}\label{Teo:Soundness}
-    The \textbf{soundness theorem} affirms that, if $\Delta\vdash D$ (the formula $D$ can be derived by some clause in $\Delta$ with the resolution rule) then $\Delta\models D$ (the CNF $\Delta$ entails $D$).
-\end{theorem}
+\begin{definition}\label{Def:Soundness}
+    An inference rule satisfy the \textbf{Soundness Property} if, we can derive $D$ from $\Delta$ by the rule and it holds that $\Delta\models D$ (the CNF $\Delta$ entails $D$).
+\end{definition}
 In practice, a resolution rule is \textbf{sound} if it derives formulas that are logically consistent with the parent clauses.\bigskip
 
 In the definition of \textit{entailment}, is a knowledge base that ''entails'' a formula, and not a formula that ''entails'' another formula, but a knowledge base $KB$ is equivalent to a CNF by putting in conjunction all the formulas in $KB$.\bigskip 
@@ -1798,7 +1801,7 @@ The Unit Propagation (UP) section of the algorithm correspond to the application
 That is, if $\Delta$ contains parent clauses of the form $C\dot\cup\{\lnot l\}$ and $\{l\}$ the rule
  allows to add the resolvent clause $C$.
 
- Does the UP rule have the soundness property of Theorem \ref{Teo:Soundness}? Yes, we have to show that if $\Delta'$ can be derived from $\Delta$ then $\Delta\models \Delta'$, this is true since any derivation made by unit resolution can also be done by the full resolution, which we already know has this property.
+ Does the UP rule have the soundness property of Definition \ref{Def:Soundness}? Yes, we have to show that if $\Delta'$ can be derived from $\Delta$ then $\Delta\models \Delta'$, this is true since any derivation made by unit resolution can also be done by the full resolution, which we already know has this property.
 
  Is the UP rule complete? To be complete, we have to show that, if $\Delta\models\Delta'$, then $\Delta'$ can be derived from $\Delta$ by the UP rule, this is false, a counter example is given by the following CNF$$\Delta = 
   \{\{P,Q\}, \{P,\lnot Q\}, \{\lnot P,Q\}, \{\lnot P,\lnot Q\}\}
@@ -1892,7 +1895,7 @@ An implication graph cannot have cycle because it keeps track of chronological b
  \begin{definition}
     Let $\Delta$ to be a set of clauses and  $G^{impl}$ the implication graph relative to a branch of the DPLL algorithm, a \textbf{conflict graph} $G^{conf}$ is a sub-graph of $G^{impl}$ such that:\begin{itemize}
         \item $G^{conf}$ contains exactly one conflict vertex $\square_C$
-        \item if $l'$ is a vertex in $^{confl}$, then, all the parents of  $l'$ that are vertices $\lnot l_i$ with the arc $(\lnot l_i,l')\in E(G^{impl})$ are also vertices in $G^{conf}$.
+        \item if $l'$ is a vertex in $G^{confl}$, then, all the parents of  $l'$ that are vertices $\lnot l_i$ with the arc $(\lnot l_i,l')\in E(G^{impl})$ are also vertices in $G^{conf}$.
         \item all the vertices in  $G^{conf}$ have a path to $\square_C$,
     \end{itemize}
  \end{definition}
@@ -2422,7 +2425,7 @@ Now we present two rules that forms a sound and complete calculus.
     \end{equation}
     where $l_1$ and $l_2$ can be unified and $g$ is an mgu for them. $[C_1\cup\{l_1\}]g$ is a \textbf{factor} of the parent clause.
 \end{definition}
-We denote $\mathcal{R}_{FactBin}$ the calculus with the factoring rule and $\mathcal{R}_{Full}$ the calculus with the full FOL resolution.
+We denote $\mathcal{R}_{FactBin}$ the calculus with the factoring rule and the binary FOL resolution, and we denote $\mathcal{R}_{Full}$ the calculus with the full FOL resolution.
 \begin{lemma2}[Lifting Lemma]\label{lemma:lifting}
     Let $C_1$ and $C_2$ be two clauses with no shared variables, and let $C_1^g$ and $C_2^g$ be ground instances of $C_1$ and $C_2$. Say that $C^g$ is a resolvent of $C_1^g$ and $C_2^g$. Then there exists a clause $C$ such that $C^g$ is a ground instance of $C$, and:
 \begin{enumerate}
@@ -2431,7 +2434,7 @@ We denote $\mathcal{R}_{FactBin}$ the calculus with the factoring rule and $\mat
 \end{enumerate}
 \end{lemma2}
 \begin{theorem}
-    The calculus with the full FOL resolution and with the factoring resolution is sound and complete.
+    The calculus $\mathcal{R}_{Full}$ and the calculus $\mathcal{R}_{FactBin}$ are both sound and complete.
 \end{theorem}
 A sketch of the proof is presented through previous intermediate results:\begin{itemize}
     \item Any set $\theta$ of FOL formulas can be represented in clausal form $\Delta$
@@ -3304,9 +3307,9 @@ We will see later also  inadmissible heuristics, that typically arise as approxi
     \State $frontier\leftarrow$ a priority queue ordered by ascending $g+\blueText{W}\cdot h$
     \State $explored\leftarrow $empty set of states
     \While{\textbf{True}}
-    \State \textbf{if} $frontier$ is empty \textbf{Then Return} failure 
+    \State \textbf{if} $frontier$ is empty \textbf{then Return} failure 
     \State $n\leftarrow Pop(frontier)$
-    \State \textbf{if} $n.State$ is the goal state \textbf{Then Return} $Solution(s)$
+    \State \textbf{if} $n.State$ is the goal state \textbf{then Return} $Solution(s)$
     \State $explored\leftarrow explored \cup n.State$
     \For{each action $a$ in $\Pi.Actions(n.State)$}
     \State $n'\leftarrow ChildNode(\Pi,n,a)$
