@@ -10,6 +10,7 @@ Below is a list of the courses and links to the corresponding notes.
 | [Artificial Intelligence](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Artificial%20intelligence/LatexSourceFile/ArtificialIntelligence.pdf) | Completed  | 
 | [Machine Learning](https://github.com/Exyss/university-notes/raw/main/Master/Machine%20Learning/Machine%20Learning.pdf) | Written by [@Exyss](https://github.com/Exyss) |
 | [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | Completed | 
+| [Robotics 2](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%202/LatexSourceFile/Robotics2.pdf) | WIP | 
 | [Medical Robotics](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Medical%20Robotics/LatexSourceFile/MedicalRobotics.pdf) | WIP | 
 
 </div>

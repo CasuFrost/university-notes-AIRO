@@ -63,5 +63,172 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduction}
-test
+Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf}{Robotics 1} course, we described the kinematic behavior of a robotic manipulator, assuming that no force are involved, and that we can control directly the angular velocity of each joint, without any kind of resistance.
+We consider the following example\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
+\end{center}
+it is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter clock wise, while the first joint remain fixed. If we have to take in account the dynamics, we should also consider\begin{itemize}
+    \item the center of mass of the first and the second link
+    \item the mass of the first and the second link
+    \item the inertia the first and the second link
+\end{itemize}
+and instead of describing the control trough angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
+
+Let's consider the following example of a 2R planar robot, with the joint axis orthogonal respect to the direction of gravity.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/2R_example.eps}
+\end{center}
+where $I_1,I_2$ are the moment of inertia of the links around their center of mass, $d_{c_{1}},d_{c_{2}}$ is the distance along the links between the joint and the center of mass, $m_1,m_2$ are the mass of the links, and $l_1,l_2$ the lengths. The initial configuration at $t=0$ is \begin{equation}
+    \mathbf q_0 = \begin{pmatrix}
+        0\\\frac{\pi}{2}
+    \end{pmatrix} \ \ \ \  
+    \dq_0 = \begin{pmatrix}
+        0\\0
+    \end{pmatrix}
+\end{equation}
+Consequently, also $\dot {\mathbf p}=\mathbf 0$ (the velocity of the effector end). We want to know, what will be $\ddot {\mathbf q}$ (and consequently $\ddot {\mathbf p}$) in the initial configuration at $t=0$, by considering the dynamics and the forces. The Jacobian matrix of this simple manipulator is\begin{equation}
+    J=\begin{pmatrix}
+        -l_1s_1-l_2s_{12} & -l_2s_{12}\\ 
+        l_1c_1+l_2c_{12} & l_2c_{12}
+    \end{pmatrix}
+\end{equation}
+in the initial configuration $\mathbf q(0)=\mathbf q_0$ we have\begin{equation}
+    J(\mathbf q_0)=\begin{pmatrix}
+        -l_2&-l_2\\ 
+        l_1&0
+    \end{pmatrix}
+\end{equation}
+from the differential relation\begin{equation}
+    \ddot{\mathbf p}=J\ddot{\mathbf q}+\dot J\dq
+\end{equation}
+since $\dq_0=\mathbf 0$
+\begin{equation}
+    \ddot{\mathbf p_0}=\begin{pmatrix}
+        -l_2&-l_2\\ 
+        l_1&0
+    \end{pmatrix}\ddot{\mathbf q_0}
+\end{equation}
+we know that, by finding the initial joint acceleration $\ddot{\mathbf q_0}$ we can predict the next configuration and where the end effector will move. The full dynamic model is a system of differential equation and is the following\begin{equation}
+    M(\mathbf q)\ddot{\mathbf q}+\mathbf c(\mathbf q,\dq)+\mathbf g(\mathbf q)=\mathbf 0
+\end{equation} 
+where $M$ is the  $2\times 2$ inertia matrix, and depends only on the current configuration, $\mathbf c$ is a term representing the centrifugal and coriolis forces, and depends also on the velocities $\dq$. The last term $\mathbf g$ is the gravity term, and depends on the current configuration. We are not explaining in details how the model is derived, since this is an introductory section, and all these topics will be described and expanded in the following chapters.  
+
+Since the robot is at rest, the $\mathbf c$ vector is null, so\begin{equation}
+    \ddot{\mathbf q}=M^{-1}(\mathbf q)\mathbf g(\mathbf q)
+\end{equation}
+the inertia matrix in the initial configuration (that for now we get for granted) is\begin{equation}
+    M(\mathbf q_0)=\begin{pmatrix}
+        I_1+m_1d_{c_1}^2+I_2+m_2d_{c_2}^2+m_2l_1^2 &I_2+m_2d_{c_2}^2\\ 
+        I_2+m_2d_{c_2}^2&I_2+m_2d_{c_2}^2
+    \end{pmatrix}
+\end{equation}
+\begin{theorem}[Steiner]
+    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing trough the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
+\end{theorem}
+In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing trough the center of mass, that we denote $\bar I_i$.
+\begin{equation}
+    M(\mathbf q_0)=\begin{pmatrix}
+        \bar I_1+\bar I_2+m_2l_1^2 &\bar I_2\\ 
+       \bar I_2&\bar I_2
+    \end{pmatrix}
+\end{equation}
+This inertia matrix is \textit{always} positive definite, so it is invertible, in particular\begin{align}
+    &M^{-1}(\mathbf q_0)=\frac{1}{\det M(\mathbf q_0)}\begin{pmatrix}
+        \bar I_2&-\bar I_2\\ 
+       -\bar I_2&\bar I_1+\bar I_2+m_2l_1^2 
+    \end{pmatrix}=\\ &\frac{1}{(\bar I_1+m_2l_1^2)\bar I_2}\begin{pmatrix}
+        \bar I_2&-\bar I_2\\ 
+       -\bar I_2&\bar I_1+\bar I_2+m_2l_1^2 
+    \end{pmatrix}
+\end{align}
+the gravity term is the following\begin{equation}
+    \mathbf g(\mathbf q_0)=\begin{pmatrix}
+        m_1d_{c_1}g_0+m_2l_1g_0\\ 0
+    \end{pmatrix}=\begin{pmatrix}
+        (m_1d_{c_1}+m_2l_1)g_0\\ 0
+    \end{pmatrix}
+\end{equation}
+the first component $ m_1d_{c_1}g_0+m_2l_1g_0$ represents the total gravitational torque acting on the first joint.\begin{itemize}
+    \item $m_1 d_{c_1} g_0$: This is the torque generated by the weight of the first link.
+    \item $m_2 l_1 g_0$: This is the torque generated by the weight of the second link acting at the end of the first link.
+\end{itemize}
+due to the vertical alignment of the initial configuration, the gravity does not exerts any torque on the second joint. By putting together the equations we get:\begin{equation}
+    \ddot{\mathbf q_0}=\frac{(m_1d_{c_1}+m_2l_1)g_0}{(\bar I_1+m_2l_1^2)\bar I_2}\begin{pmatrix}
+        -\bar I_2\\ \bar I_2
+    \end{pmatrix}=\begin{pmatrix}
+        \star<0\\ \star > 0
+    \end{pmatrix}
+\end{equation}
+so the first joint will rotate clockwise while the second counter clockwise. We want to know if the end effector will fall to the left or to the right. We compute \begin{align}
+    &\ddot{\mathbf p_0}=\begin{pmatrix}
+        -l_2&-l_2\\ 
+        l_1&0
+    \end{pmatrix}\ddot{\mathbf q_0}=\\ 
+    &\ddot{\mathbf p_0}=\begin{pmatrix}
+        -l_2&-l_2\\ 
+        l_1&0
+    \end{pmatrix}\frac{(m_1d_{c_1}+m_2l_1)g_0}{(\bar I_1+m_2l_1^2)\bar I_2}\begin{pmatrix}
+        -\bar I_2\\ \bar I_2
+    \end{pmatrix}=\\ 
+    &\ddot{\mathbf{p}}_0 = \begin{pmatrix} 0 \\ -\frac{l_1 (m_1 d_{c_1} + m_2 l_1)g_0}{\bar{I}_1 + m_2 l_1^2} \end{pmatrix}
+\end{align}
+so the end effector will accelerato downward without moving on the $x$ axis.
+\begin{center}
+    \includegraphics[width=0.27\textwidth ]{images/2R_example2.eps}
+\end{center}
+Now, we consider a simpler example from a dynamic point of view, but we will show the process to derive the dynamic model. We consider a planar 2P robot, where the joint's are orthogonal, in this simple case the Jacobian matrix is the identity. For this manipulator there will be no angular terms, since all the joint's are prismatic, we still refers with torques to the linear forces $\tau_1,\tau_2$ applied on the prismatic joints.\begin{center}
+    \includegraphics[width=0.35\textwidth ]{images/2P_example.eps}
+\end{center}
+We consider two different methods to derive the dynamic model (both these methods we will further explained in details in the their relative sections).
+\subsubsection{Newton-Euler}
+This methods perform a balance of forces acting on the system of rigid bodies. We start by the last link, backtracking towards the first. The forces acting on the second link are the torque $\tau_2$ (the commands) and the gravity, so the dynamic equation for the second link (according to the Newton laws) is:\begin{equation}
+    \tau_2-m_2g_0=m_2\ddot q_2
+\end{equation}
+on the first link, there is no force exerts from the gravity (since this link is constrained to move only along the $x$ axis), so is affected only by the command torque $\tau_1$ and the inertia of the second link (which opposes its motion):\begin{equation}
+    \tau_1-m_2\ddot q_1=m_1\ddot q_1
+\end{equation}
+by putting the two equations together we obtain the following system\begin{equation}
+    \begin{pmatrix}
+        m_1m_2&0\\ 0&m_2
+    \end{pmatrix}\begin{pmatrix}
+        \ddot q_1\\ \ddot q_2
+    \end{pmatrix}+\begin{pmatrix}
+        0\\ m_2g_0
+    \end{pmatrix}=\begin{pmatrix}
+        \tau_1\\\tau_2
+    \end{pmatrix}
+\end{equation}
+the first matrix $M$ is the inertia matrix while the vector $\begin{pmatrix}
+        0\\ m_2g_0
+    \end{pmatrix}$ is the gravity term.
+\subsubsection{Euler-Lagrange}
+This methods is based on the energy of the system. The kinetic energy $T$ is given by the sum of the kinetic energies of the two links $T_1+T_2$, the same applies for the potential energy $U=U_1+U_2$ (that in this case, is given by the gravity field). The kinetic energy of the first link (that can move only along the $x$ axis) is\begin{equation}
+    T_1=\frac{1}{2}m_1\dot q_1^2 
+\end{equation}
+since the second link can move in both directions, and their velocity is given by $\mathbf v_{c_2}=\begin{pmatrix}
+    \dot q_1\\ \dot q_2
+\end{pmatrix}$, the kinetic energy is\begin{equation}
+    T_2=\frac{1}{2}m_2\|\mathbf v_{c_2}\|^2=\frac{1}{2}m_2(\dot q_1^2+ \dot q_2^2)
+\end{equation}
+the potential energy of the first link is constant, since it can't move along the $y$ axis, we denote this constant energy just $U_1$. The potential energy of the second link, given by the gravity field, is $U_2=m_2g_0q_2$.\bigskip 
+
+The \textit{Lagrangian} is a function describing the dynamics of the system (will be explained in the next chapters), is given by the difference between the kinetic and the potential energy\begin{equation}
+    \mathcal L=T-U
+\end{equation}
+depends on the current configuration $\mathbf q$ and the velocity $\dq$. In this case we have\begin{equation}
+    \mathcal L(\mathbf q,\dq)=\frac{1}{2}m_1\dot q_1^2 +\frac{1}{2}m_2(\dot q_1^2+ \dot q_2^2)-U_1-m_2g_0q_2
+\end{equation}
+there is a simple principle in Physics, the trajectories of the system (the evolution over time of $\mathbf q$ and $\dq$) are the one that \textit{minimizes the action over time}, that is the following scalar function\begin{equation}
+    \mathcal S=\int_0^t \mathcal L(\mathbf q,\dq)dt
+\end{equation}
+this is a problem of Calculus of Variations (the minimization of a functional over a set of functions) and is proved to be solved by the trajectories that satisfies the \textbf{Euler-Lagrange Equations}:\begin{equation}
+    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_i}-\frac{\partial \mathcal L}{\partial q_i}=\tau_i, \ \ \ 1\le i\le n
+\end{equation}
+for our 2P robotic system, we have the two following equations\begin{equation}
+    \begin{cases}
+        (m_1+m_2)\ddot q_1=\tau_1\\ 
+        m_2\ddot q_2+m_2g_0=\tau_2
+    \end{cases}
+\end{equation}
+That fully describes the model.
 \end{document}
