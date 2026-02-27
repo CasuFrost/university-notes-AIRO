@@ -71,5 +71,17 @@ where the \textit{trocar} are cylinder-shaped devices used to create small holes
 
 Usually, medical robots require an high cost of installation and maintenance, and an increased size of cognitive load for surgeons and staff to operates with these devices, situation awareness is critical. Medical devices also have to pass through a long process of certification.
 
-Differently from the industrial domain, the medical robotics have to take in account one additional variable, the \textit{human being}, that has to be considered in the control loop, both the patient and the surgeon that tele operates the robot.
+Differently from the industrial domain, the medical robotics have to take in account one additional variable, the \textit{human being}, that has to be considered in the control loop, both the patient and the surgeon that tele operates the robot.\bigskip
+\subsection{Surgical Function and Robot Specifications}
+Is important to be able to match a specific surgical function to the relative needed robot, different domains of surgical operation requires different robotic tasks, kinematic structures, control modality, sensors and actuators.
+\subsection{Orthopedics}
+In the domain of orthopedics, is required the \textit{machining of rigid surfaces}, like cutting, milling and drilling.
+\begin{center}
+    \includegraphics[width=0.9\textwidth]{images/knee_replacement.png} 
+\end{center}
+In this context the accuracy that comes from the use of a robot is crucial, since these kind of operations are critical due to the risk of \textit{misplacement of the mechanical axis}, leading to  further loosening of the prosthesis. The use of a robotic agent can help in different situations, for example, an operation can be planned on a simulated environment, and then transferred with a probe that, by touching the knee in different parts, reconstruct the trajectories to be performed and localize the coordinates.
+
+The main advantages of this operation is the accuracy, permitting a smaller footprint in the patient, since robot are more accurate, with a smaller workspace, leading to intrinsically safer operations.
+
+A completely different approach are the \textit{bone mounted robot}, where a structure is mounted on the patient, in such way even if the subject moves, the alignment of the tools is preserved, in this way we get minimal obstruction, patient immobilization and a small workspace. These approach are specific to spine surgery and the integration in the surgery workflow not smooth.
 \end{document}
