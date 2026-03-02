@@ -1,0 +1,140 @@
+\documentclass[10pt, letterpaper]{report}
+% !TeX program = xelatex
+%==================PREAMBOLO=======================%
+\input{../../preamble/preamble.tex}
+\newcommand{\titolo}{Neuroengineering }
+
+ %TOGLI COMMENTO SE USI XELATEX
+%\usepackage{fontspec}
+\title{\titolo} %========TITOLO========%
+\author{Marco Casu}
+\date{\vspace{-5ex}}
+\begin{document}
+
+%==================COPERTINA=======================%
+\begin{titlepage}
+    
+\begin{center}
+    %TOGLI COMMENTO SE USI XELATEX
+   %\setmainfont{Palace Script MT}
+   \HUGE Marco Casu\acc
+\end{center}
+\thispagestyle{empty}
+\begin{figure}[h]
+    \centering{
+        %l'immagine deve avere una risoluzione 2048x2048
+        \includegraphics[width=0.95\textwidth ]{images/Copertina.png}
+    }
+\end{figure}
+\vfill 
+\centering \includegraphics[width=0.4\textwidth ]{../../preamble/Stemma_sapienza.png} \acc
+\centering \Large \color{sapienza}Faculty of Information Engineering, Computer Science and Statistics\\
+Department of Computer, Control and Management Engineering\\
+Master's degree in Artificial Intelligence and Robotics
+\end{titlepage}
+
+%===================FINE COPERTINA======================%
+\newpage
+%\pagecolor{cartaRiciclata}%\setmainfont{Algerian}
+\Large
+This document summarizes and presents the topics for the \titolo course for the Master's degree in Artificial Intelligence and Robotics at Sapienza University of Rome. The document is free for any use. If the reader notices any typos, they are kindly requested to report them to the author.
+\vfill
+\begin{figure}[h!]
+    \raggedright
+    \includegraphics[width=0.4\textwidth,right ]{../../preamble/tomodachi.pdf} 
+\end{figure}
+\newpage %\setmainfont{Times New Roman}
+\normalsize
+
+\tableofcontents 
+\newpage
+
+%==================FOOTER e HEADER=======================%
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{Section \thesection}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\titolo}
+\fancyfoot[R]{ Marco Casu}
+%\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
+%==================FOOTER e HEADER=======================%
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+%==================INIZIO======================%
+\chapter{Measurement of Bioelectrical Signals}
+\section{The Electroencephalogram}
+In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
+     \includegraphics[width=0.8\textwidth]{images/idling_alpha.png} 
+\end{center} 
+The \textbf{electroencephalogram} (EEG) is the measurements of the electrical activity of the brain, that can be measure by putting a set of \textit{electrodes} on the scalp. The activity of a single neuron is imperceptible to our instruments, but when multiple neurons starts to work in ''combination'' some variations of electrical potential can be observed.
+\begin{definition}[Synchronization]
+    In the context of neuroscience, we say that the EEG \textbf{synchronize} when the amplitude of the registered wave increase.
+\end{definition}
+The brain can be seen as a complex, non-linear and time variant dynamical system, the registered waves on the scalp are the reaction to a given ''input''. The registered oscillation are different between different execution of the same input, so usually more registration of the same input are taken to construct the average EEG signal, time locked to various sensory stimuli, thereby significantly
+increasing the signal-to-noise ratio.\bigskip
+
+We talk about \textbf{Event Related Potential} when a change in the electrical potential is registered immediately after a given input to the brain (for example, a flash light turning on in front of the eyes), there are also spontaneous rhythm that doesn't needs a time defined event. The already mention averaging procedure is essential to distinguish between the spontaneous rhythm, the ERP, and the electrical noise (also called signal's ''artifacts'').\bigskip
+
+As we already mentioned, the EEG is measured trough an electrode, this is basically a very sensible voltmeter, that captures the changes in the electrical potential on the surface where it's placed, usually, a large number of electrodes are placed on the head (up to 256), to measure the signal over time for each electrode.
+\begin{center}
+     \includegraphics[width=0.3\textwidth]{images/averaging.png}
+     \includegraphics[width=0.6\textwidth]{images/potential_scalp.png} 
+\end{center} 
+The following image shows the displacement of three groups of electrodes (2 for each group) placed in different areas of the head.
+\begin{center}
+     \includegraphics[width=0.3\textwidth]{images/electrode_displacement.png}
+\end{center} 
+The red electrodes are placed in an area near the cheeks, the blue electrodes are placed on the top of the head, on the motor cortex, and the green one are placed on the occipital cortex. Let's consider the following signals:\begin{center}
+     \includegraphics[width=0.35\textwidth]{images/alpha_waves.png}
+\end{center} 
+we can observe how the electrodes placed on the occipital cortex synchronize at some points, and start oscillating around 10 Hz, these are the so called \textbf{alpha rhythm}, mainly registered on the occipital cortex, the other electrodes doesn't seem to register any reaction. The following signals are registered when the muscle of the subject are completely still:
+\begin{center}
+     \includegraphics[width=0.35\textwidth]{images/mu_waves.png}
+\end{center} 
+We can observe how the electrodes placed on the motor cortex reacts, these oscillation are directly connected to the motor system. It is recorded in very specific conditions that concern the ''rest'' state of the muscles and movement planning.\bigskip
+
+\textit{About the axes}: In every EEG there are two small ''bars'', called \textit{calibration bars}, these are needed to show the scale of the timeline and the amplitudes of the signals. From the alpha and the mu rhythm we can see how the ERP are in the order of micro volts [$\mu V$].
+\begin{center}
+     \includegraphics[width=0.4\textwidth]{images/cal_bars.eps}
+\end{center} 
+
+We categorize the observed signals in base of their frequency, by considering 5 different bands.
+\begin{itemize}
+    \item Delta: less than 3.5 Hz 
+    \item Theta: from 4 to 7.5 Hz
+    \item Alpha: from 8 to 13 Hz 
+    \item Beta: from 14 to 30 Hz 
+    \item Gamma: more than 30 Hz
+\end{itemize}
+Clearly, the alpha rhythm is in the alpha band (around 8 to 13 Hz), also the mu rhythm is in the same band, it might be confusing, it is important to remember than the word ''bands'' refers only to the frequency, and not to other properties of the observed rhythm (like the areas where are registered).\begin{center}
+     \includegraphics[width=0.5\textwidth]{images/bands.png}
+\end{center} 
+An Event Related Response (ERP) is a potential related to an event (cognitive input) to the brain, the time that the brain takes to react depend of the kind of input, and can range from a few milliseconds to hundreds of milliseconds, usually the ''fastest'' response comes from the \textit{primal areas}, that are the earlier in the stage of processing.
+
+A \textbf{trial} is a segment of the EEG after a sensory stimulus, and the latency is the time delay between the stimulus and the trial, as we already mentioned, we takes many individual trial and then average the data to see the global response. \begin{center}
+     \includegraphics[width=1\textwidth]{images/trials.eps}
+\end{center} 
+\subsection{EEG Instrumentation}
+The EEG measurements are very tiny (microvolt), the electrodes are sensors that measure these voltages, and are usually made of silver with a surface layer of silver
+chloride. Some properties that an electrode should have is\begin{itemize}
+    \item nonreactivity to biological tissues
+    \item accurate reproduction of extremely slowly changing
+potentials
+    \item low polarization potentials, drift, and noise.
+\end{itemize}
+\begin{center}
+     \includegraphics[width=0.4\textwidth]{images/electrode.png}
+\end{center} 
+The electrode is not directly in contact with the skin, since it needs a uniform surface, so a conductive gel is applied, to create a much more stable interface, and make the skin more conductive.
+
+Neurons communicate by moving charged atoms (ions) such as Sodium ($Na^+$), Potassium ($K^+$), and Chlorine ($Cl^-$) across their membranes.
+\begin{itemize}
+    \item When a neuron fires, it opens channels that let these ions in or out.
+    \item This movement creates a difference in charge between the inside and outside of the cell.
+    \item This variation is called Action Potential.
+\end{itemize}
+Neurons generate streams of ions. These flows create electric fields that propagate in the tissues. The electrode captures the potential variation of these fields and transforms it into an electrical signal, then an analog to digital conversion is applied to display the signal on the screen.\bigskip
+
+An electrode acts in a similar way to a capacitor,\redText{TODO}
+\end{document}

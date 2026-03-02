@@ -1,7 +1,7 @@
 # Artificial Intelligence and Robotics - A.A. 2025-26 and 2026-27
 
 ## 📖 Notes
-Below is a list of the courses and links to the corresponding notes.
+Below is a list of some of the courses and links to the corresponding notes.
 <div align="center">
 
   
@@ -11,7 +11,7 @@ Below is a list of the courses and links to the corresponding notes.
 | [Machine Learning](https://github.com/Exyss/university-notes/raw/main/Master/Machine%20Learning/Machine%20Learning.pdf) | Written by [@Exyss](https://github.com/Exyss) |
 | [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | Completed | 
 | [Robotics 2](https://github.com/CasuFrost/university-notes-AIRO/blob/main/Robotics%202/LatexSourceFile/Robotics2.pdf) | WIP | 
-| [Medical Robotics](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Medical%20Robotics/LatexSourceFile/MedicalRobotics.pdf) | WIP | 
+| [Neuroengineering](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Neuroengineering/LatexSourceFile/Neuroengineering.pdf) | WIP | 
 
 </div>
 
