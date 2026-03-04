@@ -63,6 +63,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduction}
+\section{An Overview in Dynamics}
 Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf}{Robotics 1} course, we described the kinematic behavior of a robotic manipulator, assuming that no force are involved, and that we can control directly the angular velocity of each joint, without any kind of resistance.
 We consider the following example\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
@@ -231,4 +232,52 @@ for our 2P robotic system, we have the two following equations\begin{equation}
     \end{cases}
 \end{equation}
 That fully describes the model.
+\section{Planning vs Feedback Control}
+We review some concepts already explored in the course of Robotics 1 about the differences between planning and feedback control. We recall that a good controller in every robotics application, should incorporate the offline planning procedure with an online closed loop system.\bigskip
+
+We take as an example a simple body with mass $m$ that lies on a plane with zero friction. This body can move only along the direction parallel to the plane, and it's position is defined by the variable $x$, and it is applied an horizontal force $F$, the equation that describes the dynamics of the object is of course $F=m\ddot x$.
+
+We want to plan a motion, starting from the initial condition \begin{equation}
+    \begin{pmatrix}
+        x\\\dot x
+    \end{pmatrix}=\begin{pmatrix}
+        0\\ 0
+    \end{pmatrix}
+\end{equation}
+and reaching the final condition  \begin{equation}
+    \begin{pmatrix}
+        x\\\dot x
+    \end{pmatrix}=\begin{pmatrix}
+        x_d\\ 0
+    \end{pmatrix}
+\end{equation}
+We can plan the motion by integrating over time $\ddot x = \frac{F}{m}=u$. We already seen the simple bang-bang profile, in that case, the displacement in position reached in $T$ seconds by applying a command input of amplitude $u$ is \begin{equation}
+    x=\frac{T^2}{4}u
+\end{equation}
+if $u$ is limited by $F_{max}$ the minimum time to reach $x=x_d$ starting from $x=0$ is\begin{equation}
+    T=\sqrt{\frac{4 m x_d}{F_{max}}}
+\end{equation}
+where $F_{max}=mu_{max}$.
+\begin{center}
+    \includegraphics[width=\textwidth ]{images/bang_bang.eps}
+\end{center}
+This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually leads to a configuration that is not exactly the desired one, in some cases, with an high error.
+
+The feedback approach consists in using the state variables in the commands, it doesn't necessary requires the dynamic model, but some sensors to measure the position, velocity, and other quantities. In this simple example, the general approach is the following\begin{equation}
+    m\ddot x = u(x,\dot x)
+\end{equation}
+where $u$ is the control rule. We consider the following PD law:\begin{equation}
+    m\ddot x=k_P(x_d-x)-k_D \dot x
+\end{equation}
+the system is still linear. We track the error and it's derivatives\begin{equation}
+    \begin{pmatrix}
+        e=x_d-x\\ 
+        \dot e = -\dot x\\ 
+        \ddot e = -\ddot x
+    \end{pmatrix}
+\end{equation}
+We express the dynamics in term of the errors and we get the second order equation:\begin{equation}
+    m\ddot e+k_Pe+k_D\dot e = 0
+\end{equation}
+this homogeneous 
 \end{document}
