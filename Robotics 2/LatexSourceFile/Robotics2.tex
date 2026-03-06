@@ -372,4 +372,24 @@ where\begin{align}
     \end{pmatrix}\in \R^{4n}
 \end{align}
 notice how $ \Delta \mathbf y$ is given by the measurement, $\Phi$ is evaluated with the nominal parameters and $\Delta\boldsymbol\varphi$ is the unknown error in the DH parameters.
+
+Instead of considering one simple point to measure the error, one can sample $l>>n$ points, to get $l$ matrices $\Phi_i$ and $l$ cartesian errors $\Delta\mathbf y_{e,i}$. In this way we can construct the matrix\begin{equation}
+    \overline \Phi = \begin{pmatrix}
+        \Phi_1 \\ \vdots \\ \Phi_l
+    \end{pmatrix}\in Mat(6l\times 4n)
+\end{equation}
+and the vector \begin{equation}
+        \overline{\Delta\mathbf y}_e=\begin{pmatrix}
+            \Delta\mathbf y_{e,1} \\ \vdots \\ 
+            \Delta\mathbf y_{e,l}
+        \end{pmatrix}\in \R^{6l}
+\end{equation}
+the system of equation to solve in order to find the errors in the DH parameters is \begin{equation}\label{CalSys}
+    \overline \Phi \Delta\boldsymbol\varphi= \overline{\Delta \mathbf y}_e 
+\end{equation}
+$\overline\Phi$ is called \textbf{regressor matrix}. The system in \eqref{CalSys} is an overdetermined system of equations, and can be solved by considering the pseudo inverse of $\overline\Phi$\begin{align}
+    &\Delta\boldsymbol{\varphi}=\overline\Phi^{\#}\overline{\Delta \mathbf y}_e \\
+    & \overline\Phi^{\#}=(\Phi^T\Phi)^{-1}\Phi^T
+\end{align}
+Instead of finding the pseudo inverse, an iterative algorithm can be applied to find $\Delta\boldsymbol\varphi$ that considers sequentially the measurements.
 \end{document}
