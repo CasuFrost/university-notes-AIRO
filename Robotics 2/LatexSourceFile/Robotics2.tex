@@ -279,5 +279,97 @@ the system is still linear. We track the error and it's derivatives\begin{equati
 We express the dynamics in term of the errors and we get the second order equation:\begin{equation}
     m\ddot e+k_Pe+k_D\dot e = 0
 \end{equation}
-this homogeneous 
+this homogeneous equation can be solved analytically by knowing $m,k_P,k_D$ and the initial condition. The value of $e(t)$ converges to zero if $m,k_D$ and $k_P$ have the same sign, since $m$ is the mass (and is always positive), it is sufficient to choose positive values for $k_P,k_D$. This law works even if there are some disturbance, we can combine the feed forward action with the feedback loop by choosing a force command\begin{equation}
+    F=F_f+k_P(x_f-x)+k_D \dot (\dot x_f-\dot x)
+\end{equation}
+where $F_f(t)$ realizes the desired trajectory in nominal condition and $x_f(t)$ is the evolution over time of $x$ in the nominal condition.\bigskip
+
+This simple PD control law doesn't work in situations where the system is subject to undamped persistent forces. Let's consider a body of mass $m$ subject to the gravity, that can move only along the axis orthogonal to the ground. We call $y$ the position of the body, and we can apply a force $F$ as the command input. The dynamic model is described by the equation\begin{equation}
+    m\ddot y = F-mg_0.
+\end{equation}
+If we choose a PD control law for $F$ the dynamic equation is \begin{equation}
+    m\ddot y = k_P(y_d-y)-k_D\dot y-mg_0.
+\end{equation}
+where $y_d$ is the target position and 0 is the target velocity. The error is $e=y_d-y$, the temporal evolution of the error is described by the equation\begin{equation}
+     k_Pe+k_D\dot e+m\ddot e -mg_0=0
+\end{equation}
+Will $e(t)$ converge to zero? Let's decide some values for the data just to give an example, let $m=k_P=k_D=1$.
+\begin{equation}
+   e+\dot e+\ddot e -9.8=0
+\end{equation}
+if the initial conditions are $e(0)=y_d, \ \dot e(0)=0$ the solution is 
+\begin{equation}
+    e(t) = \exp\left(-\frac{1}{2}t\right) \left[ (y_d - 9.8) \cos\left(\frac{\sqrt{3}}{2}t\right) + \frac{y_d - 9.8}{\sqrt{3}} \sin\left(\frac{\sqrt{3}}{2}t\right) \right] + 9.8
+\end{equation}
+since $\lim_{t\rightarrow \infty}\exp(-\frac{1}{2}t)=0$ we have \begin{equation}
+    \lim_{t\rightarrow \infty} e(t)=9.8\ne 0 
+\end{equation}
+so the desired state will be never reached. It is sufficient to add an integral term in the control law by making it a PID controller:\begin{equation}
+    k_I\int ed\tau
+\end{equation}
+the final dynamic equation with the inclusion of this term is \begin{equation}
+    k_Pe+k_D\dot e+k_I\int_0^t ed\tau+m\ddot e -mg_0=0
+\end{equation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/PID.pdf}
+     \caption{Discrete time simulation with $m=1,y_d=1,k_P=k_D=2,k_I=1, \Delta t = 0.0001$.}
+     \label{fig:PID}
+\end{figure}
+\chapter{Advanced Topics on Kinematics}
+\section{Calibration}
+A measurement system have an high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
+
+For simplicity, we consider a manipulator with $n$ (all revolut) joints. The  DH parameters are\begin{equation}
+    \boldsymbol{\alpha }= \begin{pmatrix}
+        \alpha_1\\\vdots \\\alpha_n
+    \end{pmatrix}, \ \ 
+    \mathbf a=\begin{pmatrix}
+        a_1\\\vdots \\a_n
+    \end{pmatrix}, \ \ 
+    \mathbf d=\begin{pmatrix}
+        d_1\\\vdots \\d_n
+    \end{pmatrix}
+\end{equation}
+from these parameters we can compute the \textit{nominal} direct kinematics\begin{equation}
+    \mathbf y_{e,nom}=\mathbf k_e(\boldsymbol\alpha,\mathbf a,\mathbf d,\btheta)
+\end{equation}
+$\btheta$ is the set of joint angles measured by the encoders. The calibration procedure is essential to have a perfect direct kinematics, especially in the industrial context. 
+\begin{itemize}
+    \item due to the tolerances in the mechanical construction and in assembly of the links and the joints, there is a small errors in the actual end effector pose respect to the one given by the direct kinematics.
+    \item the errors distributed along the are are amplified, due due to
+the open kinematic chain structure of most robots
+    \item the goal of the calibration procedure is to recover as much as possible this end effector position error by adjusting the DH parameters.
+\end{itemize}
+The calibration procedure needs a sampling operations, where the robot is set in different configuration, when an external device measure the real end effector pose, in such way we can compare this ground truth with the pose predicted by the direct kinematics.
+
+Let $\mathbf y_e$ to be the real end effector pose measured by the external system, and $\mathbf y_{e,nom}$ the one given by the direct kinematics, we consider the error\begin{equation}
+    \Delta \mathbf y=\mathbf y_e-\mathbf y_{e,nom}
+\end{equation}
+from the first order Taylor expansion of the direct kinematics, we can write the following linear relation
+\begin{equation}
+    \Delta \mathbf y=
+    \frac{\partial \mathbf k_e}{\partial\boldsymbol \alpha}\Delta\boldsymbol \alpha+
+     \frac{\partial \mathbf k_e}{\partial\mathbf a}\Delta\mathbf a+
+     \frac{\partial \mathbf k_e}{\partial\mathbf d}\Delta\mathbf d+
+     \frac{\partial \mathbf k_e}{\partial \btheta}\Delta\btheta
+\end{equation}
+The small vectors $\Delta\boldsymbol \alpha,\Delta\mathbf a,\Delta\mathbf d,\Delta\btheta$ are the small errors in the DH parameters. The relation can be rewritten in matrix form\begin{equation}
+    \Delta\mathbf y_e=\Phi\Delta\boldsymbol\varphi
+\end{equation}
+where\begin{align}
+    &\Phi=\begin{pmatrix}\displaystyle
+         \frac{\partial \mathbf k_e}{\partial\boldsymbol \alpha}&
+         \displaystyle\frac{\partial \mathbf k_e}{\partial\mathbf a}&
+     \displaystyle\frac{\partial \mathbf k_e}{\partial\mathbf d}&
+     \displaystyle\frac{\partial \mathbf k_e}{\partial \btheta}
+    \end{pmatrix}\in Mat(6\times 4n)\\
+    &\Delta\boldsymbol\varphi=\begin{pmatrix}
+        \Delta\boldsymbol \alpha\\ 
+        \Delta\mathbf a\\ 
+        \Delta\mathbf d\\
+        \Delta\btheta
+    \end{pmatrix}\in \R^{4n}
+\end{align}
+notice how $ \Delta \mathbf y$ is given by the measurement, $\Phi$ is evaluated with the nominal parameters and $\Delta\boldsymbol\varphi$ is the unknown error in the DH parameters.
 \end{document}
