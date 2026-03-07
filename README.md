@@ -12,6 +12,7 @@ Below is a list of some of the courses and links to the corresponding notes.
 | [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | Completed | 
 | [Robotics 2](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%202/LatexSourceFile/Robotics2.pdf) | WIP | 
 | [Neuroengineering](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Neuroengineering/LatexSourceFile/Neuroengineering.pdf) | WIP | 
+| [Computer Vision](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Computer%20Vision/LatexSourceFile/ComputerVision.pdf) | WIP | 
 
 </div>
 

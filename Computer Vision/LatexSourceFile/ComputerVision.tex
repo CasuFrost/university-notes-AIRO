@@ -1,0 +1,215 @@
+\documentclass[10pt, letterpaper]{report}
+% !TeX program = xelatex
+%==================PREAMBOLO=======================%
+\input{../../preamble/preamble.tex}
+\newcommand{\titolo}{Computer Vision }
+
+ %TOGLI COMMENTO SE USI XELATEX
+%\usepackage{fontspec}
+\title{\titolo} %========TITOLO========%
+\author{Marco Casu}
+\date{\vspace{-5ex}}
+\begin{document}
+
+%==================COPERTINA=======================%
+\begin{titlepage}
+    
+\begin{center}
+    %TOGLI COMMENTO SE USI XELATEX
+   %\setmainfont{Palace Script MT}
+   \HUGE Marco Casu\acc
+\end{center}
+\thispagestyle{empty}
+\begin{figure}[h]
+    \centering{
+        %l'immagine deve avere una risoluzione 2048x2048
+        \includegraphics[width=0.95\textwidth ]{images/Copertina.png}
+    }
+\end{figure}
+\vfill 
+\centering \includegraphics[width=0.4\textwidth ]{../../preamble/Stemma_sapienza.png} \acc
+\centering \Large \color{sapienza}Faculty of Information Engineering, Computer Science and Statistics\\
+Department of Computer, Control and Management Engineering\\
+Master's degree in Artificial Intelligence and Robotics
+\end{titlepage}
+
+%===================FINE COPERTINA======================%
+\newpage
+%\pagecolor{cartaRiciclata}%\setmainfont{Algerian}
+\Large
+This document summarizes and presents the topics for the \titolo course for the Master's degree in Artificial Intelligence and Robotics at Sapienza University of Rome. The document is free for any use. If the reader notices any typos, they are kindly requested to report them to the author.
+\vfill
+\begin{figure}[h!]
+    \raggedright
+    \includegraphics[width=0.4\textwidth,right ]{../../preamble/tomodachi.pdf} 
+\end{figure}
+\newpage %\setmainfont{Times New Roman}
+\normalsize
+
+\tableofcontents 
+\newpage
+
+%==================FOOTER e HEADER=======================%
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{Section \thesection}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\titolo}
+\fancyfoot[R]{ Marco Casu}
+%\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
+%==================FOOTER e HEADER=======================%
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+%==================INIZIO======================%
+\chapter{Image Processing}
+An image is just a grid (matrix) where each entries represents the intensity of that pixel, for example, in grey scale images, each entry is an integer between 0 and 255 (1 byte for pixel), where 0 represents the black, 255 the white, and the other values the scale of greys.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/greys.png} 
+\end{center}
+In such way a grey scale image can be seen as a function $f:\R^2\rightarrow\R$, for the digital images, the values of the function are restricted to the integers in $[0,255]$ (also the domain is discrete and restricted to the couples of integers). Of course, color images are coded with 3 channels (Red Green Blue), so for each entry there is a triple of integers between 0 and 255 (3 byte).
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/function_image.png} 
+\end{center}
+\section{Filtering}
+\begin{definition}[Filter]
+    a filter is a mathematical algorithm applied to an image to modify its characteristics, highlight certain information or remove disturbances (noise).
+\end{definition}
+\begin{figure}[H]
+    \center
+    \includegraphics[width=0.6\textwidth ]{images/filters.png} 
+    \caption{Example of two filters}
+\end{figure}
+\subsection{Point Processing}
+The first simple filter to consider is the \textbf{Gamma Correction}, this adjust the brightness and contrast in images. The human eye perceives light in a non-linear way, and gamma correction ensures
+images appear natural. Human vision is more sensitive to changes in darker tones than in lighter tones.
+
+\redText{TODO}
+\subsection{Linear Filtering}
+The goal of the filtering procedure is to form a new image whose pixel values are a combination of the original pixel values, this is useful to enhance the image and get useful information from them.
+
+One key example is the noise reduction.
+\begin{figure}[H]
+    \center
+    \includegraphics[width=0.5\textwidth ]{images/noise.png} 
+    \caption{Noisy image from a camera}
+\end{figure}
+A \textit{linear filter} replace each pixel of the original images with a new one computed as a combination (weighted sum) of its neighbors, trough the application of the cross-correlation operator or the convolution.
+
+Each linear filter is defined by a \textit{kernel}, a matrix on which we will perform the convolution (or cross correlation) with the original images.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/linearFilter.png} 
+\end{center}
+\begin{definition}[Cross Correlation]
+    The discrete cross correlation operator between two matrices $F$ (the image) and $H$ (the kernel) results in the output matrix $G$ defined as follows\begin{equation}
+        G[i,j]=\sum_{u=-k}^k\sum_{v=-k}^k H[u,v]F[i+u,j+v]
+    \end{equation}
+\end{definition}
+we  write the result of the cross correlation as follows $G=H\otimes F$. The \textbf{Convolution} is similar but the kernel is flipped horizontally and vertically \begin{equation}
+        G[i,j]=\sum_{u=-k}^k\sum_{v=-k}^k H[u,v]F[i-u,j-v]
+    \end{equation}
+we  write the result of the convolution as follows $G=H\star F$. The convolution is commutative and associative.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/kernel.eps} 
+\end{center}
+An example of filter is the \textit{mean filter}, that assign at a given pixel the average of the neighbors, giving a blurry effects. Considering more neighbors will result in a stronger blur.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/blur.png} 
+\end{center}
+a filter is called \textbf{separable} if the kernel can be expressed as the outer product of two vectors, this property makes the application of a filter less expensive from a computational point of view, since the 2D convolution with a separable filter is equivalent to two 1D convolution (with the column and row filters).\begin{equation}
+    \begin{pmatrix}
+        1&1&1\\ 
+        1&1&1\\ 
+        1&1&1
+    \end{pmatrix}=\begin{pmatrix}
+        1\\1\\1
+    \end{pmatrix}\cdot\begin{pmatrix}
+        1&1&1
+    \end{pmatrix}
+\end{equation}
+if an image have a resolution $m\times n$ and the filter has size $l\times l$:\begin{itemize}
+    \item the convolution with a non separable filter needs $l^2mn$ operations 
+    \item the convolution with a separable filter needs $2lmn$ operations.
+\end{itemize}
+A kernel is separable if and only if the matrix has rank 1.\bigskip 
+
+Now we consider a useful non linear filter, the \textbf{Gaussian kernel} is the 2D filter $G_\sigma$ defined as follows:\begin{equation}
+    G_\sigma[i,j]=\frac{1}{2\pi\sigma^2}\exp\left(-\frac{i^2+j^2}{2\sigma^2}\right)
+\end{equation}
+\begin{figure}[H]
+    \center
+    \includegraphics[width=0.3\textwidth ]{images/gaussian_kernel.png} 
+    \caption{Heatmap of the Gaussian kernel}
+\end{figure}
+The Gaussian filter gives a blurry effects, in particular, removes the \textit{high frequencies} from an image (will be explained later). The convolution of two Gaussian filters is still a gaussian filter.
+\begin{figure}[H]
+    \center
+    \includegraphics[width=0.8\textwidth ]{images/gaussian_kernel_example.png} 
+    \caption{Application of the Gaussian kernel with different values for $\sigma$}
+\end{figure}
+Another important filter is the \textbf{Sharpening filter}.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/sharpening.png} 
+\end{center}
+Is given by the difference between a scaled \textit{impulse} and a mean filter. If we subtract the original images from the sharpened one we obtain an image that represents only the details.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/details.png} 
+\end{center}
+The sharpening operation can be done with the Gaussian filter instead of the mean one:\begin{equation}
+    ((1+\alpha)e-\alpha H)\\ 
+\end{equation}
+where
+\begin{itemize}
+    \item $\alpha$ is the value to control how sharpening the filter is 
+    \item $H$ is the Gaussian kernel 
+    \item $e$ is the unit impulse, matrix with 1 in the center and zero in the other entries\begin{equation}
+        \begin{pmatrix}
+            0&0&0\\
+            0&1&0\\
+            0&0&0
+        \end{pmatrix}.
+    \end{equation}
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.63\textwidth ]{images/sharpening_gaussian.png} 
+\end{center}
+The Gaussian filter works well but have a problem: since it averages also across the edges, these are lost and the image becomes hard to read, too much information are lost. There is a way to give the blurry effects while preserving the edges.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/blur edges.png} 
+\end{center}
+The \textbf{Bilateral filter} do not blur if there is an edge.
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/bilateral.png} 
+\end{center}
+Is defined as follows: let $f$ to be the original image, and $h$ the result of the filtering\begin{equation}
+    h[m,n]=\frac{1}{W_{m,n}}\sum_{k}\sum_lG_\sigma[k,l]r_{m,n}[k,l]f[m+k,n+l]
+\end{equation}
+where\begin{itemize}
+    \item $G_\sigma$ is the Gaussian filter
+    \item $W_{m,n}$ is a normalization factor
+    \item $r_{m,n}$ is a function defined as follows\begin{equation}
+        r_{mn}[k, l] = \exp\left( -\frac{\|f[m, n] - f[m+k, n+l]\|^2}{2\sigma_r^2} \right)
+    \end{equation}
+    \begin{itemize}
+        \item $\sigma_r$ it is the ''intensity range'' parameter indicated in the image. Determines how similar the color of a pixel must be to be considered in the calculation.
+        \item If the intensity difference between two pixels is small (the pixels are similar), $r_{mn}$ is close to 1, so the pixel contributes a lot to the average.
+        \item If the difference is large (for example, there is a sharp edge), $r_{mn}$ becomes close to 0, effectively excluding that pixel from the calculation.
+    \end{itemize}
+\end{itemize}
+\begin{itemize}
+    \item \textbf{Gaussian filtering}: Smooths everything nearby (even edges), only depends on spatial distance
+    \item \textbf{Bilateral filtering}: Smooths ''close'' pixels in space and intensity, depends on spatial and intensity distance
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.7\textwidth ]{images/gaussian_application.png} \\
+    \includegraphics[width=0.7\textwidth ]{images/bilateral_application.png}
+\end{center}
+If the goal is to enhance contrast while preserving edges, bilateral filtering is generally a better choice. If the goal is to reduce noise or blur the image slightly, Gaussian filtering might be suitable, but it might not
+preserve edges as well as bilateral filtering.
+\subsection{Sampling and Aliasing}
+\redText{TODO}
+\subsection{Image Derivatives}
+\redText{TODO}
+\subsection{Edge Detection}
+\redText{TODO}
+\end{document}
