@@ -29,7 +29,11 @@
 \usepackage{lipsum}
 \usepackage{wrapfig}
 \usepackage{multicol}
+\usepackage{titlesec}
 \usepackage[paper=a4paper,left=25mm,right=25mm,bottom=25mm,top=25mm]{geometry}
+\usepackage[most]{tcolorbox}
+\usepackage{amsfonts}
+
 \definecolor{light-gray}{gray}{0.95}
 \definecolor{cop}{HTML}{f7ecd7}
 \definecolor{copAut}{HTML}{ababab}
@@ -101,6 +105,7 @@
 \newcommand{\mcm}{{\text{mcm}}}
 \newcommand{\rg}{{\text{rg}}}
 \newcommand{\dq}{{\dot{\mathbf q}}}
+\newcommand{\dy}{{\dot{\mathbf y}}}
 \newcommand{\ve}{{\bar v}}
 \newcommand{\spaz}{{\text{\hphantom{aa}}}}
 \newcommand{\MCD}{{\text{MCD}}}
@@ -185,3 +190,145 @@
 }
 %fine roba che serve per il codice C
 \usepackage{minted}
+\usepackage[scaled]{helvet}
+\tcbuselibrary{theorems}
+
+%TEOREMI ECC 
+\newtcbtheorem[number within=section]{boxdefinition}{Definition}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!20, right color=sapienza!40}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxtheorem}{Theorem}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!20, right color=sapienza!40}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxproposition}{Proposition}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxlemma}{Lemma}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxobservation}{Observation}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\titleformat{\section}
+  {\fontfamily{phv}\selectfont\huge\bfseries} % <--- "huge" rende il testo del titolo molto grande
+  {\color{sapienza}\fontsize{20}{20}\selectfont\thesection} % <--- Numero ridotto a 18pt
+  {12pt} % Spazio tra numero e titolo
+  {} 
+  [\vspace{4pt}{\color{sapienza!40}\titlerule[3pt]}] % Linea colorata un po' più spessa
+
+\titleformat{\subsection}
+  {\fontfamily{phv}\selectfont\Large\bfseries} % <--- "huge" rende il testo del titolo molto grande
+  {\color{sapienza}\fontsize{16}{16}\selectfont\thesection} % <--- Numero ridotto a 18pt
+  {12pt} % Spazio tra numero e titolo
+  {} 
+  [\vspace{4pt}{\color{sapienza!40}\titlerule[1.5pt]}] % Linea colorata un po' più spessa

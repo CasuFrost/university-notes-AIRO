@@ -60,9 +60,6 @@ This document summarizes and presents the topics for the \titolo course for the 
 \fancyfoot[R]{ Marco Casu}
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
-\newtheorem{definition}{Definition}
-\newtheorem{proposition}{Proposition}
-\newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
 \chapter{Introduction}
 \section{An Overview in Dynamics}
@@ -125,9 +122,9 @@ the inertia matrix in the initial configuration (that for now we get for granted
         I_2+m_2d_{c_2}^2&I_2+m_2d_{c_2}^2
     \end{pmatrix}
 \end{equation}
-\begin{theorem}[Steiner]
+\begin{boxtheorem}{Steiner}{}
     If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing trough the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
-\end{theorem}
+\end{boxtheorem}
 In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing trough the center of mass, that we denote $\bar I_i$.
 \begin{equation}
     M(\mathbf q_0)=\begin{pmatrix}
@@ -540,14 +537,13 @@ Without entering in the details (for now), the \textit{general redundancy resolu
     \end{equation}
     this is more easy to solve and usually requires the resolution of a linear quadratic problem.
 \end{itemize}
-\subsection{Local Resolution Methods}
 There are three classes of methods to solve $J\dq=\dot{\mathbf y}$:\begin{itemize}
     \item Jacobian-based: Among the infinite solutions, the one that minimizes a suitable norm is chosen 
     \item null-space methods: a term is added to the previous solution so as not to affect execution
 of the task trajectory, i.e., belonging to the null-space $\mathcal N(J)$
     \item task augmentation: redundancy is reduced/eliminated by adding $s\le n-m$ further auxiliary tasks to make the problem ''squared''.
 \end{itemize}
-\subsubsection{Jacobian Based}
+\subsection{Jacobian Based Methods}
 We have to solve the redundant problem from a differential level\begin{equation}
     J\dq=\dot{\mathbf y}
 \end{equation}
@@ -650,12 +646,12 @@ We already seen in the Robotics 1 course that the pseudo inverse realizes the de
 \end{equation}
 If $J$ is singular and $JJ^T$ cannot be inverted, the formula $J^\#=J^T(JJ^T)^{-1}$ can't be used, and to find $J^\#$ we need numerical methods that relies on the \textit{singular value decomposition} of $J$.
 
-\begin{definition}[SDV]
+\begin{boxdefinition}{SDV}{}
     For any matrix $J$, there exists a decomposition\begin{equation}
         J=U\Sigma V^T 
     \end{equation}
     where $U$ and $V$ are orthonormal matrices, and $\Sigma$ is a diagonal matrix.
-\end{definition}
+\end{boxdefinition}
 This decomposition have special properties, the columns of $U$ are the eigen vectors of $JJ^T$, and the columns of $V$ are the eigen vectors of $J^TJ$. The matrix $\Sigma$ have the following form:\begin{equation}
     \Sigma=\begin{pmatrix}
         \sigma_1 & & & \\ 
@@ -672,11 +668,169 @@ where $\rho$ is the rank of $J$. The numbers $\sigma_1\dots ,\sigma_\rho$ are th
     &J\mathbf  v_i=0, \ \ \ (i=\rho+1\dots n)
 \end{align}
 we denote $\mathbf u_i$ the $i$-th column vector of $U$ and $\mathbf v_i$ the $i$-th column vector of $V$. 
-
-We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
+\begin{boxproposition}{}{}
+    The column vectors of $U$ are the eigenvectors of $JJ^T$ associated to the eigen values $\sigma_1^2\dots,\sigma_\rho^2$.
+\end{boxproposition}
+\textit{Proof}: We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
     JJ^T=U\Sigma V^T V \Sigma^T U^T
 \end{equation}
-since $V$ is orthonormal, we have that $V^T=V^{-1}$ so $V^TV=I$:\begin{equation}
-    JJ^T=U\Sigma\Sigma^T U^T
+since $V$ is orthonormal, we have that $V^T=V^{-1}$ so $V^TV=I$:\begin{align}
+    &JJ^T=U\Sigma \blueText{V^T V}\Sigma^T U^T\\
+    &JJ^T=U\Sigma \blueText{I}\Sigma^T U^T\\
+    &JJ^T=U\Sigma\Sigma^T U^T
+\end{align}
+by considering the structure of $\Sigma$, we can easily see how $\Sigma\Sigma^T$ will be:\begin{equation}
+    \Sigma\Sigma^T=\begin{pmatrix}
+        \sigma_1 & & & \\ 
+        & \ddots & & 0_{m\times (n-m)}\\ 
+        & & \sigma_m & 
+    \end{pmatrix}
+    \begin{pmatrix}
+        \sigma_1 & &  \\ 
+        & \ddots & \\ 
+        & & \sigma_m \\
+        &0_{m\times (n-m)}&
+    \end{pmatrix}=\begin{pmatrix}
+        \sigma_1^2 & &  \\ 
+        & \ddots &   \\ 
+        & & \sigma_m^2 
+    \end{pmatrix}
 \end{equation}
+so\begin{equation}
+JJ^T=U\begin{pmatrix}
+        \sigma_1^2 & &  \\ 
+        & \ddots &   \\ 
+        & & \sigma_m^2 
+    \end{pmatrix} U^T
+\end{equation}
+now we consider a vector column of $U$ and we multiply $JJ^T$ by that:\begin{equation}
+    JJ^T\mathbf u_i=U\begin{pmatrix}
+        \sigma_1^2 & &  \\ 
+        & \ddots &   \\ 
+        & & \sigma_m^2 
+    \end{pmatrix} U^T\mathbf u_i
+\end{equation}
+the result of $U^T\mathbf u_i$ is the column vector where each entry is the dot product between the column vectors of $U$ and $\mathbf u_i$:\begin{equation}
+    U^T\mathbf u_i=
+        \begin{pmatrix}
+            \mathbf u_1^T\\ 
+            \mathbf u_2^T\\ 
+            \vdots \\ 
+            \mathbf u_m^T
+        \end{pmatrix}\mathbf u_i=\begin{pmatrix}
+            \mathbf u_1^T\mathbf u_i\\ 
+            \vdots \\ 
+             \mathbf u_i^T\mathbf u_i\\ 
+             \vdots \\ 
+            \mathbf u_m^T\mathbf u_i\\ 
+        \end{pmatrix}
+\end{equation}
+since $U$ is orthonormal, the column vectors are orthogonal and have unitary norm so\begin{equation}
+    U^T\mathbf u_i=\begin{pmatrix}
+        0 \\ \vdots \\ 1 \\ \vdots \\ 0
+    \end{pmatrix}=\boldsymbol\delta_i
+\end{equation}
+where $\boldsymbol\delta_i$ is the column vector with $m$ component, all zeros except for the $i$-th entry that is 1. Now we can go back to  $JJ^T$:\begin{align}
+    &JJ^T\mathbf u_i=U\begin{pmatrix}
+        \sigma_1^2 & &  \\ 
+        & \ddots &   \\ 
+        & & \sigma_m^2 
+    \end{pmatrix} \boldsymbol\delta_i=
+    JJ^T\mathbf u_i=U\sigma_i^2\boldsymbol\delta_i\\=\sigma_i^2 U \boldsymbol\delta_i
+\end{align}
+clearly $U \boldsymbol\delta_i$ is the $i$-th column vector of $U$ so\begin{equation}
+    JJ^T\mathbf u_i=\sigma_i^2\mathbf u_i
+\end{equation}
+\hfill$\blacksquare$\bigskip
+
+\noindent As we already mention, the pseudo inverse (that we can compute with the SVD) is important since it gives the solution that minimizes the norm of the joint velocity $\dq$, this is a good property from an energetic point of view, since we always pursue the same task velocity by imposing less torque (hence, less electrical current).
+\begin{boxtheorem}{}{}
+    Consider the system $J\dq=\dy$ in the variables $\dq$, where $J$ is a full rank matrix with $n$ columns and $m$ rows ($n>m$). The solution given by $J^\#\dy=J^T(JJ^T)^{-1}\dy$ denoted $\dq_{PS}$ is the minimum norm solution that realizes $\dy$. 
+\end{boxtheorem}
+\textit{Proof}: let $\dq^*$ to be any other solution to $J\dq^*=\dy$. Since $J\dq^*=J\dq_{PS}$ it follows:\begin{align}
+    &J\dq^*=J\dq_{PS}\implies \\
+    &J\dq^*-J\dq_{PS}=\mathbf 0\implies \\
+    &J(\dq^*-\dq_{PS})=\mathbf 0.
+\end{align}\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/PS_solution_1.eps}
+\end{center}
+Now we show that the vector $\dq^*-\dq_{PS}$ is orthogonal to $\dq_{PS}$:
+\begin{align}
+    &(\dq^*-\dq_{PS})^T\dq_{PS}=\\ &(\dq^*-\dq_{PS})^TJ^\#\dy=\\
+    &\blueText{(\dq^*-\dq_{PS})^TJ^T}(JJ^T)^{-1}\dy=\\
+    &\blueText{(J(\dq^*-\dq_{PS}))^T}(JJ^T)^{-1}\dy=\\
+    &\blueText{(J\dq^*-J\dq_{PS})^T}(JJ^T)^{-1}\dy=\\
+    &\blueText{(\dy-\dy)^T}(JJ^T)^{-1}\dy=\\
+     &\blueText{\mathbf 0^T}(JJ^T)^{-1}\dy=0.
+\end{align}
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/PS_solution_2.eps}
+\end{center}
+Now let's compute the norm of $\dq^*$:\begin{equation}
+    \|\dq^*\|^2=\|\dq_{PS}+(\dq^*-\dq_{PS})\|^2
+\end{equation}
+since $\dq^*$ and $(\dq^*-\dq_{PS})$ are orthonormal, the norm of the sum is the sum of the two norms:\begin{equation}
+    \|\dq_{PS}+(\dq^*-\dq_{PS})\|^2=\|\dq_{PS}\|^2+\|(\dq^*-\dq_{PS})\|^2\ge\|\dq_{PS}\|^2 
+\end{equation}
+so it is always grater or equal than the norm of $\dq_{PS}$. The proof is complete.\hfill$\blacksquare$\bigskip
+
+We mentioned how the SVD is useful to compute the pseudo inverse when the matrix is not full rank. This is true due to the following relation:\begin{equation}
+    J=U\Sigma V^T\implies J^\#=V\Sigma^\# U^T 
+\end{equation}
+and $\Sigma^\#$ is easy to compute:\begin{equation}\label{SigmaDiecis}
+    \Sigma^\#=\begin{pmatrix}
+        \nicefrac{1}{\sigma_1}& & &\\ 
+        &\ddots &  & 0_{(m-\rho)\times (m-\rho)}\\ 
+        & &  \nicefrac{1}{\sigma_\rho} &\\ 
+         & &  0_{(n-m)\times m} &
+    \end{pmatrix}
+\end{equation}
+so to compute $J^\#$:\begin{enumerate}
+    \item We use numerical methods to compute the singular value decomposition of $J$ by finding $U,V,\Sigma$
+    \item we compute $\Sigma^\#$ by using the form in equation \eqref{SigmaDiecis}
+    \item we compute $J^\#=V\Sigma^\# U^T$.
+\end{enumerate}
+
+There is another way to solve the problem $J\dq=\dy$ by finding a solution that realizes $\dy$ but not minimize the norm of $\dq$, but a weighted norm given by a positive definite matrix $W$.
+\begin{boxdefinition}{Weighted Pseudo Inverse}{}
+    Given the problem $J\dq=\dy$, and a positive definite matrix $W$, the solution \begin{equation}
+        \dq_W=J^\#_W\dy
+    \end{equation}
+    where\begin{equation}
+        J^\#_W=W^{-1}J^T(JW^{-1}J^T)^{-1}
+    \end{equation}
+    minimizes the weighted norm\begin{equation}
+        \|\dq\|^2_W=\dq^TW\dq.
+    \end{equation}
+\end{boxdefinition}
+This kind of solution is used to give more emphases to some joints, for example, if $W$ is diagonal\begin{equation}
+    W=\begin{pmatrix}
+        W_1&\dots & 0\\ 
+        \vdots &\ddots&\vdots \\ 
+        0&\dots & W_n
+    \end{pmatrix}
+\end{equation}
+a large weight $W_i$ will impose to find a solution where $\dot q_i$ is small. This can be used to find a solution that uses more joint velocity for the last joints that are near the end effector, since they have to support a smaller weight (and not that of the entire structure) and therefore less torque is required to move them compared to the joints at the base of the structure.\bigskip
+
+There is a last Jacobian based method, called \textbf{Damped Least Squares (DLS)}. It can be proved that, the solution given by the pseudo inverse $J^\#$ is equivalent to the solution $\dq$ of the following optimization problem:\begin{equation}
+    \begin{matrix}
+        \displaystyle\min_{\dq} \|\dq\|^2\\ \\
+        \text{such that }\|\dy-J\dq\|^2=0
+    \end{matrix}
+\end{equation}
+this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ that creates a compromise between large joint velocity and task accuracy: In practice, we allow a solution that achieves a task velocity that is not identical to the desired one, but with a lower norm. The optimization problem becomes unconstrained:\begin{equation}
+    \displaystyle\min_{\dq} \frac{\mu}{2}\|\dq\|^2+\frac{1}{2}\|\dy-J\dq\|^2
+\end{equation}
+this induces a robust behavior when crossing singularities and applies equally to square and non-square matrices. Since it is a quadratic form, it admits an analytical solution:\begin{equation}
+    \dq=J_{DLS}\dy=J^T(JJ^T+\mu I_m)^{-1}\dy
+\end{equation}
+the more the factor $\mu$ is big, the more importance will be given to the norm respect to the task error. The task error is\begin{equation}
+    \dot{\mathbf e}=\mu(JJ^T+\mu I_m)^{-1}\dy
+\end{equation}
+of course, $\mu$ can be variable: Since when crossing a singularity the required joint velocity $\dq$ grows, so we can make $\mu$ inversely proportional to the minimum singular value $\sigma_\rho$ of $J$, that can be seen as a measure of distance from a singularity.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth ]{images/DLS}
+    \caption{DLS solution near a singularity for a $2\times 2$ Jacobian.}
+\end{figure}
 \end{document}
