@@ -547,4 +547,136 @@ There are three classes of methods to solve $J\dq=\dot{\mathbf y}$:\begin{itemiz
 of the task trajectory, i.e., belonging to the null-space $\mathcal N(J)$
     \item task augmentation: redundancy is reduced/eliminated by adding $s\le n-m$ further auxiliary tasks to make the problem ''squared''.
 \end{itemize}
+\subsubsection{Jacobian Based}
+We have to solve the redundant problem from a differential level\begin{equation}
+    J\dq=\dot{\mathbf y}
+\end{equation}
+where $J$ have $m$ rows and $n$ columns, with $n>m$. We will consider solutions of the form\begin{equation}
+    \dq = K\dot{\mathbf y}
+\end{equation}
+where $K$ is a matrix with $n$ rows and $m$ columns. We want $K$ to satisfy the following condition\begin{equation}
+    JKJ=J
+\end{equation}
+such a matrix is called a \textbf{generalized inverse} of $J$ (depends on the current configuration $\mathbf q$), there are infinite matrix that satisfies that condition. A generalized inverse can realize the desired task velocity $\dot{\mathbf y}$ if it is in the range of $J$.\begin{align}
+    \forall \dot{\mathbf y}\in\mathcal R(J) \ : \ J(K\dot{\mathbf y})=JKJ\dq=J\dq=\dot{\mathbf y}
+\end{align}
+An example of a generalized inverse is the \textit{right inverse}, let $J$ to be a Jacobian of the form\begin{equation}
+    J=\begin{pmatrix}
+        J_a&J_b
+    \end{pmatrix}
+\end{equation}
+where $\det J_a\ne0$, then, the right inverse is \begin{equation}
+    K_r=\begin{pmatrix}
+        J_a^{-1}\\ 0
+    \end{pmatrix}
+\end{equation}
+this is equivalent to ''freezing'' some degrees of freedom. \bigskip 
+
+Another example of a generalized inverse is the \textbf{pseudo inverse matrix}, that is the matrix $J^\#$ that satisfies the four following properties:\begin{align}
+    &JJ^\#J=J\\ 
+    &J^\#JJ^\#=J^\#\\ 
+    &(JJ^\#)^T=JJ^\#\\ 
+    &(J^\#J)^T=J^\#J
+\end{align}
+if the matrix $J$ is full rank, and $n>m$, then the pseudo inverse can be computed in closed form:\begin{equation}
+    J^\#=J^T(JJ^T)^{-1}.
+\end{equation}
+\textbf{Example}: if $$J=\begin{pmatrix}
+    1&2&3
+\end{pmatrix} $$
+the pseudo inverse is 
+$$ 
+\begin{pmatrix}
+    1\\2\\3
+\end{pmatrix}\left(
+\begin{pmatrix}
+    1&2&3
+\end{pmatrix}\begin{pmatrix}
+    1\\2\\3
+\end{pmatrix}
+\right)^{-1}=\frac{1}{14}\begin{pmatrix}
+    1\\2\\3
+\end{pmatrix}.
+$$
+\textbf{Example}: Now we consider a square singular matrix. First of all, let $J_\epsilon$ to be the following parametrized matrix
+$$J_\epsilon=\begin{pmatrix}
+    3&0\\ 0&\epsilon
+\end{pmatrix}
+$$
+we know that the inverse of this matrix is$$
+    J_\epsilon^{-1}=\begin{pmatrix}
+        \frac{1}{3}&0\\0&\frac{1}{\epsilon}
+    \end{pmatrix}
+$$
+with $\epsilon\rightarrow 0$ (the matrix becomes singular), the right-bottom element of the inverse $\frac{1}{\epsilon}$ goes to infinity. So the matrix 
+$$J=\begin{pmatrix}
+    3&0\\ 0&0
+\end{pmatrix}
+$$
+isn't invertible and the pseudo inverse just replace the ''infinite-becoming'' term with 0:$$
+J^\#=\begin{pmatrix}
+        \frac{1}{3}&0\\0&0
+    \end{pmatrix}.
+$$
+\textbf{Example}: Let's consider the following redundant full rank matrix $$J=\begin{pmatrix}
+    1&0&2\\ 
+    2&1&-1
+\end{pmatrix}$$
+we consider a generalized inverse, in particular, the right inverse:\begin{align*}
+    &J=\begin{pmatrix}
+    \begin{pmatrix}
+    1&0\\ 
+    2&1
+\end{pmatrix}& \begin{pmatrix}
+    2\\-1
+\end{pmatrix}
+\end{pmatrix}\\ 
+&K_r=\begin{pmatrix}
+    \begin{pmatrix}
+    1&0\\ 
+    2&1
+\end{pmatrix}^{-1}\\\begin{pmatrix}
+    0&0
+\end{pmatrix}
+\end{pmatrix}\\
+&K_r=\begin{pmatrix}
+    1&0\\
+    -2&1\\
+    0&0
+\end{pmatrix}.
+\end{align*}
+We already seen in the Robotics 1 course that the pseudo inverse realizes the desired task velocity by choosing the joint's velocity $\dq$ of minimum norm. In particular, given the problem $J\dq=\dot{\mathbf y}$, even if $\dot{\mathbf y}$ is not in the range space of $J$, the pseudo inverse finds the minimum norm solution among the $\dq$ that minimizes\begin{equation}
+    \|\dot{\mathbf y}-J\dq\|^2.
+\end{equation}
+If $J$ is singular and $JJ^T$ cannot be inverted, the formula $J^\#=J^T(JJ^T)^{-1}$ can't be used, and to find $J^\#$ we need numerical methods that relies on the \textit{singular value decomposition} of $J$.
+
+\begin{definition}[SDV]
+    For any matrix $J$, there exists a decomposition\begin{equation}
+        J=U\Sigma V^T 
+    \end{equation}
+    where $U$ and $V$ are orthonormal matrices, and $\Sigma$ is a diagonal matrix.
+\end{definition}
+This decomposition have special properties, the columns of $U$ are the eigen vectors of $JJ^T$, and the columns of $V$ are the eigen vectors of $J^TJ$. The matrix $\Sigma$ have the following form:\begin{equation}
+    \Sigma=\begin{pmatrix}
+        \sigma_1 & & & \\ 
+        & \ddots & & 0_{m\times (n-m)}\\ 
+        & & \sigma_m & 
+    \end{pmatrix}
+\end{equation}
+it follows that\begin{align}
+    &\sigma_1\ge\sigma_2\dots \ge \sigma_\rho>0\\
+    &\sigma_{\rho+1}= \sigma_{\rho+2}\dots = \sigma_{m}=0
+\end{align}
+where $\rho$ is the rank of $J$. The numbers $\sigma_1\dots ,\sigma_\rho$ are the \textbf{singular values} of $J$. The eigen vectors of $JJ^T$ (columns of $U$) are associated to the eigen values $\sigma_1^2\dots,\sigma_\rho^2$. The last $n-\rho$ columns of $V$ are a basis for the null space of $J$.\begin{align}
+    &J\mathbf v_i=\sigma_i\mathbf u_i, \ \ \ (i=1\dots, \rho)\\ 
+    &J\mathbf  v_i=0, \ \ \ (i=\rho+1\dots n)
+\end{align}
+we denote $\mathbf u_i$ the $i$-th column vector of $U$ and $\mathbf v_i$ the $i$-th column vector of $V$. 
+
+We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
+    JJ^T=U\Sigma V^T V \Sigma^T U^T
+\end{equation}
+since $V$ is orthonormal, we have that $V^T=V^{-1}$ so $V^TV=I$:\begin{equation}
+    JJ^T=U\Sigma\Sigma^T U^T
+\end{equation}
 \end{document}
