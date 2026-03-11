@@ -71,10 +71,11 @@ In such way a grey scale image can be seen as a function $f:\R^2\rightarrow\R$, 
 \begin{center}
     \includegraphics[width=0.6\textwidth ]{images/function_image.png} 
 \end{center}
-\section{Filtering}
-\begin{definition}[Filter]
+
+\newpage\section{Filtering}
+\begin{boxdefinition}{Filter}{}
     a filter is a mathematical algorithm applied to an image to modify its characteristics, highlight certain information or remove disturbances (noise).
-\end{definition}
+\end{boxdefinition}
 \begin{figure}[H]
     \center
     \includegraphics[width=0.6\textwidth ]{images/filters.png} 
@@ -100,11 +101,11 @@ Each linear filter is defined by a \textit{kernel}, a matrix on which we will pe
 \begin{center}
     \includegraphics[width=0.6\textwidth ]{images/linearFilter.png} 
 \end{center}
-\begin{definition}[Cross Correlation]
+\begin{boxdefinition}{Cross Correlation}{}
     The discrete cross correlation operator between two matrices $F$ (the image) and $H$ (the kernel) results in the output matrix $G$ defined as follows\begin{equation}
         G[i,j]=\sum_{u=-k}^k\sum_{v=-k}^k H[u,v]F[i+u,j+v]
     \end{equation}
-\end{definition}
+\end{boxdefinition}
 we  write the result of the cross correlation as follows $G=H\otimes F$. The \textbf{Convolution} is similar but the kernel is flipped horizontally and vertically \begin{equation}
         G[i,j]=\sum_{u=-k}^k\sum_{v=-k}^k H[u,v]F[i-u,j-v]
     \end{equation}
