@@ -191,6 +191,7 @@
 %fine roba che serve per il codice C
 \usepackage{minted}
 \usepackage[scaled]{helvet}
+\usepackage{needspace}
 \tcbuselibrary{theorems}
 
 %TEOREMI ECC 
@@ -320,15 +321,18 @@
 }{def}
 
 \titleformat{\section}
-  {\fontfamily{phv}\selectfont\huge\bfseries} % <--- "huge" rende il testo del titolo molto grande
-  {\color{sapienza}\fontsize{20}{20}\selectfont\thesection} % <--- Numero ridotto a 18pt
-  {12pt} % Spazio tra numero e titolo
+  {\needspace{5\baselineskip} % <--- Chiede almeno 5 righe di spazio libero
+   \fontfamily{phv}\selectfont\huge\bfseries} 
+  {\color{sapienza}\fontsize{20}{20}\selectfont\thesection} 
+  {12pt} 
   {} 
-  [\vspace{4pt}{\color{sapienza!40}\titlerule[3pt]}] % Linea colorata un po' più spessa
+  [\vspace{2pt}\nopagebreak\color{sapienza!40}\hrule height 3pt]
 
+% Per la Sottosezione
 \titleformat{\subsection}
-  {\fontfamily{phv}\selectfont\Large\bfseries} % <--- "huge" rende il testo del titolo molto grande
-  {\color{sapienza}\fontsize{16}{16}\selectfont\thesubsection} % <--- Numero ridotto a 18pt
-  {12pt} % Spazio tra numero e titolo
+  {\needspace{4\baselineskip} % <--- Chiede almeno 4 righe di spazio libero
+   \fontfamily{phv}\selectfont\Large\bfseries} 
+  {\color{sapienza}\fontsize{16}{16}\selectfont\thesubsection} 
+  {12pt} 
   {} 
-  [\vspace{4pt}{\color{sapienza!40}\titlerule[1.5pt]}] % Linea colorata un po' più spessa
+  [\vspace{2pt}\nopagebreak\color{sapienza!40}\hrule height 1.5pt]

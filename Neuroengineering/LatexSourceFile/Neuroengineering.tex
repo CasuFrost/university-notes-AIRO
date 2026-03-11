@@ -62,15 +62,104 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{proposition}{Proposition}
 \newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
+
+\chapter{The Neural Cell}
+\section{The Electrochemical Potential}
+\begin{boxdefinition}{Neuron}{}
+     A neuron, also known as a nerve cell, is the fundamental building block of the brain and nervous system. It is a specialized cell designed to transmit information to other nerve cells, muscle, or gland cells through electrical and chemical signals.
+\end{boxdefinition}
+A neuron have three main functions:\begin{itemize}
+     \item To \textbf{collect} the information from multiple sources, like other neural cells or receptors.
+     \item To \textbf{integrate} in time and space the incoming information to provide a binary decision.
+     \item to \textbf{generate} and \textbf{propagate} a bit of information up to a target cell.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/neuron.png}
+\end{figure}
+The neuron is covered by the \textbf{neuronal membrane}, a phospholipid bilayer\footnote{A phospholipid bilayer is a two-layered arrangement of phosphate and lipid molecules that form a cell membrane. It serves as a continuous barrier around cells and organelles, separating the internal contents from the outside environment.}  which acts as a fatty barrier between the inside of the cell (cytoplasm) and the outside environment. This membrane is \textit{selectively permeable}: charged ions cannot pass through the bilayer, this allows the neuron to maintain different concentrations of chemicals on either side.
+
+Since the membrane forms a barrier between the inside and the outside of the cell, the membrane use specialized proteins to bridge the gap: The \textbf{Ion Channels} are ''tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates an \textit{electrical difference} (voltage).\bigskip 
+
+\noindent The main ion families that pass acts in the neural cell are:\begin{itemize}
+     \item Na$^+$: Sodium 
+     \item K$^+$: Potassium 
+     \item Cl$^-$: Chloride
+     \item Ca$^{++}$: Calcium
+\end{itemize}
+The notation for the \textbf{valence} is the following, if an elements have $n$ $^+$ as supscript, it means that the atom is a positively charged ion that has lost $n$ electrons. Similarly, an element with $n$ $^-$ as supscript, is negatively charged, and had obtained $n$ electrons.
+\begin{boxdefinition}{Ion Channels}{}
+     An ion channel is a passive transportation channel where the ions can flow driven by electrochemical forces.
+\end{boxdefinition}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/neuralMembrane.png}
+     \caption{A representation of the neural membrane.}
+\end{figure}
+An \textbf{Ion Pumps} is an active transportation that requires an energy expenditure by
+the cell, it allow ions to move into
+and out of the cell by \textit{opening and
+closing} in response to voltage
+changes and to both internal and
+external signals.\bigskip 
+
+The movement of the ions in the neural cell is determined by two forces:\begin{itemize}
+     \item \textbf{diffusional forces}: It is the natural tendency of substances to move from where they are highly concentrated to where they are less concentrated. We call this force the \textit{chemical gradient}. For example, if inside the cells the concentration of Potassium is 125 mM, and outside is 5mM, the diffusional force will push the Potassium K$^+$ outside.
+     \item \textbf{electrical forces}: Since the ions are charged particles, they are attracted to the areas with opposite charge, we call this force the \textit{electrical gradient}. 
+\end{itemize}
+Each single ion will have an electrical gradient and a chemical gradient, equilibrium is reached when the (chemical) diffusion push is exactly equal and opposite to the electrical push. In this state, the net flux of that ion across the membrane is zero.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/membranePotential.png}
+     \caption{A simple model of a neural cell.}
+\end{figure}
+\begin{boxdefinition}{Nernst Equation}{}
+     The total gradient $\Delta\mu$ is given by the following equation:\begin{equation}
+          \Delta\mu=RT\ln\frac{[X]_A}{[X]_B}+zF(E_A-E_B).
+     \end{equation}
+\end{boxdefinition}
+$\Delta\mu$ is a scalar value that represents the difference in energy between the inside and the outside.\begin{itemize}
+     \item $R$ is the universal gas constant.
+     \item $T$ is the temperature in Kelvin. 
+     \item $[X]_A$ is the ion concentration of the $A$ side of the membrane.
+     \item $[X]_B$ is the ion concentration of the $A$ side of the membrane. Clearly $[X]_A$ and $[X]_B$  must share the same unit of measurement (usually mM).
+     \item $z$ is the ion valence (e.g: +2 for Ca$^++$; -1 for Cl$^-$).
+     \item $E_A-E_B$ is the energy resulting from the electric potential difference between the two sides.
+\end{itemize}
+Note how we are generally talking about a side $A$ and a side $B$, to distinguish between the outside and the inside of a membrane. There is an \textbf{electrochemical equilibrium} when $\Delta\mu=0$. For each family of ions $j$, we can compute the electrochemical equilibrium potential:\begin{align}
+     &RT\ln\frac{[X]_A}{[X]_B}+zF(E_A-E_B)=0\implies\\
+     &-zF(E_A-E_B)=RT\ln\frac{[X]_A}{[X]_B}\implies\\
+     &E_j=E_A-E_B=-\frac{RT}{zF}\ln\frac{[X]_A}{[X]_B}.
+\end{align}
+$E_j$ is usually measured in mV and represents the exact electrical voltage value needed to stop the net movement of a specific ion across the membrane. Is the voltage at which the diffusional forces balance the electrical ones for the $j$ ions. Typical values are:\begin{itemize}
+     \item Potassium: $E_{\text{K}^+}=-90$mV.
+     \item Sodium: $E_{\text{Na}^+}=50$mV.
+     \item Calcium: $E_{\text{Ca}^{++}}=-150$mV.
+\end{itemize}
+Remember that, despite the gradients, an ions is not always free to cross the membrane. For a given ion family with electrochemical equilibrium potential $E_j$, if the current potential is $E_j+\epsilon$ with $\epsilon\in \R$, in the moment that the ions are free to cross the
+membrane, they will flow with net currents that move the membrane
+potential to that value.\begin{enumerate}
+     \item The cell is at $-70 $mV, but the Sodium (Na$^+$) would like to be at $+60 $mV ($E_j$). As long as the channels are closed, Sodium is blocked.
+     \item Opening of the sodium channels: Since the current potential ($-70$) is not the equilibrium potential ($+60$), there is a huge push. Sodium ions begin to enter the cell en masse.
+     \item This flow of positive charges (current) changes the membrane voltage, ''dragging'' it from $-70$ towards $+60$.
+\end{enumerate}
+
+
+
+
+
+
+
+
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
 In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
      \includegraphics[width=0.8\textwidth]{images/idling_alpha.png} 
 \end{center} 
 The \textbf{electroencephalogram} (EEG) is the measurements of the electrical activity of the brain, that can be measure by putting a set of \textit{electrodes} on the scalp. The activity of a single neuron is imperceptible to our instruments, but when multiple neurons starts to work in ''combination'' some variations of electrical potential can be observed.
-\begin{definition}[Synchronization]
+\begin{boxdefinition}{Synchronization}{}
     In the context of neuroscience, we say that the EEG \textbf{synchronize} when the amplitude of the registered wave increase.
-\end{definition}
+\end{boxdefinition}
 The brain can be seen as a complex, non-linear and time variant dynamical system, the registered waves on the scalp are the reaction to a given ''input''. The registered oscillation are different between different execution of the same input, so usually more registration of the same input are taken to construct the average EEG signal, time locked to various sensory stimuli, thereby significantly
 increasing the signal-to-noise ratio.\bigskip
 
@@ -110,9 +199,13 @@ We categorize the observed signals in base of their frequency, by considering 5 
 Clearly, the alpha rhythm is in the alpha band (around 8 to 13 Hz), also the mu rhythm is in the same band, it might be confusing, it is important to remember than the word ''bands'' refers only to the frequency, and not to other properties of the observed rhythm (like the areas where are registered).\begin{center}
      \includegraphics[width=0.5\textwidth]{images/bands.png}
 \end{center} 
-An Event Related Response (ERP) is a potential related to an event (cognitive input) to the brain, the time that the brain takes to react depend of the kind of input, and can range from a few milliseconds to hundreds of milliseconds, usually the ''fastest'' response comes from the \textit{primal areas}, that are the earlier in the stage of processing.
-
-A \textbf{trial} is a segment of the EEG after a sensory stimulus, and the latency is the time delay between the stimulus and the trial, as we already mentioned, we takes many individual trial and then average the data to see the global response. \begin{center}
+\begin{boxdefinition}{ERP}{}
+     An \textbf{Event Related Response (ERP)} is a potential related to an event (cognitive input) to the brain, the time that the brain takes to react depend of the kind of input, and can range from a few milliseconds to hundreds of milliseconds, usually the ''fastest'' response comes from the \textit{primal areas}, that are the earlier in the stage of processing.
+\end{boxdefinition}
+\begin{boxdefinition}{Trial}{}
+     A \textbf{trial} is a segment of the EEG after a sensory stimulus, and the latency is the time delay between the stimulus and the trial, as we already mentioned, we takes many individual trial and then average the data to see the global response. 
+\end{boxdefinition}
+\begin{center}
      \includegraphics[width=1\textwidth]{images/trials.eps}
 \end{center} 
 \subsection{EEG Instrumentation}
