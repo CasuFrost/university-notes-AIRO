@@ -833,4 +833,90 @@ of course, $\mu$ can be variable: Since when crossing a singularity the required
     \includegraphics[width=0.85\textwidth ]{images/DLS}
     \caption{DLS solution near a singularity for a $2\times 2$ Jacobian.}
 \end{figure}
+We have seen four different Jacobian based methods:\begin{itemize}
+    \item pseudo inverse: $\dq=J^\#\dy$
+    \item weighted pseudo inverse: $\dq=J_W^\#\dy$
+    \item right side inverse: $\dq=\begin{pmatrix}
+        J_a^{-1}\\0
+    \end{pmatrix}\dy$
+    \item DLS: $\dq=J_{DLS}\dy$, this last one is not using a generalized inverse of $J$.
+\end{itemize}
+These solutions locally tries to avoid singularities, but there is no guarantees that that singularities are globally avoided, despite we are trying to minimize the joint velocity norm. Another issue of these local methods, is that leads to non repeatable motion: A periodic trajectory in the task space is not necessary mapped in the joint space as a periodic evolution of the joint's trajectory. This makes harder to predict if a given task movement will leads to a collision of the manipulator with obstacles in the workspace.
+\subsection{Null Space Methods}
+This method will exploit joint's movements that lies in the null space of the Jacobian matrix. Before entering in the details, let's recall the following theorem.
+\begin{boxtheorem}{}{}
+    Given a system of linear equations $A\mathbf x=\mathbf b$, any solution (if any) can be written in the form:\begin{equation}
+        \mathbf x_p+\mathbf x_h 
+    \end{equation}
+    where $\mathbf x_p$ is a particular solution, and $\mathbf x_h$ is a solution of the homogeneous system $A\mathbf x=\mathbf 0$.
+\end{boxtheorem}
+since we are trying to solve $\dy=J\dq$, we will consider a general solution of the following form:\begin{equation}
+    \dq = J^\#\dy + (I-J^\#J)\dq_N
+\end{equation}
+\begin{itemize}
+    \item $J^\#\dy$ is a particular solution (we know that is the solution with minimum norm)
+    \item $(I-J^\#J)\dq_N$ is a solution to the system $J\dy=\mathbf 0$.
+\end{itemize}
+Notice how $(I-J^\#J)$ is the \textbf{projection operator} on the null space of $J$. $\dq_N$ is an arbitrary joint velocity vector, that will be projected on the null space, in such way, this term will not influence the resulting task vector $\dy$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/qN.eps}
+\end{figure}
+\noindent In particular, $(I-J^\#J)$ is the \textit{orthogonal} projection operator, and have the following properties:\begin{itemize}
+    \item is symmetric
+    \item is idempotent: $(I-J^\#J)^2=(I-J^\#J)$
+    \item $(I-J^\#J)^\#=(I-J^\#J)$
+    \item $J^\#\dy$ is orthogonal to $(I-J^\#J)\dq_N$.
+\end{itemize}
+This kind of solution can be generalized by considering any couple of generalized inverse $K_1,K_2$:\begin{equation}
+    \dq=K_1\dy+(I-K_2J)\dq_N 
+\end{equation}
+but will not have all of the four properties just presented. In this way, $\dq_N$ can be chosen arbitrarily as a ''preferred'' direction, and the null space projection of this desired velocity will be accomplished. Before entering in the details of how to choose this $\dq_N$, we will give a general presentation (not only related to Robotics) of an optimization problem.
+\begin{boxdefinition}{Linear Quadratic Problem}{def:LQ}
+    A \textbf{LQ problem} is the following optimization problem\begin{align}
+        &\min_{\mathbf x\in \R^n}H(\mathbf x)=\frac{1}{2}(\mathbf x-\mathbf x_N)^TW(\mathbf x-\mathbf x_N)\\
+        &\text{subject to } \ J\mathbf x=\mathbf b 
+    \end{align}
+    where\begin{itemize}
+        \item $W\in Mat(n\times n)$, symmetric
+        \item $J\in Mat(m\times n)$
+        \item $\mathbf b\in \R^m$
+        \item $\mathbf x_N\in \R^n$.
+    \end{itemize}
+\end{boxdefinition}
+In our Robotics context, the matrix $W$ is also positive definite\begin{equation}
+    \mathbf x^T W \mathbf x >0, \ \ \forall \mathbf x.
+\end{equation}
+This condition is sufficient to make the problem to have a minimum solution. A general LQ problem can be solved by adding $m$ additional variables $\boldsymbol{\lambda}$ called \textbf{Lagrangian multipliers} and by considering the following function called \textbf{Lagrangian}:\begin{equation}
+    \mathcal L(\mathbf x,\boldsymbol{\lambda})=H(\mathbf x)+\boldsymbol{\lambda}^T(J\mathbf x-\mathbf b).
+\end{equation}
+These Lagrangian multipliers works as a way to ''violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
+    &\nabla_{\mathbf x}\mathcal L=\begin{pmatrix}
+        \frac{\partial\mathcal L}{\partial x_1}&\dots & \frac{\partial\mathcal L}{\partial x_n}
+    \end{pmatrix}=W(\mathbf x-\mathbf x_N)+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
+    &\nabla_{\boldsymbol{\lambda}}\mathcal L=\begin{pmatrix}
+        \frac{\partial\mathcal L}{\partial \lambda_1}&\dots & \frac{\partial\mathcal L}{\partial \lambda_m}
+    \end{pmatrix}=J\mathbf x-\mathbf b=\mathbf 0
+\end{align}
+The sufficient condition to have a minimum is to have the Hessian matrix respect to $\mathbf x$ to be positive definite, as we already said, since:\begin{equation}
+    \nabla_{\mathbf x}^2=W\succ 0
+\end{equation}
+The system of equations given by \begin{equation}
+    \begin{cases}
+        \nabla_{\mathbf x}\mathcal L=\mathbf 0\\ 
+        \nabla_{\boldsymbol{\lambda}}\mathcal L=\mathbf 0
+    \end{cases}
+\end{equation}
+the first equation can be solved for $\mathbf x$:\begin{equation}\label{LQ1}
+    \mathbf x=\mathbf x_N-W^{-1}J^T\boldsymbol{\lambda}
+\end{equation}
+by substituting in the second equation we get\begin{equation}
+    J(\mathbf x_N-W^{-1}J^T\boldsymbol{\lambda})-\mathbf b=\mathbf 0
+\end{equation}
+hence\begin{equation}\label{LQ2}
+    \boldsymbol{\lambda}=(JW^{-1}J^T)^{-1}(J\mathbf x_N-\mathbf b)
+\end{equation}
+By combining \eqref{LQ1} and \eqref{LQ2} we can find the general solution for $\mathbf x$:\begin{equation}
+    \mathbf x=\mathbf x_N+W^{-1}J^T(JW^{-1}J^T)^{-1}(\mathbf b-J\mathbf x_N).
+\end{equation}
 \end{document}

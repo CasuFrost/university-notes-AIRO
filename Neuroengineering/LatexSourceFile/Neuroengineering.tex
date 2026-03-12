@@ -172,9 +172,44 @@ When a current of positively charged ions flows into the cell, or a current of n
      \centering
      \includegraphics[width=0.8\textwidth]{images/polarization.eps}
 \end{figure}
-\subsection{Titolo Provvisorio}%TODO
+\section{Communication Between the Neurons}
+\subsection{Synapses}
+The neuron is structured as a ramified structure called \textbf{dendritic tree}, the branches called dendrite have the task to collect and propagate information from the other neural cells. A \textbf{synapses} is the structure that allows the communication between different neurons, a single neuron receives thousands of input (synapses) signals.
+
+To a neuron, might arrive a burst of signals from the same synapses near in time, or different signals coming from different synapses, in this way the neuron receives a signal that is a \textit{summation} in time and space.\bigskip
+
+In an exchange of information, the neuron that send the signal is called \textit{presynaptic neuron}, the one that receives is the \textit{postsynaptic neuron}. 
+There are two typse of synapses:\begin{itemize}
+     \item \textbf{Electrical synapses}: The ions pass directly from the presynaptic to the postsynaptic cell. Is the fastest type of communication and is almost instantaneous.
+     \item \textbf{Chemical synapses}: The chemical signals are mediated by the \textit{neurotransmitters} that cause the opening of specific ion gates channels, making the ions pass from a neuron to the other, pushed by the gradient.
+\end{itemize}
 
 
+
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/tree.png}
+     \caption{Different kinds of dendritic tree configurations.}
+\end{figure}
+
+
+The two membranes of different neurons that have to communicate aren't in contact, there is a \textit{Gap Junction}. This gap is around $3.5$nm for the electrical synapses and $20-40$nm for the chemical synapses.
+
+
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/neuronCommunication.png}
+     \caption{Electrical synapses.}
+\end{figure}
+
+After a synapses, some ions pass from a neural cell to an other, causing these two to change their potential.\begin{itemize}
+     \item \textbf{Excitatory synapses}: When some ions pass to the postsynaptic cell by depolarizing the potential.
+     \item \textbf{Inhibitory synapses}: The opposite case, when the communication cause an hyperpolarization of the postsynaptic neuron potential.
+\end{itemize}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/exc_and_inh.png}
+\end{figure}
 
 
 \chapter{Measurement of Bioelectrical Signals}
@@ -255,5 +290,14 @@ Neurons communicate by moving charged atoms (ions) such as Sodium ($Na^+$), Pota
 \end{itemize}
 Neurons generate streams of ions. These flows create electric fields that propagate in the tissues. The electrode captures the potential variation of these fields and transforms it into an electrical signal, then an analog to digital conversion is applied to display the signal on the screen.\bigskip
 
-An electrode acts in a similar way to a capacitor,\redText{TODO}
+Since the potential measured on the scalp is in the order of micro volts, amplifiers are needed to distinguish these signals from the other signals measured by the electrodes that comes from external sources. The simplest type of amplifier is the \textit{operational amplifier}.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.2\textwidth]{images/opAmplifier.eps}
+     \caption{Schematic of the operational amplifier.}
+\end{figure}
+The measured potential $V_{out}$ is \begin{equation}
+     V_{out}=A(V_+-V_-)
+\end{equation}
+
 \end{document}
