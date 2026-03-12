@@ -62,9 +62,8 @@ This document summarizes and presents the topics for the \titolo course for the 
 \newtheorem{proposition}{Proposition}
 \newtheorem{theorem}{Theorem}
 %==================INIZIO======================%
-
 \chapter{The Neural Cell}
-\section{The Electrochemical Potential}
+\section{Electrical Properties of the Neuron}
 \begin{boxdefinition}{Neuron}{}
      A neuron, also known as a nerve cell, is the fundamental building block of the brain and nervous system. It is a specialized cell designed to transmit information to other nerve cells, muscle, or gland cells through electrical and chemical signals.
 \end{boxdefinition}
@@ -101,8 +100,8 @@ the cell, it allow ions to move into
 and out of the cell by \textit{opening and
 closing} in response to voltage
 changes and to both internal and
-external signals.\bigskip 
-
+external signals. 
+\subsection{The Electrochemical Potential}
 The movement of the ions in the neural cell is determined by two forces:\begin{itemize}
      \item \textbf{diffusional forces}: It is the natural tendency of substances to move from where they are highly concentrated to where they are less concentrated. We call this force the \textit{chemical gradient}. For example, if inside the cells the concentration of Potassium is 125 mM, and outside is 5mM, the diffusional force will push the Potassium K$^+$ outside.
      \item \textbf{electrical forces}: Since the ions are charged particles, they are attracted to the areas with opposite charge, we call this force the \textit{electrical gradient}. 
@@ -143,10 +142,37 @@ potential to that value.\begin{enumerate}
      \item Opening of the sodium channels: Since the current potential ($-70$) is not the equilibrium potential ($+60$), there is a huge push. Sodium ions begin to enter the cell en masse.
      \item This flow of positive charges (current) changes the membrane voltage, ''dragging'' it from $-70$ towards $+60$.
 \end{enumerate}
+\begin{boxdefinition}{Ion Pumps}{}
+     The ion pumps are specialized proteins inside the membrane that actively push the ions against their gradient, to have a rest potential different than zero, an active transporter for the ions is needed, if not, the ions would move towards the gradient direction so as to set to zero the gradient.
+\end{boxdefinition}
 
-
-
-
+This is why at ''rest'', the potential is not zero. These ion pumps are constantly working and transforming ATP\footnote{
+     ATP (adenosine triphosphate) is the main energy exchange molecule of the cell, acting as a sort of universal ''energy currency''.
+} to push the ions.
+\begin{quote}
+    Tthe resting potential (about -70 mV) is the result of a delicate balance: the membrane passively lets out some potassium, while the sodium-potassium pump constantly works as a ''maintenance machine'' to put the ions back where they belong, keeping the inside of the cell negative compared to the outside.
+\end{quote}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/ionPumps.png}
+     \caption{The sodium-potassium pumps.}
+\end{figure}
+We already explained that any single family of ions have a electrochemical equilibrium potential (the potential needed to counter back the diffusional forces). 
+\begin{boxdefinition}{Membrane Potential}{}
+     The \textbf{membrane potential} is the \textit{difference in electrical potential} between the interior of a neuron and the surrounding extracellular fluid, given by the different ion concentration on the two ends of the membrane. At rest, this potential is around $-70$mV, so it's \textit{polarized}.
+\end{boxdefinition}
+The membrane potential is the weighted average of the equilibrium potentials of all the ions present, based on the permeability of the membrane to each of them.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=\textwidth]{images/membranePotential2.png}
+     \caption{Membrane potential.}
+\end{figure}
+When a current of positively charged ions flows into the cell, or a current of negatively charged ions flows out, the membrane potential arise becoming less negative or even positive, this phenomena is called \textbf{depolarization}. Similarly, if a current of positively charged ions flows out, or a current of negatively charged ions flows into the cell, there is a \textbf{repolarization}, or an \textbf{hyperpolarization} if the potential goes below the rest $-70$mV.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/polarization.eps}
+\end{figure}
+\subsection{Titolo Provvisorio}%TODO
 
 
 
