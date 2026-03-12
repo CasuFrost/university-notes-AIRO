@@ -899,9 +899,9 @@ These Lagrangian multipliers works as a way to ''violate'' the constraints to fi
     \end{pmatrix}=J\mathbf x-\mathbf b=\mathbf 0
 \end{align}
 The sufficient condition to have a minimum is to have the Hessian matrix respect to $\mathbf x$ to be positive definite, as we already said, since:\begin{equation}
-    \nabla_{\mathbf x}^2=W\succ 0
+    \nabla_{\mathbf x}^2\mathcal L=W\succ 0
 \end{equation}
-The system of equations given by \begin{equation}
+We can solve the system of equations given by \begin{equation}
     \begin{cases}
         \nabla_{\mathbf x}\mathcal L=\mathbf 0\\ 
         \nabla_{\boldsymbol{\lambda}}\mathcal L=\mathbf 0
@@ -919,4 +919,73 @@ hence\begin{equation}\label{LQ2}
 By combining \eqref{LQ1} and \eqref{LQ2} we can find the general solution for $\mathbf x$:\begin{equation}
     \mathbf x=\mathbf x_N+W^{-1}J^T(JW^{-1}J^T)^{-1}(\mathbf b-J\mathbf x_N).
 \end{equation}
+here $\mathbf x_n$ acts as a preferred solution, in fact, if it satisfies the constraint $J\mathbf x_n=\mathbf b$, will be the solution. Let's switch back to the Robotics context. The problem to find a solution to $J\dq=\dy$ that minimizes the weighted squared norm $\|\dq\|_W^2$ is exactly an LQ problem.\begin{align*}
+    &\min_{\dq} \frac{1}{2}(\dq-\dq_N)W(\dq-\dq_N)\\ 
+    &\text{s.t. } J\dq=\dy
+\end{align*}
+and $\dq_N$ is the preferred solution. We know that the solution is exactly\begin{equation}
+   \dq= \dq_N+W^{-1}J^T(JW^{-1}J^T)^{-1}(\dy-J\dq_N)
+\end{equation}
+notice how $W^{-1}J^T(JW^{-1}J^T)^{-1}$ is the weighted pseudo inverse $J^\#_W$:
+\begin{equation}
+   \dq= \dq_N+J^\#_W(\dy-J\dq_N)
+\end{equation}
+can be reorganized as follows
+\begin{equation}
+   \dq= J^\#_W\dy+(I-J^\#_WJ)\dq_N 
+\end{equation}
+that is exactly the sum of a particular solution ($J^\#_W\dy$) and the projection (not orthogonal) of $\dq_N$ on the null space of $J$.
+\bigskip 
+
+\noindent At this point, we have to define a way to choose (at each time step) the preferred direction $\dq_N$.\begin{quote}
+    \sapText{Idea}: We can choose $\dq_N$ as the gradient of some performance metrics in function of the configuration.
+\end{quote}
+We define a scalar function $G(\mathbf q)$ that measures how desirable a configuration is, the gradient of this function will push the configuration towards the maximization of that function. So we define:\begin{equation}
+    \dq_N=\nabla G
+\end{equation}
+In this way, while executing the desired trajectory $\mathbf y(t)$, we will let the robot to perform a self motion by trying to increase $G(\mathbf q)$. Note how, in the configuration space $\mathcal C$, that is a differentiable manifold, there is a \textbf{self motion manifold}, an embedded subspace of the configurations that are mapped in the same task vector $\mathbf y$. This manifold is given by all the configurations $\mathbf q$ that satisfies $\mathbf k(\mathbf q)=\mathbf y$, where $\mathbf k$ is the direct kinematics.\bigskip
+
+We know that $\mathcal C$ is a $n$-manifold, and $\mathcal T$ (the task space) is a $m$-manifold. When $n>m$ the dimension of the self motion manifold embedded in $\mathcal C$ is of course $n-m$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/nablaG.eps}
+    \caption{The vector $\nabla G$ is pointing where $G$ is greater than the actual configuration value $G(\mathbf q^*)$. In particular, the preferred direction will be the projection of the gradient on the null space of $J$.}
+\end{figure}
+Now let's see some example of metrics. One important choice, is to consider the \textit{distance from singularities} defined as follows\begin{equation}
+    G_{man}(\mathbf q)=\sqrt{\det(J(\mathbf q)J^T(\mathbf q))}
+\end{equation}
+this measure is related to the volume of the manipulability ellipsoid, so, by trying to maximize it, the robot will go away from singular configurations.\bigskip 
+
+$G_{man}(\mathbf q)$ is quite difficult to compute at each time step, since it require to compute the determinant of $JJ^T$, when dealing with a specific kinematic structure, we can find other metrics that are suitable and less expensive to compute.
+
+For example, consider a 3R planar robot, we know that a singular configuration occurs when $q_2\in \{0,\pi\}$ or $q_3\in \{0,\pi\}$. A good choice of metrics can be\begin{equation}
+    G(\mathbf q)=\sin^2q_2+\sin^2q_3
+\end{equation}
+it is true that $G$ and $G_{man}$ (for the 3R planar robot) shares the zeros: $G(\mathbf q)=0\iff G_{man}(\mathbf q)=0$, but $G$ is easier to compute.
+\begin{center}
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Plot of $G(q_2,q_3)$},
+        xlabel={$q_2$},
+        ylabel={$q_3$},
+        zlabel={$G(q_2,q_3)$},
+        % Personalizzazione della visualizzazione
+        colormap/viridis, % Scala di colori moderna
+        colorbar,         % Mostra la legenda dei colori
+        view={45}{60},    % Angolo di visualizzazione (azimuth e elevazione)
+        grid=major,
+    ]
+        \addplot3[
+            surf,           % Crea una superficie
+            samples=30,     % Numero di punti (più alto = più fluido, ma più lento)
+            domain=-3.14:3.14,    % Range per q_2
+            y domain=-3.14:3.14,  % Range per q_3
+        ] 
+        {(sin(deg(x)))^2 + (sin(deg(y)))^2}; % Inserisci qui la tua funzione (usa x per q_2 e y per q_3)
+        
+    \end{axis}
+\end{tikzpicture}
+\end{center}
+
+
 \end{document}
