@@ -331,7 +331,7 @@ For simplicity, we consider a manipulator with $n$ (all revolut) joints. The  DH
     \end{pmatrix}
 \end{equation}
 from these parameters we can compute the \textit{nominal} direct kinematics\begin{equation}
-    \mathbf y_{e,nom}=\mathbf k_e(\boldsymbol\alpha,\mathbf a,\mathbf d,\btheta)
+    \mathbf y_{e,nom}=k_e(\boldsymbol\alpha,\mathbf a,\mathbf d,\btheta)
 \end{equation}
 $\btheta$ is the set of joint angles measured by the encoders. The calibration procedure is essential to have a perfect direct kinematics, especially in the industrial context. 
 \begin{itemize}
@@ -348,20 +348,20 @@ Let $\mathbf y_e$ to be the real end effector pose measured by the external syst
 from the first order Taylor expansion of the direct kinematics, we can write the following linear relation
 \begin{equation}
     \Delta \mathbf y=
-    \frac{\partial \mathbf k_e}{\partial\boldsymbol \alpha}\Delta\boldsymbol \alpha+
-     \frac{\partial \mathbf k_e}{\partial\mathbf a}\Delta\mathbf a+
-     \frac{\partial \mathbf k_e}{\partial\mathbf d}\Delta\mathbf d+
-     \frac{\partial \mathbf k_e}{\partial \btheta}\Delta\btheta
+    \frac{\partial k_e}{\partial\boldsymbol \alpha}\Delta\boldsymbol \alpha+
+     \frac{\partial k_e}{\partial\mathbf a}\Delta\mathbf a+
+     \frac{\partial k_e}{\partial\mathbf d}\Delta\mathbf d+
+     \frac{\partial k_e}{\partial \btheta}\Delta\btheta
 \end{equation}
 The small vectors $\Delta\boldsymbol \alpha,\Delta\mathbf a,\Delta\mathbf d,\Delta\btheta$ are the small errors in the DH parameters. The relation can be rewritten in matrix form\begin{equation}
     \Delta\mathbf y_e=\Phi\Delta\boldsymbol\varphi
 \end{equation}
 where\begin{align}
     &\Phi=\begin{pmatrix}\displaystyle
-         \frac{\partial \mathbf k_e}{\partial\boldsymbol \alpha}&
-         \displaystyle\frac{\partial \mathbf k_e}{\partial\mathbf a}&
-     \displaystyle\frac{\partial \mathbf k_e}{\partial\mathbf d}&
-     \displaystyle\frac{\partial \mathbf k_e}{\partial \btheta}
+         \frac{\partial k_e}{\partial\boldsymbol \alpha}&
+         \displaystyle\frac{\partial k_e}{\partial\mathbf a}&
+     \displaystyle\frac{\partial k_e}{\partial\mathbf d}&
+     \displaystyle\frac{\partial k_e}{\partial \btheta}
     \end{pmatrix}\in Mat(6\times 4n)\\
     &\Delta\boldsymbol\varphi=\begin{pmatrix}
         \Delta\boldsymbol \alpha\\ 
@@ -373,14 +373,14 @@ where\begin{align}
 notice how $ \Delta \mathbf y$ is given by the measurement, $\Phi$ is evaluated with the nominal parameters and $\Delta\boldsymbol\varphi$ is the unknown error in the DH parameters. 
 
 For example, with a 2R planar robot, where the direct kinematics is \begin{equation}
-    \mathbf k(\mathbf a,\btheta)=\begin{pmatrix}
+    k(\mathbf a,\btheta)=\begin{pmatrix}
         a_1\cos\theta_1+a_2\cos(\theta_1+\theta_2)\\ 
         a_1\sin\theta_1+a_2\sin(\theta_1+\theta_2)
     \end{pmatrix}
 \end{equation}
 if the we assume that the parameters $\mathbf \alpha,\mathbf d$ are correct, the $\Phi$ matrix to consider is\begin{equation}
     \Phi=\begin{pmatrix}
-        \displaystyle\frac{\partial\mathbf k}{\partial \mathbf a}&   \displaystyle\frac{\partial\mathbf k}{\partial \btheta}
+        \displaystyle\frac{\partial k}{\partial \mathbf a}&   \displaystyle\frac{\partial k}{\partial \btheta}
     \end{pmatrix}=\begin{pmatrix}
         c_1&c_{12}&-a_1s_2-a_2s_{12}&-a_2s_{12}\\ 
         s_1&s_{12}&a_1c_1+a_2c_{12}&a_2c_{12}
@@ -497,10 +497,10 @@ we update the parameters\begin{equation}
     \end{pmatrix}.
 \end{equation}
 \section{Kinematic Redundancy}
-The direct kinematics $\mathbf y=\mathbf k(\mathbf q)$ is the map between the task space and the configuration space\begin{equation}
-    \mathbf k:\mathcal C\rightarrow\mathcal T
+The direct kinematics $\mathbf y=k(\mathbf q)$ is the map between the task space and the configuration space\begin{equation}
+     k:\mathcal C\rightarrow\mathcal T
 \end{equation}
-we usually denote $n=\dim\mathcal C$ the dimension of the configuration space and $m=\dim\mathcal T$ the dimension of the task space. A robot is \textbf{kinematically redundant} if $n>m$ (there are more degrees of freedom than strictly needed for executing the task). 
+we usually denote $n=\dim\mathcal C$ the dimension of the configuration space and $m=\dim\mathcal T$ the dimension of the task space. A robot is \textbf{kinematically redundant} if $n>m$ (there are more degrees of freedom than strictly needed for executing the task), and $n-m$ is the \textbf{redundancy degree}. 
 The redundancy of a robot is a relative concept, doesn't depend on the number of joints, but on the number of dimension of the task space, a 6R robot is not redundant for the task of positioning and orientating the end effector, but is redundant for the task of just positioning.
 
 A redundant robot have an infinite number of solution for the inverse kinematics in the regular case, the redundancy can be used in various ways, for example\begin{itemize}
@@ -520,7 +520,7 @@ The solution to the inverse kinematics to perform a self motion are mainly sough
     \includegraphics[width=\textwidth ]{images/tangent_space2.eps}
 \end{center}
 In practice, the configuration that are in the self motion on a given position $\mathbf p$ satisfies\begin{equation}
-    \mathbf q \in \mathcal C \  : \ \mathbf k(\mathbf q)=\mathbf p
+    \mathbf q \in \mathcal C \  : \ k(\mathbf q)=\mathbf p
 \end{equation}
 the following image represents the points on the configuration space of a planar 2R that are mapped on the same task vector.\begin{center}
     \includegraphics[width=0.6\textwidth ]{images/selfmotion.png}
@@ -943,7 +943,7 @@ that is exactly the sum of a particular solution ($J^\#_W\dy$) and the projectio
 We define a scalar function $G(\mathbf q)$ that measures how desirable a configuration is, the gradient of this function will push the configuration towards the maximization of that function. So we define:\begin{equation}
     \dq_N=\nabla G
 \end{equation}
-In this way, while executing the desired trajectory $\mathbf y(t)$, we will let the robot to perform a self motion by trying to increase $G(\mathbf q)$. Note how, in the configuration space $\mathcal C$, that is a differentiable manifold, there is a \textbf{self motion manifold}, an embedded subspace of the configurations that are mapped in the same task vector $\mathbf y$. This manifold is given by all the configurations $\mathbf q$ that satisfies $\mathbf k(\mathbf q)=\mathbf y$, where $\mathbf k$ is the direct kinematics.\bigskip
+In this way, while executing the desired trajectory $\mathbf y(t)$, we will let the robot to perform a self motion by trying to increase $G(\mathbf q)$. Note how, in the configuration space $\mathcal C$, that is a differentiable manifold, there is a \textbf{self motion manifold}, an embedded subspace of the configurations that are mapped in the same task vector $\mathbf y$. This manifold is given by all the configurations $\mathbf q$ that satisfies $k(\mathbf q)=\mathbf y$, where $ k$ is the direct kinematics.\bigskip
 
 We know that $\mathcal C$ is a $n$-manifold, and $\mathcal T$ (the task space) is a $m$-manifold. When $n>m$ the dimension of the self motion manifold embedded in $\mathcal C$ is of course $n-m$.
 \begin{figure}[H]
@@ -951,6 +951,9 @@ We know that $\mathcal C$ is a $n$-manifold, and $\mathcal T$ (the task space) i
     \includegraphics[width=0.6\textwidth ]{images/nablaG.eps}
     \caption{The vector $\nabla G$ is pointing where $G$ is greater than the actual configuration value $G(\mathbf q^*)$. In particular, the preferred direction will be the projection of the gradient on the null space of $J$.}
 \end{figure}
+\begin{boxdefinition}{Projected Gradient}{}
+    The \textbf{projected gradient} method is the procedure to use the gradient of the performance metric $G$ as the preferred direction $\dq_N$.
+\end{boxdefinition}
 Now let's see some example of metrics. One important choice, is to consider the \textit{distance from singularities} defined as follows\begin{equation}
     G_{man}(\mathbf q)=\sqrt{\det(J(\mathbf q)J^T(\mathbf q))}
 \end{equation}
@@ -986,6 +989,115 @@ it is true that $G$ and $G_{man}$ (for the 3R planar robot) shares the zeros: $G
     \end{axis}
 \end{tikzpicture}
 \end{center}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/topographicViewG.eps}
+\end{figure}
+Another useful choice for $G$ comes from the midpoints of the joints ranges, let \begin{align}
+    &q_i\in[q_{im},q_{iM}]\\
+    &\bar q_i=\frac{q_{im}+q_{iM}}{2}
+\end{align}
+to be the ranges for each joint $i$. The following function will be greater when the value of each joint is near to their mid point $\bar q_i$:\begin{equation}
+    G_{mid}(\mathbf q)=\frac{1}{2}\sum_{i=1}^{n}\left(\frac{q_i-\bar q_i}{q_{iM}-q_{im}}\right)^2
+\end{equation}
+These choice of $G$ are all differentiable, so it's always possible to compute the gradient $\nabla G$. The following function is not differentiable.\begin{boxdefinition}{Clearance}{}
+    The \textbf{clearance} is the minimum distance between a point of the robot and an obstacles in the workspace.
+\end{boxdefinition}
+Let $robot\subset\R^3$ to be the set of all points on the surface of the robot structure, and let $obstacles\subset\R^3$ to be the set of points on the surface of all the obstacles in the workspace. Clearly, the points in $robot$ change with the configuration $\mathbf q$ according to the direct kinematics.
 
+The clearance function is defined as follows:\begin{equation}
+    H_{cle}(\mathbf q)=\min_{\begin{matrix}
+    \mathbf p\in robot\\ \mathbf p' \in obstacles
+    \end{matrix}}\|\mathbf p(\mathbf q)-\mathbf p'\|^h
+\end{equation}
+where $h$ is usually 1 or 2. Of course, this function is not practically computable if we consider the real shapes of the objects, that are composed by an infinite and continuous number of points displaced in a non formally describable way. To exploit this, usually the robot structure and the obstacles are modeled with simple shapes like cubes,parallelepiped or spheres, which surround the true shapes of the objects, so as to be conservative in terms of coverage (if such shapes do not collide, then the true objects do not collide either). \begin{boxproposition}{Decidability of the Distance between Two Polytopes}{}
+    For any couple of convex shapes (polytopes) in the three dimensional space, it is possible to find the minimum distance between them.
+\end{boxproposition}
+Given these results, if we model the robotic structure and the obstacles as convex shapes, we can always compute $H_{cle}(\mathbf q)$ in any configuration.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/clearence.eps}
+\end{figure}
+So if $H_{cle}$ is chosen as $G$, then the robot will try to move towards a configuration that maximizes the distance from the obstacles. The problem is that $H_{cle}$ is not differentiable, since the nearest object to the robot can change during the motion. For example, let's consider a toy example of a robot with one revolut joint, and two obstacles in the workspace.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth ]{images/ExampleClearance.eps}
+    \caption{Computed clearence in different configurations, in this simple example, we consider only the end effector as a physical object that can collide.}
+    \label{clearence}
+\end{figure}
+Consider the situation in image \ref{clearence}, the end effector start rotating counter clockwise to avoid the obstacle, at some point, the object 1 will be no more the nearest, switching with the object 2, in this way it is clear how the clearance function $H_{cle}(q)$ is not differentiable, due to the swap of the nearest object.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/clearance_over_q.eps}
+\end{figure}
+These jumps can cause vibrations in the control if not managed with smoothing techniques or potential functions (such as the barrier functions).\bigskip
 
+At the end, after choosing an appropriate performance metric $G$ to maximize, the control input for the velocity is\begin{equation}
+    \dq=J^\#\dy+(I-J^\#J)\nabla G 
+\end{equation}
+this equation can be reorganized to avoid the computation of the projector operator:\begin{equation}
+    \dq=\nabla G+J^\#(\dy-J\nabla G)
+\end{equation}
+but the computation of the pseudo inverse $J^\#$ is still required, and is intensive since it requires numerical methods for the SVD. In principle, since $m$ of the $n$ configuration variables are used to accomplish the desired task trajectory, the additional complexity of the redundancy resolution method should depend only on the remaining $n-m$ (redundancy degree) variables.\bigskip
+
+There is another method than relies on a different constrained optimization problems that should be more efficient than the projected gradient in situations where the Jacobian has full rank.
+\begin{boxproposition}{Decomposition of joint space}{}
+    If $\text{rank} J=m$ there exists a \textbf{decomposition} of the joint variables (possibly after a reordering) \begin{equation}
+        \mathbf q=\begin{pmatrix}
+            \mathbf q_a \\
+            \mathbf q_b
+        \end{pmatrix}
+        \begin{array}{l}
+            \in \R^m \\
+            \in \R^{n-m}
+        \end{array}
+    \end{equation}
+    such that the matrix \begin{equation}
+        J_a=\left(\frac{\partial  k}{\partial \mathbf q_a}\right)
+    \end{equation}
+    is non singular.
+\end{boxproposition}
+from the \textit{implicit function theorem (Dini)}, given the direct kinematics\begin{equation}
+    k(\mathbf q_a,\mathbf q_b)=\mathbf y
+\end{equation}
+we can rewrite $\mathbf q_a$ as a function of $\mathbf y$ and $\mathbf q_b$\begin{equation}
+    \mathbf q_a=g(\mathbf y,\mathbf q_b)
+\end{equation}
+in general, is hard to find an explicit expression for $g$, but this is not needed: we consider the partial derivative of $g$ respect to $\mathbf q_b$:\begin{equation}
+    \nabla_{\mathbf q_b}g=\left(\frac{\partial  g}{\partial \mathbf q_b}\right)
+\end{equation}
+this is equals to\begin{equation}
+    \left(\frac{\partial  g}{\partial \mathbf q_b}\right)=-\left(\frac{\partial  k}{\partial \mathbf q_a}\right)^{-1}\left(\frac{\partial  k}{\partial \mathbf q_b}\right)=-J_a^{-1}J_b\in Mat(m\times n-m).
+\end{equation}
+The $n-m$ variables $\mathbf q_b$ can be selected independently to optimize some performance metrics while the remaining $m$ variables $\mathbf q_a$ are used to correctly execute the task $\mathbf q_a=g(\mathbf y,\mathbf q_b)$, at the velocity level by controlling $\dq$.\bigskip 
+
+The \textbf{Reduced Gradient} method aims to perform a step in the gradient direction just for the reduced $n-m$ variables $\dq_b$, then, the remaining velocity for $\dq_a$ is computed in function of the just found $\dq_b$ and the desired task velocity $\dy$.
+\begin{equation}
+    G(\mathbf q)=G(\mathbf q_a,\mathbf q_b)
+\end{equation}
+$\mathbf q_a$ is expressed in term of $\mathbf q_b$ and the desired $\mathbf y$ so $G$ can be written as a function of $\mathbf q_b$ only:\begin{equation}
+    G(\mathbf q)=G(\mathbf q_a,\mathbf q_b)=G(g(\mathbf y,\mathbf q_b),\mathbf q_b)=G'(\mathbf q_b)
+\end{equation}
+we don't have to compute $g$ since at differential level we can compute $\nabla_{\mathbf q_b}G'$\begin{align}
+    &\nabla_{\mathbf q_b}G'=
+    \left(\frac{\partial G}{\partial \mathbf q_a}\right)
+    \left(\frac{\partial g}{\partial \mathbf q_b}\right)+
+    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\ 
+    &\left(\frac{\partial G}{\partial \mathbf q_a}\right)(-J_a^{-1}J_b)+
+    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\ 
+    &\begin{pmatrix}\displaystyle
+        \frac{\partial G}{\partial \mathbf q_a}&\displaystyle\frac{\partial G}{\partial \mathbf q_b}
+    \end{pmatrix}\begin{pmatrix}
+        -J_a^{-1}J_b\\ I
+    \end{pmatrix}=\\ 
+    &\Big(
+        -(J_a^{-1}J_b)^T \ \ I_{n-m}
+   \Big)\nabla_{\mathbf q}G
+\end{align}
+At each time step, the algorithm to compute $\dot q$ is the following\begin{enumerate}
+    \item compute the velocities for $\mathbf q_b$ to maximize the metric $G$: $\dq_b=\nabla_{\mathbf q_b}G'$
+    \item we have to solve the equation $J_a\dq_a+J_b\dq_b=\dy$ for $\dq_a$ to satisfy the $m$ task constraints 
+    \item $\dq_a=J_a^{-1}(\dy-J_b\dq_b)$
+\end{enumerate}
+this method is analytically simpler respect to the projected gradient since doesn't require to calculate the pseudo inverse $J^\#$, but requires to search a non-singular minor $J_a$.
 \end{document}
