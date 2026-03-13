@@ -72,9 +72,9 @@ it is clear that, considering the positive angular velocity $v>0$, in the next c
     \item the mass of the first and the second link
     \item the inertia the first and the second link
 \end{itemize}
-and instead of describing the control trough angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
+and instead of describing the control through angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
 
-Let's consider the following example of a 2R planar robot, with the joint axis orthogonal respect to the direction of gravity.
+Let's consider the following example of a 2R planar robot, with the joint axis orthogonal with respect to the direction of gravity.
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/2R_example.eps}
 \end{center}
@@ -123,9 +123,9 @@ the inertia matrix in the initial configuration (that for now we get for granted
     \end{pmatrix}
 \end{equation}
 \begin{boxtheorem}{Steiner}{}
-    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing trough the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
+    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing through the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
 \end{boxtheorem}
-In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing trough the center of mass, that we denote $\bar I_i$.
+In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing through the center of mass, that we denote $\bar I_i$.
 \begin{equation}
     M(\mathbf q_0)=\begin{pmatrix}
         \bar I_1+\bar I_2+m_2l_1^2 &\bar I_2\\ 
