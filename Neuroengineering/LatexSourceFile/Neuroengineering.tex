@@ -299,5 +299,27 @@ Since the potential measured on the scalp is in the order of micro volts, amplif
 The measured potential $V_{out}$ is \begin{equation}
      V_{out}=A(V_+-V_-)
 \end{equation}
+We need an amplifier that\begin{itemize}
+     \item performs an high amplification on the desired signal, without amplifying the noise
+     \item have an high input impedance.
+\end{itemize}
+A real amplifiers can be modeled as follows\begin{equation}
+     V_{out}=G_d(V_+-V_-)+G_c\left(\frac{V_++V_-}{2}\right)
+\end{equation}
+$V_+-V_-$ is the quantity that we want to measure and amplify, and the amplitude of this signal is given by the \textit{differential gain} $G_d$. The \textit{common mode gain} $G_c$ amplifies the common signal that is identical on the two electrodes, and is always gain. In an ideal amplifier, $G_c=0$.
+\begin{boxdefinition}{Common-Mode Rejection Ratio}{}
+     The \textbf{Common-Mode Rejection Ratio} is the ratio between $G_d$ and $G_c$, it measures how well the amplifier rejects noise that affects both electrodes in the same way (such as 50Hz power line interference) and amplifies only the actual brain signal.
+     \begin{equation}
+          CMRR=\frac{G_d}{G_c}\Bigg|_{\text{dB}}=20\log_{10}\frac{G_d}{G_c}
+     \end{equation}
+\end{boxdefinition}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/CMRR.eps}
+     \caption{The value $\frac{V_++V_-}{2}$ is the common potential shared between the two electrodes.}
+\end{figure}
+Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain. Despite this difference, the output of amplifier have still some artifacts to deal with.\bigskip
+
+
 
 \end{document}
