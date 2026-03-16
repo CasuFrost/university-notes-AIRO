@@ -210,7 +210,78 @@ After a synapses, some ions pass from a neural cell to an other, causing these t
      \centering
      \includegraphics[width=0.5\textwidth]{images/exc_and_inh.png}
 \end{figure}
+\subsection{Action Potential}
+When a single neuron release neurotransmitters, generates a potential that depolarize the membrane, but is not enough to create an \textit{action potential}, the signal returns back to the rest condition at $-70$ mV.  
+If more presynaptic neurons fires a signal through different points of the dendrite to the same postsynaptic neuron, there is a \textbf{spatial summation effect}, these small potentials sum, generating a much higher potential.
+If a single presynaptic neuron fires a burst of potential near in time, there is a \textbf{temporal summation effect}, since the ion channels have not yet closed completely from the first stimulus, the second EPSP is added to the ''tail'' of the previous one.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/summation_synapses.png}
+\end{figure}
+The presynaptic signals sent to a neuron are binary, these action potentials are spikes, that can be inhibitory or excitatory, all these signals are summed in the postsynaptic neuron creates a potential that changes continuously over time.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/summation_synapses2.png}
+\end{figure}
+So, the information processed by the neurons is composed by the sum of these excitatory and inhibitory post synaptic signals, the spatial and temporal summation produce the membrane polarization/depolarization, and this result is propagated along the membrane up the axon hillock (the physical point where all the EPSPs and IPSPs collected by the dendrites and soma converge. Here the algebraic sum of the signals takes place). According to the result of this summation, the cell may or not may fire an \textit{action potential}.
+\begin{boxdefinition}{Action Potential}{}
+     The action potential (or spike) is a rapid, temporary, self-reflexive reversal of a neuron's resting membrane potential.
+\end{boxdefinition}
+The potential abruptly goes from about $-70\text{ mV}$ (rest) to about $+30$ or $+40\text{ mV}$, and then rapidly returns to the negative state. This process occurs in approximately 1-2 milliseconds.
+If the sum of EPSPs at the axon hillock exceeds the threshold (about $-55\text{ mV}$), the voltage-gated sodium ($Na^+$) channels open wide. Sodium enters massively into the cell, making it positive.\bigskip
 
+It's a \textit{all or none} process, if the stimulus does not reach the given threshold, nothing happens, else, the spike have always the same shape, duration and intensity, it's a \textbf{binary decision}.\begin{itemize}
+     \item \textbf{The Sodium Channel}:\begin{enumerate}
+          \item At the resting potential $-70\text{ mV}$, the gate is closed, the ions Na$^+$ can't pass. 
+          \item When the membrane depolarize and reach the threshold (about $-55\text{ mV}$), the sodium gates open, and the ions pass quickly in the gates following the electrochemical gradient, producing a raise in the action potential. 
+          \item At the peak of this spike, an \textit{inactivation port} activates, closing the gates from the inside, the channel is closed and can't be re-opened immediately. This is called \textbf{absolute refractory period}: No
+new action potential can be
+produced (under any
+circumstances).
+     \end{enumerate}
+     \item  \textbf{The Potassium Channel}:\begin{enumerate}
+          \item It is closed during rest and during the first rising phase of the spike.
+          \item It opens with a certain delay compared to that of sodium, typically when the spike has reached its peak.
+          \item When it opens, the potassium K$^+$ leaves the cell (because it is less concentrated outside). This release of positive charges causes the membrane potential to collapse, bringing it back down (repolarization).
+          \item Because it closes slowly, too much potassium often escapes, bringing the membrane to a more negative value than rest (e.g. -80 mV), causing post-potential hyperpolarization (undershoot).
+     \end{enumerate}
+\end{itemize}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/spike.eps}
+\end{figure}
+All the spikes have the same shape, the same duration (2 milliseconds) and the same amplitude (100 mV), are fast and intense. Once the action potential is generated in the axon hillock, it needs to be propagated along the axon towards other cells. There are two main mechanisms.\bigskip 
+
+In \textbf{Continuous Conduction}, the action potential is continuously generated at each membrane section , the fast membrane depolarization induces an intra and extra cellular ionic currents, that propagate the perturbation to close membrane regions. If it finds Na$^+$ channels ready to open, the depolarizing perturbation produces
+again an action potential (active generation).
+\bigskip
+
+If the close membrane region has just produced an action potential, the Na$^+$ channels will be in their absolute refractory period, if so, a new action potential will be impossible to produce. The propagation speed is around 1 meter per second.
+
+The absolute refractory causes the \textbf{unidirectional} of the action potential propagation:  As the action potential propagates forward towards the ''closed'' (ready to fire) channels, the membrane segment just passed through is in the refractory period. Even if the electric charges (local currents) try to diffuse backwards, they find inactivated Na$^+$ channels that do not respond. 
+
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/ContinuousConduction.png}
+     \caption{Continuous Conduction.}
+\end{figure}
+
+\textbf{Saltatory Conduction} is the mechanism by which an action potential propagates along a myelinated axon. Instead of flowing continuously across the entire membrane, the pulse ''jumps'' from one non-isolated point to another.\bigskip
+
+In axons, the membrane is surrounded by an insulating sheath called myelin (formed by Schwann cells in the PNS and oligodendrocytes in the CNS).
+
+The myelin sheath functions as an electrical insulator which dramatically increases the membrane's resistance ($R_m$) and reduces its capacitance ($C_m$).
+The \textit{nodes of Ranvier} are short breaks in the sheath (about 1-2 $\mu$m) where the axon membrane is exposed to extracellular fluid. Only here is a very high density of voltage-gated sodium (Na$^+$) channels found.\bigskip 
+
+When a spike is generated in a node of Ranvier, sodium ions enter the cell. Because myelin prevents charges from ''leaking'' across the membrane (high $R_m$), electric current flows almost instantaneously within the axon to the next node.
+The speed is much higher than that of sequential opening of channels.
+Before the electrical signal fades too much, it reaches the next Ranvier node. Here, the depolarization is still sufficient to exceed the threshold, triggering the opening of local Na$^+$ channels.
+
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/SaltatoryConduction.jpg}
+     \caption{Saltatory Conduction.}
+\end{figure}
 
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
@@ -320,6 +391,52 @@ $V_+-V_-$ is the quantity that we want to measure and amplify, and the amplitude
 \end{figure}
 Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain. Despite this difference, the output of amplifier have still some artifacts to deal with.\bigskip
 
+A desirable feature for an amplifier is an \textit{high input impedance}. Before explaining what the impedance is, we need some electronics concepts, the following circuit is the simplest model of a source and a measurement system.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/measurement.eps}
+     \caption{A simple measurement model.}
+     \label{impedance}
+\end{figure}
+This is a model of  real generator that is an ideal generator in series with an output impedance.\begin{equation}
+     V_{meas}=V_{gen}\frac{Z_2}{Z_1+Z_2}
+\end{equation} 
+The impedance is (in simplistic words) a \textbf{frequency dependant resistance}. The measurement system in Figure \ref{impedance} is a real multimeter, composed by an ideal multimeter (that measures the voltage without disturbing the circuit) plus an impedance in parallel. This is the simplest model of a real measurement system. 
 
+We want the input impedance $Z_2$ to be high, in order to have the most accurate measurement possible:\begin{equation}
+     \lim_{Z_2\rightarrow+\infty}V_{gen}\frac{Z_2}{Z_1+Z_2}=V_{gen}.
+\end{equation}
+For the same argument, we want a low output impedance for the source:\begin{equation}
+      \lim_{Z_1\rightarrow 0}V_{gen}\frac{Z_2}{Z_1+Z_2}=\frac{Z_2}{Z_2}V_{gen}=V_{gen}.
+\end{equation}
+Our output source is the membrane that generates the ionic current, the contact impedance $Z_1$ is given by the pathway that goes from the source (the neurons) to the measurement system (the electrode). Most of the structure in this pathway are low impedance (mostly wet tissues).
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/measurement2.eps}
+     \caption{A simple measurement model.}
+     \label{impedance2}
+\end{figure}
+The real problem in the impedance is the skin, the surface part of the skin is composed mostly by dead cells, that have an high impedance, for that purpose we use a gel to stabilize the contact surface  and infiltrates the dry skin to moist it, by reducing the impedance.
 
+The international guidelines suggest to keep electrode impedance below 5 k$\Omega$, the modern amplifiers with high input impedance allows to relax this requirement, a typical value for the input impedance is around hundreds of M$\Omega$.
+\subsection{Standard Electrode Displacement}
+The first standard from the 90's required 19 electrodes.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.35\textwidth]{images/10_20_EEG.png}
+     \includegraphics[width=0.35\textwidth]{images/10_10_EEG.png}
+     \caption{International 10-20 system (left) and 10-10 system (right) of EEG electrode placement and labeling.}
+     \label{10_20_EEG}
+\end{figure}
+The 10-20 system prescribes where to put the electrodes and what the labels of the electrodes are. For research purposes, 19 electrodes are not enough.Another system is the 10-10 system that uses at most 73 electrodes. The inion and the nasion are points that can be localized on the skull.\begin{center}
+     \includegraphics[width=0.5\textwidth]{images/inion_nasion.png}
+\end{center}
+This points are ''reliable'' and can be located in every skull, allowing to build the standard displacement. The labels on the electrodes (N, AF, F, FT, T, \dots) are named by the lobes of the brain.
+\begin{center}
+     \includegraphics[width=0.6\textwidth]{images/lobes}
+\end{center}
+There are four lobes, as can be seen in the 10-10 system, the electrodes placed in proximity of the frontal lobes are labeled with an F (or AF), as the labels placed near the temporal and the parietal lobes are labeled with TP. There is an exception for the electrode on the nasion, labeled with N and the electrode on the inion, labeled with I and the ear, labeled with A. 
+The electrodes on the left are labeled with an odd number subscript, the labels on the right with an even number, the further the electrodes are from the sagittal arc\footnote{arc connecting the inion and the nasion, that divides the skull in two parts. The electrodes on this segment are labeled with $z$ (zero).}, the greater their number on the label will be.
+\subsection{Reference Electrodes}
+We define the zero potential as the potential measured at infinite distance (far away from any electrical source). This is a convention, we will have to arbitrary define where is the zero potential. We are measuring the difference of potential so we need at least two electrodes, an additional amplifier is needed for the ground. One of the two electrodes used to measure the difference is called the \textbf{reference electrode}, the other is called \textbf{active electrode}, the reference electrode is placed where we set the potential to zero. So we measure the position of the \textit{active electrode} with reference to the \textit{reference electrode}.
 \end{document}
