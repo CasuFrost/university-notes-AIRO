@@ -118,15 +118,15 @@ An example of filter is the \textit{mean filter}, that assign at a given pixel t
     \includegraphics[width=0.6\textwidth ]{images/blur.png} 
 \end{center}
 a filter is called \textbf{separable} if the kernel can be expressed as the outer product of two vectors, this property makes the application of a filter less expensive from a computational point of view, since the 2D convolution with a separable filter is equivalent to two 1D convolution (with the column and row filters).\begin{equation}
-    \begin{pmatrix}
+    \begin{bmatrix}
         1&1&1\\ 
         1&1&1\\ 
         1&1&1
-    \end{pmatrix}=\begin{pmatrix}
+    \end{bmatrix}=\begin{bmatrix}
         1\\1\\1
-    \end{pmatrix}\cdot\begin{pmatrix}
+    \end{bmatrix}\cdot\begin{bmatrix}
         1&1&1
-    \end{pmatrix}
+    \end{bmatrix}
 \end{equation}
 if an image have a resolution $m\times n$ and the filter has size $l\times l$:\begin{itemize}
     \item the convolution with a non separable filter needs $l^2mn$ operations 
@@ -134,7 +134,7 @@ if an image have a resolution $m\times n$ and the filter has size $l\times l$:\b
 \end{itemize}
 A kernel is separable if and only if the matrix has rank 1.\bigskip 
 
-Now we consider a useful non linear filter, the \textbf{Gaussian kernel} is the 2D filter $G_\sigma$ defined as follows:\begin{equation}
+Now we consider a useful non linear filter, the \textbf{Gaussian kernel} is the 2D filter $G_\sigma$ defined as follows:\begin{equation}\label{gaussian_filter}
     G_\sigma[i,j]=\frac{1}{2\pi\sigma^2}\exp\left(-\frac{i^2+j^2}{2\sigma^2}\right)
 \end{equation}
 \begin{figure}[H]
@@ -164,11 +164,11 @@ where
     \item $\alpha$ is the value to control how sharpening the filter is 
     \item $H$ is the Gaussian kernel 
     \item $e$ is the unit impulse, matrix with 1 in the center and zero in the other entries\begin{equation}
-        \begin{pmatrix}
+        \begin{bmatrix}
             0&0&0\\
             0&1&0\\
             0&0&0
-        \end{pmatrix}.
+        \end{bmatrix}.
     \end{equation}
 \end{itemize}
 \begin{center}
@@ -208,9 +208,223 @@ where\begin{itemize}
 If the goal is to enhance contrast while preserving edges, bilateral filtering is generally a better choice. If the goal is to reduce noise or blur the image slightly, Gaussian filtering might be suitable, but it might not
 preserve edges as well as bilateral filtering.
 \subsection{Sampling and Aliasing}
-\redText{TODO}
-\subsection{Image Derivatives}
-\redText{TODO}
+When we need to reduce the size of an image, we can discard (for example) the odd rows and the odd columns, to reduce in half the resolution, this process is called \textit{sub sampling}.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/subsampling.png}
+\end{center}
+This procedure lost some information, this can be seen since, if we try to zoom the image we will se the \textit{aliasing} effects.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/aliasing.png}
+\end{center}
+The \textbf{aliasing} occurs when the sampling rate is not high enough to capture the amount of detail in the image, to make a good sampling, we need to understand the structure of an image by frequency analysis, explained in details in Section \ref{frequencyAnalysis}.\bigskip 
+
+To avoid the aliasing, the sampling rate should be greater or at least equal to the double of the max frequency in the image (Nyquist rate).
+The Gaussian filter eliminates the higher frequencies in an image, so a basic idea of sampling is to apply this low pass filter: We filter the image with a Gaussian filter, and then sub sample.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/subsampling_gaussian.png}
+\end{center}
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/aliasing_gaussian.png}
+\end{center}
+If we iteratively apply this filter-sampling procedure, we get a sequence of images, where each image has half the resolution of the previous one, this series is called \textbf{Gaussian Pyramid}.
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/gaussian_pyramid.png}
+\end{center}
+The \textbf{upsampling} procedure is the opposite of the down sampling: We take an image and we repeat $n$ times each column (to increase the resolution of a factor $n$), this method is called nearest neighbor
+interpolation.
+\begin{center}
+    \includegraphics[width=0.2\textwidth ]{images/upsampling.png}
+\end{center}
+There are also other methods, like the bilinear interpolation and the bicubic interpolation.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/upsampling2.png}
+\end{center}
+The bilinear interpolation is computationally less intensive and faster than bicubic interpolation. If speed is a critical factor, bilinear interpolation might be preferred. Bicubic interpolation generally provides smoother and more accurate results, making it suitable for applications where image quality is a priority.\begin{itemize}
+    \item Bilinear interpolation calculates the value of the new pixel by taking a weighted average of the 4 neighboring pixels (2x2).
+    \item Bicubic interpolation is more complex and precise: it calculates the value of the new pixel by analyzing the 16 surrounding pixels (4x4). Uses cubic polynomials to create a smooth curve between pixel values. Instead of drawing straight lines between the dots, try to follow the flow of colors and contrasts.
+\end{itemize}
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/bilinear_bicubic.png}
+\end{center}
+\section{Image Derivatives}
+An image is a discrete sampling of a function $f:\R^2\rightarrow\R$ (in practice, there are three functions, one for each channel). The partial derivative formula for a continuous function:\begin{equation}
+    \frac{\partial f(x,y)}{\partial x}=\lim_{\epsilon\rightarrow 0}\frac{f(x+\epsilon,y)-f(x,y)}{\epsilon}
+\end{equation}
+can be approximated by a finite difference for our discrete images:\begin{align}
+    &\frac{\partial f(x,y)}{\partial x}\simeq \frac{f(x+1,y)-f(x,y)}{1}\\
+    &\frac{\partial f(x,y)}{\partial x}\simeq \frac{f(x+1,y)-f(x-1,y)}{2}
+\end{align}
+these operation can be realized by two kernels:\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/derivatives.eps}
+\end{center}
+Similarly, the derivative respect to $y$ can be approximated by the same kernel but transposed:
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/derivatives2.eps}
+\end{center}
+By applying the convolution we can compute the two derivatives of an image, called the \textbf{gradient}:
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/derivatives3.png}
+\end{center}
+we can also display the norm of the gradient\begin{equation}
+    \|\nabla f\|=\sqrt{\left(\frac{\partial f}{\partial x}\right)^2+\left(\frac{\partial f}{\partial y}\right)^2}.
+\end{equation}
+\begin{center}
+    \includegraphics[width=0.2\textwidth ]{images/gradient}
+\end{center}
+The gradient is a vector that points in the direction of most rapid increase in the intensity, and the strength of this increase is given by the norm. The gradient direction is given by\begin{equation}\label{dir_grad}
+    \theta=\tan^{-1}\left(\frac{\nicefrac{\partial f}{\partial y}}{\nicefrac{\partial f}{\partial x}}\right),
+\end{equation}
 \subsection{Edge Detection}
+The goal of the edge detection is to convert a 2D image in a set of curves, extracting salient features in the scene, to represent it in a more compact way respect to the pixels. If we represent the intensity of a grey scale image in the $z$ axis of a plot, the edges will look like steep cliff.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/edges.png}
+\end{center}
+In general, an edge is a \textit{rapid change} in the image intensity function. We can consider a \textit{scan line} in the 2D image, and plot the intensity along this line, to get a one dimensional signal:
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/scanline.png}
+\end{center}
+here the edges can be seen clearly, if we consider the derivative of this signal, the edges will corresponds to local maxima and/or minima. The direction of the edges is given by the direction of the gradient, computed like in the equation \eqref{dir_grad}.\bigskip
+
+If an image is noisy, it may be difficult to detect the edge through the derivative, like in the following example:
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/noisy_der.png}
+\end{center}
+To solve this problem we need to apply a smoothening filter to the image, the convolution with a Gaussian kernel will solve the problem and make easier to find the edges.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/edge_gaussian.png}
+\end{center}
+\begin{boxtheorem}{Derivative Theorem of Convolution}{}
+The derivative of the convolution between $f$ and $h$ is equal to the derivative of $h$ convolved with $f$:\begin{equation}
+    \frac{(\partial h\star f)}{\partial x}=\left(\frac{\partial h}{\partial x}\right)\star f
+    .
+\end{equation}
+\end{boxtheorem}
+Instead of computing the derivative of the convolution, we can exploit the derivative theorem of convolution to save time and do less steps to compute $\frac{d}{dx}(f\star h)$.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/edge_gaussian2.png}
+\end{center}
+So instead of considering the Gaussian filter we consider the derivative of it in both directions.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/derivative_of_gaussian.png}
+\end{center}
+As we have seen, the first derivative 1D filter\begin{equation}
+    \begin{bmatrix}
+        1&0&-1
+    \end{bmatrix}
+\end{equation}
+comes from a first order finite difference approximation of a partial derivative. We can consider a second order finite difference to approximate the second derivative, this leads to the \textbf{Laplace filter}:\begin{equation}\label{laplace_filter}
+    \begin{bmatrix}
+        1&-2&1
+    \end{bmatrix}
+\end{equation}
+So, we can derive two times the Gaussian filter, this approximation is called \textbf{Laplacian of Gaussian (LoG) filter}, is given by the convolution of the Gaussian filter in equation \eqref{gaussian_filter} with the 1D Laplace filter given in equation \eqref{laplace_filter}.\bigskip 
+
+If we apply this LoG filter to a function we will get a signal that, \textit{crosses the zero} on the edges.
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/LoG.png}
+\end{center}
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/LoG2.png}
+\end{center}
+The zero crossing LoG procedure is more accurate at localizing the edges, but the derivative of Gaussian method is more efficient and fast to compute.\bigskip
+
+An approximation of the derivative of Gaussian filter is given by the \textbf{Sobel filter}:\begin{equation}
+    s_x=\frac{1}{8}\begin{bmatrix}
+        -1&0&1\\
+        -2&0&2\\
+        -1&0&1
+    \end{bmatrix} \ \ \ \ \ \  
+     s_y=\frac{1}{8}\begin{bmatrix}
+        1&2&1\\
+        0&0&0\\
+        -1&-2&-1
+    \end{bmatrix}
+\end{equation}
+$s_x$ is the horizontal sobel filter while $s_y$ is the vertical sobel filter. These filters are separable:\begin{align}
+    &s_x=\begin{bmatrix}
+        1\\2\\1
+    \end{bmatrix}\cdot \begin{bmatrix}
+        1&0&-1
+    \end{bmatrix}\\ 
+    &s_y=\begin{bmatrix}
+        1\\0\\-1
+    \end{bmatrix}\cdot \begin{bmatrix}
+        1&2&1
+    \end{bmatrix}
+\end{align}
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/sobel.png}
+\end{center}
+\subsection{Canny Edge Detector}
+An optimal edge detector should\begin{itemize}
+    \item be accurate, minimize the number of false positives and false negatives 
+    \item have precise localization, pinpointing edges at the
+positions where they actually occur
+\item have single response, ensuring that only
+one edge is found where there only is one edge.
+\end{itemize}
+A good procedure is the \textbf{Non-Maximum Suppression}: Let's consider the following image
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/dog_image.png}
+\end{center}
+to localize the edges we try to smooth the image and then consider the norm of the gradient
+\begin{center}
+    \includegraphics[width=0.43\textwidth ]{images/dog_image2.png}
+\end{center}
+It is hard to localize precisely the edge, since we get a wide line of pixels of different intensity. To find the perfect 1-pixel wide edge, we may look at the intensity along the direction of the gradient.
+We can get the orientation angle for each pixel:
+\begin{center}
+    \includegraphics[width=0.43\textwidth ]{images/dog_image3.png}
+\end{center}
+The procedure is the following\begin{enumerate}
+    \item for each pixel, we compute the direction of the gradient in that point
+    \item we compare the intensity of that pixel with the local neighbors along the direction of the gradient
+    \item if the current pixel is the most intense among its neighbors in the direction of the gradient, it is retained. Otherwise, it is suppressed: The intensity is set to zero.
+\end{enumerate}
+
+\begin{center}
+    \includegraphics[width=0.5\textwidth ]{images/nonmaxsupp.png}
+\end{center}
+The following image is the result of the Non-Max Suppression:
+\begin{center}
+    \includegraphics[width=0.3\textwidth ]{images/dog_image4.png}
+\end{center}
+Of course, there is some noise left, we want to keep only the strong edges, we can consider two thresholds $t$ and $T$, for each pixel:\begin{itemize}
+    \item let $R$ to be the intensity of the gradient of the inspected pixel 
+    \item if $R>T$, the pixel is on a strong edge 
+    \item if $t<R<T$, the pixel is on a weak edge 
+    \item if $R<t$, it's not an edge 
+\end{itemize}
+we can keep the strong edges and the weak edges that connects to strong edges, by looking at the 8 closest neighbors. It is important to tune correctly $t$ and $T$. This stage also removes small pixels noises on the assumption that edges are long lines.\bigskip 
+
+The \textbf{Edge Tracking by Hysteresis} consists in transforming weak pixels into strong one if and only if at least one pixels around the one being processed is a strong
+one.
+\begin{center}
+    \includegraphics[width=0.4\textwidth ]{images/Hysteresis.png}
+\end{center}
+Summing up all the steps described, we arrive at the \textbf{Canny Edge Detector}, characterized by the following steps:\begin{enumerate}
+    \item Filter image with Derivative of Gaussian.
+    \item Find magnitude and orientation of gradient.
+    \item Non-maximum suppression.
+    \item Linking and thresholding (hysteresis)\begin{itemize}
+        \item define a low threshold $t$ and an high threshold $T$
+        \item use the high threshold to start edge curves and the
+low threshold to continue them.
+    \end{itemize}
+\end{enumerate}
+The results of the Canny edge detector depends on the choice of the thresholds and the Gaussian blur $\sigma$.
+\begin{center}
+    \includegraphics[width=0.6\textwidth ]{images/canny.png}
+\end{center}
+\section{Image Pyramids}
+
+
+
+
+
+
+
+\newpage
+\section{Frequency Analysis}\label{frequencyAnalysis}
 \redText{TODO}
 \end{document}

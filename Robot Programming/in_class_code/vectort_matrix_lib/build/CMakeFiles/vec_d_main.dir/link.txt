@@ -1,1 +1,0 @@
-/usr/bin/c++ -rdynamic CMakeFiles/vec_d_main.dir/vec_d_main.cpp.o -o vec_d_main  liblinear_algebra_library.a 
