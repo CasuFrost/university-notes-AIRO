@@ -1168,4 +1168,61 @@ and are exactly $n-m$ conditions that can be chosen as the extra task $k_2(\math
     k_2(\mathbf q)=[-(J_a^{-1}J_b)^TJ]\nabla_{\mathbf q}G=\mathbf 0.
 \end{equation}
 Since we are solving the problem at differential level, it would be required to compute $J_2=\left(\displaystyle\frac{\partial k_2}{\partial \mathbf q}\right)$, the calculation is pretty involved, so in that case the gradient might be computed numerically with a finite difference method.
+In presence of algorithmic singularities, one can use the DLS method, however, both the original and the augmented task will be affected by errors.\bigskip 
+
+In most cases, one can define a main task to execute, and one or more auxiliary tasks, with lower priority respect the first one (execute perfectly the first task, than the others). The \textbf{task priority} problem consists in assigning a priority value to each tasks, and then execute them in order to satisfy the higher priority tasks before the others. For example, let's consider two tasks\begin{align*}
+    &\dy_1=J_1\dq\\ 
+    &\dy_2=J_2\dq
+\end{align*}
+first, we address the first task as follows\begin{equation}\label{q_expression_priority}
+    \dq = J_1^\#\dy_1+(I-J_1^\#J_1)\mathbf v_1
+\end{equation}
+the vector $\mathbf v_1\in \R^n$ can be chosen to satisfy (if possible) the second task, and will be projected on the null space of $J_1$.\begin{align}
+    &\dy_2=J_2\dq=\\ 
+    &J_2(J_1^\#\dy_1+(I-J_1^\#J_1)\mathbf v_1)=\\ 
+    &J_2J_1^\#\dy_1+   J_2(I-J_1^\#J_1)\mathbf v_1=\\
+    &J_2J_1^\#\dy_1+J_2P_1\mathbf v_1
+\end{align}
+We denoted $P_1$ the projection on the null space of $J_1$: $(I-J_1^\#J_1)$. The general solution for $\mathbf v_1$ in order to accomplish $\dy_2$ is:\begin{equation}
+    \mathbf v_1=(J_2P_1)^\#(\dy_2-J_2J_1^\#\dy_1)+
+    (I-(J_2P_1)^\#(J_2P_1))\mathbf v_2 
+\end{equation}
+where $\mathbf v_2\in \R^n$ is again an arbitrary vector that might be chosen to accomplish a third task of lower priority. By substituting the expression of $\mathbf v_1$ in \eqref{q_expression_priority} we get:\begin{align}
+    &\dq=J_1^\#\dy_1+P_1(J_2P_1)^\#(\dy_2-J_2J_1^\#\dy_1)+P_1(I-(J_2P_1)^\#(J_2P_1))\mathbf v_2= \\
+    &J_1^\#\dy_1+(J_2P_1)^\#(\dy_2-J_2J_1^\#\dy_1)+P_1(I-(J_2P_1)^\#(J_2P_1))\mathbf v_2 
+\end{align}
+With task priority, there will be no algorithmic singularities, the error will be restricted only on the second and lower priorities tasks.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/task_priority.png}
+\end{figure}
+The concept can be generalized with an arbitrary number of tasks, but is useful to have a recursive representation. 
+Let $s$ to be the number of tasks, each task is defined by a Jacobian matrix $J_i$ and a task vector $\dy_i$\begin{align}
+    &\dy_i\in \R^{m_i}\\ 
+    &\text{task }i: \ \dy_i=J_i\dq\\ 
+    &i=1,2,\dots s
+\end{align}
+each task $i$ have $m_i$ components, we denote $m$ the number of total singular task\begin{equation}
+    m=\sum_{i=1}^s m_i 
+\end{equation}
+this can be also greater than $n$ (not all task can be accomplished simultaneously). The task are indexed such that the task $i$ have greater priority than task $j$ if $i>j$, so the task $\dy_1=J_1\dq$ is the one with highest priority.
+
+At each time step, a \textbf{stack of tasks} is defined, at that moment, the solution must be found to accomplish (if possible) the tasks ordered in the stack:\begin{equation}
+    \dy_{A,k}=\begin{pmatrix}
+        \dy_1\\
+        \vdots\\
+        \dy_k
+    \end{pmatrix}
+\end{equation}
+up to the $k$-th task. In the same way is defined the augmented Jacobian matrix:\begin{equation}
+    J_{A,k}=\begin{pmatrix}
+        J_1\\
+        \vdots\\
+        J_k
+    \end{pmatrix}
+\end{equation}
+that have $n$ (dof) columns and $m=\sum m_i$ rows. The projector on the null space of $ J_{A,k}$ is defined as usual:\begin{equation}
+     P_{A,k}=I- J_{A,k}^\# J_{A,k}
+\end{equation}
+Notice how we are defining the stack of tasks up to the $k$-th in order to define later the recursive algorithm that works for a generic $k$, and will be executed for all the task.\redText{riscrivi meglio sta parte}.
 \end{document}
