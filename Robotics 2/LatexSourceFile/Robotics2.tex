@@ -1224,5 +1224,22 @@ up to the $k$-th task. In the same way is defined the augmented Jacobian matrix:
 that have $n$ (dof) columns and $m=\sum m_i$ rows. The projector on the null space of $ J_{A,k}$ is defined as usual:\begin{equation}
      P_{A,k}=I- J_{A,k}^\# J_{A,k}
 \end{equation}
-Notice how we are defining the stack of tasks up to the $k$-th in order to define later the recursive algorithm that works for a generic $k$, and will be executed for all the task.\redText{riscrivi meglio sta parte}.
+Notice how we are defining the stack of tasks up to the $k$-th in order to define later the recursive algorithm that works for a generic $k$, and will be executed for all the task until the $s$-th one. To satisfy the highest priority task we have to solve the following problem\begin{align}
+    &\dq_1=\arg\min_{\dq\in \R^n}\frac{1}{2}\|\dq\|^2\\
+    &\text{s.t. }J_1\dq=\dy_1
+\end{align}
+the problem can be reformulated in a way to allows solution that are not exact but minimize the task error:\begin{align}
+     &\dq_1=\arg\min_{\dq\in \mathcal S_1}\frac{1}{2}\|\dq\|^2\\
+    &\mathcal S_1=\left\{ \arg\min_{\dq\in \R^n}\frac{1}{2}\|J_1\dq-\dy_1\|^2\right\}
+\end{align}
+We know that the problem is solved by the pseudo inverse $\dq=J_1^\#\dy_1$, so the set $\mathcal S_1$ can be rewritten as the sum of a particular solution (given by the pseudo inverse) and the projection of an arbitrary vector on the null space of $J_1$:
+\begin{align}
+    &\mathcal S_1=\left\{ \dq_1+P_{A,1}\mathbf v_1 \ : \  \mathbf v_1\in \R^n\right\}\\ 
+    &\dq_1=J_1^\#\dy_1
+\end{align}
+About the notation: $\dq_1$ is not the first component of $\dq$ but is the solution that solves the highest priority task. At this point, we know how we can choose $\mathbf v_1$ to accomplish (if possible) the second task. Instead, to generalize the procedure to $k$-th tasks, we can continue with the following formulation:\begin{align}
+    &\dq_2=\arg\min_{\dq\in \mathcal S_2}\frac{1}{2}\|\dq\|^2\\
+    &\mathcal S_2=\left\{ \arg\min_{\dq\in \mathcal S_1}\frac{1}{2}\|J_2\dq-\dy_2\|^2\right\}
+\end{align}
+As the previous step 
 \end{document}
