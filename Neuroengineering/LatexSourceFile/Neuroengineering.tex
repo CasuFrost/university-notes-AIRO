@@ -438,5 +438,25 @@ This points are ''reliable'' and can be located in every skull, allowing to buil
 There are four lobes, as can be seen in the 10-10 system, the electrodes placed in proximity of the frontal lobes are labeled with an F (or AF), as the labels placed near the temporal and the parietal lobes are labeled with TP. There is an exception for the electrode on the nasion, labeled with N and the electrode on the inion, labeled with I and the ear, labeled with A. 
 The electrodes on the left are labeled with an odd number subscript, the labels on the right with an even number, the further the electrodes are from the sagittal arc\footnote{arc connecting the inion and the nasion, that divides the skull in two parts. The electrodes on this segment are labeled with $z$ (zero).}, the greater their number on the label will be.
 \subsection{Reference Electrodes}
+
 We define the zero potential as the potential measured at infinite distance (far away from any electrical source). This is a convention, we will have to arbitrary define where is the zero potential. We are measuring the difference of potential so we need at least two electrodes, an additional amplifier is needed for the ground. One of the two electrodes used to measure the difference is called the \textbf{reference electrode}, the other is called \textbf{active electrode}, the reference electrode is placed where we set the potential to zero. So we measure the position of the \textit{active electrode} with reference to the \textit{reference electrode}.
+
+There are no ''good'' position for the reference electrode, but the displacement will influence the signal that will be displayed.
+
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/ref_electrodes.png}
+\end{figure}
+
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/ref_potentials.png}
+     \caption{Distributions of potential depending on the reference position. }
+\end{figure}
+
+Changing the reference is equivalent to imposing a value of zero on a specific channel. By subtracting the potential of one electrode from all other recordings, that channel becomes the new reference.
+
+While one might attempt to create a paired reference by physically short-circuiting two earlobe electrodes, this is ill-advised. Because potentials are asymmetric across the ears, short-circuiting them forces these two points to an identical potential, which physically redistorts the electric field across the head. 
+
+Instead, this should be handled in software: by recording both electrodes separately, calculating their average, and subtracting it from the remaining channels, we create a mathematically stable \textbf{virtual reference}.
 \end{document}

@@ -2,6 +2,8 @@
 % !TeX program = xelatex
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
+\newcommand{\y}{{\mathbf y}}
+\newcommand{\q}{{\mathbf q}}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \newcommand{\titolo}{Robotics 2 }
@@ -63,22 +65,22 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================INIZIO======================%
 \chapter{Introduction}
 \section{An Overview in Dynamics}
-Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf}{Robotics 1} course, we described the kinematic behavior of a robotic manipulator, assuming that no force are involved, and that we can control directly the angular velocity of each joint, without any kind of resistance.
+Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf}{Robotics 1} course, we described the kinematic behavior of a robotic manipulator, assuming that no forces are involved, and that we can control directly the angular velocity of each joint, without any kind of resistance.
 We consider the following example\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
 \end{center}
 it is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter clock wise, while the first joint remain fixed. If we have to take in account the dynamics, we should also consider\begin{itemize}
     \item the center of mass of the first and the second link
     \item the mass of the first and the second link
-    \item the inertia the first and the second link
+    \item the inertia of the first and the second link
 \end{itemize}
-and instead of describing the control trough angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
+and instead of describing the control through angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
 
-Let's consider the following example of a 2R planar robot, with the joint axis orthogonal respect to the direction of gravity.
+Let's consider the following example of a 2R planar robot, with the joint axis orthogonal with respect to the direction of gravity.
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/2R_example.eps}
 \end{center}
-where $I_1,I_2$ are the moment of inertia of the links around their center of mass, $d_{c_{1}},d_{c_{2}}$ is the distance along the links between the joint and the center of mass, $m_1,m_2$ are the mass of the links, and $l_1,l_2$ the lengths. The initial configuration at $t=0$ is \begin{equation}
+where $I_1,I_2$ are the moment of inertia of the links around their center of mass, $d_{c_{1}},d_{c_{2}}$ are the distances along the links between the joint and the center of mass, $m_1,m_2$ are the mass of the links, and $l_1,l_2$ the lengths. The initial configuration at $t=0$ is \begin{equation}
     \mathbf q_0 = \begin{pmatrix}
         0\\\frac{\pi}{2}
     \end{pmatrix} \ \ \ \  
@@ -123,9 +125,9 @@ the inertia matrix in the initial configuration (that for now we get for granted
     \end{pmatrix}
 \end{equation}
 \begin{boxtheorem}{Steiner}{}
-    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing trough the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
+    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing through the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
 \end{boxtheorem}
-In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing trough the center of mass, that we denote $\bar I_i$.
+In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing through the center of mass, that we denote $\bar I_i$.
 \begin{equation}
     M(\mathbf q_0)=\begin{pmatrix}
         \bar I_1+\bar I_2+m_2l_1^2 &\bar I_2\\ 
@@ -1221,25 +1223,219 @@ up to the $k$-th task. In the same way is defined the augmented Jacobian matrix:
         J_k
     \end{pmatrix}
 \end{equation}
-that have $n$ (dof) columns and $m=\sum m_i$ rows. The projector on the null space of $ J_{A,k}$ is defined as usual:\begin{equation}
+that have $n$ (dof) columns and $m=\sum m_i$ rows.
+
+The projector on the null space of $J_i$ is defined as usual\begin{equation}
+    P_i=I-J_i^\#J_i
+\end{equation}
+The projector on the null space of $ J_{A,k}$ is defined as follows:\begin{equation}
      P_{A,k}=I- J_{A,k}^\# J_{A,k}
 \end{equation}
-Notice how we are defining the stack of tasks up to the $k$-th in order to define later the recursive algorithm that works for a generic $k$, and will be executed for all the task until the $s$-th one. To satisfy the highest priority task we have to solve the following problem\begin{align}
-    &\dq_1=\arg\min_{\dq\in \R^n}\frac{1}{2}\|\dq\|^2\\
-    &\text{s.t. }J_1\dq=\dy_1
-\end{align}
-the problem can be reformulated in a way to allows solution that are not exact but minimize the task error:\begin{align}
-     &\dq_1=\arg\min_{\dq\in \mathcal S_1}\frac{1}{2}\|\dq\|^2\\
-    &\mathcal S_1=\left\{ \arg\min_{\dq\in \R^n}\frac{1}{2}\|J_1\dq-\dy_1\|^2\right\}
-\end{align}
-We know that the problem is solved by the pseudo inverse $\dq=J_1^\#\dy_1$, so the set $\mathcal S_1$ can be rewritten as the sum of a particular solution (given by the pseudo inverse) and the projection of an arbitrary vector on the null space of $J_1$:
+Notice how we are defining the stack of tasks up to the $k$-th in order to define later the recursive algorithm that works for a generic $k$, and will be executed for all the task until the $s$-th one. To satisfy the first task in the stack $\dy_1$, we use the solution $\dq_1$ found through the pseudo inverse:\begin{equation}
+    \dq_1=J^\#_1\dy_1
+\end{equation}
+we know that the pseudo inverse find the minimum norm solution, so $\dq_1$ can be seen as the solution of the following LQ problem
 \begin{align}
-    &\mathcal S_1=\left\{ \dq_1+P_{A,1}\mathbf v_1 \ : \  \mathbf v_1\in \R^n\right\}\\ 
-    &\dq_1=J_1^\#\dy_1
+    &\dq_1=\arg\min_{\dq\in \mathcal S_1}\frac{1}{2}\|\dq\|^2\\
+    &\mathcal S_1=\left\{ \arg\min_{\dq\in \mathcal S_0}\frac{1}{2}\|J_1\dq-\dy_1\|^2\right\}
 \end{align}
-About the notation: $\dq_1$ is not the first component of $\dq$ but is the solution that solves the highest priority task. At this point, we know how we can choose $\mathbf v_1$ to accomplish (if possible) the second task. Instead, to generalize the procedure to $k$-th tasks, we can continue with the following formulation:\begin{align}
-    &\dq_2=\arg\min_{\dq\in \mathcal S_2}\frac{1}{2}\|\dq\|^2\\
+where $\mathcal S_0=\R^n$. So $\mathcal S_1$ is the set of all the joint velocities that satisfies the first task (if possible), or at least, minimize the error.
+To satisfy also the second task, by keeping the first task accomplished, we might look for a solution among all the solution that already satisfies $\dy_1$:\begin{align}
+    &\dq_2=\arg\min_{\dq\in\mathcal S_2}\frac{1}{2}\|\dq\|^2\\
     &\mathcal S_2=\left\{ \arg\min_{\dq\in \mathcal S_1}\frac{1}{2}\|J_2\dq-\dy_2\|^2\right\}
 \end{align}
-As the previous step 
+$\mathcal S_2$ is the subset of $\mathcal S_1$ of all the joint velocities that minimizes the error for the second task, so a solution found in $\mathcal S_2$ will be a solution\footnote{
+    not necessarily a perfect solution, we are minimizing the task error, if might be impossible to perfectly realize the desired task trajectory.
+} for the first task. It can be proved, that a solution for the second task can be found by considering the particular solution\begin{equation}
+    \dq_2=\dq_1+(J_2P_1)^\#(\dy_2-J_2\dq_1)
+\end{equation}
+and a solution of the homogeneous equation, so the set of all the solution can be rewritten as\begin{equation}
+    \mathcal S_2=\left\{
+    \dq_2+P_{A,2}\mathbf v_2 \ : \  \mathbf v_2\in \R^n
+    \right\}
+\end{equation}
+This procedure can be generalized: We have to find the solution up to the $k$-th task, we have found the prioritized solution $\dq_{k-1}$ and the set of all solutions up to task $k-1$ is\begin{equation}
+     \mathcal S_{k-1}=\left\{
+    \dq_{k-1}+P_{A,k-1}\mathbf v_{k-1} \ : \  \mathbf v_{k-1}\in \R^n
+    \right\}
+\end{equation}
+The LQ problem for the $k$-th task is\begin{align}
+    &\dq_k=\arg\min_{\dq\in\mathcal S_k}\frac{1}{2}\|\dq\|^2\\
+    &\mathcal S_k=\left\{ \arg\min_{\dq\in \mathcal S_{k-1}}\frac{1}{2}\|J_k\dq-\dy_k\|^2\right\}
+\end{align}
+over the steps, the set of solutions is progressively reduced\begin{equation}
+    \R^n=\mathcal S_0\supseteq\mathcal S_1\dots \supseteq \mathcal S_k\dots \supseteq \mathcal S_s
+\end{equation}
+The recursive formula to find a solution is 
+\begin{equation}\label{task_priority_sol}
+     \dq_k=\dq_{k-1}+(J_kP_{A,k-1})^\#(\dy_k-J_k\dq_{k-1})
+\end{equation}
+The solution up to the $k$-th task given in \eqref{task_priority_sol} satisfies also the previous tasks so\begin{equation}
+    J_{A,k-1}\dq_k=J_{A,k-1}\dq_{k-1}
+\end{equation}
+So to solve the problem through an iterative method up to the $k$-th task we need to compute the null space projectors $P_{A,1},P_{A,2}\dots P_{A,k}$. There exists a recursive expression.
+\begin{boxproposition}{Baerlocher, Boulic}{}
+    The null space projector for the $k$-task is given by the following recursive formula\begin{equation}
+        P_{A,k}=P_{A,k-1}-(J_kP_{A,k-1})^\#J_kP_{A,k-1}
+    \end{equation}
+    starting from $P_{A,0}=I$.
+\end{boxproposition}
+In presence of algorithmic singularities, for the $k$-th solution instead of the solution in Equation \eqref{task_priority_sol}, we need to apply the DLS method.
+\section{Extensions to Redundancy Problems}
+\subsection{Resolution at Acceleration Level}
+Up to know, we have solved the redundancy problem for the joint's velocities $\dq$, we know that at the lowest level, we don't control directly $\dq$, but the acceleration $\ddq$.\begin{equation}
+    \mathbf y = k(\mathbf q)\implies \dy=J\dq\implies \ddy=J\ddq+\dot J\dq.
+\end{equation}
+\begin{boxdefinition}{Tangent Bundle}{}
+    The \textbf{tangent bundle} is the set of couples $(\mathbf q,\dq)$ where $\mathbf q$ is a point of the configuration space $\mathcal C$ and $\dq$ is a point of the tangent space $T_{\mathbf q}\mathcal C$. If the points $\q$ are called configurations, the points $(\q,\dq)$ are called \textbf{states}. 
+\end{boxdefinition}
+In a given configuration $\mathbf q$, we know that the differential problem becomes linear in $\dq$, since $J=J(\mathbf q)$ evaluates becoming a linear operator. The same argument applies at acceleration level, in a given point of the tangent bundle $(\mathbf q, \dq)$, the Jacobian $J=J(\mathbf q)$ and it's derivative $\dot J=\dot J(\mathbf q,\dq)$ evaluates and the expression $\ddy=J\ddq+\dot J\dq$ becomes linear in $\ddq$\begin{equation}
+   J\ddq = \ddy -\dot J\dq.
+\end{equation}
+A solution for $\ddq$ can be found with the null space method:\begin{equation}
+    \ddq=J^\#\ddy+(I-J^\#J)\ddq_N
+\end{equation}
+where $\ddq_N$ is a preferred acceleration, usually defined as\begin{equation}
+    \ddq_N=\alpha\nabla_{\mathbf q}G-K_D\dq 
+\end{equation}
+where $\alpha$ is a real number that weights the gradient of $G$, that is a performance metrics as in the projected gradient method. $-K_D\dq$ is a \textbf{damping term} to stabilize the joint motion in the null space, $K_D$ is a positive definite matrix.\bigskip 
+
+The problem to find $\ddq_N$ in order to minimize $G(\mathbf q, \dq)$, is hard, in general $G$ is not even separable\footnote{$G(\mathbf q, \dq)$ can't be rewritten as $h(\mathbf q)+g(\dq)$ for some scalar functions $h,g$.}. This is a nonlinear optimal control problem, is hard to solve, so can be re-defined in discrete time assuming that joint accelerations are piecewise constant in time. At discrete time we have \begin{equation}
+    \ddq(t)=\ddq_k, \ \ t\in[t_k,t_k+\Delta t]
+\end{equation}
+where $\Delta t$ is the sampling time step. $G_k$ is $G(\mathbf q_k,\dq_k)$ evaluated in $t\in[t_k,t_k+\Delta t]$. Given $\ddq_k$, the evolution of the velocities and the configuration can be approximated as\begin{align}
+    &\dq_{k+1}=\dq_k+\Delta t\ddq_k\\
+    &\mathbf q_{k+1}=\mathbf q_k+\Delta t\dq_k+\frac{1}{2}\Delta t^2\ddq_k
+\end{align}
+$G$ can be expanded locally around $(\mathbf q_k,\dq_k)$ in order to find the next value $G_{k+1}$:\begin{align}
+    &G_{k+1}=G_k+\nabla_{\mathbf q}G_k(\mathbf q_{k+1}-\mathbf q_k)+
+    \nabla_{\dq}G_k(\dq_{k+1}-\dq_k)=\\ 
+    &G_k+\nabla_{\mathbf q}G_k\Delta t\dq_k+\Delta t\left(\frac{1}{2}\Delta t \nabla_{\mathbf q}G_k+\nabla_{\dq}G_k\right)\ddq
+\end{align}
+In order to get the largest decrease of $G_{k+1}-G_k$ the following preferred acceleration can be chosen:\begin{equation}
+    \ddq_N=-\alpha_k\left(\frac{1}{2}\Delta t \nabla_{\mathbf q}G_k+\nabla_{\dq}G_k\right)
+\end{equation}
+for some real step size $\alpha_k>0$.
+\subsection{Dynamic Resolution}
+We can include the dynamic model of a manipulator, given by the following system of equations\begin{equation}\label{dynModel}
+    M(\q)\ddq+\mathbf n(\q,\dq)=\btau
+\end{equation}
+where $M$ is the $n\times n$ symmetric inertia matrix, positive definite for all $\q$, $\mathbf n$ is a vector relative to centrifugal, coriolis and gravitational forces, and $\btau$ is the input torques vector. In a state $(\q,\dq)$, the matrix $M$ and the vector $\mathbf n$ evaluates and the Equation \eqref{dynModel} becomes bilinear in $\boldsymbol\tau$ and $\ddq$, $M$ is always invertible (more details in the next chapters) so there is a 1 to 1 mapping between $\btau$ and $\ddq$, in this way, we can easily choose $\btau$ to realize the desired $\ddq$.\bigskip
+
+Since we are controlling directly the torque $\btau$, we can apply the usual methods that uses the gradient of an objective function as preferred solutions. One common choice is to minimize the torque norm:\begin{equation}\label{H_1_torque}
+    H_1(\ddq)=\frac{1}{2}\|\btau\|^2=\frac{1}{2}\ddq^TM^2\ddq+\mathbf n^TM\ddq+\frac{1}{2}\mathbf n^T\mathbf n
+\end{equation}
+Remember that this (and the following) equations are evaluated in a given state $(\q,\dq)$, so that $M$ and $\mathbf n$ are evaluated in real numbers.
+Another common choice for the objective function is the squared inverse inertia weighted norm:\begin{align}
+    &H_2(\ddq)=\frac{1}{2}\|\btau\|^2_{M^{-2}}=\frac{1}{2}\btau M^{-2}\btau=\\
+    &\label{H_2_torque}\frac{1}{2}\ddq^T\ddq+\mathbf n^TM^{-1}\ddq+\frac{1}{2}\mathbf n^TM^{-2}\mathbf n
+\end{align}
+is the weighted norm that consider the square of the inverse of the inertia matrix $M$. The last choice that we see is to use the weighted norm given by the inverse of $M$:
+\begin{align}
+    &H_3(\ddq)=\frac{1}{2}\|\btau\|^2_{M^{-1}}=\frac{1}{2}\btau M^{-1}\btau=\\
+    &\label{H_3_torque}\frac{1}{2}\ddq^TM\ddq+\mathbf n^T\ddq+\frac{1}{2}\mathbf n^TM^{-1}\mathbf n.
+\end{align}
+Notice how all these Equations \eqref{H_1_torque},\eqref{H_2_torque} and \eqref{H_3_torque}, are quadratic forms in $\ddq$, so they all admit a closed form solution for $\ddq$, hence (since there is a 1 by 1 mapping) the value of the preferred torque $\btau$.\begin{itemize}
+    \item The minimum torque solution is \begin{equation}
+        \btau_1=(JM^{-1})^\#(\ddy-\dot J\dq+JM^{-1}\mathbf n)
+    \end{equation}
+    this local solution is good for short trajectories, but may leads to \textbf{whipping}: the solution minimizes only the norm of $\btau$ but doesn't try to minimize the joint's velocities, if the requested trajectory is long, the speed of the joints could accumulate, the controller could require very high angular accelerations at the joints with lower inertia to compensate for the required movement, causing sudden jerks.
+    \item The squared inverse inertia weighted norm solution is\begin{equation}
+        \btau_2=MJ^\#(\ddy-\dot J\dq+JM^{-1}\mathbf n)
+    \end{equation}
+    this form prevents whipping and is to be preferred.
+    \item The inverse inertia weighted norm solution is\begin{equation}
+        \btau_3=J^T(JM^{-1}J^T)^{-1}(\ddy-\dot J\dq+JM^{-1}\mathbf n).
+    \end{equation}
+\end{itemize}
+\subsection{Kinematic Control and Mobile Manipulators}
+So far we haven't considered in the redundancy problem the case where there is an initial task error. If the trajectory to follow is $\y_d(t)$ and the actual task position is $\y(t)$ (given by the DK and the current configuration $\q$), the error at any given time is\begin{equation}
+    \mathbf e(t)=\y_d(t)-\y(t)
+\end{equation} 
+a non zero erro can be given by\begin{itemize}
+    \item disturbances 
+    \item initial mismatch 
+    \item discrete-time implementation.
+\end{itemize}
+To solve this problem we need to close the feedback loop on task execution, instead of imposing the velocity $\dy=\dy_d$ (or the acceleration $\ddy=\ddy_d$), we the error in the control law:\begin{align}
+    &\dy=\dy_d+K_P\mathbf e\\ 
+    &\ddy=\ddy_d+K_D\dot{\mathbf e}+K_P\mathbf e
+\end{align}
+where $K,K_P$ and $K_D$ are positive definite matrices. We already seen in the Robotics 1 course that the inclusion of these terms are necessary to leads the error to zero.\bigskip
+
+\noindent 
+The next topic concerns mobile manipulators. These kind of robots, usually have a configuration space that can be decoupled in two sets of variables:\begin{itemize}
+    \item $\q_b$ are the configuration variables of the base
+    \item $\q_m$ are the joint variables of the manipulator.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/mobile_manipulator.eps}
+\end{figure}
+The task vector $\y$ is given by the direct kinematics that are a function of both the vectors $\q_m$ and $\q_b$\begin{equation}
+    \y=k(\q)=k(\q_b,\q_m).
+\end{equation}
+The variables $\q_m$ are (as we already said) the joint's angular positions. We can control the joint's velocities $\dq_m$, let's denote our control input for the manipulator $\mathbf u_m$, that is exactly  $\dq_m$:\begin{equation}
+    \mathbf u_m=\dq_m
+\end{equation}
+The variables $\q_b$ for a robot that moves on a plane, are the orientation $\phi$ and the position $x,y$ on that plane.\begin{equation}
+    \q_b=\begin{pmatrix}
+        x\\y\\\phi
+    \end{pmatrix}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/base_conf.eps}
+\end{figure}
+But our command for the base, denoted $\mathbf u_b$, is referred to the velocity of the wheels, in that case\begin{equation}
+    \dq_b\ne \mathbf u_b 
+\end{equation}
+In general there is a relation that depends on the current base configuration:\begin{equation}\label{mobile_base_G}
+    \dq_b=G(\q_b)\mathbf u_b.
+\end{equation}
+For example, assumes that we have a mobile base with two wheels. We can control the angular velocities $v_r,v_l$ of the two wheels, that are placed at distance $d$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/base_conf2.eps}
+\end{figure}
+we want to find the map between the linear velocity $v$ and the angular velocity $\omega=\dot \phi$ and $v_r,v_l$. There is a theory behind the definition of that map, but we will not cover it here. The linear velocity $v$ is simply given by the average velocity of the two wheels:\begin{equation}
+    v=\frac{1}{2}(v_l+v_r)
+\end{equation}
+the angular velocity is given by\begin{equation}
+    \omega = \frac{v_r-v_l}{d}
+\end{equation}
+given the linear velocity $v$, the components on $x$ and $y$ are\begin{align}
+    &\dot x = v\cos\phi \\ 
+    &\dot y=v\sin \phi
+\end{align}
+so the map $G(\q_b)$ is \begin{equation}
+    \begin{pmatrix}
+        \dot x\\\dot y\\ \omega
+    \end{pmatrix}=\begin{pmatrix}
+        \nicefrac{1}{2}\cos\phi&\nicefrac{1}{2}\cos\phi\\ 
+        \nicefrac{1}{2}\sin\phi&\nicefrac{1}{2}\sin\phi\\ 
+        \nicefrac{1}{d}&-\nicefrac{1}{d}
+    \end{pmatrix}\begin{pmatrix}
+        v_r\\v_l
+    \end{pmatrix}.
+\end{equation}
+We want to find the relation between $\dy$ and $\dq$ for a mobile base manipulator. Given \begin{equation}
+    \y=k(\q)=k(\q_b,\q_m)
+\end{equation}
+we consider the derivative\begin{equation}
+    \dy=\left( \frac{\partial k}{\partial\q_b }\right)\dq_b+
+    \left( \frac{\partial k}{\partial\q_m }\right)\dq_m
+\end{equation}
+from Equation \eqref{mobile_base_G}:
+\begin{equation}
+    \dy=\left( \frac{\partial k}{\partial\q_b }\right)G(\q_b)\mathbf u_b+
+    \left( \frac{\partial k}{\partial\q_m }\right)\mathbf u_m=\begin{pmatrix}
+        J_bG&J_m
+    \end{pmatrix}\begin{pmatrix}
+        \mathbf u_b\\ \mathbf u_m
+    \end{pmatrix}=J_{NMM}\mathbf u
+\end{equation}
+the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
+\subsection{Hard Limits in the Joint Space}
+\chapter{Dynamics}
 \end{document}
