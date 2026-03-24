@@ -1438,4 +1438,44 @@ from Equation \eqref{mobile_base_G}:
 the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
 \subsection{Hard Limits in the Joint Space}
 \chapter{Dynamics}
+The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure with the joint configuration $\q$. Typically, this relation is given by a system of second order differential equation:\begin{equation}
+    \Phi(\q,\dq,\ddq)=\mathbf u.
+\end{equation}
+The problem of direct dynamics consists in finding the trajectory $\q(t)$ over time, by knowing the profile of the forces $\mathbf u(t)$. There are experimental and simulation solutions, the latter consists in integrating over time the differential equations (solve numerically).
+
+The inverse problem consists in finding the required forces $\mathbf u(t)$ to realize a desired motion $\q(t)$. Can be done experimentally by \textit{iterative learning}, or can be computed algebraically at every time instant $t$ by knowing the analytical model of the manipulator. There are two main approach to find the dynamic model:\begin{itemize}
+    \item The \textbf{Euler-Lagrange} method is an \textit{energy based} approach. It provides the dynamic equations in symbolic form, and is the best method to study the dynamic properties and for the analysis of control schemes. Despite that, the terms in the model grows (more than exponentially) with the increase of the degree of freedom, so is not feasible to use it real time to control the manipulator. 
+    \item The \textbf{Newton-Euler} method is based on a balance of forces and moments. The dynamic equations are provided in a numerical/recursive formulation, and is the best way to implement the dynamics in the real time control schemes. 
+\end{itemize}
+The following discussion will be done under the assumption that the links are rigid bodies.
+\section{Lagrangian Dynamics}
+
+The full evolution in time of a manipulator can be described by the profile $\q(t)$ of the joint variables, $\q$ is a set of generalized coordinates (also called Lagrangian coordinates), and identify completely the configuration of the system. 
+
+This discussion can be done for any mechanical (and also non mechanical) system. Given an initial configuration $(\q(0),\dq(0))$, what will be the profile of $\q(t)$? To answer the question, we need to define the Lagrangian.
+
+\begin{boxdefinition}{Lagrangian}{}
+    Given a system of rigid bodies described by the Lagrangian coordinates $\q$, let $U(\q)$ to be the potential energy of the system, and $T(\q,\dq)$ to be the kinetic energy. The \textbf{Lagrangian} of the system is a function of the state $(\q,\dq)$ and is defined as the difference between the kinetic and the potential energy:\begin{equation}
+        \mathcal L(\q,\dq)=T(\q,\dq)-U(\q).
+    \end{equation}
+\end{boxdefinition}
+
+We have to define a quantity called \textbf{Action}, this is a functional that, in a given time interval $[0,t]$, maps each trajectory $\q:[0,t]\rightarrow \R^n$ to a real number, computed through an integration:\begin{equation}
+    \mathcal S[\q(t)]=\int_0^t\mathcal L(\q(t),\dq(t))dt
+\end{equation}
+So the action is defined as the integral of the Lagrangian over time, to each trajectory $\q(t)$, is associated a value of the action. The following principle is crucial to determine which trajectory the system will follow.
+\begin{boxpostulate}{Principle of Least Action}{}
+The trajectory $\q(t)$ that a system of rigid bodies will follow, is the one that \textbf{minimizes the action} over time.
+\end{boxpostulate}
+So, the challenge of finding the trajectory in general, is a problem of calculus of variations:\begin{equation}
+    \q^*(t)=\arg\min_{\q(t)} \mathcal S[\q(t)].
+\end{equation}
+The trajectory that minimize the action is the one that satisfies the \textbf{Euler-Lagrange Equations}:\begin{equation}
+    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_i}+\frac{\partial \mathcal L}{\partial q_i}=u_i, \  \ \ i=1,\dots n
+\end{equation}
+where $\mathbf u=\begin{pmatrix}
+    u_1&\dots & u_n
+\end{pmatrix}^T$ is the set of non conservative forces acting on the joints (torques given by the motor, friction, etc..). The set of $n$ scalar equation can be rewritten as a single vector equation:\begin{equation}
+    \frac{d}{dt}\nabla_{\dq}\mathcal L+\nabla_{\q}\mathcal L=\mathbf u.
+\end{equation}
 \end{document}

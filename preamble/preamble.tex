@@ -323,6 +323,31 @@
     description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
 }{def}
 
+\newtcbtheorem[number within=section]{boxpostulate}{Postulate}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
 \titleformat{\section}
   {\needspace{5\baselineskip} % <--- Chiede almeno 5 righe di spazio libero
    \fontfamily{phv}\selectfont\huge\bfseries} 
