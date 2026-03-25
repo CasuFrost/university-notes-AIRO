@@ -69,12 +69,12 @@ Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/
 We consider the following example\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
 \end{center}
-it is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter clock wise, while the first joint remain fixed. If we have to take in account the dynamics, we should also consider\begin{itemize}
+it is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter-clockwise, while the first joint remains fixed. If we have to take into account the dynamics, we should also consider\begin{itemize}
     \item the center of mass of the first and the second link
     \item the mass of the first and the second link
     \item the inertia of the first and the second link
 \end{itemize}
-and instead of describing the control through angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according with the laws of rigid body dynamics.\bigskip
+and instead of describing the control through angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according to the laws of rigid body dynamics.\bigskip
 
 Let's consider the following example of a 2R planar robot, with the joint axis orthogonal with respect to the direction of gravity.
 \begin{center}
@@ -88,7 +88,7 @@ where $I_1,I_2$ are the moment of inertia of the links around their center of ma
         0\\0
     \end{pmatrix}
 \end{equation}
-Consequently, also $\dot {\mathbf p}=\mathbf 0$ (the velocity of the effector end). We want to know, what will be $\ddot {\mathbf q}$ (and consequently $\ddot {\mathbf p}$) in the initial configuration at $t=0$, by considering the dynamics and the forces. The Jacobian matrix of this simple manipulator is\begin{equation}
+Consequently, also $\dot {\mathbf p}=\mathbf 0$ (the end effector velocity). We want to know, what will be $\ddot {\mathbf q}$ (and consequently $\ddot {\mathbf p}$) in the initial configuration at $t=0$, by considering the dynamics and the forces. The Jacobian matrix of this simple manipulator is\begin{equation}
     J=\begin{pmatrix}
         -l_1s_1-l_2s_{12} & -l_2s_{12}\\ 
         l_1c_1+l_2c_{12} & l_2c_{12}
@@ -1693,11 +1693,11 @@ So, the challenge of finding the trajectory in general, is a problem of calculus
     \q^*(t)=\arg\min_{\q(t)} \mathcal S[\q(t)].
 \end{equation}
 The trajectory that minimize the action is the one that satisfies the \textbf{Euler-Lagrange Equations}:\begin{equation}
-    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_i}+\frac{\partial \mathcal L}{\partial q_i}=u_i, \  \ \ i=1,\dots n
+    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_i}-\frac{\partial \mathcal L}{\partial q_i}=u_i, \  \ \ i=1,\dots n
 \end{equation}
 where $\mathbf u=\begin{pmatrix}
     u_1&\dots & u_n
 \end{pmatrix}^T$ is the set of non conservative forces acting on the joints (torques given by the motor, friction, etc..). The set of $n$ scalar equation can be rewritten as a single vector equation:\begin{equation}
-    \frac{d}{dt}\nabla_{\dq}\mathcal L+\nabla_{\q}\mathcal L=\mathbf u.
+    \frac{d}{dt}\nabla_{\dq}\mathcal L-\nabla_{\q}\mathcal L=\mathbf u.
 \end{equation}
 \end{document}
