@@ -1658,7 +1658,7 @@ The inequalities between vectors are element-wise.
 \centering 
      \includegraphics[width=0.8\textwidth ]{images/cartesianBoxConstraints.eps}
 \end{figure}
-
+\redText{TODO}
 \chapter{Dynamics}
 The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure with the joint configuration $\q$. Typically, this relation is given by a system of second order differential equation:\begin{equation}
     \Phi(\q,\dq,\ddq)=\mathbf u.
@@ -1700,4 +1700,90 @@ where $\mathbf u=\begin{pmatrix}
 \end{pmatrix}^T$ is the set of non conservative forces acting on the joints (torques given by the motor, friction, etc..). The set of $n$ scalar equation can be rewritten as a single vector equation:\begin{equation}
     \frac{d}{dt}\nabla_{\dq}\mathcal L-\nabla_{\q}\mathcal L=\mathbf u.
 \end{equation}
+From these equations we will derive the dynamic model in the $n$ Lagrangian coordinates $\q$. We will also see how, the total energy of a manipulator is computed by adding together the energies of each link.\bigskip
+
+Now, we consider the model of an actuated pendulum, in order to find the dynamic equation with the Lagrangian approach. This simple system is one-dimensional (angular position of the pendulum), so we expect to derive a single equation. Observe the diagram in Figure \ref{fig:actuadedPendulum}:\begin{itemize}
+    \item \texttt{Dynamic parameter}: $I_m$ is the moment of inertia of the motor around it's rotation axis. 
+    \item \texttt{Control command}: $\tau_m$ is the torque provided by the actuators that makes the motor to accelerate.
+    \item \texttt{Variable/configuration of the system}: $\theta_m$ is the angular position of the motor.
+    \item \texttt{Dynamic parameter}: $b_m$ is the viscous friction on the motor that acts as a damping factor, and $b_l$ is the viscous friction on the link.
+    \item \texttt{Kinematic parameter}: $n_r$ is the reduction ratio between the motor and the link. 
+    \item \texttt{Control command}: $\tau$ is the torque on the link and depends on $\tau_m$ according to the reduction ratio.
+    \item \texttt{Variable/configuration of the system}: $\theta$ is the angular position of the link and depends on $\theta_m$ according to the reduction ratio.
+    \item \texttt{Dynamic parameter}: $m$ is the mass of the link and $I_l$ is the moment of inertia of the link around the axis parallel to the joint's axis that pass through it's center of mass. 
+    \item \texttt{Kinematic parameter}:  $d_c$ is the distance between the joint's axis and the center of mass, and $l$ is the length of the link.
+    \item \texttt{Control command}: $F_x$ is an external force that can be applied on the tip of the link, and is only horizontal (orthogonal to both the joint's axis and the direction of the gravity).
+    \item \texttt{External force}: $mg_0$ is the gravity applied on the link.
+\end{itemize}
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.8\textwidth ]{images/actuated_pendulum.drawio.pdf}
+     \caption{Simple model of an actuated pendulum.}
+     \label{fig:actuadedPendulum}
+\end{figure}
+The system is one dimensional and it's configuration is described by $\theta$ or $\theta_m$ since these two are mapped one to the other:\begin{align}
+   & \dot \theta_m=n_r\dot\theta\\ 
+   &  \theta_m=n_r\theta\\ 
+   &\tau=n_r\tau_m
+\end{align}
+So our Lagrangian coordinate will be $q=\theta$. We want to compute the kinetic energy of the system, that is given by the sum between the kinetic energy of the motor and the kinetic energy of the link. The kinetic energy of the motor can be easily computed:\begin{equation}
+    T_m=\frac{1}{2}I_m\dot\theta^2_m
+\end{equation}
+To compute $T_l$ instead we need to consider the inertia of the link around the joint's axis. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint's axis and the center of mass, we can compute the inertia:\begin{equation}
+    I_l+md_c^2
+\end{equation}
+the kinetic energy is \begin{equation}
+    T_l=\frac{1}{2}(I_l+md_c^2)\dot\theta^2_m
+\end{equation}
+The total kinetic energy of the system is\begin{equation}
+    T=T_l+T_m=\frac{1}{2}I_m\dot\theta^2_m+\frac{1}{2}(I_l+md_c^2)\dot\theta^2_m
+\end{equation}
+there is a problem: it should be expressed in the same variable, so we convert $\theta_m$ to $\theta$ by considering the reduction ratio:\begin{equation}
+    T=\frac{1}{2}(
+        I_l+md_c^2+I_mn_r^2
+    )\dot\theta^2=\frac{1}{2}I\dot\theta^2
+\end{equation}
+we denoted $I$ the total inertia of the system.
+The potential energy is given by $mg_0y$ where $y$ is the vertical coordinate of the center of mass.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/actuated_pendulum2.eps}
+\end{figure}
+If $\theta=0$ identifies the configuration where the pendulum is pointing downward (so, $\theta$ is the angle between the $y$ axis and the link), the $y$ coordinate is given by $-d_c\cos\theta$, the potential energy is\begin{equation}
+    U=U_0-mg_0d_c\cos\theta
+\end{equation}
+where $U_0$ is the arbitrary constant. At this point, we can explicit the Lagrangian of the system:\begin{equation}
+    \mathcal L=\frac{1}{2}I\dot\theta^2+mg_0d_c\cos\theta-U_0.
+\end{equation}
+The Euler-Lagrange equation is the following\begin{equation}
+    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot\theta}-\frac{\partial \mathcal L}{\partial \theta}=u
+\end{equation}
+we need to define the term $u$ that contains all the external forces that adds or subtracts energy from the system. In particular, since the variable is $\theta$, all these forces will be in the form of torques applied on the link.\begin{itemize}
+    \item  The first term is the torque on the link $\tau$ produced by the motor, that is $n_r\tau_m$. $\tau_m$ is one of the two control input of the system.
+    \item Then, we have the friction of the link: $-b_l\dot\theta$.
+    \item The friction of the motor on the link side is given by $-n_rb_m\theta_m$, by converting with the reduction ratio to express this term in $\theta$ we get $-n_r^2b_m\theta$.
+    \item The last term is the torque on the link produced by the controlled force $F_x$.
+\end{itemize}
+We have to find the relation between the force $F_x$ and the torque on the link. To do so, we can proceed with a kinematic approach. The pendulum is a simple robotic manipulator, the direct kinematic for the position on the $x$ axis is given by\begin{equation}
+    p_x=l\sin\theta
+\end{equation}
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.3\textwidth ]{images/actuated_pendulum3.eps}
+\end{figure}
+The relation between the velocity on of the end effector and $\dot\theta$ is given by the Jacobian matrix\begin{equation}
+    \dot p_x=J\dot\theta=\frac{\partial p_x}{\partial \theta}\dot\theta=l\cos\theta\cdot \dot \theta
+\end{equation}
+In this case the Jacobian is a scalar and his transpose is still $l\cos\theta$. We recall that the Jacobian transpose maps the forces on the end effector to the torques on the joints, so the torque produced by $F_x$ is just $JF_x=l\cos\theta F_x$.
+So:\begin{align}
+    &\frac{\partial \mathcal L}{\partial \dot\theta}=I\dot\theta\\
+    &\frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot\theta}=\frac{d}{dt}\left(I\dot\theta\right)=I\ddot\theta\\ 
+    &\frac{\partial \mathcal L}{\partial \theta}=-mg_0d_c\sin\theta\\ 
+    &\frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot\theta}-\frac{\partial \mathcal L}{\partial \theta}= I\ddot\theta+mg_0d_c\sin\theta.
+\end{align}
+The complete Euler-Lagrange equation with all the terms is:\begin{equation}
+    I\ddot\theta+mg_0d_c\sin\theta=n_r\tau_m-(b_l+b_mn_r^2)\dot\theta+l\cos\theta F_x.
+\end{equation}
+Is a non linear second order differential equation and can't be solved analytically.
+\subsection{Kinetic and Potential Energy}
 \end{document}
