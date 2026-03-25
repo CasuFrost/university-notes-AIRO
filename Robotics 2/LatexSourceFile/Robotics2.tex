@@ -1437,6 +1437,228 @@ from Equation \eqref{mobile_base_G}:
 \end{equation}
 the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
 \subsection{Hard Limits in the Joint Space}
+Until now, we have seen how the joint's velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in details, a quadratic programming problem of the kind:\begin{align}
+    &\arg\min_\dq \dq^T W\dq\\ 
+    &\text{s.t. }J\dq=\dy
+\end{align}
+where $W$ is usually positive definite. The set of solutions is defined by the $m$ \textit{equality} constraints $J\dq=\dy$, but in it's general formulation, a quadratic program have the solutions defined in a convex set given by both equality and inequality constraints:
+\begin{align}
+    &\dq^*=\arg\min_\dq^T \dq W\dq\\ 
+    &\text{s.t. }\begin{matrix}
+        J\dq=\dy\\ 
+        C\dq\le \mathbf d
+    \end{matrix}
+\end{align}
+We know that $J\dq=\dy$ is not always feasible, so in practice we search for the solution $\dq^*$ that minimizes the task error $\|J\dq-\dy\|$. 
+
+In many cases, there is the need to add also inequality constraints to the optimization problem, the most canonical example is the inclusion of bounds of joint's velocity, limits that usually comes from the specifications of the actuators.
+A set of inequality constraints such as $C\dq\le \mathbf d$ identifies a convex set in $\R^n$.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.4\textwidth ]{images/ineq_constraints.eps}
+     \caption{A convex set (in green) defined by three inequality constraints.}
+\end{figure}
+By adding also some equality constraints, the set of solutions restrict in the intersection between the polyhedron and the hyper plane given by the equality constraints.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_2.eps}
+\end{figure}
+If the constraint $\mathbf c_2^T\dq\le d_2$ have higher priority than $\mathbf c_3^T\dq\le d_3$, and the equality constraint $J\dq=\dy$ must be satisfied, the solution will be the following:
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_3.eps}
+\end{figure}
+This solution $\dq^*$ is the feasible one closest to the inequality constraint $\mathbf c_2^T\dq\le d_2$, in particular, that solution saturate that constraint:\begin{equation}
+    \mathbf c_2^T\dq^*= d_2
+\end{equation}
+when this happens, we say that the constraint becomes \textbf{active}. If the constraint $\mathbf c_3^T\dq\le d_3$ would have higher priority than $\mathbf c_2^T\dq\le d_2$, the solution would be the following:
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_4.eps}
+\end{figure}
+
+As we already mentioned, the robot have some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint's velocity, acceleration and torque. These constraints are ''boxes'' in the joint's configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
+
+The \textbf{Saturation in the Null Space (SNS)} is a method to deal with these limits in the context of online resolution for the joint velocity, it consists in saturating one overdriven joint command at a time, until a feasible and better
+performing solution is found. it requires some \textit{decisions}, in which joint we should saturate to not affect the task execution, for tasks that are (certainly) unfeasible, SNS embeds the selection of a task
+scaling factor preserving execution of the task direction with minimal scaling. The general solution provided by the SNS is the following:\begin{equation}\label{eq:SNS}
+    \dq_{SNS}=(JW)^\#s\dy+\left(
+I-(JW)^\#J
+    \right)\dq_N
+\end{equation}
+where\begin{itemize}
+    \item $W$ is a diagonal matrix such that the entries are 0 or 1 and is needed to select which joint will saturate. 
+    \item $s$ is the scaling factor of the required task velocity $\dy$.
+    \item $\dq_N$ is the vector of the saturated (full speed) joint velocities.
+\end{itemize}
+This kind of solution starts from the pseudo inverse solution $J^\#\dy$ and add a ''correction'' to define a new solution that activate one constraints by remaining feasible, this correction is always in the null space of the Jacobian $\mathcal N(J)$ (up to a scaling factor, if present).
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=\textwidth ]{images/SNS.eps}
+\end{figure}
+\textbf{Example}: Let's consider a 4R planar robot with link length $l$ for all the links. The Jacobian matrix for the task of positioning in the end effector plane is\begin{equation}
+    J(\q)=\begin{pmatrix}
+       -ls_1-ls_{12} -ls_{123} -ls_{1234} &
+        -ls_{12} -ls_{123} -ls_{1234} 
+         &-ls_{123} -ls_{1234} 
+          &-ls_{1234} \\ 
+          lc_1+lc_{12}+lc_{123}+lc_{1234}&
+         lc_{12}+lc_{123}+lc_{1234}&
+         lc_{123}+lc_{1234}&
+          lc_{1234}
+    \end{pmatrix}
+\end{equation}
+there are the following bounds on the joint's velocities:\begin{align*}
+    &|q_i|\le V_i, \ \ i=1,2,3,4\\ 
+    &V_1=V_2=2 \ \nicefrac{\text{rad}}{\text{sec}}\\ 
+    &V_3=V_4=4 \ \nicefrac{\text{rad}}{\text{sec}}
+\end{align*}
+In the configuration\begin{equation}
+    \q=\begin{pmatrix}
+        \frac{\pi}{2}&-\frac{\pi}{2}&\frac{\pi}{2}&-\frac{\pi}{2}
+    \end{pmatrix}^T
+\end{equation}
+the Jacobian evaluates in \begin{equation}
+    J=\begin{pmatrix}
+        -2&-1&-1&0\\ 
+        2&2&1&1
+    \end{pmatrix}
+\end{equation}
+If the desired end effector velocity is \begin{equation}
+    \dy=\begin{pmatrix}
+        -4&-1.5
+    \end{pmatrix}^T
+\end{equation}
+the solution provided by the pseudo inverse is\begin{equation}
+    \dq_{PS}=J^\#\dy=\frac{1}{11} \begin{pmatrix} -6 & -2 \\ 4 & 5 \\ -3 & -1 \\ 7 & 6 \end{pmatrix}\begin{pmatrix}
+        -4\\ -1.5
+    \end{pmatrix}=\begin{pmatrix}
+        2.4545&-2.1364&1.2273&-3.3636
+    \end{pmatrix}^T
+\end{equation}
+The first two joints exceeds the maximum velocity, if we scale the solution with the maximum scale factor required to be under the limits, the solution becomes\begin{equation}
+    s\dq_{PS}=\begin{pmatrix}
+        2&
+        -1.74&
+        1&
+        -2.74
+    \end{pmatrix}^T
+\end{equation}
+with $s=0.8148$.
+instead, if we saturate only the \textit{most violating} velocity with the SNS method, we get the solution\begin{equation}
+    \dq_{SNS}=\begin{pmatrix}
+        2&-1.8333&1.8333&-3.6667
+    \end{pmatrix}^T
+\end{equation}
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/SNS2.eps}
+\end{figure}
+As we can see by the figure, the solution provided by the \greenText{SNS procedure } is way closer to the \sapText{desired solution } respect the \blueText{scaled one}.\bigskip
+
+Since we control the robot by velocity commands by imposing $\dq$, we can't directly impose a limits for the joint ranges $\q$ and the accelerations $\ddq$. Consider a full set of limits in the most general way:
+\begin{equation}
+    \begin{matrix}
+        Q_{min,i}\le q_i \le Q_{max,i} \\ 
+        -V_{max,i}\le \dot q_i \le V_{max,i}\\ 
+        -A_{max,i}\le \ddot q_i \le A_{max,i}
+    \end{matrix} \ \ \ i=1,2,\dots n
+\end{equation}
+During the online resolution ad discrete time, we can \textbf{convert} the acceleration and position limits in velocity constraints by making the velocity bounds $Q_{min,i},Q_{max,i}$ not constant but variable\begin{equation}
+    \dot{\mathbf Q}_{min,i}(t_k) \le \dq \le \dot{\mathbf Q}_{max,i}(t_k)
+\end{equation} 
+where $t_k$ is the current time step, and $q_{k,i}=q_i(t_k)$. Let $T$ to be the sampling time, we define the velocity constraints (at each time step) as follows:\begin{align*}
+    &
+    \dot Q_{min,i}=\max\left\{
+        \frac{Q_{min,i}-q_{k,i}}{T},
+        -V_{max,i}, 
+        -\sqrt{2A_{max,i}(q_{k,i}-Q_{min,i})}
+        \right\}
+    \\ 
+    &
+    \dot Q_{max,i}=\min\left\{
+        \frac{Q_{max,i}-q_{k,i}}{T},
+        V_{max,i}, 
+        \sqrt{2A_{max,i}(Q_{min,i}-q_{k,i})}
+        \right\}
+\end{align*} 
+In this way, if $q_i$ is approaching one of it's bound, the maximum velocity for $\dot q_i$ will decrease to zero.\bigskip
+
+The Equation \eqref{eq:SNS} define how the solution will be evaluated, the control law of the SNS algorithm works to decide what are the joints to exceeds and what is the maximum scaling factor to consider, by choosing at each time step the matrix $W$ and the scalar value $s$.
+
+\begin{algorithm}[H]
+    \caption{Saturation in the Null Space}\label{alg:SNS}
+    \begin{algorithmic}[1]
+    \Function{MainLoop}{$\dy, J$}
+    \State limit\_exceeded = TRUE
+    \State $W=I$, $s=1$, $s^*=0$, $\dq_N=\mathbf 0$ \greenText{//$s^*$ is the largest task scale factor found so far}
+    \While{limit\_exceeded = TRUE}
+    \State limit\_exceeded = FALSE
+    \State $\overline\dq=\dq_N+(JW)^\#(\dy-J\dq_N)$
+    \If{$\exists i \in \{1,\dots n\}$ such that $\overline{\dot {q_i}} < \dot Q_{min,i}$ \texttt{or} $\overline{\dot {q_i}} > \dot Q_{max,i}$}
+    \State \greenText{//some joint's exceed their maximum speed}
+    \State limit\_exceeded = TRUE
+    \State $\mathbf a=(JW)^\#\dy$
+    \State $\mathbf b=\overline\dq-\mathbf a$
+    \State  $s=$ \Call{GetTaskScalingFactor}{$\mathbf a,\mathbf b$}
+    \If{$s>s^*$}
+    \State $s^*=s$, $W^*=W$, $\dq_N^*=\dq_N$
+    \EndIf 
+    \State $j=$ the most critical joint (closest to it's bound) 
+    \State $W_{jj}=0$
+    \State $\dot q_{N,j}=\begin{cases}
+        \dot Q_{max,j} \ \text{if }\overline{\dot q_j} > \dot Q_{max,j}\\ 
+        \dot Q_{min,j}  \ \text{if }\overline{\dot q_j} < \dot Q_{min,j}
+    \end{cases}$
+    \If{rank($JW<m$)}
+    \State $s=s^*$, $W=W^*$, $\dq_N=\dq_N^*$
+    \State $\overline\dq=\dq_N+(JW)^\#(s\dy-J\dq_N)$ 
+    \State limit\_exceeded = FALSE \greenText{ //the algorithm ends}
+    \EndIf
+    \EndIf
+    \EndWhile
+    \State \Return $\dq_{SNS}=\overline\dq$
+    \EndFunction
+    \vspace{0.5cm}
+    \Function{GetTaskScalingFactor}{$\mathbf a, \mathbf b$}
+    \State \greenText{//at this point $\dq_{SNS}=s\mathbf a+\mathbf b$}
+    \For{$i = 1 \to n$}
+        \State $S_{min,i} = (\dot{Q}_{min,i} - b_i) / a_i$
+        \State $S_{max,i} = (\dot{Q}_{max,i} - b_i) / a_i$
+        \If{$S_{min,i} > S_{max,i}$}
+            \State swap $S_{min,i}$ and $S_{max,i}$
+        \EndIf
+    \EndFor
+    \State $s_{max} = \min_i \{S_{max,i}\}$
+    \State $s_{min} = \max_i \{S_{min,i}\}$
+    \State the most critical joint $= \arg \min_i \{S_{max,i}\}$
+    \If{$s_{min} > s_{max}$ \texttt{or} $s_{max} < 0$ \texttt{or} $s_{min} > 1$}
+        \State\Return 0
+    \Else
+        \State\Return $s_{max}$
+    \EndIf
+    \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+\redText{TODO: Aggiungere spiegazione algoritmo rimandnado alle righe di codice.}
+\subsection{Hard Cartesian Bounds}
+The SNS procedure works at velocity level by dealing with hard bounds for joint position, velocity and acceleration. We can consider also additional \textit{cartesian box inequalities} on position, velocity and acceleration. One interpretation for a position cartesian bound, might identify an operational space where the robot can move safely.
+
+The general approach is the following: We identify $r$ \textbf{control points} on the mechanical structure of the manipulator (and usually on the end effector):\begin{equation}
+    \mathbf p_{cp,i}(\q), \ \ i=1,\dots r
+\end{equation}
+we drop the notation of the dependence on $\q$ by writing just $\mathbf p_{cp,i}$.
+ For each of these points we add  box constraints for position, velocity and acceleration:\begin{align}
+    &\mathbf P^{min}_{cp,i}\le {\mathbf p_{cp,i}} \le \mathbf P^{max}_{cp,i}\\ 
+    &\mathbf V^{min}_{cp,i}\le {\dot{\mathbf p}_{cp,i}} \le \mathbf V^{max}_{cp,i}\\ 
+    &\mathbf A^{min}_{cp,i}\le {\ddot{\mathbf p}_{cp,i}} \le \mathbf A^{max}_{cp,i}
+\end{align}
+The inequalities between vectors are element-wise.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.8\textwidth ]{images/cartesianBoxConstraints.eps}
+\end{figure}
+
 \chapter{Dynamics}
 The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure with the joint configuration $\q$. Typically, this relation is given by a system of second order differential equation:\begin{equation}
     \Phi(\q,\dq,\ddq)=\mathbf u.
