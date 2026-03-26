@@ -1660,7 +1660,7 @@ The inequalities between vectors are element-wise.
 \end{figure}
 \redText{TODO}
 \chapter{Dynamics}
-The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure with the joint configuration $\q$. Typically, this relation is given by a system of second order differential equation:\begin{equation}
+The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure. Typically, this relation is given by a system of second order differential equation:\begin{equation}
     \Phi(\q,\dq,\ddq)=\mathbf u.
 \end{equation}
 The problem of direct dynamics consists in finding the trajectory $\q(t)$ over time, by knowing the profile of the forces $\mathbf u(t)$. There are experimental and simulation solutions, the latter consists in integrating over time the differential equations (solve numerically).
@@ -1700,8 +1700,7 @@ where $\mathbf u=\begin{pmatrix}
 \end{pmatrix}^T$ is the set of non conservative forces acting on the joints (torques given by the motor, friction, etc..). The set of $n$ scalar equation can be rewritten as a single vector equation:\begin{equation}
     \frac{d}{dt}\nabla_{\dq}\mathcal L-\nabla_{\q}\mathcal L=\mathbf u.
 \end{equation}
-From these equations we will derive the dynamic model in the $n$ Lagrangian coordinates $\q$. We will also see how, the total energy of a manipulator is computed by adding together the energies of each link.\bigskip
-
+From these equations we will derive the dynamic model in the $n$ Lagrangian coordinates $\q$. We will also see how, the total energy of a manipulator is computed by adding together the energies of each link.\subsection{The Actuated Pendulum Example}
 Now, we consider the model of an actuated pendulum, in order to find the dynamic equation with the Lagrangian approach. This simple system is one-dimensional (angular position of the pendulum), so we expect to derive a single equation. Observe the diagram in Figure \ref{fig:actuadedPendulum}:\begin{itemize}
     \item \texttt{Dynamic parameter}: $I_m$ is the moment of inertia of the motor around it's rotation axis. 
     \item \texttt{Control command}: $\tau_m$ is the torque provided by the actuators that makes the motor to accelerate.
@@ -1724,32 +1723,32 @@ Now, we consider the model of an actuated pendulum, in order to find the dynamic
 The system is one dimensional and it's configuration is described by $\theta$ or $\theta_m$ since these two are mapped one to the other:\begin{align}
    & \dot \theta_m=n_r\dot\theta\\ 
    &  \theta_m=n_r\theta\\ 
-   &\tau=n_r\tau_m
+   &\tau=n_r\tau_m.
 \end{align}
-So our Lagrangian coordinate will be $q=\theta$. We want to compute the kinetic energy of the system, that is given by the sum between the kinetic energy of the motor and the kinetic energy of the link. The kinetic energy of the motor can be easily computed:\begin{equation}
+So, our Lagrangian coordinate will be $q=\theta$. We want to compute the kinetic energy of the system, that is given by the sum between the kinetic energy of the motor and the kinetic energy of the link. The kinetic energy of the motor can be easily computed:\begin{equation}
     T_m=\frac{1}{2}I_m\dot\theta^2_m
 \end{equation}
-To compute $T_l$ instead we need to consider the inertia of the link around the joint's axis. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint's axis and the center of mass, we can compute the inertia:\begin{equation}
+To compute $T_l$ instead we need to consider the inertia of the link around the joint's axis, since the link rotate around that axis and not around it's center of mass. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint's axis and the center of mass, we can compute the inertia:\begin{equation}
     I_l+md_c^2
 \end{equation}
 the kinetic energy is \begin{equation}
-    T_l=\frac{1}{2}(I_l+md_c^2)\dot\theta^2_m
+    T_l=\frac{1}{2}(I_l+md_c^2)\dot\theta^2
 \end{equation}
 The total kinetic energy of the system is\begin{equation}
-    T=T_l+T_m=\frac{1}{2}I_m\dot\theta^2_m+\frac{1}{2}(I_l+md_c^2)\dot\theta^2_m
+    T=T_l+T_m=\frac{1}{2}I_m\dot\theta^2_m+\frac{1}{2}(I_l+md_c^2)\dot\theta^2
 \end{equation}
 there is a problem: it should be expressed in the same variable, so we convert $\theta_m$ to $\theta$ by considering the reduction ratio:\begin{equation}
     T=\frac{1}{2}(
         I_l+md_c^2+I_mn_r^2
     )\dot\theta^2=\frac{1}{2}I\dot\theta^2
 \end{equation}
-we denoted $I$ the total inertia of the system.
+we denote $I$ the total inertia of the system.
 The potential energy is given by $mg_0y$ where $y$ is the vertical coordinate of the center of mass.
 \begin{figure}[H]    
 \centering 
      \includegraphics[width=0.4\textwidth ]{images/actuated_pendulum2.eps}
 \end{figure}
-If $\theta=0$ identifies the configuration where the pendulum is pointing downward (so, $\theta$ is the angle between the $y$ axis and the link), the $y$ coordinate is given by $-d_c\cos\theta$, the potential energy is\begin{equation}
+Since $\theta=0$ identifies the configuration where the pendulum is pointing downward (so, $\theta$ is the angle between the $y$ axis and the link), the $y$ coordinate is given by $-d_c\cos\theta$, the potential energy is\begin{equation}
     U=U_0-mg_0d_c\cos\theta
 \end{equation}
 where $U_0$ is the arbitrary constant. At this point, we can explicit the Lagrangian of the system:\begin{equation}
@@ -1758,10 +1757,10 @@ where $U_0$ is the arbitrary constant. At this point, we can explicit the Lagran
 The Euler-Lagrange equation is the following\begin{equation}
     \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot\theta}-\frac{\partial \mathcal L}{\partial \theta}=u
 \end{equation}
-we need to define the term $u$ that contains all the external forces that adds or subtracts energy from the system. In particular, since the variable is $\theta$, all these forces will be in the form of torques applied on the link.\begin{itemize}
+we need to define the term $u$ that contains all the non conservative forces that adds or subtracts energy from the system. In particular, since the variable is $\theta$, all these forces will be in the form of torques applied on the link.\begin{itemize}
     \item  The first term is the torque on the link $\tau$ produced by the motor, that is $n_r\tau_m$. $\tau_m$ is one of the two control input of the system.
     \item Then, we have the friction of the link: $-b_l\dot\theta$.
-    \item The friction of the motor on the link side is given by $-n_rb_m\theta_m$, by converting with the reduction ratio to express this term in $\theta$ we get $-n_r^2b_m\theta$.
+    \item The friction of the motor is $-b_m\theta_m$. On the link side is given by $-n_rb_m\theta_m$ (the torque is multiplied by the reduction ratio), by converting then $\theta_m$ in order to express this term in $\theta$ we get $-n_r^2b_m\theta$.
     \item The last term is the torque on the link produced by the controlled force $F_x$.
 \end{itemize}
 We have to find the relation between the force $F_x$ and the torque on the link. To do so, we can proceed with a kinematic approach. The pendulum is a simple robotic manipulator, the direct kinematic for the position on the $x$ axis is given by\begin{equation}
@@ -1784,6 +1783,259 @@ So:\begin{align}
 The complete Euler-Lagrange equation with all the terms is:\begin{equation}
     I\ddot\theta+mg_0d_c\sin\theta=n_r\tau_m-(b_l+b_mn_r^2)\dot\theta+l\cos\theta F_x.
 \end{equation}
-Is a non linear second order differential equation and can't be solved analytically.
+Is a non linear second order differential equation and can't be solved analytically.\bigskip
+
+The  diagram in Figure \ref{fig:pendulum_DD} describes the relation between the input forces $\tau_m,F_x$ and the configuration profile $\theta$ over time.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=\textwidth ]{images/DirectDynamics_simulink.drawio.pdf}
+     \caption{Symulink block diagram of the direct dynamics.}
+     \label{fig:pendulum_DD}
+\end{figure}
+\noindent This is how is compute the \textbf{direct dynamics} of the system, by isolating the acceleration term:\begin{equation}
+    \ddot\theta=\frac{1}{I}\left(n_r\tau_m-(b_l+b_mn_r^2)\dot\theta+l\cos\theta F_x-mg_0d_c\sin\theta\right)
+\end{equation}
+and knowing the initial condition $\dot q(0),q(0)$, we can integrate over time the differential equation and estimate the time profile of $\ddot \theta$ (and consequently, of $\theta$). The \textbf{inverse dynamics} instead, have the goal to compute the control forces $\tau_m,F_x$ in order to execute the desired trajectory $\theta_d(t)$. In this case we need the assumption that the second derivative of $\theta_d(t)$ exists and is piece-wise continuous.
+
+For this actuated pendulum we have two control forces, the motor torque $\tau_m$ and the force on the tool tip $F_x$, but there is only one variable for the configuration, so we are in a situation of \textit{redundancy of forces}. Let's compute the inverse dynamics for two case:\begin{itemize}
+    \item (Case 1: $F_x=0$) we have our desired trajectory $\theta_d(t)$, we isolate the input torque:\begin{equation}
+        \tau_m=\frac{1}{n_r}\left(I\ddot\theta_d+mg_0d_c\sin\theta_d+(b_l+b_mn_r^2)\dot\theta_d\right)=\frac{1}{n_r}f(\theta_d,\dot\theta_d,\ddot\theta_d)
+    \end{equation}
+    we denote $f(\theta_d,\dot\theta_d,\ddot\theta_d)$ the right term without the $\frac{1}{n_r}$ factor. Notice how the inverse dynamics is perfectly computable at each time step, we can always get the needed value for $\tau_m$. 
+    \item (Case 2: $\tau_m=0$) we proceed in the same way by isolating $F_x$:\begin{equation}
+        F_x=\frac{1}{l\cos\theta_d}\left(I\ddot\theta_d+mg_0d_c\sin\theta_d+(b_l+b_mn_r^2)\dot\theta_d\right)=\frac{1}{l\cos\theta_d}f(\theta_d,\dot\theta_d,\ddot\theta_d)
+    \end{equation}
+    in this case, the needed force $F_x$ is not always defined, since in some configurations, the force to execute the desired trajectory grows to infinity due to the $l\cos\theta_d$ at the denominator. This is a case of \textbf{singularity} in the dynamics context. The singular configurations are $\theta_d\in\{-\nicefrac{\pi}{2},\nicefrac{\pi}{2}\}$.
+\end{itemize}
+Now we consider the most general case where both the forces can be applied.
+\begin{align}
+    &n_r\tau_m+l\cos\theta_dF_x=f(\theta_d,\dot\theta_d,\ddot\theta_d)\\
+    &\label{redundantForces}u_1+u_2=f(\theta_d,\dot\theta_d,\ddot\theta_d)
+\end{align}
+How to resolve the inverse dynamics in this redundant case? The equation \eqref{redundantForces} can be rewritten as a dot product between two vectors\begin{equation}
+    \begin{pmatrix}
+        1&1
+    \end{pmatrix}
+      \begin{pmatrix}
+        u_1\\u_1
+    \end{pmatrix}=f(\theta_d,\dot\theta_d,\ddot\theta_d)
+\end{equation}
+As we well know, every time there is a system of equations $A\mathbf x=\mathbf b$ where $A$ have more columns than rows, we can solve the system by finding the minimum norm solution through the pseudo inverse (we abbreviate the right term with $f$):\begin{equation}
+    \begin{pmatrix}
+        u_1\\u_1
+    \end{pmatrix}=\begin{pmatrix}
+        1&1
+    \end{pmatrix}^\#f=\begin{pmatrix}
+        \nicefrac{1}{2}\\\nicefrac{1}{2}
+    \end{pmatrix}f=\begin{pmatrix}
+        \nicefrac{f}{2}\\\nicefrac{f}{2}
+    \end{pmatrix}
+\end{equation}
+this solution minimizes $u_1^2+u_2^2$, but remember that these terms are our control input but not directly the forces provided by the actuators. Instead, we should rewrite the relation as follows:
+    \begin{equation}
+    \begin{pmatrix}
+        n_r&l\cos\theta_d
+    \end{pmatrix}
+      \begin{pmatrix}
+        \tau_m\\F_x
+    \end{pmatrix}=f
+\end{equation}
+in this case we can solve for $ \begin{pmatrix}
+        \tau_m&F_x
+    \end{pmatrix}^T$ in order to minimizes our actuators output.\begin{equation}
+        \begin{pmatrix}
+        \tau_m\\F_x
+    \end{pmatrix}= \begin{pmatrix}
+        n_r&l\cos\theta_d
+    \end{pmatrix}^\#f=\frac{1}{n_r^2+(l\cos\theta_d)^2}\begin{pmatrix}
+        n_r\\l\cos\theta_d
+    \end{pmatrix}f.
+    \end{equation}
 \subsection{Kinetic and Potential Energy}
+In this section we explain how to derive the Lagrangian of a full robotic manipulator. The kinetic energy of the robot will be the sum of the kinetic energies of each link:\begin{equation}
+   T= \sum_{i=1}^nT_i
+\end{equation}
+The kinetic energy of the $i$-th link will depend on previous links (we are considering only open kinematic chain manipulators). So $T_i$ will depend on the state variables restricted to the first $i$ joints: \begin{equation}
+    T_i=T_i(q_j,\dot q_j), \ \ j\in\{1\dots i\}.
+\end{equation}
+Let's start by describing the dynamic parameters of a single link.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/kinetic_energy_link.pdf}
+\end{figure}
+$RF_c$ is the reference frame attached to the center of mass of the rigid body, $RF_0$ our base reference frame and the position of the center of mass in the base frame is $\mathbf r_c$. The mass of the object is given by\begin{equation}
+    m=\int_B\rho(x,y,z)dxdydz=\int_B dm
+\end{equation}
+where $B$ is the set describing the rigid body and $\rho$ the density function. We will assume for now on, that all the rigid bodies have an homogeneous density. The center of mass is given by\begin{equation}
+    \mathbf r_c=\frac{1}{m}\int_B\mathbf r(x,y,z) dm 
+\end{equation}
+where $\mathbf r$ is the distance between the origin and the infinitesimal point that we are considering in the integral (we drop in the notation the dependence on $x,y,z$). When all the vectors are expressed in the reference frame attached to the center of mass of the body, $\mathbf r_c$ will be null:\begin{equation}\label{rcZero}
+    \mathbf r_c=\mathbf 0\implies \int_B\mathbf rdm=\mathbf 0.
+\end{equation}
+Since the kinetic energy of a single point is $\frac{1}{2}mv^2$ (where $m$ is the mass and $v$ the norm of the velocity), to compute the kinetic energy of the whole rigid body we can integrate all the infinitesimal energies of each infinitesimal point of $B$:\begin{equation}
+    T=\frac{1}{2}\int_B\mathbf v^T\mathbf vdm
+\end{equation}
+where $\mathbf v$ is the velocity of a single point and depend on $x,y,z$. We can rewrite the kinetic energy by exploiting the following relation:\begin{equation}
+    \mathbf v = \mathbf v_c+\boldsymbol\omega\times \mathbf r=\mathbf v_c+S(\boldsymbol\omega)\mathbf r
+\end{equation}
+that explain how the velocity of a single point is the sum between the velocity of the center of mass and the cross product between the angular velocity and the distance of the point from the center of mass. $S(\boldsymbol\omega)$ is the skew symmetric matrix\begin{equation}
+    S(\boldsymbol\omega)=\begin{pmatrix}
+        0&-\omega_z&\omega_y\\ 
+        \omega_z&0&-\omega_x\\ 
+        -\omega_y&\omega_x&0
+    \end{pmatrix}
+\end{equation}
+the kinetic energy can be rewritten as follows\begin{equation}
+    T=\frac{1}{2}\int_B(\mathbf v_c+S(\boldsymbol\omega)\mathbf r)^T(\mathbf v_c+S(\boldsymbol\omega)\mathbf r)dm
+\end{equation}
+by distributing the product we can split the equation in three integrals\begin{equation}
+    T=\frac{1}{2}\int_B \mathbf v_c^T\mathbf v_c+
+    \int_B\mathbf v_c^TS(\bomega)\mathbf rdm+\frac{1}{2}\int_B\mathbf r^TS^T(\bomega)S(\bomega)\mathbf rdm
+\end{equation}\begin{itemize}
+    \item The first term$$\frac{1}{2}\int_B \mathbf v_c^T\mathbf v_c$$
+    can be easily computed since $\mathbf v_c$ is the velocity of the center of mass and don't depend on the integrating variable so$$
+    \frac{1}{2}\int_B \mathbf v_c^T\mathbf v_c=\frac{1}{2}\mathbf v_c^T\mathbf v_c\int_Bdm=\frac{1}{2}\mathbf v_c^T\mathbf v_cm$$
+    \item in the second term 
+    $$  \int_B\mathbf v_c^TS(\bomega)\mathbf rdm $$ 
+    for the same reason we can carry $\mathbf v_c^TS(\bomega)$ outside the integral
+    $$  \mathbf v_c^TS(\bomega)\int_B\mathbf rdm $$ 
+    from the equation \eqref{rcZero}, by expressing everything in the reference frame attached to the center of mass, we can eliminate this term:
+     $$  \mathbf v_c^TS(\bomega)\int_B\mathbf rdm = \mathbf v_c^TS(\bomega)\mathbf 0= 0 $$ 
+     \item the third term can be transformed by using the following identity
+     $$
+     \mathbf r^TS^T(\bomega)S(\bomega)\mathbf r=
+     \bomega^TS^T(\mathbf r)S(\mathbf r)\bomega
+     $$
+     so 
+     $$ 
+     \frac{1}{2}\int_B\mathbf r^TS^T(\bomega)S(\bomega)\mathbf rdm=
+     \frac{1}{2}\int_B\bomega^TS^T(\mathbf r)S(\mathbf r)\bomega dm
+     $$
+     $\bomega$ can be carried out the integral:
+     $$
+     \frac{1}{2}\bomega^T\left(\int_BS^T(\mathbf r)S(\mathbf r) dm\right)\bomega
+     $$
+\end{itemize}
+\begin{boxdefinition}{Inertia Matrix}{}
+    The \textbf{inertia matrix} around the center of mass of a rigid body $B$ is the following:\begin{equation}
+        I_c=\int_BS^T(\mathbf r)S(\mathbf r) dm.
+    \end{equation}
+\end{boxdefinition}
+So, by the previous discussion, we get to the following result.
+\begin{boxtheorem}{König}{}
+    The kinetic energy of a rigid body is given by the following equation:
+    \begin{equation}
+    T=\frac{1}{2}\mathbf v_c^T\mathbf v_cm+\frac{1}{2}\bomega^TI_c\bomega.
+\end{equation}
+\end{boxtheorem}
+So the kinetic energy of the $i$-th link is \begin{equation}
+    T_i=\frac{1}{2}\mathbf v_{ci}^T\mathbf v_{ci}m+\frac{1}{2}\bomega_i^TI_{ci}\bomega_i
+\end{equation}
+where $\mathbf v_{ci}$ is the linear velocity of the $i$-th link, $\bomega_i$ the angular velocity of the $i$-th link and $I_{ci}$ is the inertia matrix of the $i$-th link. We recall that $\mathbf v_{ci}$ and $\bomega_i$ are computed through the (partial) geometric Jacobian up to the $i$-th link, so $T_i$ is a function of $q_1,\dots q_i,\dot q_1,\dots \dot q_i$.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/partialJacobians.png}
+\end{figure}\begin{equation}
+    \mathbf v_{ci}=J_L^i(\q)\dq=\begin{pmatrix}
+         & & & 0 &  & 0\\
+          J_{L1}(\q)&\dots & J_{Li}(\q) & 0 &\dots & 0\\
+           & & & 0 &  & 0
+    \end{pmatrix}\dq
+\end{equation}
+\begin{equation}
+    \bomega_i=J_A^i(\q)\dq=\begin{pmatrix}
+         & & & 0 &  & 0\\
+          J_{A1}(\q)&\dots & J_{Ai}(\q) & 0 &\dots & 0\\
+           & & & 0 &  & 0
+    \end{pmatrix}\dq
+\end{equation}
+$J_{Lj}$ is the $j$-th columns of the linear part of the geometric Jacobian and $J_{Aj}$ is the $j$-th columns of the rotational part of the geometric Jacobian. The matrices $J_L^i(\q),J_A^i(\q)$ are called partial Jacobians. At this point we can sum over the links and get the expression of the kinetic energy of the manipulator:\begin{equation}
+    T=\frac{1}{2}\sum_{i=1}^n(m_i\mathbf v_{ci}^T\mathbf v_{ci}+\bomega^T_iI_{ci}\bomega_i)
+\end{equation}
+by expanding the linear and angular velocities we get the following expression:\begin{equation}
+    T=\frac{1}{2}\dq^T\left(
+       \sum_{i=1}^n m_i{J_L^i}^T(\q){J_L^i}(\q)+{J_A^i}^T(\q)I_{ci}J_A^i(\q)
+    \right)\dq
+\end{equation}
+$I_{ci}$ is constant if expressed in the reference frame $RF_{ci}$. Notice how $T$ is a \textit{quadratic form} in $\dq$, the term \begin{equation}
+    M(\q)=\sum_{i=1}^n m_i{J_L^i}^T(\q){J_L^i}(\q)+{J_A^i}^T(\q)I_{ci}J_A^i(\q)
+\end{equation}
+is the \textbf{Generalized Inertia Matrix} of the robot:\begin{equation}
+    T=\frac{1}{2}\dq^TM(\q)\dq 
+\end{equation}
+since $T$ is the kinetic energy, is always non negative, and is null if and only if $\dq$ is null, so, by definition $M(\q)$ is always \textit{positive definite}:\begin{equation}
+    M(\q)\succ 0, \ \ \forall \q
+\end{equation}
+hence, $M(\q)$ is \textbf{always invertible}.\bigskip 
+
+Now that we have given a full discussion about the kinetic energy, we can proceed to the potential energy. Luckily, this computation is much easier, since the potential energy of a single rigid body is given only by his mass and the position of it's center of mass. So, for the $i$-th link we have\begin{equation}
+    U_i=-m_i\mathbf g^T\mathbf r_{0,ci}
+\end{equation}
+where $m_i$ is the mass, $\mathbf g$ is the gravity vector (depends on where the manipulator is placed) and $\mathbf r_{0,ci}$ is the position of the center of mass of the $i$-th link expressed in the base frame $RF_0$, depend only on $\q$:\begin{equation}
+    \begin{pmatrix}
+        \mathbf r_{0,ci}\\ 1
+    \end{pmatrix}= {}^1A_1(q_1)
+    {}^1A_2(q_2)\dots  
+    {}^{i-1}A_i(q_i)\begin{pmatrix}
+        \mathbf r_{i,ci}\\ 1
+    \end{pmatrix}
+\end{equation}
+$\mathbf r_{i,ci}$ is the position of the center of mass expressed in the frame $RF_i$ of the $i$-th link and is constant. The matrices ${}^1A_1(q_1)
+    {}^1A_2(q_2)\dots  
+    {}^{i-1}A_i(q_i)$ are the homogeneous transformations computed with the DH parameters. Often, we will denote the potential energy of the manipulator just $U(\q)$ without writing the internal structure. The kinetic energy instead can be rewritten also in scalar form:\begin{equation}
+        T=\frac{1}{2}\sum_{i=1}^n\sum_{j=1}^nm_{ij}(\q)\dot q_i\dot q_j=\frac{1}{2}\sum_{i,j}m_{ij}(\q)\dot q_i\dot q_j
+    \end{equation}
+    where $m_{ij}$ is an entry of the matrix $M(\q)$. The Lagrangian of the whole system is\begin{equation}
+        \mathcal L(\q,\dq)=\frac{1}{2}\sum_{i,j}m_{ij}(\q)\dot q_i\dot q_j-U(\q).
+    \end{equation}
+    Now we have to write the Euler-Lagrange equations\begin{equation}
+    \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_k}-\frac{\partial \mathcal L}{\partial q_k}=u_k, \ \ \ 1\le k\le n
+\end{equation}
+Firstly, we derive the Lagrangian respect to $\dot q_k$:\begin{equation}
+    \frac{\partial \mathcal L}{\partial \dot q_k}=\sum_{j=1}^nm_{kj}(\q)\dot q_j
+\end{equation}
+then, we have to derive this result respect to the time, but $m_{kj}$ depends on $\q$ that depends on time so we apply the chain rule\begin{align}
+    &\frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_k}= \\
+    &\sum_{j=1}^nm_{kj}(\q)\ddot q_j+
+    \sum_{j=1}^n\left(\frac{\partial m_{kj}}{\partial\q}\dq\right) \dot q_j\end{align}
+    $\frac{\partial m_{kj}}{\partial\q}$ is the row vector of the partial derivatives respect each component.
+    \begin{align}&\sum_{j=1}^nm_{kj}(\q)\ddot q_j+ \sum_{j=1}^n\left(\sum_{i=1}^n\frac{\partial m_{kj}}{\partial q_i}\dot q_i\right) \dot q_j=\\
+    &\sum_{j=1}^nm_{kj}(\q)\ddot q_j+ \sum_{i,j}\frac{\partial m_{kj}}{\partial q_i}\dot q_i\dot q_j
+\end{align}
+Then we compute the other term of the equation\begin{equation}
+    \frac{\partial\mathcal L}{\partial q_k}=\frac{1}{2}\sum_{i,j}\frac{\partial m_{ij}}{\partial q_k}\dot q_i\dot q_j-\frac{\partial U}{\partial q_k}
+\end{equation}
+The complete $k$-th Euler Lagrange equation is\begin{align}
+    &\sum_{j=1}^nm_{kj}(\q)\ddot q_j+ \sum_{i,j}\frac{\partial m_{kj}}{\partial q_i}\dot q_i\dot q_j-\left(\frac{1}{2}\sum_{i,j}\frac{\partial m_{ij}}{\partial q_k}\dot q_i\dot q_j-\frac{\partial U}{\partial q_k}\right)=u_k\implies\\ 
+    &\sum_jm_{kj}\ddot q_j+\sum_{i,j}\left(
+        \frac{\partial m_{kj}}{\partial q_i}-\frac{1}{2}\frac{\partial m_{ij}}{\partial q_k}
+    \right)\dot q_i\dot q_j+\frac{\partial U}{\partial q_k}=u_k
+\end{align}
+we recall that $u_k$ is the non-conservative generalized force performing work on $q_k$. It is important to notice that, in the Euler-Lagrange equations:\begin{itemize}
+    \item the accelerations $\ddq$ appears as \textbf{linear} terms
+    \item the velocities $\dq$ appears as \textbf{quadratic} terms
+    \item the equation is \textbf{non linear} in the configuration $\q$.
+\end{itemize}
+So, for each known state $(\q,\dq)$, the system of equations can be inverted and solved for $\ddq$.
+\begin{boxdefinition}{Christoffel symbols}{}
+    The \textbf{Christoffel symbols} of the first kind associated to the inertia matrix of the robot $M(\q)$ are a set of coefficients indexed by $i,j,k\in \{1\dots n\}$. The Christoffel symbol $c_{kij}$ is\begin{equation}
+        c_{kij} = \frac{1}{2} \left( \frac{\partial m_{kj}}{\partial q_i} + \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)
+    \end{equation}
+    The symbols are symmetric: $c_{kji}=c_{kij}$.
+\end{boxdefinition}
+Without entering in the details, we exploit the following identity:\begin{equation}
+     \sum_{i,j}\frac{\partial m_{kj}}{\partial q_i}-\frac{1}{2}\frac{\partial m_{ij}}{\partial q_k}=\sum_{i,j}\frac{1}{2} \left( \frac{\partial m_{kj}}{\partial q_i} + \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)
+\end{equation}
+so is explicit how the Christoffel symbols appears in the $k$-th Euler Lagrange equation:\begin{align}
+    &\sum_jm_{kj}\ddot q_j+\sum_{i,j}\frac{1}{2}\left( \frac{\partial m_{kj}}{\partial q_i} + \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)\dot q_i\dot q_j+\frac{\partial U}{\partial q_k}=u_k\implies\\ 
+    &\sum_jm_{kj}\ddot q_j+\sum_{i,j}c_{kij}(\q)\dot q_i\dot q_j+\frac{\partial U}{\partial q_k}=u_k
+\end{align}
+Let's give a physical interpretation:\begin{equation}
+    \sapText{\sum_jm_{kj}\ddot q_j}+\greenText{\sum_{i,j}c_{kij}(\q)\dot q_i\dot q_j}+\blueText{\frac{\partial U}{\partial q_k}}=u_k
+\end{equation}
+\begin{itemize}
+    \item The first are the \sapText{ Inertial Terms} 
+    \item the second the \greenText{ Centrifugal and Coriolis Terms}
+    \item the third the \blueText{ Gravity Terms}.
+\end{itemize}
 \end{document}
