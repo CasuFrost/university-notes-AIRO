@@ -459,4 +459,37 @@ Changing the reference is equivalent to imposing a value of zero on a specific c
 While one might attempt to create a paired reference by physically short-circuiting two earlobe electrodes, this is ill-advised. Because potentials are asymmetric across the ears, short-circuiting them forces these two points to an identical potential, which physically redistorts the electric field across the head. 
 
 Instead, this should be handled in software: by recording both electrodes separately, calculating their average, and subtracting it from the remaining channels, we create a mathematically stable \textbf{virtual reference}.
+
+
+Observe the Figure  \ref{bipolar_monopolar}.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=\textwidth]{images/bipolar_monopolar.png}
+     \caption{Monopolar vs. bipolar montages}
+     \label{bipolar_monopolar}
+\end{figure}
+\begin{boxdefinition}{}{}
+     With \textbf{Montage} we refers to the disposition of electrodes on the skull (displacement and number) and how they are connected.
+\end{boxdefinition}
+In the left diagram, we are acquiring data from different electrodes by using the same reference electrode, this is a \textbf{Monopolar Montage}: All the channel shares the same potential as a reference.\bigskip
+
+In case of \textbf{Bipolar Montage}, there is no a single reference potential, for each channel to record we use a different reference. Usually, there is a ''line'' of electrodes, and for each channel we use as active electrode, the one that was a reference electrode in the previous channel. In the image, the bipolar montage is placed in a longitudinal way.
+
+As we can observe in the example of figure \ref{bipolar_monopolar}, the potential is distributed in such way to have a peak on the vertex. The monopolar montage in this case mount the reference electrode near the ear where the potential is minimum, and waveform recorded by the channels faithfully represent the potential distribution.
+
+In the bipolar montage the displacement and the connections effects the recording in a different way, for example, the first two electrodes on the top records a negative potential since the reference electrode $F_3$ is closer to the peak, so the difference $F_{p1}-F_3$ is a negative value. The bipolar montage highlight phase reversals, making easier to detect peaks in the potential, so in the clinical practice, the bipolar montage is often used more than the monopolar montage.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/phase_reversal.eps}
+     \caption{The phase reversal makes easier to identify the peaks in the potential.}
+\end{figure}
+\subsection{Data Collection}
+\redText{TODO}
+\subsection{Artifacts}
+\redText{TODO}
+\subsection{EEF Analysis}
+\redText{TODO}
+\section{Signal Processing}
+This section is a small recap of some basic signal processing concepts.
+\redText{TODO}
 \end{document}
