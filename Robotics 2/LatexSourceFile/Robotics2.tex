@@ -1851,7 +1851,7 @@ in this case we can solve for $ \begin{pmatrix}
         n_r\\l\cos\theta_d
     \end{pmatrix}f.
     \end{equation}
-\subsection{Kinetic and Potential Energy}
+\subsection{Derivation of the Dynamic Model}
 In this section we explain how to derive the Lagrangian of a full robotic manipulator. The kinetic energy of the robot will be the sum of the kinetic energies of each link:\begin{equation}
    T= \sum_{i=1}^nT_i
 \end{equation}
@@ -1969,9 +1969,9 @@ since $T$ is the kinetic energy, is always non negative, and is null if and only
 hence, $M(\q)$ is \textbf{always invertible}.\bigskip 
 
 Now that we have given a full discussion about the kinetic energy, we can proceed to the potential energy. Luckily, this computation is much easier, since the potential energy of a single rigid body is given only by his mass and the position of it's center of mass. So, for the $i$-th link we have\begin{equation}
-    U_i=-m_i\mathbf g^T\mathbf r_{0,ci}
+    U_i=-m_i\mathbf g_0^T\mathbf r_{0,ci}
 \end{equation}
-where $m_i$ is the mass, $\mathbf g$ is the gravity vector (depends on where the manipulator is placed) and $\mathbf r_{0,ci}$ is the position of the center of mass of the $i$-th link expressed in the base frame $RF_0$, depend only on $\q$:\begin{equation}
+where $m_i$ is the mass, $\mathbf g_0$ is the gravity vector (depends on where the manipulator is placed) and $\mathbf r_{0,ci}$ is the position of the center of mass of the $i$-th link expressed in the base frame $RF_0$, depend only on $\q$:\begin{equation}
     \begin{pmatrix}
         \mathbf r_{0,ci}\\ 1
     \end{pmatrix}= {}^1A_1(q_1)
@@ -2038,4 +2038,27 @@ Let's give a physical interpretation:\begin{equation}
     \item the second the \greenText{ Centrifugal and Coriolis Terms}
     \item the third the \blueText{ Gravity Terms}.
 \end{itemize}
+The gravitational term on the $k$-th equation is\begin{equation}
+    g_k(\q)=-\sum_{i=1}^n m_i\mathbf g_0^T\left(\frac{\partial\mathbf r_{0,ci}}{\partial q_k}\right)
+\end{equation}
+About the inertia matrix:\begin{itemize}
+    \item $m_{kk}(\q)$ is the inertia at joint $k$ when joint $k$ accelerates, is always greater than 0.
+    \item $m_kj$ is the inertia ''seen'' at joint $k$ when joint $j$ accelerates, represents the inertia coupling between the two joints.
+\end{itemize}
+About the Christoffel symbols:\begin{itemize}
+    \item $c_{kii}$ is the coefficient of the centrifugal effect at joint $k$ when the joint $i$ is moving. 
+    \item $c_{kij}$ is the coefficient of the Coriolis effect at joint $k$ when joint $i$ and joint $j$ are moving.
+\end{itemize}
+Instead of writing the $n$ Euler-Lagrange equations, we can write the dynamic model in one single vector equations. The inertia terms are simply given by $$ M(\q)\ddq$$
+The gravity term is a vector (the gradient of the potential energy)\begin{equation}
+    \mathbf g(\q)=\left(\frac{\partial U}{\partial \q}\right)^T
+=\nabla_\q U
+\end{equation}
+for the Christoffel symbol, we define a square matrix $C(\q,\dq)$ of order $n$, where the entry $(k,j)$ is defined through the Christoffel symbols:\begin{equation}
+    C[k,j]=c_{kj}(\q,\dq)=\sum_{i=1}^nc_{kij}(\q)\dq
+\end{equation}
+About the notation: The $c$ with two appendices is an entry of the matrix $C(\q,\dq)$, the $c$ with three appendices is a Christoffel symbol. The full dynamic model as a single vector equation is:\begin{equation}
+    M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)=\mathbf u
+    .
+\end{equation}
 \end{document}
