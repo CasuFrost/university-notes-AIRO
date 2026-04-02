@@ -161,7 +161,7 @@ due to the vertical alignment of the initial configuration, the gravity does not
         \star<0\\ \star > 0
     \end{pmatrix}
 \end{equation}
-so the first joint will rotate clockwise while the second counter clockwise. We want to know if the end effector will fall to the left or to the right. We compute \begin{align}
+so the first joint will rotate clockwise while the second counter-clockwise. We want to know if the end effector will fall to the left or to the right. We compute \begin{align}
     &\ddot{\mathbf p_0}=\begin{pmatrix}
         -l_2&-l_2\\ 
         l_1&0
@@ -174,11 +174,11 @@ so the first joint will rotate clockwise while the second counter clockwise. We 
     \end{pmatrix}=\\ 
     &\ddot{\mathbf{p}}_0 = \begin{pmatrix} 0 \\ -\frac{l_1 (m_1 d_{c_1} + m_2 l_1)g_0}{\bar{I}_1 + m_2 l_1^2} \end{pmatrix}
 \end{align}
-so the end effector will accelerato downward without moving on the $x$ axis.
+so the end effector will accelerate downward without moving on the $x$ axis.
 \begin{center}
     \includegraphics[width=0.27\textwidth ]{images/2R_example2.eps}
 \end{center}
-Now, we consider a simpler example from a dynamic point of view, but we will show the process to derive the dynamic model. We consider a planar 2P robot, where the joint's are orthogonal, in this simple case the Jacobian matrix is the identity. For this manipulator there will be no angular terms, since all the joint's are prismatic, we still refers with torques to the linear forces $\tau_1,\tau_2$ applied on the prismatic joints.\begin{center}
+Now, we consider a simpler example from a dynamic point of view, but we will show the process to derive the dynamic model. We consider a planar 2P robot, where the joints are orthogonal, in this simple case the Jacobian matrix is the identity. For this manipulator there will be no angular terms, since all the joints are prismatic, we still refers with torques to the linear forces $\tau_1,\tau_2$ applied on the prismatic joints.\begin{center}
     \includegraphics[width=0.35\textwidth ]{images/2P_example.eps}
 \end{center}
 We consider two different methods to derive the dynamic model (both these methods we will further explained in details in the their relative sections).
@@ -262,7 +262,7 @@ where $F_{max}=mu_{max}$.
 \begin{center}
     \includegraphics[width=\textwidth ]{images/bang_bang.eps}
 \end{center}
-This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually leads to a configuration that is not exactly the desired one, in some cases, with an high error.
+This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually lead to a configuration that is not exactly the desired one, in some cases, with an high error.
 
 The feedback approach consists in using the state variables in the commands, it doesn't necessary requires the dynamic model, but some sensors to measure the position, velocity, and other quantities. In this simple example, the general approach is the following\begin{equation}
     m\ddot x = u(x,\dot x)
@@ -319,7 +319,7 @@ the final dynamic equation with the inclusion of this term is \begin{equation}
 \end{figure}
 \chapter{Advanced Topics on Kinematics}
 \section{Calibration}
-A measurement system have an high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
+A measurement system has an high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
 
 For simplicity, we consider a manipulator with $n$ (all revolut) joints. The  DH parameters are\begin{equation}
     \boldsymbol{\alpha }= \begin{pmatrix}
@@ -338,7 +338,7 @@ from these parameters we can compute the \textit{nominal} direct kinematics\begi
 $\btheta$ is the set of joint angles measured by the encoders. The calibration procedure is essential to have a perfect direct kinematics, especially in the industrial context. 
 \begin{itemize}
     \item due to the tolerances in the mechanical construction and in assembly of the links and the joints, there is a small errors in the actual end effector pose respect to the one given by the direct kinematics.
-    \item the errors distributed along the are are amplified, due due to
+    \item the errors distributed along the arm are amplified,  due to
 the open kinematic chain structure of most robots
     \item the goal of the calibration procedure is to recover as much as possible this end effector position error by adjusting the DH parameters.
 \end{itemize}
@@ -643,7 +643,7 @@ we consider a generalized inverse, in particular, the right inverse:\begin{align
     0&0
 \end{pmatrix}.
 \end{align*}
-We already seen in the Robotics 1 course that the pseudo inverse realizes the desired task velocity by choosing the joint's velocity $\dq$ of minimum norm. In particular, given the problem $J\dq=\dot{\mathbf y}$, even if $\dot{\mathbf y}$ is not in the range space of $J$, the pseudo inverse finds the minimum norm solution among the $\dq$ that minimizes\begin{equation}
+We already seen in the Robotics 1 course that the pseudo inverse realizes the desired task velocity by choosing the joint velocities $\dq$ of minimum norm. In particular, given the problem $J\dq=\dot{\mathbf y}$, even if $\dot{\mathbf y}$ is not in the range space of $J$, the pseudo inverse finds the minimum norm solution among the $\dq$ that minimizes\begin{equation}
     \|\dot{\mathbf y}-J\dq\|^2.
 \end{equation}
 If $J$ is singular and $JJ^T$ cannot be inverted, the formula $J^\#=J^T(JJ^T)^{-1}$ can't be used, and to find $J^\#$ we need numerical methods that relies on the \textit{singular value decomposition} of $J$.
@@ -805,7 +805,7 @@ There is another way to solve the problem $J\dq=\dy$ by finding a solution that 
         \|\dq\|^2_W=\dq^TW\dq.
     \end{equation}
 \end{boxdefinition}
-This kind of solution is used to give more emphases to some joints, for example, if $W$ is diagonal\begin{equation}
+This kind of solution is used to give more emphasis to some joints, for example, if $W$ is diagonal\begin{equation}
     W=\begin{pmatrix}
         W_1&\dots & 0\\ 
         \vdots &\ddots&\vdots \\ 
@@ -843,9 +843,9 @@ We have seen four different Jacobian based methods:\begin{itemize}
     \end{pmatrix}\dy$
     \item DLS: $\dq=J_{DLS}\dy$, this last one is not using a generalized inverse of $J$.
 \end{itemize}
-These solutions locally tries to avoid singularities, but there is no guarantees that that singularities are globally avoided, despite we are trying to minimize the joint velocity norm. Another issue of these local methods, is that leads to non repeatable motion: A periodic trajectory in the task space is not necessary mapped in the joint space as a periodic evolution of the joint's trajectory. This makes harder to predict if a given task movement will leads to a collision of the manipulator with obstacles in the workspace.
+These solutions locally tries to avoid singularities, but there is no guarantees that that singularities are globally avoided, despite we are trying to minimize the joint velocity norm. Another issue of these local methods, is that leads to non repeatable motion: A periodic trajectory in the task space is not necessary mapped in the joint space as a periodic evolution of the joint trajectories. This makes harder to predict if a given task movement will leads to a collision of the manipulator with obstacles in the workspace.
 \subsection{Null Space Methods}\label{NullSpaceMethods}
-This method will exploit joint's movements that lies in the null space of the Jacobian matrix. Before entering in the details, let's recall the following theorem.
+This method will exploit joint movements that lies in the null space of the Jacobian matrix. Before entering in the details, let's recall the following theorem.
 \begin{boxtheorem}{}{}
     Given a system of linear equations $A\mathbf x=\mathbf b$, any solution (if any) can be written in the form:\begin{equation}
         \mathbf x_p+\mathbf x_h 
@@ -1027,7 +1027,7 @@ So if $H_{cle}$ is chosen as $G$, then the robot will try to move towards a conf
     \caption{Computed clearence in different configurations, in this simple example, we consider only the end effector as a physical object that can collide.}
     \label{clearence}
 \end{figure}
-Consider the situation in image \ref{clearence}, the end effector start rotating counter clockwise to avoid the obstacle, at some point, the object 1 will be no more the nearest, switching with the object 2, in this way it is clear how the clearance function $H_{cle}(q)$ is not differentiable, due to the swap of the nearest object.
+Consider the situation in image \ref{clearence}, the end effector start rotating counter-clockwise to avoid the obstacle, at some point, the object 1 will be no more the nearest, switching with the object 2, in this way it is clear how the clearance function $H_{cle}(q)$ is not differentiable, due to the swap of the nearest object.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/clearance_over_q.eps}
@@ -1283,7 +1283,7 @@ So to solve the problem through an iterative method up to the $k$-th task we nee
 In presence of algorithmic singularities, for the $k$-th solution instead of the solution in Equation \eqref{task_priority_sol}, we need to apply the DLS method.
 \section{Extensions to Redundancy Problems}
 \subsection{Resolution at Acceleration Level}
-Up to know, we have solved the redundancy problem for the joint's velocities $\dq$, we know that at the lowest level, we don't control directly $\dq$, but the acceleration $\ddq$.\begin{equation}
+Up to know, we have solved the redundancy problem for the joint velocities $\dq$, we know that at the lowest level, we don't control directly $\dq$, but the acceleration $\ddq$.\begin{equation}
     \mathbf y = k(\mathbf q)\implies \dy=J\dq\implies \ddy=J\ddq+\dot J\dq.
 \end{equation}
 \begin{boxdefinition}{Tangent Bundle}{}
@@ -1339,7 +1339,7 @@ Notice how all these Equations \eqref{H_1_torque},\eqref{H_2_torque} and \eqref{
     \item The minimum torque solution is \begin{equation}
         \btau_1=(JM^{-1})^\#(\ddy-\dot J\dq+JM^{-1}\mathbf n)
     \end{equation}
-    this local solution is good for short trajectories, but may leads to \textbf{whipping}: the solution minimizes only the norm of $\btau$ but doesn't try to minimize the joint's velocities, if the requested trajectory is long, the speed of the joints could accumulate, the controller could require very high angular accelerations at the joints with lower inertia to compensate for the required movement, causing sudden jerks.
+    this local solution is good for short trajectories, but may leads to \textbf{whipping}: the solution minimizes only the norm of $\btau$ but doesn't try to minimize the joint velocities, if the requested trajectory is long, the speed of the joints could accumulate, the controller could require very high angular accelerations at the joints with lower inertia to compensate for the required movement, causing sudden jerks.
     \item The squared inverse inertia weighted norm solution is\begin{equation}
         \btau_2=MJ^\#(\ddy-\dot J\dq+JM^{-1}\mathbf n)
     \end{equation}
@@ -1364,7 +1364,7 @@ To solve this problem we need to close the feedback loop on task execution, inst
 where $K,K_P$ and $K_D$ are positive definite matrices. We already seen in the Robotics 1 course that the inclusion of these terms are necessary to leads the error to zero.\bigskip
 
 \noindent 
-The next topic concerns mobile manipulators. These kind of robots, usually have a configuration space that can be decoupled in two sets of variables:\begin{itemize}
+The next topic concerns mobile manipulators. These kinds of robots, usually have a configuration space that can be decoupled in two sets of variables:\begin{itemize}
     \item $\q_b$ are the configuration variables of the base
     \item $\q_m$ are the joint variables of the manipulator.
 \end{itemize}
@@ -1375,7 +1375,7 @@ The next topic concerns mobile manipulators. These kind of robots, usually have 
 The task vector $\y$ is given by the direct kinematics that are a function of both the vectors $\q_m$ and $\q_b$\begin{equation}
     \y=k(\q)=k(\q_b,\q_m).
 \end{equation}
-The variables $\q_m$ are (as we already said) the joint's angular positions. We can control the joint's velocities $\dq_m$, let's denote our control input for the manipulator $\mathbf u_m$, that is exactly  $\dq_m$:\begin{equation}
+The variables $\q_m$ are (as we already said) the joint angular positions. We can control the joint velocities $\dq_m$, let's denote our control input for the manipulator $\mathbf u_m$, that is exactly  $\dq_m$:\begin{equation}
     \mathbf u_m=\dq_m
 \end{equation}
 The variables $\q_b$ for a robot that moves on a plane, are the orientation $\phi$ and the position $x,y$ on that plane.\begin{equation}
@@ -1437,7 +1437,7 @@ from Equation \eqref{mobile_base_G}:
 \end{equation}
 the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
 \subsection{Hard Limits in the Joint Space}
-Until now, we have seen how the joint's velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in details, a quadratic programming problem of the kind:\begin{align}
+Until now, we have seen how the joint velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in details, a quadratic programming problem of the kind:\begin{align}
     &\arg\min_\dq \dq^T W\dq\\ 
     &\text{s.t. }J\dq=\dy
 \end{align}
@@ -1451,7 +1451,7 @@ where $W$ is usually positive definite. The set of solutions is defined by the $
 \end{align}
 We know that $J\dq=\dy$ is not always feasible, so in practice we search for the solution $\dq^*$ that minimizes the task error $\|J\dq-\dy\|$. 
 
-In many cases, there is the need to add also inequality constraints to the optimization problem, the most canonical example is the inclusion of bounds of joint's velocity, limits that usually comes from the specifications of the actuators.
+In many cases, there is the need to add also inequality constraints to the optimization problem, the most canonical example is the inclusion of bounds of joint velocities, limits that usually comes from the specifications of the actuators.
 A set of inequality constraints such as $C\dq\le \mathbf d$ identifies a convex set in $\R^n$.
 \begin{figure}[H]
     \centering 
@@ -1477,7 +1477,7 @@ when this happens, we say that the constraint becomes \textbf{active}. If the co
      \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_4.eps}
 \end{figure}
 
-As we already mentioned, the robot have some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint's velocity, acceleration and torque. These constraints are ''boxes'' in the joint's configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
+As we already mentioned, the robot have some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint velocities, acceleration and torque. These constraints are ''boxes'' in the joint configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
 
 The \textbf{Saturation in the Null Space (SNS)} is a method to deal with these limits in the context of online resolution for the joint velocity, it consists in saturating one overdriven joint command at a time, until a feasible and better
 performing solution is found. it requires some \textit{decisions}, in which joint we should saturate to not affect the task execution, for tasks that are (certainly) unfeasible, SNS embeds the selection of a task
@@ -1508,7 +1508,7 @@ This kind of solution starts from the pseudo inverse solution $J^\#\dy$ and add 
           lc_{1234}
     \end{pmatrix}
 \end{equation}
-there are the following bounds on the joint's velocities:\begin{align*}
+there are the following bounds on the joint velocities:\begin{align*}
     &|q_i|\le V_i, \ \ i=1,2,3,4\\ 
     &V_1=V_2=2 \ \nicefrac{\text{rad}}{\text{sec}}\\ 
     &V_3=V_4=4 \ \nicefrac{\text{rad}}{\text{sec}}
@@ -1596,7 +1596,7 @@ The Equation \eqref{eq:SNS} define how the solution will be evaluated, the contr
     \State limit\_exceeded = FALSE
     \State $\overline\dq=\dq_N+(JW)^\#(\dy-J\dq_N)$
     \If{$\exists i \in \{1,\dots n\}$ such that $\overline{\dot {q_i}} < \dot Q_{min,i}$ \texttt{or} $\overline{\dot {q_i}} > \dot Q_{max,i}$}
-    \State \greenText{//some joint's exceed their maximum speed}
+    \State \greenText{//some joints exceed their maximum speed}
     \State limit\_exceeded = TRUE
     \State $\mathbf a=(JW)^\#\dy$
     \State $\mathbf b=\overline\dq-\mathbf a$
@@ -1709,9 +1709,9 @@ Now, we consider the model of an actuated pendulum, in order to find the dynamic
     \item \texttt{Kinematic parameter}: $n_r$ is the reduction ratio between the motor and the link. 
     \item \texttt{Control command}: $\tau$ is the torque on the link and depends on $\tau_m$ according to the reduction ratio.
     \item \texttt{Variable/configuration of the system}: $\theta$ is the angular position of the link and depends on $\theta_m$ according to the reduction ratio.
-    \item \texttt{Dynamic parameter}: $m$ is the mass of the link and $I_l$ is the moment of inertia of the link around the axis parallel to the joint's axis that pass through it's center of mass. 
-    \item \texttt{Kinematic parameter}:  $d_c$ is the distance between the joint's axis and the center of mass, and $l$ is the length of the link.
-    \item \texttt{Control command}: $F_x$ is an external force that can be applied on the tip of the link, and is only horizontal (orthogonal to both the joint's axis and the direction of the gravity).
+    \item \texttt{Dynamic parameter}: $m$ is the mass of the link and $I_l$ is the moment of inertia of the link around the axis parallel to the joint axis that pass through it's center of mass. 
+    \item \texttt{Kinematic parameter}:  $d_c$ is the distance between the joint axis and the center of mass, and $l$ is the length of the link.
+    \item \texttt{Control command}: $F_x$ is an external force that can be applied on the tip of the link, and is only horizontal (orthogonal to both the joint axis and the direction of the gravity).
     \item \texttt{External force}: $mg_0$ is the gravity applied on the link.
 \end{itemize}
 \begin{figure}[H]    
@@ -1728,7 +1728,7 @@ The system is one dimensional and it's configuration is described by $\theta$ or
 So, our Lagrangian coordinate will be $q=\theta$. We want to compute the kinetic energy of the system, that is given by the sum between the kinetic energy of the motor and the kinetic energy of the link. The kinetic energy of the motor can be easily computed:\begin{equation}
     T_m=\frac{1}{2}I_m\dot\theta^2_m
 \end{equation}
-To compute $T_l$ instead we need to consider the inertia of the link around the joint's axis, since the link rotate around that axis and not around it's center of mass. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint's axis and the center of mass, we can compute the inertia:\begin{equation}
+To compute $T_l$ instead we need to consider the inertia of the link around the joint axis, since the link rotate around that axis and not around it's center of mass. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint axis and the center of mass, we can compute the inertia:\begin{equation}
     I_l+md_c^2
 \end{equation}
 the kinetic energy is \begin{equation}
@@ -2057,8 +2057,391 @@ The gravity term is a vector (the gradient of the potential energy)\begin{equati
 for the Christoffel symbol, we define a square matrix $C(\q,\dq)$ of order $n$, where the entry $(k,j)$ is defined through the Christoffel symbols:\begin{equation}
     C[k,j]=c_{kj}(\q,\dq)=\sum_{i=1}^nc_{kij}(\q)\dq
 \end{equation}
-About the notation: The $c$ with two appendices is an entry of the matrix $C(\q,\dq)$, the $c$ with three appendices is a Christoffel symbol. The full dynamic model as a single vector equation is:\begin{equation}
+About the notation: The $c$ with two appendices is an entry of the matrix $C(\q,\dq)$, the $c$ with three appendices is a Christoffel symbol. The full dynamic model as a single vector equation is:\begin{equation}\label{dynModel}
     M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)=\mathbf u
     .
 \end{equation}
+The matrix-vector multiplication $C(\q,\dq)\dq$ is the factorization of a vector $\mathbf c(\q,\dq)$, another general way to write the model is
+\begin{equation}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u
+\end{equation} 
+where the $k$-th component of is defined as follows\begin{align}
+     &c_k(\q,\dq)=\dq^TC_k(\q)\dq\\ \label{ChrystoffelMat}
+     &C_k(\q)=\frac{1}{2}\left(
+        \frac{\partial M_k}{\partial \q}+\left(\frac{\partial M_k}{\partial \q}\right)^T-\frac{\partial M}{\partial q_k}
+     \right)
+\end{align}
+$M_k$ is the $k$-th column vector of the inertia matrix $M(\q)$.\bigskip
+
+On the right side of the equation we have the non conservative terms $\mathbf u$, these forces have to be expressed as components that perform work on the Lagrangian coordinate. Since for a manipulator the coordinates are the joint variables defined according to the DH convention, the terms $\mathbf u$ are expressed as torques. There are generally three kinds of non conservative torques:\begin{itemize}
+    \item We denote $\btau$ the torques produced by the motors (actuation). This is usually our control input. 
+    \item We denote $\btau_{int}$ the torques produced by the interaction with the environment. Let $\mathbf f$ to be the vector of generalized forces (wrench) that are applied on the end effector.
+    \begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/wrench.eps}
+\end{figure}
+   given the Jacobian matrix $J$ relative to the direct kinematics of the end effector pose, the torques on the joints resulting from $\mathbf f$ are\begin{equation}
+    \btau_{int}=J^T\mathbf f.
+   \end{equation}
+   \item The dissipative torques due to the friction are denoted $\btau_B$. 
+\end{itemize}
+$\btau_B$ always imply a loss of the total energy of the system $\mathcal H=T+U$, while $\btau$ and $\btau_{int}$ may increase or decrease the total energy.
+\subsection{Dynamic Model of a PR Robot}
+In this section we show how to derive the dynamic model of a simple PR robot. Making the model of such a simple robot explicit is not trivial, this should also be proof of how the explicit definition of the equations of motion for a more complex robot is impractical and often unfeasible.
+We analyze the PR planar manipulator:
+ \begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/PR_3d.eps}
+\end{figure}
+The first joint is prismatica, to let $d_{c1}$ constant, we define this quantity as the distance between the second joint axis and $\mathbf p_{c1}$, and $d_{c2}$ is defined as the distance between (again) the second joint axis and $\mathbf p_{c2}$. The position of the center of mass of the first link is easy to compute, since is always on the $x_w$ axis, is given by $q_1-d_{c1}$:\begin{equation}
+    \mathbf p_{c1}=\begin{pmatrix}
+        q_1-d_{c1}\\0\\0
+    \end{pmatrix}
+\end{equation}
+the derivative is simply
+\begin{equation}
+    \mathbf v_{c1}=\dot{\mathbf p}_{c1}=\begin{pmatrix}
+        \dot q_1\\0\\0
+    \end{pmatrix}
+\end{equation}
+so\begin{equation}
+    \| \mathbf v_{c1}\|^2=\dot q_1^2.
+\end{equation}
+The first link never rotate, so it's angular velocity $\bomega_1$ is always null, hence the kinetic energy is simply computed (from the König Theorem) as follows:\begin{equation}
+    T_1=\frac{1}{2}m_1\dot q_1^2.
+\end{equation}
+For the second link, we have to compute $ \mathbf v_{c2}=\dot{\mathbf p}_{c2}$. The position of the center of mass is\begin{equation}
+    \mathbf p_{c2}=\begin{pmatrix}
+        q_1+d_{c2}\cos q_2\\ 
+        d_{c2}\sin q_2\\0
+    \end{pmatrix}
+\end{equation}
+so\begin{equation}
+    \mathbf v_{c2}=\dot{\mathbf p}_{c2}=\begin{pmatrix}
+        \dot q_1-d_{c2}\sin q_2\dot q_2\\ 
+         d_{c2}\cos q_2\dot q_2\\ 0
+    \end{pmatrix}
+\end{equation}
+the squared norm of the velocity is\begin{equation}
+    \| \mathbf v_{c2}\|^2=\dot q_1^2+d_{c2}^2\sin^2 q_2\dot q_2^2-2\dot q_1d_{c2}\sin q_2\dot q_2+d^2_{c2}\cos^2 q_2\dot q^2_2=\dot q_1^2+d_{c2}^2\dot q_2^2-2d_{c2}\sin q_2\dot q_1\dot q_2
+\end{equation}
+so the linear part of $T_2$ is\begin{equation}
+    \frac{1}{2}m_2(\dot q_1^2+d_{c2}^2\dot q_2^2-2d_{c2}\sin q_2\dot q_1\dot q_2)
+\end{equation}
+the angular part is given by\begin{equation}
+    \frac{1}{2}\bomega^T_2 I_{c2}\bomega_2
+\end{equation}
+where $I_{c2}$ is the inertia matrix relative to the center of mass. The angular velocity of the second link is easy to compute, since it rotate on the $z_w$ according to $\dot q_2$ so:\begin{equation}
+    \bomega_2=\begin{pmatrix}
+        0\\0\\ \dot q_2
+    \end{pmatrix}
+\end{equation}
+due to the two zeros the term $\bomega^T_2 I_{c2}\bomega_2$ will include only the bottom right element of the matrix:\begin{equation}
+    \bomega^T_2 I_{c2}\bomega_2=
+    \begin{pmatrix}
+        0&0& \dot q_2
+    \end{pmatrix}
+\begin{pmatrix}
+       I_{c2,xx}&I_{c2,xy}&I_{c2,xz}\\
+       I_{c2,yx}&I_{c2,yy}&I_{c2,yz}\\
+       I_{c2,zx}&I_{c2,zy}&I_{c2,zz}\\
+    \end{pmatrix}
+    \begin{pmatrix}
+        0\\0\\ \dot q_2
+    \end{pmatrix}=I_{c2,zz}\dot q_2^2
+\end{equation}
+the kinetic energy of the second link is\begin{equation}
+    T_2=\frac{1}{2}m_2(\dot q_1^2+d_{c2}^2\dot q_2^2-2d_{c2}\sin q_2\dot q_1\dot q_2)+\frac{1}{2}I_{c2,zz}\dot q_2^2
+\end{equation}
+We assume that the robot is on the horizontal plane so it does not feel the gravity: $U=0$. The Lagrangian is\begin{equation}
+    \mathcal L(\q,\dq)=T-U=T=\frac{1}{2}m_1\dot q_1^2+\frac{1}{2}m_2(\dot q_1^2+d_{c2}^2\dot q_2^2-2d_{c2}\sin q_2\dot q_1\dot q_2)+\frac{1}{2}I_{c2,zz}\dot q_2^2.
+\end{equation}
+to compute $M(\q)$ we have to factorize $T$ since $T=\frac{1}{2}\dq^TM(\q)\dq$:\begin{align}
+    &\dot q_1^2\frac{1}{2}\left(
+        m_1+m_2
+    \right)+\dot q_2^2\frac{1}{2}\left(
+        I_{c2,zz}+ m_2d_{c2}^2
+    \right)+\dot q_1\dot q_2\left(-m_2d_{c2}\sin q_2\right)
+    \implies\\ &T=\frac{1}{2}\dq^T\begin{pmatrix}
+        m_1+m_2 & -m_2d_{c2}\sin q_2\\ 
+       -m_2d_{c2}\sin q_2& m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}\dq
+\end{align}
+so\begin{equation}
+    M(\q)=M(q_2)=\begin{pmatrix}
+        m_1+m_2 & -m_2d_{c2}\sin q_2\\ 
+       -m_2d_{c2}\sin q_2& m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}.
+\end{equation}
+Notice how the variable $q_1$ does not appear, in fact, $M$ is only in function of $q_2$, de facto this is a \textbf{general property}. \begin{boxlemma}{}{}
+The inertia matrix $M(\q)$ never depend on $q_1$: The inertia matrix represents the mass distribution seen from the base reference system. By rotating the first joint ($q_1$), you rotate the entire robot around its main axis. Since the geometry of the subsequent arms with respect to the first axis does not change, the kinetic energy of the system remains the same regardless of the value of $q_1$.
+\end{boxlemma}
+Another general property is the following.\begin{boxlemma}{}{}
+    For the inertia matrix $M(\q)$, the bottom-right term $m_{nn}$ is \textbf{always constant}. The element $m_{nn}$ reflects the inertia of the last link (the final element or effector) with respect to its axis of rotation. Since after the last joint there are no other joints that can move masses and change the geometric configuration of the terminal, the mass distribution with respect to the $n$ axis remains fixed.
+\end{boxlemma}
+Now, given $M$, we can compute the centrifugal and Coriolis terms. The vector \begin{equation}
+    \mathbf c(\q,\dq)=\begin{pmatrix}
+        c_1(\q,\dq)\\ 
+        c_2(\q,\dq)
+    \end{pmatrix}
+\end{equation}
+have its component $c_k$ defined through a matrix $C_k$ as in equation \eqref{ChrystoffelMat}. Given\begin{equation}
+    M_1=\begin{pmatrix}
+        m_1+m_2 \\ 
+       -m_2d_{c2}\sin q_2
+    \end{pmatrix}, \ \ M_2=\begin{pmatrix}
+      -m_2d_{c2}\sin q_2\\ 
+      m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}
+\end{equation}
+we compute\begin{align}
+    &\frac{\partial M_1}{\partial \q}=\begin{pmatrix}
+        0&0\\  
+        0&-m_2d_{c2}\cos q_2
+    \end{pmatrix}\\
+     &\frac{\partial M}{\partial q_1}=\begin{pmatrix}
+        0&0\\  
+        0&0
+    \end{pmatrix}\\
+     &\frac{\partial M_2}{\partial \q}=\begin{pmatrix}
+        0&-m_2d_{c2}\cos q_2\\  
+        0&0
+    \end{pmatrix}\\
+     &\frac{\partial M}{\partial \q_2}=\begin{pmatrix}
+        0 & -m_2d_{c2}\cos q_2\\ 
+       -m_2d_{c2}\cos q_2& 0
+    \end{pmatrix}.
+\end{align}
+So\begin{align}
+    &C_1=\frac{1}{2}\left(
+        \begin{pmatrix}
+        0&0\\  
+        0&-m_2d_{c2}\cos q_2
+    \end{pmatrix}+\begin{pmatrix}
+        0&0\\  
+        0&-m_2d_{c2}\cos q_2
+    \end{pmatrix}-\begin{pmatrix}
+        0&0\\  
+        0&0
+    \end{pmatrix}
+    \right)=\\ &\begin{pmatrix}
+        0&0\\  
+        0&-m_2d_{c2}\cos q_2
+    \end{pmatrix}\implies  
+    c_1=
+    \begin{pmatrix}
+       \dot  q_1&\dot q_2
+    \end{pmatrix}\begin{pmatrix}
+        0&0\\  
+        0&-m_2d_{c2}\cos q_2
+    \end{pmatrix}\begin{pmatrix}
+       \dot  q_1\\\dot q_2
+    \end{pmatrix}=-m_2d_{c2}\cos q_2\dot q_2^2
+\end{align}
+and\begin{align}
+    &C_2=\frac{1}{2}\left(
+        \begin{pmatrix}
+        0&-m_2d_{c2}\cos q_2\\  
+        0&0
+    \end{pmatrix}+\begin{pmatrix}
+        0&0\\  
+        -m_2d_{c2}\cos q_2&0
+    \end{pmatrix}-\begin{pmatrix}
+        0 & -m_2d_{c2}\cos q_2\\ 
+       -m_2d_{c2}\cos q_2& 0
+    \end{pmatrix}
+    \right)=\\
+    & \begin{pmatrix}
+        0&0\\  
+        0&0
+    \end{pmatrix}\implies c_2=0.
+\end{align}
+The full model is\begin{equation}
+    \begin{pmatrix}
+        m_1+m_2 & -m_2d_{c2}\sin q_2\\ 
+       -m_2d_{c2}\sin q_2& m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}\begin{pmatrix}
+        \ddot q_1\\ \ddot q_2
+    \end{pmatrix}+\begin{pmatrix}
+       -m_2d_{c2}\cos q_2\dot q_2^2 \\ 0
+    \end{pmatrix}=\begin{pmatrix}
+        u_1\\ u_2
+    \end{pmatrix}.
+\end{equation}
+We want to answer to the following question\begin{quotation}
+    Starting at rest $\q=\dq=\mathbf 0$, if we apply a torque on the first joint $u_1>0$ and zero torque on the second joint, the latter will it move?
+\end{quotation}
+To answer, we isolate $\ddq$:\begin{align}
+    &\ddq=M^{-1}[\mathbf u-\mathbf c]
+\end{align}
+if $\q=\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
+    &\ddq=M^{-1}\mathbf u=\\ 
+    &\frac{1}{\det M}\begin{pmatrix}
+       m_2d_{c2}^2+I_{c2,zz} & m_2d_{c2}\sin q_2\\ 
+       m_2d_{c2}\sin q_2& m_1+m_2
+    \end{pmatrix}\begin{pmatrix}
+        u_1\\ 0
+    \end{pmatrix}=\\ 
+    &\frac{u_1}{\det M}\begin{pmatrix}
+       m_2d_{c2}^2+I_{c2,zz}\\ 
+      m_2d_{c2}\sin q_2
+    \end{pmatrix}
+\end{align}
+it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, it will stay still if and only if $q_2=0$ or $q_2=\pi$.\bigskip
+
+Now that we have the model we want to solve the inverse dynamics. The first desired trajectory is\begin{equation}
+    \begin{cases}
+        q_{1d}(t)=k \text{ constant}\\ 
+        q_{2d}(t)=\alpha t\text{ with }\alpha >0
+    \end{cases}
+\end{equation}
+we compute the desired velocity and acceleration:\begin{align}
+    &\dot q_{1d}=\ddot q_{1d}=0\\ 
+    &\dot q_{2d}=\alpha, \ \ \ddot q_{2d}=0
+\end{align}
+then we substitute these trajectory in the model:\begin{equation}
+    \begin{pmatrix}
+        m_1+m_2 & -m_2d_{c2}\sin (\alpha t)\\ 
+       -m_2d_{c2}\sin (\alpha t)& m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}\begin{pmatrix}
+       0\\ 0
+    \end{pmatrix}+\begin{pmatrix}
+       -m_2d_{c2}\cos (\alpha t)\alpha^2 \\ 0
+    \end{pmatrix}=\begin{pmatrix}
+        u_1\\ u_2
+    \end{pmatrix}
+\end{equation}
+\begin{equation}
+    \begin{cases}
+        u_1(t)=-m_2d_{c2}\cos(\alpha t)\alpha^2 \\ 
+        u_2(t)=0
+    \end{cases}
+\end{equation}
+understanding the dynamics is not that trivial: We need to impose a torque only on $q_1$ to make $q_2$ to moves, and let $q_1$ still. The non zero torque $u_1\ne 0$ compensate the centrifugal effect of $q_2$. Let's see another example:\begin{equation}
+    \begin{cases}
+        q_{1d}(t)=A(1-\cos(\omega t))\\ 
+        q_{2d}(t)=\frac{\pi}{2}
+    \end{cases}
+\end{equation}
+hence 
+\begin{align}
+    &\dot q_{1d}=A\omega\sin(\omega t), \ \ \dot q_{1d}=A\omega^2\cos(\omega t)\\ 
+    &\dot q_{2d}=\ddot q_{2d}=0
+\end{align}
+in this case
+\begin{equation}
+    \begin{pmatrix}
+        m_1+m_2 & -m_2d_{c2}\\ 
+       -m_2d_{c2}& m_2d_{c2}^2+I_{c2,zz}
+    \end{pmatrix}\begin{pmatrix}
+        A\omega^2\cos(\omega t)\\ 0
+    \end{pmatrix}+\begin{pmatrix}
+       0 \\ 0
+    \end{pmatrix}=\begin{pmatrix}
+        u_1\\ u_2
+    \end{pmatrix}\implies
+\end{equation}\begin{equation}
+    \begin{cases}
+        u_1=A\omega^2\cos(\omega t)(m_1+m_2)\\ 
+        u_2=A\omega^2\cos(\omega t)(-m_2d_{c2})
+    \end{cases}
+\end{equation}
+the frequency of the commands is identical but the direction is inverted.\subsection{Factorization and Energy Conservation}
+Now, we compute the factorization of $\mathbf c$ through a matrix $C$ in order to write the model in the form of equation \eqref{dynModel}.\begin{align}
+    &\mathbf c = \begin{pmatrix}
+        -m_2d_{c2}\cos q_2\dot q_2^2\\ 
+        0
+    \end{pmatrix} =\begin{pmatrix}
+        0&-m_2d_{c2}\cos q_2\dot q_2\\ 
+        0&0
+    \end{pmatrix}\begin{pmatrix}
+        \dot q_1 \\ 
+        \dot q_2
+    \end{pmatrix}\implies \\ &C=\begin{pmatrix}
+        0&-m_2d_{c2}\cos q_2\dot q_2\\ 
+        0&0
+    \end{pmatrix}
+\end{align}
+this factorization is the one that satisfy the property of skew-symmetry for the matrix $\dot M-2C$, there exists an infinite number of factorizations, but these ones doesn't necessarily satisfies the property, for example\begin{equation}
+    N=\begin{pmatrix}
+        0&-m_2d_{c2}\cos q_2\dot q_2\\ 
+        -\dot q_2&\dot q_1
+    \end{pmatrix}.
+\end{equation}
+\begin{boxtheorem}{Skew Symmetry of $\dot M-2C$}{}
+    Let $C(\q,\dq)$ to be a factorization of the centrifugal and Coriolis terms of the dynamic model: $$\mathbf c(\q,\dq) = C(\q,\dq)\dq $$
+    if $C(\q,\dq)$ is the matrix constructed through the Christoffel symbols: 
+    $$ C[k,j]=c_{kj}=\sum_{i=1}^{n}c_{kij}(\q)\dq$$
+    then $\dot M-2C$ is skew symmetric.
+\end{boxtheorem}
+\textit{Proof}: The $(k,j)$-th entry of $\dot M$ is\begin{equation}
+    \dot m_{kj}=\sum{i=1}{n}\frac{\partial m_{kj}}{\partial q_i}\dot q_i
+\end{equation}
+and the $(k,j)$-th entry of $2C$ is\begin{equation}
+    2c_{kj}=2\sum_{i=1}^{n}c_{kij}(\q)\dot q_i=\sum_{i=1}^{n} \left( \frac{\partial m_{kj}}{\partial q_i} + \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)\dot q_i
+\end{equation}
+so the $(k,j)$-th entry of $\dot M-2C$ is\begin{equation}
+     \dot m_{kj}- 2c_{kj}=\sum_{i=1}^{n} \left(  \frac{\partial m_{ij}}{\partial q_k} - \frac{\partial m_{ki}}{\partial q_j} \right)\dot q_i = s_{kj}
+\end{equation}
+We denoted $s_{kj}$ this term. From this, it follows that $s_{kj}$, the $(j,k)$-th entry of $\dot M-2C$, is 
+\begin{equation}
+     s_{jk}=\dot m_{jk}- 2c_{jk}=\sum_{i=1}^{n} \left(  \frac{\partial m_{ik}}{\partial q_j} - \frac{\partial m_{ji}}{\partial q_k} \right)\dot q_i 
+\end{equation}
+since $M$ is symmetric, we can swap the indices:
+\begin{equation}
+     s_{jk}=\dot m_{jk}- 2c_{jk}=\sum_{i=1}^{n} \left(  \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)\dot q_i = -\sum_{i=1}^{n} \left(-  \frac{\partial m_{ki}}{\partial q_j} + \frac{\partial m_{ij}}{\partial q_k} \right)\dot q_i
+\end{equation}
+but this is exactly $-s_{kj}$, so\begin{equation}
+    s_{jk}=-s_{kj}.
+\end{equation}
+\hfill$\blacksquare$\bigskip
+
+\noindent
+A weaker property than skew symmetry is:\begin{equation}
+    \mathbf x^T(\dot M-2C)\mathbf x=\mathbf 0, \ \ \forall \mathbf x\in \R^n
+\end{equation}
+and holds for any factorization $N\mathbf c$
+\begin{equation}\label{conditionEnergyCons}
+    \mathbf x^T(\dot M-2N)\mathbf x=\mathbf 0, \ \ \forall \mathbf x\in \R^n.
+\end{equation}
+This relation explains the \textbf{conservation of the total energy}: Let $\mathcal H$ to be the total energy of a manipulator\begin{equation}
+    \mathcal H=T+U=\frac{1}{2}\dq^T M(\q)\dq+U(\q) 
+\end{equation}
+the evolution over time of the energy is\begin{equation}\label{EnergyEvolution}
+    \dot{\mathcal H}=\dq^TM(\q)\ddq+\frac{1}{2}\dq^T\dot M(\q)\dq+\frac{\partial U}{\partial \q}\dq
+\end{equation}
+From equation \eqref{dynModel}, the dynamic model\begin{equation}\label{dynModel}
+    M(\q)\ddq+N(\q,\dq)\dq+\mathbf g(\q)=\mathbf u
+\end{equation}
+can be reorganized\begin{equation}\label{reorganization}
+     M(\q)\ddq=\mathbf u-N(\q,\dq)\dq-\mathbf g(\q)
+\end{equation}
+by recalling that $\mathbf g=\left(\frac{\partial U}{\partial \q}\right)^T$ and by putting together \eqref{EnergyEvolution} and \eqref{reorganization} we get:\begin{align}
+    &\dot{\mathcal H}=
+    \dq^T(\mathbf u-N(\q,\dq)\dq-\mathbf g(\q))+\frac{1}{2}\dq^T\dot M(\q)\dq+\dq^T\mathbf g(\q)\implies \\
+   & \dot{\mathcal H}=\dq^T\mathbf u+\frac{1}{2}\dq^T(\dot M-2N)\dq
+\end{align}
+but since the relation \eqref{conditionEnergyCons} holds:\begin{equation}
+    \dot{\mathcal H}=\dq^T\mathbf u
+\end{equation}
+When $\mathbf u=\mathbf 0$ (no dissipation or increase) the \textit{total energy is constant}, instead, when $\mathbf u\ne \mathbf 0$ the \textbf{variation of total energy} is equal to the \textit{work done by non conservative forces}. For example, all the non conservative forces  relative to  friction can be expressed in the following form\begin{equation}
+    \mathbf u = -K_D\dq 
+\end{equation}
+where $K_D$ is a diagonal positive definite matrix. In this case, if we have only friction terms:\begin{equation}
+        \dot{\mathcal H}=-\dq^TK_D\dq 
+\end{equation}
+due to the properties of $K_D$, $\dq^TK_D\dq >0$, hence:
+\begin{equation}
+        \dot{\mathcal H}=-\dq^TK_D\dq <0
+\end{equation}
+there is always a loss of energy. If there is no friction and we have only torque commands   $\btau$:
+\begin{equation}
+        \dot{\mathcal H}=\dq^T\btau
+\end{equation}
+in this case the torque $\tau_i$ on joint $q_i$ will add energy on the system if and only if:\begin{equation}
+    \text{sign}(\tau_i)=\text{sign}(\dot q_i).
+\end{equation}
+
+\section{Algorithm for the Kinetic Energy}
+\redText{TODO}
 \end{document}
