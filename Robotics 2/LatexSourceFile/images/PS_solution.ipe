@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260310184957" modified="D:20260310185954"/>
+<info created="D:20260310184957" modified="D:20260402190146"/>
 <preamble>\usepackage{amssymb}
 \usepackage{amsmath}</preamble>
 <ipestyle name="basic">
@@ -350,7 +350,7 @@ h
 </path>
 <text transformations="translations" pos="264 692" stroke="0.502 0 0" type="label" width="41.569" height="6.472" depth="1.35" valign="baseline" size="script" style="math">\dot{\mathbf q}_{PS}=J^\# \dot{\mathbf y}</text>
 <text matrix="1 0 0 1 32 -36" transformations="translations" pos="264 692" stroke="0 0.502 0" type="label" width="8.926" height="5.33" depth="1.35" valign="baseline" size="script" style="math">\dot{\mathbf q}^*</text>
-<text matrix="1 0 0 1 -40 32" transformations="translations" pos="264 692" stroke="0 0 1" type="label" width="40.304" height="4.81" depth="1.35" valign="baseline" size="script" style="math">J\dot{\mathbf q}=\dot{\mathbf y}\in \mathbb R</text>
+<text matrix="1 0 0 1 -40 32" transformations="translations" pos="264 692" stroke="0 0 1" type="label" width="46.92" height="5.157" depth="1.35" valign="baseline" size="script" style="math">J\dot{\mathbf q}=\dot{\mathbf y}\in \mathbb R^m</text>
 <path stroke="1 0.502 0" pen="fat" arrow="normal/normal">
 256 688 m
 288 656 l

@@ -66,10 +66,10 @@ This document summarizes and presents the topics for the \titolo course for the 
 \chapter{Introduction}
 \section{An Overview in Dynamics}
 Previously, in the \href{https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf}{Robotics 1} course, we described the kinematic behavior of a robotic manipulator, assuming that no forces are involved, and that we can control directly the angular velocity of each joint, without any kind of resistance.
-We consider the following example\begin{center}
+We consider the following example:\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
 \end{center}
-it is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter-clockwise, while the first joint remains fixed. If we have to take into account the dynamics, we should also consider\begin{itemize}
+It is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter-clockwise, while the first joint remains fixed. If we have to take into account the dynamics, we should also consider\begin{itemize}
     \item the center of mass of the first and the second link
     \item the mass of the first and the second link
     \item the inertia of the first and the second link
@@ -262,7 +262,7 @@ where $F_{max}=mu_{max}$.
 \begin{center}
     \includegraphics[width=\textwidth ]{images/bang_bang.eps}
 \end{center}
-This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually lead to a configuration that is not exactly the desired one, in some cases, with an high error.
+This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually lead to a configuration that is not exactly the desired one, in some cases, with a high error.
 
 The feedback approach consists in using the state variables in the commands, it doesn't necessary requires the dynamic model, but some sensors to measure the position, velocity, and other quantities. In this simple example, the general approach is the following\begin{equation}
     m\ddot x = u(x,\dot x)
@@ -319,7 +319,7 @@ the final dynamic equation with the inclusion of this term is \begin{equation}
 \end{figure}
 \chapter{Advanced Topics on Kinematics}
 \section{Calibration}
-A measurement system has an high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
+A measurement system has a high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
 
 For simplicity, we consider a manipulator with $n$ (all revolut) joints. The  DH parameters are\begin{equation}
     \boldsymbol{\alpha }= \begin{pmatrix}
@@ -337,7 +337,7 @@ from these parameters we can compute the \textit{nominal} direct kinematics\begi
 \end{equation}
 $\btheta$ is the set of joint angles measured by the encoders. The calibration procedure is essential to have a perfect direct kinematics, especially in the industrial context. 
 \begin{itemize}
-    \item due to the tolerances in the mechanical construction and in assembly of the links and the joints, there is a small errors in the actual end effector pose respect to the one given by the direct kinematics.
+    \item due to the tolerances in the mechanical construction and in assembly of the links and the joints, there is a small error in the actual end effector pose respect to the one given by the direct kinematics.
     \item the errors distributed along the arm are amplified,  due to
 the open kinematic chain structure of most robots
     \item the goal of the calibration procedure is to recover as much as possible this end effector position error by adjusting the DH parameters.
@@ -505,7 +505,7 @@ The direct kinematics $\mathbf y=k(\mathbf q)$ is the map between the task space
 we usually denote $n=\dim\mathcal C$ the dimension of the configuration space and $m=\dim\mathcal T$ the dimension of the task space. A robot is \textbf{kinematically redundant} if $n>m$ (there are more degrees of freedom than strictly needed for executing the task), and $n-m$ is the \textbf{redundancy degree}. 
 The redundancy of a robot is a relative concept, doesn't depend on the number of joints, but on the number of dimension of the task space, a 6R robot is not redundant for the task of positioning and orientating the end effector, but is redundant for the task of just positioning.
 
-A redundant robot have an infinite number of solution for the inverse kinematics in the regular case, the redundancy can be used in various ways, for example\begin{itemize}
+A redundant robot has an infinite number of solution for the inverse kinematics in the regular case, the redundancy can be used in various ways, for example\begin{itemize}
     \item avoid collision with obstacles in the cartesian space 
     \item avoid kinematic singularities in the joint space 
     \item increase manipulability in specified directions
@@ -843,7 +843,7 @@ We have seen four different Jacobian based methods:\begin{itemize}
     \end{pmatrix}\dy$
     \item DLS: $\dq=J_{DLS}\dy$, this last one is not using a generalized inverse of $J$.
 \end{itemize}
-These solutions locally tries to avoid singularities, but there is no guarantees that that singularities are globally avoided, despite we are trying to minimize the joint velocity norm. Another issue of these local methods, is that leads to non repeatable motion: A periodic trajectory in the task space is not necessary mapped in the joint space as a periodic evolution of the joint trajectories. This makes harder to predict if a given task movement will leads to a collision of the manipulator with obstacles in the workspace.
+These solutions locally tries to avoid singularities, but there is no guarantees that  singularities are globally avoided, despite we are trying to minimize the joint velocity norm. Another issue of these local methods, is that leads to non repeatable motion: A periodic trajectory in the task space is not necessary mapped in the joint space as a periodic evolution of the joint trajectories. This makes harder to predict if a given task movement will leads to a collision of the manipulator with obstacles in the workspace.
 \subsection{Null Space Methods}\label{NullSpaceMethods}
 This method will exploit joint movements that lies in the null space of the Jacobian matrix. Before entering in the details, let's recall the following theorem.
 \begin{boxtheorem}{}{}
@@ -864,7 +864,7 @@ Notice how $(I-J^\#J)$ is the \textbf{projection operator} on the null space of 
     \centering
     \includegraphics[width=0.6\textwidth ]{images/qN.eps}
 \end{figure}
-\noindent In particular, $(I-J^\#J)$ is the \textit{orthogonal} projection operator, and have the following properties:\begin{itemize}
+\noindent In particular, $(I-J^\#J)$ is the \textit{orthogonal} projection operator, and has the following properties:\begin{itemize}
     \item is symmetric
     \item is idempotent: $(I-J^\#J)^2=(I-J^\#J)$
     \item $(I-J^\#J)^\#=(I-J^\#J)$
@@ -1477,7 +1477,7 @@ when this happens, we say that the constraint becomes \textbf{active}. If the co
      \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_4.eps}
 \end{figure}
 
-As we already mentioned, the robot have some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint velocities, acceleration and torque. These constraints are ''boxes'' in the joint configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
+As we already mentioned, the robot has some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint velocities, acceleration and torque. These constraints are ''boxes'' in the joint configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
 
 The \textbf{Saturation in the Null Space (SNS)} is a method to deal with these limits in the context of online resolution for the joint velocity, it consists in saturating one overdriven joint command at a time, until a feasible and better
 performing solution is found. it requires some \textit{decisions}, in which joint we should saturate to not affect the task execution, for tasks that are (certainly) unfeasible, SNS embeds the selection of a task
@@ -2093,7 +2093,7 @@ We analyze the PR planar manipulator:
 \centering 
      \includegraphics[width=0.7\textwidth ]{images/PR_3d.eps}
 \end{figure}
-The first joint is prismatica, to let $d_{c1}$ constant, we define this quantity as the distance between the second joint axis and $\mathbf p_{c1}$, and $d_{c2}$ is defined as the distance between (again) the second joint axis and $\mathbf p_{c2}$. The position of the center of mass of the first link is easy to compute, since is always on the $x_w$ axis, is given by $q_1-d_{c1}$:\begin{equation}
+The first joint is prismatic, to let $d_{c1}$ constant, we define this quantity as the distance between the second joint axis and $\mathbf p_{c1}$, and $d_{c2}$ is defined as the distance between (again) the second joint axis and $\mathbf p_{c2}$. The position of the center of mass of the first link is easy to compute, since is always on the $x_w$ axis, is given by $q_1-d_{c1}$:\begin{equation}
     \mathbf p_{c1}=\begin{pmatrix}
         q_1-d_{c1}\\0\\0
     \end{pmatrix}
@@ -2287,7 +2287,7 @@ if $\q=\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
       m_2d_{c2}\sin q_2
     \end{pmatrix}
 \end{align}
-it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, it will stay still if and only if $q_2=0$ or $q_2=\pi$.\bigskip
+it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, will remain stationary if and only if $q_2=0$ or $q_2=\pi$.\bigskip
 
 Now that we have the model we want to solve the inverse dynamics. The first desired trajectory is\begin{equation}
     \begin{cases}
@@ -2441,7 +2441,558 @@ there is always a loss of energy. If there is no friction and we have only torqu
 in this case the torque $\tau_i$ on joint $q_i$ will add energy on the system if and only if:\begin{equation}
     \text{sign}(\tau_i)=\text{sign}(\dot q_i).
 \end{equation}
+\subsection{Inertial Coupling and Bounds}
+This small section aims to list some classic robot structure and their relative inertia matrix.
 
-\section{Algorithm for the Kinetic Energy}
-\redText{TODO}
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/PP_orthogonal.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    For a 2P planar robot with orthogonal joints, the inertia matrix is diagonal and constant.\begin{equation}
+        M=\begin{pmatrix}
+            m_{11}&0\\ 0&m_{22}
+        \end{pmatrix}
+    \end{equation}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/PP_skewed.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    For a 2P planar robot with skewed joints, the inertia matrix is not diagonal but  constant.\begin{equation}
+        M=\begin{pmatrix}
+            m_{11}&m_{12}\\ m_{12}&m_{22}
+        \end{pmatrix}
+    \end{equation}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/PR.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    For a PR planar robot, the inertia matrix have the first term $m_{11}$ constant. Remember that, in every case, $m_{nn}$ is constant and $M$ never depends on $q_1$.\begin{equation}
+        M=\begin{pmatrix}
+            m_{11}&m_{12}(q_2)\\ m_{12}(q_2)&m_{22}
+        \end{pmatrix}
+    \end{equation}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/2R.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    For a 2R planar robot, only $m_{22}$ is constant.\begin{equation}
+        M=\begin{pmatrix}
+            m_{11}(q_2)&m_{12}(q_2)\\ m_{12}(q_2)&m_{22}
+        \end{pmatrix}
+    \end{equation}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/3R.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    The inertia matrix of a 3R articulated spatial robot has the following structure.\begin{equation}
+        M=\begin{pmatrix}
+            m_{11}(q_2,q_3)&0&0\\ 
+            0&m_{22}(q_3)&m_{23}(q_3)\\ 
+            0&m_{23}(q_3)&m_{33}
+        \end{pmatrix}
+    \end{equation}
+  \end{minipage}
+\end{figure}
+It is important to know that the dynamics term in the model are bounded, in particular, for any value of $\q$ and $\dq$, there are 8 constants $k_0,k_1,\dots k_7$ such that:\begin{align}
+    &k_0\le \|M(\q)\|\le k_1+k_2\|\q\|+k_3\|\q\|^2\\ 
+    &\|S(\q,\dq)\|\le (k_4+k_5\|\q\|)\|\dq\|\\ 
+    &\|\mathbf g(\q)\|\le k_6+k_7\|\q\|
+\end{align}
+$S(\q,\dq)$ is the matrix of a factorization of the centrifugal/Coriolis terms. If all the joins are revolute, these three conditions simplify to:\begin{align}
+    &k_0\le \|M(\q)\|\le k_1\\ 
+    &\|S(\q,\dq)\|\le k_4\|\dq\|\\ 
+    &|\mathbf g(\q)\|\le k_6
+\end{align}
+in these relations we are computing the norm of the matrix $M$ and $S$. There are various ways to define the norm of a matrix, in this case, given the norm for a vector $\|\cdot \|$, the \textbf{induced norm} of a matrix $A$ is defined as follows:\begin{equation}
+    \|A\|=\sup_{\mathbf x\in \R^n\backslash\{\mathbf 0\}}\frac{\|A\mathbf x\|}{\|\mathbf x\|}
+\end{equation}
+if we consider the L2 norm $\|\mathbf x\|_2=\sqrt{\sum_{i=1}^n x_i^2}$, the induced norm of a matrix is given by their maximum singular value:\begin{equation}
+    \|A\|_2=\sigma_{\max}(A)=\sqrt{\lambda_{\max}(A^TA)}
+\end{equation}
+here, $\lambda_{\max}(A^TA)$ is the maximum eigenvalue of $A^TA$. For symmetric and positive definite matrices like the inertia matrix $M$, the norm is easier to compute since it is just the highest eigenvalue:\begin{equation}
+    \|M\|_2=\lambda_{\max}(M).
+\end{equation}
+
+\section{Computing the Kinetic Energy}
+The complexity of the dynamic model and the number of terms involved grows more than exponentially with the degrees of freedom, it is almost impossible to derive the full inertia matrix of a 6R manipulator by hand.
+
+In this section, a recursive method to compute symbolically the inertia matrix $M(\q)$ is presented, this matrix can characterize the full model since $\mathbf c(\q,\dq)$ is derived by $M(\q)$ and the gravity term $\mathbf g(\q)$ is easy to define. The method aims to compute recursively $\mathbf v_{ci}$ and $\bomega_{i}$ starting from the base toward the end effector considering all the link. We use the notation $^{i}\mathbf  u$ to denote the point $\mathbf u$ expressed in $RF_i$.
+
+Recall that the vector $\mathbf r_{ci}$, that identifies the position of the center of mass of link $i$, is always constant in the reference frame $RF_i$. The algorithm take advantage of the following rigid bodies relation:\begin{equation}\label{vel_rigid_bodies}
+    \mathbf v_{ci}=\mathbf v_i+\bomega_i\times\mathbf r_{ci}
+\end{equation}
+where $\mathbf v_i$ identifies the velocity of the reference frame $RF_i$. We need an indicator $\sigma_i$ that discriminates the prismatic joints:\begin{equation}
+    \sigma_i=\begin{cases}
+        0\text{ if joint $i$ is revolute}\\
+        1\text{ if joint $i$ is prismatic}
+    \end{cases}
+\end{equation}
+The method use the relations of differential kinematics, to compute the quantities at each step, we need the transformations between the moving frames, we denote $$^{i-1}R_i(q_i) $$
+the $3\times 3$ rotation matrix between the frame $i-1$ to the frame $i$:\begin{equation}
+    ^{i-1}\mathbf u= ^{i-1}R_i(q_i)  ^{i}\mathbf u.
+\end{equation}
+Now we proceeds to describe the recursive steps. We need to compute ${}^i\bomega_i$ and ${}^i\mathbf v_{i}$ and we have already computed ${}^{i-1}\bomega_{i-1}$ and ${}^{i-1}\mathbf v_{i-1}$. We compute ${}^i\bomega_i$ as follows:
+\begin{boxequation*}{Recursive Step for $ {}^i\bomega_i$}{}
+\begin{equation}\label{bomega_i}
+    {}^i\bomega_i=^{i-1}R^T_i(q_i)[{}^{i-1}\bomega_{i-1}+(1-\sigma_i)\dot q_i {}^{i-1}\mathbf z_{i-1}].
+\end{equation}
+\end{boxequation*}
+First of all, ${}^{i-1}\mathbf z_{i-1}$ is always $\begin{pmatrix}
+    0&0&1
+\end{pmatrix}^T$, since the angular velocities sum up, ${}^{i-1}\bomega_{i-1}+(1-\sigma_i)\dot q_i {}^{i-1}\mathbf z_{i-1}$ gives the angular velocity of link $i$  in the reference frame $RF_{i-1}$\begin{itemize}
+    \item if $\sigma_i=0$ and the joint is revolute, the two angular velocities are added together 
+    \item if $\sigma_i=1$ and the joint is prismatic, there is no additional angular velocity produced by this joint.
+\end{itemize}
+ \begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/computeKineticStep1.eps}
+\end{figure}
+${}^i\bomega_i$ is always $\dot q_i{}^i\mathbf z_i$ since the revolute joint contributes in the angular velocity only along its axis. 
+Then, $ {}^i\mathbf v_i$ is computed using  ${}^i\bomega_i$ as follows:
+\begin{boxequation*}{Recursive Step for $ {}^i\mathbf v_i$}{}
+\begin{equation}\label{v_i}
+    {}^i\mathbf v_i=^{i-1}R^T_i(q_i)[
+         {}^{i-1}\mathbf v_{i-1}+\sigma_i\dot q_i {}^{i-1}\mathbf z_{i-1}+
+         ^{i-1}\bomega_{i}\times ^{i-1}\mathbf r_{i-1,i}
+    ].
+\end{equation}
+\end{boxequation*}
+Let's analyze each component\begin{itemize}
+    \item $\sigma_i\dot q_i ^{i-1}\mathbf z_{i-1}$ is the linear velocity contribution given by the prismatic joint, in fact is non zero if and only if $\sigma_i=1$
+    \item $^{i-1}\bomega_{i}\times ^{i-1}\mathbf r_{i-1,i}$ is the linear (tangential) velocity given by the rotation of the previous joint. $\mathbf r_{i-1,i}$ is the vector going from $RF_{i-1}$ to $RF_i$.
+    \begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.45\textwidth ]{images/computeKineticStep2.eps}
+\end{figure}
+\end{itemize}
+After computing ${}^i\bomega_i$, ${}^i\mathbf v_i$ for all $i$, we compute ${}^i\mathbf v_{ci}$ using the relation \eqref{vel_rigid_bodies}, and from the König theorem we can compute the kinetic energy of the system (from which the inertia matrix is derived).
+\subsection{Dynamic Model of a 2R Robot}
+We give an example of the algorithm at work by considering a planar 2R manipulator, with link length $l_1$ and $l_2$.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.55\textwidth ]{images/dynamic2R.eps}
+\end{figure}
+We assume that the robot is moving on the vertical plane so the gravity vector is\begin{equation}
+    \mathbf g=\begin{pmatrix}
+        0\\-g_0\\ 0
+    \end{pmatrix}
+\end{equation}
+the rotation matrices between the frames of this simple manipulator are\begin{equation}
+    {}^{i-1}R_i(q_i)=\begin{pmatrix}
+        \cos(q_i)&-\sin(q_i)&0\\ 
+        \sin(q_i)&\cos(q_i)&0\\ 
+        0&0&1
+    \end{pmatrix}.
+\end{equation}
+The center of mass of link $i$ in reference frame $RF_i$ is always on the $\mathbf x_i$ axis simply given by\begin{equation}
+    {}^i\mathbf r_{ci}=\begin{pmatrix}
+        -l_i+d_{ci}\\ 0\\ 0
+    \end{pmatrix}.
+\end{equation}
+Since the method is recursive, it needs an initialization for the first step at $i=0$:\begin{equation}
+    {}^0\bomega_0={}^0\mathbf v_0=\mathbf 0.
+\end{equation}
+As the first step, we compute  ${}^1\bomega_1$ as described in equation \eqref{bomega_i}:\begin{align}
+    &{}^1\bomega_1=^{0}R^T_1(q_1)[{}^{0}\bomega_{0}+(1-\sigma_1)\dot q_1 {}^{0}\mathbf z_{0}]
+    \\ 
+    &=\begin{pmatrix}
+        \cos(q_1)&\sin(q_1)&0\\ 
+        -\sin(q_1)&\cos(q_1)&0\\ 
+        0&0&1
+    \end{pmatrix}\left[
+        \mathbf 0 + \dot q_1\begin{pmatrix}
+            0\\0\\1
+        \end{pmatrix}
+    \right]=\begin{pmatrix}
+            0\\0\\\dot q_1
+        \end{pmatrix}
+\end{align}
+then, as described in equation \eqref{v_i}, we compute ${}^1\mathbf v_1$:\begin{align}
+    &{}^1\mathbf v_1=^{0}R^T_1(q_1)[
+         {}^{0}\mathbf v_{0}+\sigma_i\dot q_1 {}^{0}\mathbf z_{0}+
+         ^{0}\bomega_{1}\times ^{0}\mathbf r_{0,1}
+    ]\\ 
+    &=
+    \begin{pmatrix}
+        \cos(q_1)&\sin(q_1)&0\\ 
+        -\sin(q_1)&\cos(q_1)&0\\ 
+        0&0&1
+    \end{pmatrix}\left[
+       \mathbf 0+
+        \begin{pmatrix}
+            0\\0\\\dot q_1
+        \end{pmatrix}\times \begin{pmatrix}
+            l_1\cos(q_1)\\l_1\sin(q_1)\\ 0
+        \end{pmatrix}
+    \right]=\begin{pmatrix}
+           0\\l_1\dot q_1\\ 0
+        \end{pmatrix}
+\end{align}
+we have all the ingredients to compute ${}^1\mathbf v_{c1}$ using the relation \eqref{vel_rigid_bodies}:\begin{equation}
+    {}^1\mathbf v_{c1}=\begin{pmatrix}
+           0\\l_1\dot q_1\\ 0
+        \end{pmatrix}+\begin{pmatrix}
+            0\\0\\\dot q_1
+        \end{pmatrix}\times \begin{pmatrix}
+        -l_1+d_{c1}\\ 0\\ 0
+    \end{pmatrix}=\begin{pmatrix}
+        0\\ d_{c1}\dot q_1\\ 0
+    \end{pmatrix}
+\end{equation}
+the kinetic energy of the first link is\begin{align}
+    &T_1=
+    \frac{1}{2}m_1{}^1\mathbf v_{c1}^T{}^1\mathbf v_{c1}+\frac{1}{2}{}^1\bomega_1^TI_{c1}{}^1\bomega_1\\
+    &=\frac{1}{2}m_1 d^2_{c1}\dot q^2_1+
+    \frac{1}{2}\begin{pmatrix}
+            0&0&\dot q_1
+        \end{pmatrix}\begin{pmatrix}
+       I_{c1,xx}&I_{c1,xy}&I_{c1,xz}\\
+       I_{c1,yx}&I_{c1,yy}&I_{c1,yz}\\
+       I_{c1,zx}&I_{c1,zy}&I_{c1,zz}\\
+    \end{pmatrix}\begin{pmatrix}
+            0\\0\\\dot q_1
+        \end{pmatrix}\\ 
+        &=
+        \frac{1}{2}m_1 d^2_{c1}\dot q^2_1+
+        \frac{1}{2}I_{c1,zz}\dot q_1^2=\frac{1}{2}(I_{c1,zz}+m_1 d^2_{c1})\dot q^2_1.
+\end{align}
+Now, we proceed to the second step with $i=2$, by computing ${}^2\bomega_2$:\begin{align}
+    &{}^2\bomega_2=^{1}R^T_2(q_2)[{}^{1}\bomega_{1}+(1-\sigma_2)\dot q_2 {}^{1}\mathbf z_{1}]\\
+    &=\begin{pmatrix}
+        \cos(q_2)&\sin(q_2)&0\\ 
+        -\sin(q_2)&\cos(q_2)&0\\ 
+        0&0&1
+    \end{pmatrix}
+    \left[
+        \begin{pmatrix}
+            0\\0\\\dot q_1
+        \end{pmatrix}+\dot q_2 \begin{pmatrix}
+            0\\0\\1
+        \end{pmatrix}\right]= \begin{pmatrix}
+            0\\0\\\dot q_1+\dot q_2
+        \end{pmatrix}
+\end{align}
+and then ${}^2\mathbf v_{2}$\begin{align}
+    &{}^2\mathbf v_2=^{1}R^T_2(q_2)[
+         {}^{1}\mathbf v_{1}+\sigma_2\dot q_2 {}^{1}\mathbf z_{1}+
+         ^{1}\bomega_{2}\times ^{1}\mathbf r_{1,2}
+    ]\\ 
+    &=\begin{pmatrix}
+        \cos(q_2)&\sin(q_2)&0\\ 
+        -\sin(q_2)&\cos(q_2)&0\\ 
+        0&0&1
+    \end{pmatrix}
+    \left[
+        \begin{pmatrix}
+           0\\l_1\dot q_1\\ 0
+        \end{pmatrix}+\begin{pmatrix}
+            0\\0\\\dot q_1+\dot q_2
+        \end{pmatrix}\times \begin{pmatrix}
+            l_2\cos( q_2)\\ 
+            l_2\sin (q_2)\\ 0
+        \end{pmatrix}
+    \right]\\
+    &=\begin{pmatrix}
+        l_1\sin(q_2)\dot q_1\\l_1\cos(q_2)\dot q_1\\0
+    \end{pmatrix}+\begin{pmatrix}
+        0\\0\\\dot q_1+\dot q_2
+    \end{pmatrix}\times \begin{pmatrix}
+        l_2\\0\\0
+    \end{pmatrix}=\begin{pmatrix}
+        l_1\sin (q_2)\dot q_1\\l_1\cos(q_2)\dot q_1 + l_2(\dot q_1+\dot q_2)
+        \\0
+    \end{pmatrix}
+\end{align}
+the velocity of the center of mass of the second link is\begin{align}
+    &{}^2\mathbf v_{c2}=\begin{pmatrix}
+        l_1\sin (q_2)\dot q_1\\l_1\cos(q_2)\dot q_1 + l_2(\dot q_1+\dot q_2)
+        \\0
+    \end{pmatrix}+\begin{pmatrix}
+        0\\0\\\dot q_1+\dot q_2
+    \end{pmatrix}\times \begin{pmatrix}
+        -l_2+d_{c2}\\ 0\\ 0
+    \end{pmatrix}\\
+    &=\begin{pmatrix}
+        l_1\sin(q_2)\dot q_1\\ 
+        l_1\cos(q_2)\dot q_1+d_{c2}(\dot q_1+\dot q_2)
+        \\ 0
+    \end{pmatrix}
+\end{align}
+the kinetic energy of the second link is\begin{equation}
+    T_2=\frac{1}{2}m_2\big ( l_1^2\dot q_1^2+d_{c2}^2(\dot q_1+\dot q_2)^2+
+    2l_1d_{c2}\cos(q_2)\dot q_1(\dot q_1+\dot q_2)\big)+\frac{1}{2}I_{c2,zz}(\dot q_1+\dot q_2)^2.
+\end{equation}
+The kinetic energy of the whole system is\begin{equation}
+    T=T_1+T_2=\dq^TM(\q)\dq 
+\end{equation}
+without entering in the detailed steps of the factorization, we give directly the elements $m_{ij}$ of the matrix $M$:\begin{equation}
+    m_{11}(\q)=I_{c1,zz} + m_1 d_{c1}^2 + I_{c2,zz} + m_2 d_{c2}^2 + m_2 l_1^2 + 2m_2 l_1 d_{c2} \cos(q_2)
+\end{equation}
+it is convenient to regroup the constant terms and denote it with a single coefficient:
+\begin{align}
+   & m_{11}(\q)=\rho_1 + 2\rho_2 \cos q_2\\ 
+   &\rho_1=I_{c1,zz} + m_1 d_{c1}^2 + I_{c2,zz} + m_2 d_{c2}^2 + m_2 l_1^2\\ 
+   &\rho_2=m_2l_1d_{c2}
+\end{align}
+\begin{boxdefinition}{Dynamic Coefficients}{}
+    The dynamic coefficients $\rho_i$ are coefficients that group constant terms in a dynamic model (such as mass or joint length). They are useful for making the inertia matrix more readable, and are considered in the context of linear parametrization.
+\end{boxdefinition}
+Then we have\begin{align}
+    &m_{12}(\q)=m_{21}(\q)=I_{c2,zz} + m_2 d_{c2}^2 + m_2 l_1 d_{c2} \cos q_2\implies \\
+    &m_{12}(\q)=m_{21}(\q)=\rho_3+\rho_2\cos q_2\\
+    &\rho_3=I_{c2,zz} + m_2 d_{c2}^2\\
+    &m_{22}(\q)=I_{c2,zz} + m_2 d_{c2}^2=\rho_3.
+\end{align}
+The inertia matrix is rewritten in the following form:\begin{equation}
+    M(\q)=\begin{pmatrix}
+        \rho_1 + 2\rho_2 \cos q_2&\rho_3+\rho_2\cos q_2\\ 
+        \rho_3+\rho_2\cos q_2&\rho_3
+    \end{pmatrix}
+\end{equation}
+notice how it doesn't depend on $q_1$. Now that we have the symbolic expression of $M$, we can compute the centrifugal and Coriolis terms:\begin{align}
+    &C_1(\q)=\frac{1}{2}\left(
+        \frac{\partial M_1}{\partial \q}+\left(
+         \frac{\partial M_1}{\partial \q}
+    \right)^T+ \frac{\partial M}{\partial \q_1}
+    \right)=\begin{pmatrix}
+        0&-\rho_2\sin q_2\\
+        -\rho_2\sin q_2&-\rho_2\sin q_2
+    \end{pmatrix}\\ 
+    &\implies \mathbf c_1(\q,\dq)=\dq^T C_1(\q)\dq=-\rho_2\sin q_2(\dot q_2^2+2\dot q_1\dot q_2)\\[1.5ex]
+    &C_2(\q)=\frac{1}{2}\left(
+        \frac{\partial M_2}{\partial \q}+\left(
+         \frac{\partial M_2}{\partial \q}
+    \right)^T+ \frac{\partial M}{\partial \q_2}
+    \right)=\begin{pmatrix}
+       \rho_2\sin q_2&0\\ 0&0
+    \end{pmatrix}\\ 
+    &\implies \mathbf c_2(\q,\dq)=\dq^T C_2(\q)\dq=\rho_2\sin q_2\dot q_1^2
+\end{align}
+Now, we have to compute the gravity terms. The potential energy of the links is\begin{align}
+    &U_1=-m_1\mathbf g^T\mathbf r_{0,c1}=m_1g_0d_{c1}\sin q_1\\ 
+    &U_2=-m_2\mathbf g^T\mathbf r_{0,c2}=m_2g_0(l_1\sin q_1+d_{c2}\sin(q_1+q_2))
+\end{align}
+now we have to compute the gradient of $U=U_1+U_2$:\begin{align}
+    &\left(\frac{\partial U}{\partial \q}\right)^T=\begin{pmatrix} g_0(m_1 d_{c1} \cos(q_1)+ m_2 l_1 \cos(q_1) + m_2 d_{c2} \cos(q_1+q_2)) \\ g_0 m_2 d_{c2} \cos(q_1+q_2) \end{pmatrix}\\ & =\begin{pmatrix}
+    \rho_4\cos q_1+\rho_5 \cos (q_1+q_2)\\ \rho_5 \cos (q_1+q_2)
+    \end{pmatrix}\end{align}where\begin{align} 
+    &\rho_4=g_0(m_1 d_{c1}+ m_2 l_1)\\ 
+    &\rho_5= g_0 m_2 d_{c2}.
+\end{align}
+The full dynamic model of the 2R robot is\begin{equation}
+    \begin{pmatrix}
+        \rho_1 + 2\rho_2 \cos q_2&\rho_3+\rho_2\cos q_2\\ 
+        \rho_3+\rho_2\cos q_2&\rho_3
+    \end{pmatrix}\ddq+\begin{pmatrix}
+        -\rho\sin q_2(\dot q_2^2+2\dot q_1\dot q_2)\\ 
+        \rho_2\sin q_2\dot q_1^2
+    \end{pmatrix}+\begin{pmatrix}
+    \rho_4\cos q_1+\rho_5 \cos (q_1+q_2)\\ \rho_5 \cos (q_1+q_2)
+    \end{pmatrix}=\mathbf u
+\end{equation}
+we rewrite it in scalar form as a system of two equations:\begin{align}
+&(\rho_1 + 2\rho_2 c_2)\ddot{q}_1 + (\rho_2 c_2 + \rho_3)\ddot{q}_2 - \rho_2 s_2(\dot{q}_2^2 + 2\dot{q}_1 \dot{q}_2)
++ \rho_4 c_1 + \rho_5 c_{12} = u_1 \\
+&(\rho_2 c_2 + \rho_3)\ddot{q}_1 + \rho_3 \ddot{q}_2 + \rho_2 s_2 \dot{q}_1^2 + \rho_5 c_{12} = u_2
+\end{align}
+we used the notation $c_1=\cos(q_1)$, $c_{12}=\cos(q_1+q_2)$ etc\dots
+
+The values of $\rho_i$ depends on the dynamic parameters, the construction of the mechanical structure of the manipulator can take place in such a way as to cancel some of these parameters and make the dynamic model simpler, for example, if $\rho_2$ is null, the model became: 
+\begin{align}
+&\rho_1\ddot{q}_1 + \rho_3\ddot{q}_2 -  2\dot{q}_1 \dot{q}_2
++ \rho_4 c_1 + \rho_5 c_{12} = u_1 \\
+&\rho_3\ddot{q}_1 + \rho_3 \ddot{q}_2  + \rho_5 c_{12} = u_2
+\end{align}
+is it possible to make $\rho_2=0$? $\rho_2$ is equal to $m_2l_2d_{c2}$, $m_2$ is the mass of the second link so it can't be zero, $l_2$ is the link length and can't be zero too. $d_{c2}$ is the distance between the joint axis of link two and the center of mass of the second link: \textbf{It can be zero} if the center of mass is exactly on the joint axis, this condition can be satisfied by a link construction that adequately distributes the weight (for example, adding a counterweight on the other side of the link).
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/counter_weight.pdf}
+\end{figure}
+\section{Closed Kinematic Chain}
+
+In some cases, the gravity term in the dynamic model of a manipulator is identically zero, for example, if the motion of the robot is on an horizontal plane, making the potential energy $U$ constant, or for manipulators placed in remote space where the gravity can be considered absent. There are other cases when the term $\frac{\partial U}{\partial \q}$ is null, such for \textit{closed kinematic chain}.
+
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/closed_chain.png}
+\end{figure}
+In this section we analyze a particular closed kinematic chain manipulator, a robot with a \textit{parallel structure}. Observe the figure \ref{parallel}.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/parallel_new.drawio.pdf}
+     \caption{Parallel structure manipulator, 3D view.}
+     \label{parallel}
+\end{figure}
+The green joints are active and actuated, the grey one are passive, hence, despite the 5 total joints, the system have two degrees of freedom, and the end effector always lies on the $(x,y)$ plane. The planar view of the manipulator is the following:
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/parallel_2.eps}
+     \caption{Parallel structure manipulator, planar view.}
+\end{figure}
+The coordinate of the system are respectively $q_1$ as the angle between the first link and the $x$ axis and $q_2$ as the angle between the second link and the $x$ axis. Notice how the angle between the fifth link and the $x$ axis is exactly $q_2-\pi$. The direct kinematics for the position of the end effector on the $(x,y)$ plane is \begin{equation}
+    \mathbf p_{EE}=k(\q)=\begin{pmatrix}
+        l_1\cos q_1\\ 
+        l_1\sin q_1
+    \end{pmatrix}+\begin{pmatrix}
+        l_5\cos(q_2-\pi)\\ 
+        l_5\sin(q_2-\pi)
+    \end{pmatrix}=\begin{pmatrix}
+        l_1\cos q_1-l_5\cos q_2\\ 
+        l_1\sin q_1-l_5\sin q_2
+    \end{pmatrix}
+\end{equation}
+Now we consider the centers of mass of the links:
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/parallel_3.eps}
+\end{figure}
+The direct kinematics for the centers of mass is easy to compute (from now we use the short hand notation for the trigonometric terms):
+
+\begin{align}
+    &\mathbf p_{c1}=\begin{pmatrix}
+        l_{c1}c_1\\ 
+        l_{c1}s_1
+    \end{pmatrix}\\ 
+    &\mathbf p_{c2}=\begin{pmatrix}
+        l_{c2}c_2\\ 
+        l_{c2}s_2
+    \end{pmatrix}\\ 
+    &\mathbf p_{c3}=\begin{pmatrix}
+        l_{2}c_2+l_{c3}c_1\\ 
+        l_{2}s_2+l_{c3}s_1
+    \end{pmatrix}\\ 
+    &\mathbf p_{c4}=\begin{pmatrix}
+        l_1c_1-l_{c4}c_2\\ 
+        l_1s_1-l_{c4}s_2
+    \end{pmatrix}
+\end{align}
+The fourth and fifth link are considered as a single rigid body and they always have the same angular velocity. The angular velocity of the first link is $\bomega_1=(0,0,\dot q_1)^T$. The third link is ''constrained'' and always rotate with the first one, so $\bomega_3=\bomega_1$. The same reasoning applies for the second and fourth link:\begin{equation}
+    \bomega_2=\bomega_4=(0,0,\dot q_2)^T.
+\end{equation}
+The velocity of the centers of mass is obtained by differentiating $\mathbf p_{ci}$:
+    \begin{align}
+    &\mathbf v_{c1}=\dot q_1\begin{pmatrix}
+        -l_{c1}s_1\\ 
+        l_{c1}c_1
+    \end{pmatrix}\\ 
+    &\mathbf v_{c2}=\dot q_2\begin{pmatrix}
+       - l_{c2}s_2\\ 
+        l_{c2}c_2
+    \end{pmatrix}\\ 
+    &\mathbf v_{c3}=\begin{pmatrix}
+        -\dot q_2l_{2}s_2-\dot q_1l_{c3}s_1\\ 
+        \dot q_2l_{2}c_2+\dot q_1l_{c3}c_1
+    \end{pmatrix}\\ 
+    &\mathbf v_{c4}=\begin{pmatrix}
+        -\dot q_1l_1s_1+\dot q_2l_{c4}s_2\\ 
+        \dot q_1l_1c_1-\dot q_2l_{c4}c_2
+    \end{pmatrix}.
+\end{align}
+We have all the ingredients to compute the kinetic energy for each link, we denote $I_{ci,zz}$ the bottom right entry of the inertia matrix $I_{ci}$ of the $i$-th link respect its center of mass:\begin{align}
+    &T_1=\frac{1}{2}m_1l_{c1}^2\dot q_1^2+\frac{1}{2}I_{c1,zz}\dot q_1^2\\[1.5ex]
+    &T_2=\frac{1}{2}m_2l_{c2}^2\dot q_2^2+\frac{1}{2}I_{c2,zz}\dot q_2^2\\[1.5ex]
+    &T_3 = \frac{1}{2} m_3 (l_2^2 \dot{q}_2^2 + l_{c3}^2 \dot{q}_1^2 + 2l_2 l_{c3} c_{2-1} \dot{q}_1 \dot{q}_2) + \frac{1}{2} I_{c3,zz} \dot{q}_1^2 \\[1.5ex]
+    &T_4 = \frac{1}{2} m_4 (l_1^2 \dot{q}_1^2 + l_{c4}^2 \dot{q}_2^2 - 2l_1 l_{c4} c_{2-1} \dot{q}_1 \dot{q}_2) + \frac{1}{2} I_{c4,zz} \dot{q}_2^2
+\end{align}
+the kinetic energy of the whole system is $T=\frac{1}{2}\dq^TM(\q)\dq$ where\begin{equation}
+    M(\q)=\begin{pmatrix}
+I_{c1,zz} + m_1 l_{c1}^2 + I_{c3,zz} + m_3 l_{c3}^2 + m_4 l_1^2 & (m_3 l_2 l_{c3} - m_4 l_1 l_{c4}) c_{2-1}  \\[2ex]
+(m_3 l_2 l_{c3} - m_4 l_1 l_{c4}) c_{2-1} & I_{c2,zz} + m_2 l_{c2}^2 + I_{c4,zz} + m_4 l_{c4}^2 + m_3 l_2^2
+\end{pmatrix}
+\end{equation}
+The diagonal of this matrix is constant, notice how, we can design the mechanical structure of the manipulator in order to accomplish the following equality:\begin{equation}
+    m_3l_2l_{c3}=m_4l_1l_{c4}
+\end{equation}
+if so, the inertia matrix becomes \textbf{diagonal and constant}:
+\begin{equation}
+    M=\begin{pmatrix}
+    m_{11} & 0  \\
+    0 & m_{22}
+    \end{pmatrix}
+\end{equation}
+this is another example of how the mechanical design can simplify the dynamic model and leading to a \textbf{big advantage} for the \textbf{design of motion control laws}, in fact, since the matrix is constant, the centrifugal and Coriolis terms $\mathbf c(\q,\dq)$ are identically zero (they are computed through the partial derivatives of the columns in $M$), and the dynamic model simplifies in\begin{equation}
+    \begin{pmatrix}
+    m_{11} & 0  \\
+    0 & m_{22}
+    \end{pmatrix}
+    \begin{pmatrix}
+    \ddot q_1\\ 
+    \ddot q_2
+    \end{pmatrix}
+    +\mathbf g(\q)=\begin{pmatrix}
+    u_1\\ u_2
+    \end{pmatrix}
+\end{equation}
+if the robot is placed on an horizontal plane and $U$ is constant, then:\begin{equation}
+    \begin{cases}
+        m_{11}\ddot q_1=u_1\\ 
+         m_{22}\ddot q_2=u_2
+    \end{cases}
+\end{equation}
+the dynamic model is \textbf{mechanically decoupled} and \textbf{linear}.
+
+Now, let's take in account the gravity, directed on the $y$ axis. The potential energy of each component can be easily computed by considering the $y$ coordinate of the position of center of mass:\begin{align}
+    &U_1=m_1g_0l_{c1}s_1\\ 
+    &U_2=m_2g_0l_{c2}s_2\\ 
+    &U_3=m_3g_0(l_{2}s_2+l_{c3}s_1)\\
+    &U_4=m_4g_0( l_1s_1-l_{c4}s_2)
+\end{align}
+given $U=\sum U_i$, the gravity contribution in the dynamic model is\begin{equation}
+    \mathbf g(\q)=\left(\frac{\partial U}{\partial \q}\right)^T=\begin{pmatrix}
+        g_0(m_1l_{c1}+m_3l_{c3}+m_4l_1)c_1\\
+        g_0(m_2l_{c2}+m_3l_{2}-m_4l_{c4})c_2
+    \end{pmatrix}=\begin{pmatrix}
+      g_1(q_1)\\ g_2(q_2)
+    \end{pmatrix}
+\end{equation}
+these gravity components are decoupled, the model becomes\begin{equation}
+    \begin{cases}
+        m_{11}\ddot q_1+g_1(q_1)=u_1\\ 
+         m_{22}\ddot q_2+g_2(q_2)=u_2
+    \end{cases}
+\end{equation}
+notice how we can still impose additional mechanical conditions on the structure to nullify the gravity terms, we have to satisfy:\begin{align}
+   & m_1l_{c1}+m_3l_{c3}+m_4l_1=0\\
+   & m_2l_{c2}+m_3l_{2}-m_4l_{c4}=0
+\end{align}
+with the previous condition, the choice of the dynamics parameters have to satisfy the system of three equations:\begin{equation}
+    \begin{cases}
+        m_1l_{c1}+m_3l_{c3}+m_4l_1=0\\
+        m_2l_{c2}+m_3l_{2}-m_4l_{c4}=0\\
+        m_3l_2l_{c3}-m_4l_1l_{c4}=0
+    \end{cases}.
+\end{equation}
 \end{document}
+ 
