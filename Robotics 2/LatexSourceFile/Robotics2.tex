@@ -1592,55 +1592,73 @@ The Equation \eqref{eq:SNS} define how the solution will be evaluated, the contr
     \Function{MainLoop}{$\dy, J$}
     \State limit\_exceeded = TRUE
     \State $W=I$, $s=1$, $s^*=0$, $\dq_N=\mathbf 0$ \greenText{//$s^*$ is the largest task scale factor found so far}
-    \While{limit\_exceeded = TRUE}
+    \While{limit\_exceeded == TRUE}
     \State limit\_exceeded = FALSE
-    \State $\overline\dq=\dq_N+(JW)^\#(\dy-J\dq_N)$
-    \If{$\exists i \in \{1,\dots n\}$ such that $\overline{\dot {q_i}} < \dot Q_{min,i}$ \texttt{or} $\overline{\dot {q_i}} > \dot Q_{max,i}$}
+    \State $\overline\dq=\dq_N+(JW)^\#(\dy-J\dq_N)$\label{alg:first_assignment}
+    \If{$\exists i \in \{1,\dots n\}$ such that $\overline{\dot {q_i}} < \dot Q_{min,i}$ \texttt{or} $\overline{\dot {q_i}} > \dot Q_{max,i}$}\label{alg:check_bounds}
     \State \greenText{//some joints exceed their maximum speed}
     \State limit\_exceeded = TRUE
     \State $\mathbf a=(JW)^\#\dy$
     \State $\mathbf b=\overline\dq-\mathbf a$
-    \State  $s=$ \Call{GetTaskScalingFactor}{$\mathbf a,\mathbf b$}
-    \If{$s>s^*$}
+    \State  $s=$ \Call{GetTaskScalingFactor}{$\mathbf a,\mathbf b$}\label{alg:scl_factor}
+    \If{$s>s^*$}\label{alg:largesr_factor_obtained}
     \State $s^*=s$, $W^*=W$, $\dq_N^*=\dq_N$
     \EndIf 
-    \State $j=$ the most critical joint (closest to it's bound) 
-    \State $W_{jj}=0$
+    \State $j=$ the most critical joint (closest to it's bound) \label{alg:disable_crit1}
+    \State $W_{jj}=0$\label{alg:disable_crit2}
     \State $\dot q_{N,j}=\begin{cases}
         \dot Q_{max,j} \ \text{if }\overline{\dot q_j} > \dot Q_{max,j}\\ 
         \dot Q_{min,j}  \ \text{if }\overline{\dot q_j} < \dot Q_{min,j}
-    \end{cases}$
-    \If{rank($JW<m$)}
+    \end{cases}$\label{alg:disable_crit3}
+    \If{rank($JW<m$)}\label{alg:rankJW}
     \State $s=s^*$, $W=W^*$, $\dq_N=\dq_N^*$
-    \State $\overline\dq=\dq_N+(JW)^\#(s\dy-J\dq_N)$ 
-    \State limit\_exceeded = FALSE \greenText{ //the algorithm ends}
+    \State $\overline\dq=\dq_N+(JW)^\#(s\dy-J\dq_N)$ \label{alg:exit1}
+    \State limit\_exceeded = FALSE \greenText{ //the algorithm ends} \label{alg:exit2}
     \EndIf
     \EndIf
     \EndWhile
     \State \Return $\dq_{SNS}=\overline\dq$
     \EndFunction
     \vspace{0.5cm}
-    \Function{GetTaskScalingFactor}{$\mathbf a, \mathbf b$}
+    \Function{GetTaskScalingFactor}{$\mathbf a, \mathbf b$}\label{alg:SF_alg}
     \State \greenText{//at this point $\dq_{SNS}=s\mathbf a+\mathbf b$}
     \For{$i = 1 \to n$}
-        \State $S_{min,i} = (\dot{Q}_{min,i} - b_i) / a_i$
-        \State $S_{max,i} = (\dot{Q}_{max,i} - b_i) / a_i$
+        \State $S_{min,i} = (\dot{Q}_{min,i} - b_i) / a_i$\label{alg:Smin}
+        \State $S_{max,i} = (\dot{Q}_{max,i} - b_i) / a_i$\label{alg:Smax}
         \If{$S_{min,i} > S_{max,i}$}
-            \State swap $S_{min,i}$ and $S_{max,i}$
+            \State swap $S_{min,i}$ and $S_{max,i}$\label{alg:switch}
         \EndIf
     \EndFor
     \State $s_{max} = \min_i \{S_{max,i}\}$
     \State $s_{min} = \max_i \{S_{min,i}\}$
     \State the most critical joint $= \arg \min_i \{S_{max,i}\}$
     \If{$s_{min} > s_{max}$ \texttt{or} $s_{max} < 0$ \texttt{or} $s_{min} > 1$}
-        \State\Return 0
+        \State\Return 0\label{alg:ret0}
     \Else
-        \State\Return $s_{max}$
+        \State\Return $s_{max}$\label{alg:retsmax}
     \EndIf
     \EndFunction
     \end{algorithmic}
 \end{algorithm}
-\redText{TODO: Aggiungere spiegazione algoritmo rimandnado alle righe di codice.}
+\noindent\textbf{Main Loop Algorithm Breakdown}:\begin{itemize}
+    \item At line \ref{alg:first_assignment} we compute the joint velocity with initialized values, since $\dq_N=\mathbf 0$ and $W=I$, the initial computed value is exactly $\overline{\dq}=J^\#\dy$.
+    \item At line \ref{alg:check_bounds} we check if the current computed joint velocity exceeds or not the bounds of the joint velocity.
+    \item At line \ref{alg:scl_factor} we compute the task scaling factor.
+    \item At line \ref{alg:largesr_factor_obtained} we check if a larger task scaling factor is obtained. If so, we save the current solution.
+    \item At lines \ref{alg:disable_crit1}, \ref{alg:disable_crit2} and \ref{alg:disable_crit3}, we disable the most critical joint by forcing it as its saturated velocity.
+    \item At line \ref{alg:rankJW} we check if the task can be accomplished with the remaining enabled joints, defined by the matrix $W$.
+    \item If the task can't be accomplished, at lines \ref{alg:exit1} and  \ref{alg:exit2} we use the parameters that allow the largest task scaling factor and we exit from the main loop, terminating the algorithm.
+    \item The main loop is repeated until at least one joint limit is exceeded.
+\end{itemize}
+\noindent\textbf{Scaling Factor Routine Algorithm Breakdown}:\begin{itemize}
+    \item At lines \ref{alg:Smin} and \ref{alg:Smax} we have\begin{equation}
+        \dot Q_{min,i}\le a_is+b_i\le \dot Q_{max} \ \text{ with } \ s\in [0,1].
+    \end{equation}
+    \item At line \ref{alg:switch} we restore the correct order of inequalities (possibly modified by the sign of $a_i$).
+    \item The procedure yields to the best task scaling factor (the biggest one, closest to 1).
+    \item At line \ref{alg:ret0} we return zero, in this case there will be no variation and the main loop will keep the previous $s^*$, as shown at line \ref{alg:largesr_factor_obtained}.
+    \item At line \ref{alg:retsmax} we take the largest value for task scaling.
+\end{itemize}
 \subsection{Hard Cartesian Bounds}
 The SNS procedure works at velocity level by dealing with hard bounds for joint position, velocity and acceleration. We can consider also additional \textit{cartesian box inequalities} on position, velocity and acceleration. One interpretation for a position cartesian bound, might identify an operational space where the robot can move safely.
 
@@ -1658,7 +1676,19 @@ The inequalities between vectors are element-wise.
 \centering 
      \includegraphics[width=0.8\textwidth ]{images/cartesianBoxConstraints.eps}
 \end{figure}
-\redText{TODO}
+We define a generalized vector that describes the ''configuration'' of the manipulator (in fact, $\q$ is already sufficient since it identifies the position of the control points, but in this context we need a vector that contains the configuration $\q$ and the position of the control points):\begin{equation}
+    \mathbf a = \begin{pmatrix}
+        \q^T&\mathbf p_{cp,1}^T&\mathbf p_{cp,2}^T&\dots & \mathbf p_{cp,r}^T
+    \end{pmatrix}^T.
+\end{equation}
+%At this point, we require the relationship between joint velocities and the velocities of the control points. By differentiating each control point with respect to $\q$, we obtain the Jacobian matrix associated with each point:\begin{equation}
+    %\frac{\partial \mathbf p_{cp,i}}{\partial \q}=J_{cp,i}
+%\end{equation}
+The \textbf{unified joint/cartesian bounds} are expressed at each time step as the following set of inequalities:\begin{equation}
+    \mathbf B_{min}(t_k)\le \dot{\mathbf a}(\q,\dq)\le\mathbf B_{max}(t_k)
+\end{equation}
+where $\mathbf{B}_{min}$ and $\mathbf{B}_{max}$ are time-varying vectors that, at each time step, enforce both the joint limits and the control point constraints.
+
 \chapter{Dynamics}
 The dynamics concerns the causes of the motion, and consider the generalized forces $\mathbf u$ that acts on the mechanical structure. Typically, this relation is given by a system of second order differential equation:\begin{equation}
     \Phi(\q,\dq,\ddq)=\mathbf u.
@@ -1934,7 +1964,7 @@ So the kinetic energy of the $i$-th link is \begin{equation}
 where $\mathbf v_{ci}$ is the linear velocity of the $i$-th link, $\bomega_i$ the angular velocity of the $i$-th link and $I_{ci}$ is the inertia matrix of the $i$-th link. We recall that $\mathbf v_{ci}$ and $\bomega_i$ are computed through the (partial) geometric Jacobian up to the $i$-th link, so $T_i$ is a function of $q_1,\dots q_i,\dot q_1,\dots \dot q_i$.
 \begin{figure}[H]    
 \centering 
-     \includegraphics[width=0.7\textwidth ]{images/partialJacobians.png}
+     \includegraphics[width=0.9\textwidth ]{images/partialGeometric.eps}
 \end{figure}\begin{equation}
     \mathbf v_{ci}=J_L^i(\q)\dq=\begin{pmatrix}
          & & & 0 &  & 0\\
@@ -2626,7 +2656,7 @@ Since the method is recursive, it needs an initialization for the first step at 
 \end{equation}
 As the first step, we compute  ${}^1\bomega_1$ as described in equation \eqref{bomega_i}:\begin{align}
     &{}^1\bomega_1=^{0}R^T_1(q_1)[{}^{0}\bomega_{0}+(1-\sigma_1)\dot q_1 {}^{0}\mathbf z_{0}]
-    \\ 
+    \\[1.5ex]
     &=\begin{pmatrix}
         \cos(q_1)&\sin(q_1)&0\\ 
         -\sin(q_1)&\cos(q_1)&0\\ 
@@ -2643,7 +2673,7 @@ then, as described in equation \eqref{v_i}, we compute ${}^1\mathbf v_1$:\begin{
     &{}^1\mathbf v_1=^{0}R^T_1(q_1)[
          {}^{0}\mathbf v_{0}+\sigma_i\dot q_1 {}^{0}\mathbf z_{0}+
          ^{0}\bomega_{1}\times ^{0}\mathbf r_{0,1}
-    ]\\ 
+    ]\\[1.5ex]
     &=
     \begin{pmatrix}
         \cos(q_1)&\sin(q_1)&0\\ 
@@ -2673,7 +2703,7 @@ we have all the ingredients to compute ${}^1\mathbf v_{c1}$ using the relation \
 \end{equation}
 the kinetic energy of the first link is\begin{align}
     &T_1=
-    \frac{1}{2}m_1{}^1\mathbf v_{c1}^T{}^1\mathbf v_{c1}+\frac{1}{2}{}^1\bomega_1^TI_{c1}{}^1\bomega_1\\
+    \frac{1}{2}m_1{}^1\mathbf v_{c1}^T{}^1\mathbf v_{c1}+\frac{1}{2}{}^1\bomega_1^TI_{c1}{}^1\bomega_1\\[1.5ex]
     &=\frac{1}{2}m_1 d^2_{c1}\dot q^2_1+
     \frac{1}{2}\begin{pmatrix}
             0&0&\dot q_1
@@ -2683,13 +2713,13 @@ the kinetic energy of the first link is\begin{align}
        I_{c1,zx}&I_{c1,zy}&I_{c1,zz}\\
     \end{pmatrix}\begin{pmatrix}
             0\\0\\\dot q_1
-        \end{pmatrix}\\ 
+        \end{pmatrix}\\[1.5ex] 
         &=
         \frac{1}{2}m_1 d^2_{c1}\dot q^2_1+
         \frac{1}{2}I_{c1,zz}\dot q_1^2=\frac{1}{2}(I_{c1,zz}+m_1 d^2_{c1})\dot q^2_1.
 \end{align}
 Now, we proceed to the second step with $i=2$, by computing ${}^2\bomega_2$:\begin{align}
-    &{}^2\bomega_2=^{1}R^T_2(q_2)[{}^{1}\bomega_{1}+(1-\sigma_2)\dot q_2 {}^{1}\mathbf z_{1}]\\
+    &{}^2\bomega_2=^{1}R^T_2(q_2)[{}^{1}\bomega_{1}+(1-\sigma_2)\dot q_2 {}^{1}\mathbf z_{1}]\\[1.5ex]
     &=\begin{pmatrix}
         \cos(q_2)&\sin(q_2)&0\\ 
         -\sin(q_2)&\cos(q_2)&0\\ 
@@ -2708,7 +2738,7 @@ and then ${}^2\mathbf v_{2}$\begin{align}
     &{}^2\mathbf v_2=^{1}R^T_2(q_2)[
          {}^{1}\mathbf v_{1}+\sigma_2\dot q_2 {}^{1}\mathbf z_{1}+
          ^{1}\bomega_{2}\times ^{1}\mathbf r_{1,2}
-    ]\\ 
+    ]\\[1.5ex] 
     &=\begin{pmatrix}
         \cos(q_2)&\sin(q_2)&0\\ 
         -\sin(q_2)&\cos(q_2)&0\\ 
@@ -2723,7 +2753,7 @@ and then ${}^2\mathbf v_{2}$\begin{align}
             l_2\cos( q_2)\\ 
             l_2\sin (q_2)\\ 0
         \end{pmatrix}
-    \right]\\
+    \right]\\[1.5ex]
     &=\begin{pmatrix}
         l_1\sin(q_2)\dot q_1\\l_1\cos(q_2)\dot q_1\\0
     \end{pmatrix}+\begin{pmatrix}
@@ -2743,7 +2773,7 @@ the velocity of the center of mass of the second link is\begin{align}
         0\\0\\\dot q_1+\dot q_2
     \end{pmatrix}\times \begin{pmatrix}
         -l_2+d_{c2}\\ 0\\ 0
-    \end{pmatrix}\\
+    \end{pmatrix}\\[1.5ex]
     &=\begin{pmatrix}
         l_1\sin(q_2)\dot q_1\\ 
         l_1\cos(q_2)\dot q_1+d_{c2}(\dot q_1+\dot q_2)
