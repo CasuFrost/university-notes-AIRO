@@ -737,8 +737,8 @@ where $\boldsymbol\delta_i$ is the column vector with $m$ component, all zeros e
         \sigma_1^2 & &  \\ 
         & \ddots &   \\ 
         & & \sigma_m^2 
-    \end{pmatrix} \boldsymbol\delta_i=
-    JJ^T\mathbf u_i=U\sigma_i^2\boldsymbol\delta_i\\=\sigma_i^2 U \boldsymbol\delta_i
+    \end{pmatrix} \boldsymbol\delta_i=\\
+    &JJ^T\mathbf u_i=U\sigma_i^2\boldsymbol\delta_i=\sigma_i^2 U \boldsymbol\delta_i
 \end{align}
 clearly $U \boldsymbol\delta_i$ is the $i$-th column vector of $U$ so\begin{equation}
     JJ^T\mathbf u_i=\sigma_i^2\mathbf u_i
@@ -895,10 +895,10 @@ This condition is sufficient to make the problem to have a minimum solution. A g
 These Lagrangian multipliers works as a way to ''violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
     &\nabla_{\mathbf x}\mathcal L=\begin{pmatrix}
         \frac{\partial\mathcal L}{\partial x_1}&\dots & \frac{\partial\mathcal L}{\partial x_n}
-    \end{pmatrix}=W(\mathbf x-\mathbf x_N)+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
+    \end{pmatrix}^T=W(\mathbf x-\mathbf x_N)+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
     &\nabla_{\boldsymbol{\lambda}}\mathcal L=\begin{pmatrix}
         \frac{\partial\mathcal L}{\partial \lambda_1}&\dots & \frac{\partial\mathcal L}{\partial \lambda_m}
-    \end{pmatrix}=J\mathbf x-\mathbf b=\mathbf 0
+    \end{pmatrix}^T=J\mathbf x-\mathbf b=\mathbf 0
 \end{align}
 The sufficient condition to have a minimum is to have the Hessian matrix respect to $\mathbf x$ to be positive definite, as we already said, since:\begin{equation}
     \nabla_{\mathbf x}^2\mathcal L=W\succ 0
@@ -1065,8 +1065,8 @@ from the \textit{implicit function theorem (Dini)}, given the direct kinematics\
 we can rewrite $\mathbf q_a$ as a function of $\mathbf y$ and $\mathbf q_b$\begin{equation}
     \mathbf q_a=g(\mathbf y,\mathbf q_b)
 \end{equation}
-in general, is hard to find an explicit expression for $g$, but this is not needed: we consider the partial derivative of $g$ respect to $\mathbf q_b$:\begin{equation}
-    \nabla_{\mathbf q_b}g=\left(\frac{\partial  g}{\partial \mathbf q_b}\right)
+in general, is hard to find an explicit expression for $g$, but this is not needed: we consider the partial derivatives of $g$ respect to $\mathbf q_b$ (that is a matrix):\begin{equation}
+   \left(\frac{\partial  g}{\partial \mathbf q_b}\right)
 \end{equation}
 this is equals to\begin{equation}
     \left(\frac{\partial  g}{\partial \mathbf q_b}\right)=-\left(\frac{\partial  k}{\partial \mathbf q_a}\right)^{-1}\left(\frac{\partial  k}{\partial \mathbf q_b}\right)=-J_a^{-1}J_b\in Mat(m\times n-m).
@@ -1081,18 +1081,25 @@ $\mathbf q_a$ is expressed in term of $\mathbf q_b$ and the desired $\mathbf y$ 
     G(\mathbf q)=G(\mathbf q_a,\mathbf q_b)=G(g(\mathbf y,\mathbf q_b),\mathbf q_b)=G'(\mathbf q_b)
 \end{equation}
 we don't have to compute $g$ since at differential level we can compute $\nabla_{\mathbf q_b}G'$\begin{align}
-    &\nabla_{\mathbf q_b}G'=
+    &\left(\frac{\partial G'}{\partial \mathbf q_b}\right)=
     \left(\frac{\partial G}{\partial \mathbf q_a}\right)
     \left(\frac{\partial g}{\partial \mathbf q_b}\right)+
-    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\ 
+    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\[1.5ex]
     &\left(\frac{\partial G}{\partial \mathbf q_a}\right)(-J_a^{-1}J_b)+
-    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\ 
+    \left(\frac{\partial G}{\partial \mathbf q_b}\right)=\\[1.5ex] 
     &\begin{pmatrix}\displaystyle
         \frac{\partial G}{\partial \mathbf q_a}&\displaystyle\frac{\partial G}{\partial \mathbf q_b}
     \end{pmatrix}\begin{pmatrix}
         -J_a^{-1}J_b\\ I
-    \end{pmatrix}=\\ 
-    &\Big(
+    \end{pmatrix}=\left(\frac{\partial G}{\partial \mathbf q}\right)\begin{pmatrix}
+        -J_a^{-1}J_b\\ I
+\end{pmatrix}\end{align}
+    to get the gradient $\nabla G'_{\q_b}$ we transpose:
+\begin{align}
+    &\left(\frac{\partial G'}{\partial \mathbf q_b}\right)=\left(\frac{\partial G}{\partial \mathbf q}\right)\begin{pmatrix}
+        -J_a^{-1}J_b\\ I
+\end{pmatrix}\implies\\[1.5ex]
+    &\nabla G'_{\q_b}=\Big(
         -(J_a^{-1}J_b)^T \ \ I_{n-m}
    \Big)\nabla_{\mathbf q}G
 \end{align}
