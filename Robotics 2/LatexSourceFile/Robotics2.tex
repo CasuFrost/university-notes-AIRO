@@ -342,7 +342,7 @@ $\btheta$ is the set of joint angles measured by the encoders. The calibration p
 the open kinematic chain structure of most robots
     \item the goal of the calibration procedure is to recover as much as possible this end effector position error by adjusting the DH parameters.
 \end{itemize}
-The calibration procedure needs a sampling operations, where the robot is set in different configuration, when an external device measure the real end effector pose, in such way we can compare this ground truth with the pose predicted by the direct kinematics.
+The calibration procedure needs a sampling operations, where the robot is set in different configurations, when an external device measure the real end effector pose, in such way we can compare this ground truth with the pose predicted by the direct kinematics.
 
 Let $\mathbf y_e$ to be the real end effector pose measured by the external system, and $\mathbf y_{e,nom}$ the one given by the direct kinematics, we consider the error\begin{equation}
     \Delta \mathbf y=\mathbf y_e-\mathbf y_{e,nom}
@@ -356,7 +356,7 @@ from the first order Taylor expansion of the direct kinematics, we can write the
      \frac{\partial k_e}{\partial \btheta}\Delta\btheta
 \end{equation}
 The small vectors $\Delta\boldsymbol \alpha,\Delta\mathbf a,\Delta\mathbf d,\Delta\btheta$ are the small errors in the DH parameters. The relation can be rewritten in matrix form\begin{equation}
-    \Delta\mathbf y_e=\Phi\Delta\boldsymbol\varphi
+    \Delta\mathbf y=\Phi\Delta\boldsymbol\varphi
 \end{equation}
 where\begin{align}
     &\Phi=\begin{pmatrix}\displaystyle
@@ -380,7 +380,7 @@ For example, with a 2R planar robot, where the direct kinematics is \begin{equat
         a_1\sin\theta_1+a_2\sin(\theta_1+\theta_2)
     \end{pmatrix}
 \end{equation}
-if the we assume that the parameters $\mathbf \alpha,\mathbf d$ are correct, the $\Phi$ matrix to consider is\begin{equation}
+if  we assume that the parameters $\boldsymbol\alpha$ and $\mathbf d$ are correct, the $\Phi$ matrix to consider is\begin{equation}
     \Phi=\begin{pmatrix}
         \displaystyle\frac{\partial k}{\partial \mathbf a}&   \displaystyle\frac{\partial k}{\partial \btheta}
     \end{pmatrix}=\begin{pmatrix}
@@ -804,6 +804,7 @@ There is another way to solve the problem $J\dq=\dy$ by finding a solution that 
     minimizes the weighted norm\begin{equation}
         \|\dq\|^2_W=\dq^TW\dq.
     \end{equation}
+    $J^\#_W$ satisfies the relations of the pseudo inverse, except for $(J^\#J)^T=J^\#J$.
 \end{boxdefinition}
 This kind of solution is used to give more emphasis to some joints, for example, if $W$ is diagonal\begin{equation}
     W=\begin{pmatrix}
