@@ -191,7 +191,7 @@ on the first link, there is no force exerts from the gravity (since this link is
 \end{equation}
 by putting the two equations together we obtain the following system\begin{equation}
     \begin{pmatrix}
-        m_1m_2&0\\ 0&m_2
+        m_1+m_2&0\\ 0&m_2
     \end{pmatrix}\begin{pmatrix}
         \ddot q_1\\ \ddot q_2
     \end{pmatrix}+\begin{pmatrix}
@@ -827,7 +827,7 @@ this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ t
 this induces a robust behavior when crossing singularities and applies equally to square and non-square matrices. Since it is a quadratic form, it admits an analytical solution:\begin{equation}
     \dq=J_{DLS}\dy=J^T(JJ^T+\mu I_m)^{-1}\dy
 \end{equation}
-the more the factor $\mu$ is big, the more importance will be given to the norm respect to the task error. The task error is\begin{equation}
+the larger the factor $\mu$, the more importance will be given to the norm respect to the task error. The task error is\begin{equation}
     \dot{\mathbf e}=\mu(JJ^T+\mu I_m)^{-1}\dy
 \end{equation}
 of course, $\mu$ can be variable: Since when crossing a singularity the required joint velocity $\dq$ grows, so we can make $\mu$ inversely proportional to the minimum singular value $\sigma_\rho$ of $J$, that can be seen as a measure of distance from a singularity.
@@ -1013,7 +1013,7 @@ The clearance function is defined as follows:\begin{equation}
     \mathbf p\in robot\\ \mathbf p' \in obstacles
     \end{matrix}}\|\mathbf p(\mathbf q)-\mathbf p'\|^h
 \end{equation}
-where $h$ is usually 1 or 2. Of course, this function is not practically computable if we consider the real shapes of the objects, that are composed by an infinite and continuous number of points displaced in a non formally describable way. To exploit this, usually the robot structure and the obstacles are modeled with simple shapes like cubes,parallelepiped or spheres, which surround the true shapes of the objects, so as to be conservative in terms of coverage (if such shapes do not collide, then the true objects do not collide either). \begin{boxproposition}{Decidability of the Distance between Two Polytopes}{}
+where $h$ is usually 1 or 2. Of course, this function is not practically computable if we consider the real shapes of the objects, that are composed by an infinite and continuous number of points displaced in a non formally describable way. To exploit this, usually the robot structure and the obstacles are modeled with simple shapes like cubes,parallelepipeds or spheres, which surround the true shapes of the objects, so as to be conservative in terms of coverage (if such shapes do not collide, then the true objects do not collide either). \begin{boxproposition}{Decidability of the Distance between Two Polytopes}{}
     For any couple of convex shapes (polytopes) in the three dimensional space, it is possible to find the minimum distance between them.
 \end{boxproposition}
 Given these results, if we model the robotic structure and the obstacles as convex shapes, we can always compute $H_{cle}(\mathbf q)$ in any configuration.
@@ -2325,7 +2325,7 @@ if $\q=\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
       m_2d_{c2}\sin q_2
     \end{pmatrix}
 \end{align}
-it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, will remain stationary if and only if $q_2=0$ or $q_2=\pi$.\bigskip
+it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, it will remain stationary if and only if $q_2=0$ or $q_2=\pi$.\bigskip
 
 Now that we have the model we want to solve the inverse dynamics. The first desired trajectory is\begin{equation}
     \begin{cases}
@@ -3206,5 +3206,82 @@ After putting together all these terms and defining the Lagrangian, we apply the
 notice how in the first $n$ equations \eqref{first_n} there is a zero on the right side, since we are assuming that there are no external torques performing work on $\q$ if the robot is in free space.
 
 When applying a torque commands on $\btau$, this will influence $\ddot{\btheta}$ that through the elastic potential energy will control the joint angular positions $\q$.
+\section{State Equations}
+The Euler-Lagrange formulation provides a dynamic model of $n$ second order differential equations:\begin{equation}\label{model_in_conf}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u 
+\end{equation}
+the unknowns of this model are the trajectories in the \textit{configuration space} $\q\in \R^n$. We can describe the model in the \textit{state space}, that is the set of all the couples $(\q,\dq)\in \R^{2n}$, we denote the state variables $\mathbf x=(\q,\dq)=(\mathbf x_1,\mathbf x_2)$. The model in the unknowns $\mathbf x$ is given by the state equations, a set of $2n$ first order differential equations:\begin{equation}
+    \dot{\mathbf x}=\begin{pmatrix}
+        \dot{\mathbf x}_1\\ 
+        \dot{\mathbf x}_2
+    \end{pmatrix}=\begin{pmatrix}
+        \mathbf x_2\\ 
+        -M^{-1}(\mathbf x_1)[\mathbf c(\mathbf x_1,\mathbf x_2)+\mathbf g(\mathbf x_1)]
+    \end{pmatrix}+\begin{pmatrix}
+        \begin{matrix}
+        0&\dots&0\\
+        \vdots&\ddots&\vdots\\
+        0&\dots&0
+        \end{matrix}\\ M^{-1}(\mathbf x_1)
+    \end{pmatrix}\mathbf u
+\end{equation}
+notice how is in the form $\mathbf f(\mathbf x)+G(\mathbf x)\mathbf u$ where $\mathbf f$ is a $2n$ vector and $G$ a $2n\times n$ matrix, the model is linear in the non conservative terms $\mathbf u$.
+
+Another choice of coordinates relies on the \textbf{phase space} representation. \begin{boxdefinition}{Conjugate Momentum}{}
+    Let $\mathcal L(\q,\dq)$ be the Lagrangian of our robotic system. The $i$-th \textbf{Conjugate Momentum} $p_i$ is the partial derivative of the Lagrangian respect to the $i$-th joint velocity:\begin{equation}
+        p_i=\frac{\partial \mathcal L}{\partial \dot q_i}.
+    \end{equation}
+\end{boxdefinition}
+Since the Lagrangian is\begin{equation}
+    \mathcal L = \frac{1}{2}\dq^T M(\q)\dq - U(\q)
+\end{equation}
+the vector of Conjugate Momentum $\mathbf p$ is\begin{equation}
+    \mathbf p=\frac{\partial \mathcal L}{\partial\dq}=M(\q)\dq.
+\end{equation}
+The \textbf{phase space} is the set of all the couples of configurations and conjugate momentum:\begin{equation}
+    (\q,\mathbf p)=\left(\q,M(\q)\dq\right)\in \R^{2n}
+\end{equation}
+and is the set of coordinates used in the so called \textit{Hamiltonian Approach} (we will not dive into the details). The \textbf{Hamilton equations of motion} describe the dynamical model of the robot as a set of $2n$ first order differential equations in the unknowns $(\q,\mathbf p)$.
+We describe the model by the  time evolution of $(\q,\mathbf p)$:
+\begin{itemize}
+    \item From the definition of momentum $\mathbf p$, the time evolution of the configuration is\begin{equation}
+        \dq=M(\q)^{-1}\mathbf p
+    \end{equation}
+    \item the evolution of the momentum is given by\begin{equation}\label{dotp}
+        \dot{\mathbf p}=\dot M(\q)\dq+M(\q)\ddq
+    \end{equation}
+    \item from the model \eqref{model_in_conf} we know that\begin{equation}
+        M(\q)\ddq=\mathbf u-\mathbf c(\q,\dq)-\mathbf g(\q)
+    \end{equation}
+    \item we substitute in equation \eqref{dotp} and get\begin{equation}
+        \dot{\mathbf p} = \dot{M}(\q)M(\q)^{-1}\mathbf  p - \mathbf  c(\q, M(\q)^{-1}\mathbf p) -\mathbf  g(\mathbf q) +\mathbf  u.
+    \end{equation}
+\end{itemize}
+So, by denoting $\tilde{\mathbf x}=(\q,\mathbf p)$ the phase space vector, the Hamilton equations of motion  are\begin{equation}
+    \dot{\tilde{\mathbf x}}=\begin{pmatrix}
+        \dq\\ 
+        \dot{\mathbf p}
+    \end{pmatrix}=\begin{pmatrix}
+        M(\q)^{-1}\mathbf p\\
+        \dot{M}(\q)M(\q)^{-1}\mathbf  p - \mathbf  c(\q, M(\q)^{-1}\mathbf p) -\mathbf  g(\mathbf q)
+    \end{pmatrix}+\begin{pmatrix}
+        \begin{matrix}
+        0&\dots&0\\
+        \vdots&\ddots&\vdots\\
+        0&\dots&0
+        \end{matrix}\\ I
+    \end{pmatrix}\mathbf u.
+\end{equation}
+Notice that is still in the form  $\mathbf f(\mathbf x)+G(\mathbf x)\mathbf u$.
+We have seen how the Lagrangian is in function of vectors in the state space $(\q,\dq)$, the \textbf{Hamiltonian function} instead is a scalar function that takes in input vectors in the phase space and is defined as the \textit{Legendre Transform}\footnote{
+    The Legendre transform is a mathematical operation that allows you to change the description of a function by passing from its original variables to its derivatives. More details in: \url{https://en.wikipedia.org/wiki/Legendre_transformation}.
+}
+of the Lagrangian:\begin{equation}
+    \mathcal H(\q,\mathbf p)=\sum_{i=1}^{n}p_i\dot q_i-\mathcal L(\q,\dq)
+\end{equation}
+in the robotics context the Hamiltonian is just the \textbf{total energy} of the system:\begin{equation}
+    \mathcal{H}=T+U.
+\end{equation}
+\section{Approximate Linearization}
 \end{document}
  
