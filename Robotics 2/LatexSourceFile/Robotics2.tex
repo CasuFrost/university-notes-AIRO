@@ -3206,7 +3206,7 @@ After putting together all these terms and defining the Lagrangian, we apply the
 notice how in the first $n$ equations \eqref{first_n} there is a zero on the right side, since we are assuming that there are no external torques performing work on $\q$ if the robot is in free space.
 
 When applying a torque commands on $\btau$, this will influence $\ddot{\btheta}$ that through the elastic potential energy will control the joint angular positions $\q$.
-\section{State Equations}
+\section{State Equations}\label{StateDescription}
 The Euler-Lagrange formulation provides a dynamic model of $n$ second order differential equations:\begin{equation}\label{model_in_conf}
     M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u 
 \end{equation}
@@ -3282,6 +3282,84 @@ of the Lagrangian:\begin{equation}
 in the robotics context the Hamiltonian is just the \textbf{total energy} of the system:\begin{equation}
     \mathcal{H}=T+U.
 \end{equation}
+The following diagram is an example of block diagram in Simulink to simulate the time evolution of a generic 2dof manipulator.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/simulink_2dof.png}
+\end{figure}
 \section{Approximate Linearization}
+Around a given operative condition, sometimes we can derive a \textit{linear model} of a manipulator that locally approximates the dynamic behavior.
+\begin{boxdefinition}{}{}
+    An \textbf{equilibrium state} of the manipulator is a state $(\q_e,\dq_e)$ such that \begin{align}
+        &\dq_e=\mathbf 0\\ 
+        &(\q,\dq)=(\q_e,\mathbf 0)\implies \ddq=\mathbf 0
+    \end{align}
+\end{boxdefinition}
+When the model is at en equilibrium state, the dynamic equations simplifies:\begin{align}
+   & M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u_e\implies \\ 
+   &g(\mathbf q_e)=\mathbf u_e.
+\end{align}
+We denoted $\mathbf u_e$ the non conservative terms in the equilibrium state.
+The terms $M(\q)\ddq$ and $\mathbf c (\q,\dq)$ becomes zero if $\ddq=\dq=\mathbf 0$.
+Let's consider a small variation around an equilibrium state:\begin{equation}
+    \q=\q_e+\Delta\q
+\end{equation} 
+the variation in velocity is\begin{equation}
+    \dq=\dq_e+\dot{\Delta \q}=\dot{\Delta \q}
+\end{equation}
+the acceleration:\begin{equation}
+    \ddq=\ddq_e+\ddot{\Delta \q}=\ddot{\Delta \q}
+\end{equation}
+also the non conservative terms:\begin{equation}
+    \mathbf u = \mathbf u_e+\Delta\mathbf u
+\end{equation}
+We discard the infinitesimal terms of second or higher order. The linearized model by considering the first order Taylor series becomes:\begin{equation}
+    M(\q_e)\ddot{\Delta\q}+\mathbf g(\q_e)+\frac{\partial \mathbf g}{\partial \q}(\q_e)\cdot \Delta \q=\mathbf u_e+\Delta \mathbf u
+\end{equation}
+We denote $G=\frac{\partial \mathbf g}{\partial \q}$. Since $\mathbf g(\q_e)=\mathbf u_e$:
+\begin{equation}
+    M(\q_e)\ddot{\Delta\q}+G(\mathbf q_e) \Delta \q=\Delta \mathbf u
+\end{equation}
+in the state space representation where $\mathbf x=(\q,\dq)$:\begin{equation}
+    \dot{\Delta \mathbf x}=\begin{pmatrix}
+        0&I\\ 
+        -M^{-1}(\q_e)G(\q_e)&0
+    \end{pmatrix}
+    \Delta\mathbf x+\begin{pmatrix}
+        0\\ 
+        M^{-1}(\q_e)
+    \end{pmatrix}\Delta{\mathbf u}
+\end{equation}
+this is exactly a linear system of first order differential equations of the form:\begin{equation}
+    \dot{\Delta{\mathbf x}}=A\Delta{\mathbf x}+B\Delta{\mathbf u}
+\end{equation}
+\redText{TODO: equilibrium trajectory}
+\section{Coordinate Transformation}
+In this section we describe how to manage a change of coordinates in the dynamic model. We rewrite the model by gathering together $\mathbf c$ and $\mathbf g$:\begin{equation}
+    M(\q)\ddq+\mathbf n(\q,\dq)=\mathbf u_q
+\end{equation}
+The transformation of coordinates is given by  a \textit{local diffeomorphism} $f(\q)$:\begin{itemize}
+    \item $f$ is a bijection and the inverse $f^{-1}$ exists. 
+    \item $f$ must be differentiable at least two times: $f\in C^2$.
+    \item The Jacobian of the transformation must be always non singular in every configuration:\begin{equation}
+        \det J=\det\left(\frac{\partial f}{\partial \mathbf q}\right)\ne 0.
+    \end{equation}
+\end{itemize}
+We will denote $\mathbf p=f(\q)$ the transformed coordinates. Note how \begin{itemize}
+    \item The Jacobian denoted $J$ here  is not the Jacobian of the direct kinematics that we have used until now, but the Jacobian of a general coordinate transformation $f$.
+    \item With $\mathbf p$ we are just denoting the new set of coordinates, this have nothing to do with the conjugate momentum defined in Section \ref{StateDescription}.
+\end{itemize}
+Given $\mathbf p\in \R^n$ we can return to the old set of coordinates:\begin{equation}
+    \q=f^{-1}(\mathbf p)
+\end{equation}
+the differential relations is given by the Jacobian\begin{align}
+    &\dot{\mathbf p} = J\dq\implies \dq=J^{-1}\dot{\mathbf p}\\
+    &\ddot{\mathbf p}=J\ddq+\dot J\dq\implies 
+    \ddq = J^{-1}(\ddot{\mathbf p}-\dot JJ^{-1}\dot{\mathbf p}).
+\end{align}
+If $\mathbf u_q$ is the non conservative terms performing work on $\q$, the work performed on $\mathbf p$ (by the principle of virtual work) is in relation with $\mathbf u_q$ as described in the following identity:\begin{equation}
+    \mathbf u_q=J^T\mathbf u_p
+    .
+\end{equation}
 \end{document}
  
