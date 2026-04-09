@@ -372,7 +372,7 @@ where\begin{align}
         \Delta\btheta
     \end{pmatrix}\in \R^{4n}
 \end{align}
-notice how $ \Delta \mathbf y$ is given by the measurement, $\Phi$ is evaluated with the nominal parameters and $\Delta\boldsymbol\varphi$ is the unknown error in the DH parameters. 
+notice how $ \Delta \mathbf y$ is given by the measurement, $\Phi$ it is evaluated with the nominal parameters and $\Delta\boldsymbol\varphi$ is the unknown error in the DH parameters. 
 
 For example, with a 2R planar robot, where the direct kinematics is \begin{equation}
     k(\mathbf a,\btheta)=\begin{pmatrix}
@@ -654,7 +654,7 @@ If $J$ is singular and $JJ^T$ cannot be inverted, the formula $J^\#=J^T(JJ^T)^{-
     \end{equation}
     where $U$ and $V$ are orthonormal matrices, and $\Sigma$ is a diagonal matrix.
 \end{boxdefinition}
-This decomposition have special properties, the columns of $U$ are the eigen vectors of $JJ^T$, and the columns of $V$ are the eigen vectors of $J^TJ$. The matrix $\Sigma$ have the following form:\begin{equation}
+This decomposition have special properties, the columns of $U$ are the eigenvectors of $JJ^T$, and the columns of $V$ are the eigenvectors of $J^TJ$. The matrix $\Sigma$ have the following form:\begin{equation}
     \Sigma=\begin{pmatrix}
         \sigma_1 & & & \\ 
         & \ddots & & 0_{m\times (n-m)}\\ 
@@ -665,13 +665,13 @@ it follows that\begin{align}
     &\sigma_1\ge\sigma_2\dots \ge \sigma_\rho>0\\
     &\sigma_{\rho+1}= \sigma_{\rho+2}\dots = \sigma_{m}=0
 \end{align}
-where $\rho$ is the rank of $J$. The numbers $\sigma_1\dots ,\sigma_\rho$ are the \textbf{singular values} of $J$. The eigen vectors of $JJ^T$ (columns of $U$) are associated to the eigen values $\sigma_1^2\dots,\sigma_\rho^2$. The last $n-\rho$ columns of $V$ are a basis for the null space of $J$.\begin{align}
+where $\rho$ is the rank of $J$. The numbers $\sigma_1\dots ,\sigma_\rho$ are the \textbf{singular values} of $J$. The eigenvectors of $JJ^T$ (columns of $U$) are associated to the eigenvalues $\sigma_1^2\dots,\sigma_\rho^2$. The last $n-\rho$ columns of $V$ are a basis for the null space of $J$.\begin{align}
     &J\mathbf v_i=\sigma_i\mathbf u_i, \ \ \ (i=1\dots, \rho)\\ 
     &J\mathbf  v_i=0, \ \ \ (i=\rho+1\dots n)
 \end{align}
 we denote $\mathbf u_i$ the $i$-th column vector of $U$ and $\mathbf v_i$ the $i$-th column vector of $V$. 
 \begin{boxproposition}{}{}
-    The column vectors of $U$ are the eigenvectors of $JJ^T$ associated to the eigen values $\sigma_1^2\dots,\sigma_\rho^2$.
+    The column vectors of $U$ are the eigenvectors of $JJ^T$ associated to the eigenvalues $\sigma_1^2\dots,\sigma_\rho^2$.
 \end{boxproposition}
 \textit{Proof}: We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
     JJ^T=U\Sigma V^T V \Sigma^T U^T
@@ -774,7 +774,7 @@ Now let's compute the norm of $\dq^*$:\begin{equation}
 since $\dq^*$ and $(\dq^*-\dq_{PS})$ are orthonormal, the norm of the sum is the sum of the two norms:\begin{equation}
     \|\dq_{PS}+(\dq^*-\dq_{PS})\|^2=\|\dq_{PS}\|^2+\|(\dq^*-\dq_{PS})\|^2\ge\|\dq_{PS}\|^2 
 \end{equation}
-so it is always grater or equal than the norm of $\dq_{PS}$. The proof is complete.\hfill$\blacksquare$\bigskip
+so it is always greater or equal than the norm of $\dq_{PS}$. The proof is complete.\hfill$\blacksquare$\bigskip
 
 We mentioned how the SVD is useful to compute the pseudo inverse when the matrix is not full rank. This is true due to the following relation:\begin{equation}
     J=U\Sigma V^T\implies J^\#=V\Sigma^\# U^T 
@@ -1291,7 +1291,7 @@ So to solve the problem through an iterative method up to the $k$-th task we nee
 In presence of algorithmic singularities, for the $k$-th solution instead of the solution in Equation \eqref{task_priority_sol}, we need to apply the DLS method.
 \section{Extensions to Redundancy Problems}
 \subsection{Resolution at Acceleration Level}
-Up to know, we have solved the redundancy problem for the joint velocities $\dq$, we know that at the lowest level, we don't control directly $\dq$, but the acceleration $\ddq$.\begin{equation}
+Up to now, we have solved the redundancy problem for the joint velocities $\dq$, we know that at the lowest level, we don't control directly $\dq$, but the acceleration $\ddq$.\begin{equation}
     \mathbf y = k(\mathbf q)\implies \dy=J\dq\implies \ddy=J\ddq+\dot J\dq.
 \end{equation}
 \begin{boxdefinition}{Tangent Bundle}{}
@@ -3361,5 +3361,88 @@ If $\mathbf u_q$ is the non conservative terms performing work on $\q$, the work
     \mathbf u_q=J^T\mathbf u_p
     .
 \end{equation}
+By substituting the terms in the model we get:\begin{align}
+   & M(\q)J^{-1}\ddot{\mathbf p}-M(\q)J^{-1}\dot JJ^{-1}\dot{\mathbf p}+\mathbf n(\q,\dq)=J^T\mathbf u_p\implies\\
+   &J^{-T}M(\q)J^{-1}\ddot{\mathbf p}-J^{-T}\left(\mathbf n(\q,\dq)-M(\q)J^{-1}\dot JJ^{-1}\dot{\mathbf p}\right)=\mathbf u_p
+\end{align}
+in this way we expressed the dynamic model in the new set of coordinates $\mathbf p$, we can group together the terms by defining\begin{align}
+    &M_p=J^{-T}MJ^{-1}\\
+    &\mathbf c_p=J^{-T}(\mathbf c-MJ^{-1}\dot JJ^{-1}\dot{\mathbf p})=J^{-T}\mathbf c-M_p\dot JJ^{-1}\dot{\mathbf p}\\
+    &\mathbf g_p=J^{-T}\mathbf g
+\end{align}
+the dynamic model in this way assume the canonical form\begin{equation}
+    M_p(\mathbf p)\ddot{\mathbf p}+\mathbf c_p(\mathbf p,\dot{\mathbf p})+\mathbf g_p(\mathbf p)=\mathbf u_p.
+\end{equation}
+\textbf{Example}: Let's see an application of coordinate transformation, we take into account the dynamic model of the 2R planar robot where the generalized coordinates $\q$ are the one defined by the DH convention. The inertia matrix of the robot is:\begin{equation}
+    M=\begin{pmatrix}
+        \rho_1+2\rho_2\cos q_2&\rho_3+\rho_2\cos q_2\\ 
+        \rho_3+\rho_2\cos q_2&\rho_3
+    \end{pmatrix}
+\end{equation}
+the $\mathbf c$ vector:\begin{equation}
+    \mathbf c=\begin{pmatrix}
+        -\rho_2\sin q_2(\dot q_2^2+2\dot q_1\dot q_2)\\ 
+        \rho_2\sin q_2\dot q_1^2
+    \end{pmatrix}
+\end{equation}
+and the gravity term:\begin{equation}
+   \mathbf g= \begin{pmatrix}
+    \rho_4\cos q_1+\rho_5 \cos (q_1+q_2)\\ \rho_5 \cos (q_1+q_2)
+    \end{pmatrix}.
+\end{equation}
+We apply the following change of coordinates:\begin{equation}
+    \mathbf p=\begin{pmatrix}
+        p_1\\p_2
+    \end{pmatrix}=\begin{pmatrix}
+        q_1\\q_1+q_2
+    \end{pmatrix}
+\end{equation}
+the Jacobian of this transformation is\begin{equation}
+    J=\begin{pmatrix}
+        1&0\\1&1
+    \end{pmatrix}
+\end{equation}
+the inverse and the inverse of the transpose:\begin{equation}
+    J^{-1}=\begin{pmatrix}
+        1&0\\-1&1
+    \end{pmatrix} \ \ \  J^{-T}=\begin{pmatrix}
+        1&-1\\0&1
+    \end{pmatrix}.
+\end{equation}
+So:\begin{align}
+    &M_p=J^{-T}MJ^{-1}=\begin{pmatrix}
+        \rho_1-\rho_3&\rho_2\cos(p_2-p_1)\\ 
+        \rho_2\cos(p_2-p_1)&\rho_3
+    \end{pmatrix}\\[1.5ex]
+    &\mathbf c_p=J^{-T}\mathbf c=\begin{pmatrix}
+        -\rho_2\sin(p_2-p_1)\dot p_2^2\\ 
+        \rho_2\sin(p_2-p_1)\dot p_1^2
+    \end{pmatrix}\\[1.5ex]
+    &\mathbf g_p=J^{-T}\mathbf g=\begin{pmatrix}
+        \rho_4\cos p_1\\ 
+        \rho_5\cos p_2
+    \end{pmatrix}\\[1.5ex]
+    &\mathbf u_p=J^{-T}\mathbf u_q=\begin{pmatrix}
+        u_{q1}-u_{q2}\\
+        u_{q2}
+    \end{pmatrix}.
+\end{align}
+The dynamic model in the coordinates $\mathbf p$ is:\begin{equation}
+    \begin{pmatrix}
+        \rho_1-\rho_3&\rho_2\cos(p_2-p_1)\\ 
+        \rho_2\cos(p_2-p_1)&\rho_3
+    \end{pmatrix}\ddot{\mathbf p}+\begin{pmatrix}
+        -\rho_2\sin(p_2-p_1)\dot p_2^2\\ 
+        \rho_2\sin(p_2-p_1)\dot p_1^2
+    \end{pmatrix}+\begin{pmatrix}
+        \rho_4\cos p_1\\ 
+        \rho_5\cos p_2
+    \end{pmatrix}=\begin{pmatrix}
+        u_{q1}-u_{q2}\\
+        u_{q2}
+    \end{pmatrix}
+    .
+\end{equation}
+\section{Dynamic Redundancy in the Task Space}
 \end{document}
  
