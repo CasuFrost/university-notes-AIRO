@@ -3032,5 +3032,179 @@ with the previous condition, the choice of the dynamics parameters have to satis
         m_3l_2l_{c3}-m_4l_1l_{c4}=0
     \end{cases}.
 \end{equation}
+\newpage\section{Adding Dynamic Terms}
+We have seen how to derive the dynamic model of a manipulator, in this section we expand this model by making it more precise to describe the real systems. First of all, we give a more detailed description of the \textit{dissipative phenomena} due to friction included in $\mathbf u$. 
+
+We take in account the \textit{viscous friction}, the \textit{Coulomb friction} and the so called \textit{stiction} (stati friction). These, are local effects at the joint, and the friction on one joint doesn't affect the others.\begin{itemize}
+    \item The viscous friction opposes to the motion of a joint with an intensity proportional to the velocity:\begin{align}
+        &u_{vi}=-B_{vi}\dot q_i\\ &B_{vi}>0.
+    \end{align}
+    \item The Coulomb friction is similar but remain independent from the joint velocity norm.\begin{align}
+        &u_{ci}=-B_{ci}\text{sign}(\dot q_i)\\ &B_{vi}>0.
+    \end{align}
+    \item The stiction is present only when the velocity is null, it opposes the intended direction of motion and once the joint starts moving, its effect vanishes.\begin{align}
+        &u_{si}=-B_{si}d_i\\ &d_i\in \{-1,1\}  \ := \ \text{ intended direction}
+    \end{align}
+    this term is pretty hard to model, so is approximated with a curve that rapidly increases near zero.
+    \begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/stiction.eps}
+\end{figure}
+\end{itemize}
+In general, any dissipative effect $\mathbf u_{diss}$ removes energy to the system: $\mathbf u_{diss}^T\dq<0$.
+\subsection{Including the Actuators}
+Now, we want to consider the presence of the actuators in the dynamic model, each motor have a mass and a proper kinetic energy,\begin{itemize}
+    \item The motor that moves link $i$ is usually mounted on link $i-1$ (or before), with very few exceptions.
+    \item Often, the spinning axis of motor $i$ is aligned with link $i$.
+    \item The mass of the motor is included in the mass of the link. 
+    \item The inertia of the spinning rotor is added to the robot kinetic energy. 
+    \item We include the transmissions with the reduction gears.
+\end{itemize}
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.8\textwidth ]{images/motors.png}
+\end{figure}
+For now we assume that the transmissions and the joints are infinitely stiff, in that case, there is a 1:1 mapping between the joint angular position and the rotor angular position:\begin{align}
+     \theta_{mi}=n_{ri}\theta_i
+\end{align}
+we denote $\theta_{mi}$ the angular position of the rotor and $\theta_i$ the angular position of the joint, that until now we denoted $q_i$. $n_{ri}$ is the reduction ratio, this relation in terms of velocity and torque becomes:\begin{align}
+    &\dot \theta_{mi}=n_{ri}\dot \theta_i\\
+    &\tau_i=n_{ri}\tau_{mi}.
+\end{align}
+Due to this mapping, the system can be fully described by the $n$ joints angular positions or the $n$ motor's angular positions, the number of generalized coordinates is still $n$.\bigskip
+
+Now we compute the kinetic energy of the motors, with the \textbf{simplifying assumption} that the rotational part of the kinetic energy concerns only the spinning of the rotor around its axis. In a robot, the $i$ motor is mounted on the $i-1$ link. When the robot moves, the motor moves in space (linear velocity) and rotates together with the link (angular velocity of the body). However, with this simplification, we say that the only thing that matters for the motor's kinetic energy $T_{mi}$ is its relative internal rotation, multiplied by the reduction ratio.\begin{equation}\label{kinetic_energy_rotor}
+    T_{mi}=\frac{1}{2}I_{mi}\dot \theta_{mi}^2=\frac{1}{2}I_{mi}n_{ri}^2\dot q_i^2
+\end{equation}
+we denote $M_{mi}=I_{mi}n_{ri}^2$ the inertial coefficients of motor $i$:\begin{align}
+    &T_{mi}=\frac{1}{2}M_{mi}\dot q_i^2\implies \\ 
+    &T_m = \sum_{i=1}^n T_{mi}=\frac{1}{2}\dq^T M_m \dq 
+\end{align}
+$T_m$ is the total kinetic energy of all the motors, $M_m$ is the inertia matrix of the rotors part and is constant, diagonal and positive definite, so, by adding it to the model, the vector $\mathbf c(\q,\dq)$ will not be affected. The full model by considering the motors inertia and the viscous and Coulomb friction becomes:\begin{equation}
+    (M(\q)+M_m)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+B_v\dq+B_c\text{sign}(\dq)=\btau 
+\end{equation}
+$\btau$ are the motor torques after the reduction gears (input) and $B_v,B_c$ are diagonal matrix with positive entries. This model is expressed in the coordinates $\q=\btheta$, if we want to express everything in the motor coordinates $\btheta_m$ we have to scale by the reduction gears, the model becomes:\begin{equation}
+    \left(
+        I_m + \text{diag} \left\{\frac{m_{ii}(\q)}{n_{ri}^2}\right\} 
+    \right)\ddot{\btheta}_m + 
+    \text{diag} \left\{\frac{1}{n_{ri}}\right\}(\overline M(\q)\ddq+\mathbf n(\q,\dq))=\btau_m
+\end{equation}
+where\begin{itemize}
+    \item $\mathbf n(\q,\dq)=\mathbf c(\q,\dq)+\mathbf g(\q)$ is just the summation of the centrifugal, Coriolis and gravitational terms. 
+    \item $I_m$ is the diagonal matrix where each diagonal entry $(i,i)$ is the inertia of the  rotor of motor $i$ on its spinning axis: $I_{mi}$, used in equation \eqref{kinetic_energy_rotor}.
+    \item $\overline M(\q)$ is the inertia matrix $M(\q)$ except the terms on the diagonal
+    \begin{equation}
+        \overline m_{ij}(\q)=\begin{cases}
+            m_{ij}(\q) \text{ if }i\ne j\\ 
+            0 \text{ else}
+        \end{cases}.
+    \end{equation}
+\end{itemize}
+In many industrial application, where the reduction ratios $n_{ri}$ are big, in some cases for example $n_{ri}\simeq 100$, some terms in the model became negligible:\begin{align}
+    &\frac{m_{ii}(\q)}{n_{ri}^2}\rightarrow 0\\ 
+    &\frac{1}{n_{ri}}\rightarrow 0
+\end{align}
+and a linear control might works pretty well.\bigskip
+
+\noindent Now we describe the model of a 2R planar robot with both the actuators placed on the robot base. The actuators are displaced as shown in the following picture.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/2R_actuators_on_base.png}
+     \includegraphics[width=0.35\textwidth ]{images/2R_actuators_on_base2.png}
+\end{figure}
+We choose a set of coordinates that doesn't follow the DH convention: we choose $p_1$ as the angle between the first link and the $x_0$ axis (identical to $q_1$), and $p_2$ as the angle between the second link and the $x_0$ axis.
+We denote $d_{ci}$ the distance between the center of mass and the joint axis as usual. The kinetic energy of the first link is only rotational:\begin{equation}
+    T_1=\frac{1}{2}(I_{1,zz}+m_1d_{c1}^2)\dot p_1^2
+\end{equation}
+the position of the center of mass of the second link is\begin{equation}
+    \mathbf p_{c2}=\begin{pmatrix}
+        l_1\cos (p_1)+d_{c2}\cos(p_2)\\
+        l_1\sin (p_1)+d_{c2}\sin(p_2)
+    \end{pmatrix}
+\end{equation}
+so the velocity is\begin{equation}
+   \mathbf v_{c2}= \dot{\mathbf p}_{c2}=\begin{pmatrix}
+        -l_1\sin (p_1)\dot p_1-d_{c2}\sin(p_2)\dot p_2\\
+        l_1\cos (p_1)\dot p_1+d_{c2}\cos(p_2)\dot p_2
+    \end{pmatrix}
+\end{equation}
+so the square of the norm is \begin{align}
+    &\|\mathbf v_{c2}\|^2=\mathbf v_{c2}^T\mathbf v_{c2}=\\ 
+    &(-l_1\sin (p_1)\dot p_1-d_{c2}\sin(p_2)\dot p_2)^2+( l_1\cos (p_1)\dot p_1+d_{c2}\cos(p_2)\dot p_2)^2=\\ 
+    &l_1^2\dot p_1^2+d_{c2}^2\dot p_2^2+2l_1d_{c2}\cos(p_2-p_1)\dot p_1\dot p_2
+\end{align}
+hence the kinetic energy of the second link is\begin{align}
+    &T_2=\frac{1}{2}m_2\mathbf v_{c2}^T\mathbf v_{c2}+\frac{1}{2}I_{2,zz}\dot p_2^2=\\ 
+    &\frac{1}{2}m_2(l_1^2\dot p_1^2+d_{c2}^2\dot p_2^2+2l_1d_{c2}\cos(p_2-p_1)\dot p_1\dot p_2)+\frac{1}{2}I_{2,zz}\dot p_2^2
+\end{align}
+the kinetic energy of the whole system is\begin{align}
+    &\frac{1}{2}(I_{1,zz}+m_1d_{c1}^2)\dot p_1^2+\frac{1}{2}m_2(l_1^2\dot p_1^2+d_{c2}^2\dot p_2^2+2l_1d_{c2}\cos(p_2-p_1)\dot p_1\dot p_2)+\frac{1}{2}I_{2,zz}\dot p_2^2=\\[1.5ex]
+    &\frac{1}{2}\begin{pmatrix}
+        p_1&p_2
+    \end{pmatrix}\begin{pmatrix}
+        I_{1,zz}+m_1d_{c1}^2+m_2l_1^2&m_2l_1d_{c2}\cos(p_2-p_1)\\
+        m_2l_1d_{c2}\cos(p_2-p_1)&I_{2,zz}+m_2d_{c2}^2
+    \end{pmatrix}\begin{pmatrix}
+        p_1\\ p_2
+    \end{pmatrix}
+\end{align}
+we set 3 dynamic coefficients\begin{align}
+    &\rho_1=I_{1,zz}+m_1d_{c1}^2+m_2l_1^2\\ 
+    &\rho_2=m_2l_1d_{c2}\\ 
+    &\rho_3=I_{2,zz}+m_2d_{c2}^2
+\end{align}
+so\begin{equation}
+    M=\begin{pmatrix}
+        \rho_1&\rho_2\cos(p_2-p_1)\\ 
+        \rho_2\cos(p_2-p_1)&\rho_3
+    \end{pmatrix}
+\end{equation}
+the $\mathbf c$ vector obtained by $M$ is \begin{equation}
+    \mathbf c=\begin{pmatrix}
+        -\rho_2\sin(p_2-p_1)\dot p_2^2\\ 
+        \rho_2\sin(p_2-p_1)\dot p_1^2
+    \end{pmatrix}
+\end{equation}
+the gravity term obtained by $\frac{\partial U}{\partial \mathbf p}$ is\begin{equation}
+    \mathbf g=\begin{pmatrix}
+        \rho_4\cos(p_1)\\ 
+        \rho_5\cos(p_2)
+    \end{pmatrix}
+\end{equation}
+where we defined two additional dynamic coefficients\begin{align}
+    &g_0(m_1d_{c1}+m_2l_1)\\
+    &\rho_5=g_0m_2d_{c2}.
+\end{align}
+\subsection{Robots with Joint Elasticity}
+In industrial robot, the use of use of motion transmissions based on belts, harmonic drives and long shafts introduces flexibility between actuating motors (input) and driven
+links (output). In the context of collaborative robots, this flexibility can be exploited to introduce compliance as a passive way to increase safety. We don't model the links as deformable bodies (this would require an infinite dimensional configuration space), but we model the flexibility as concentrated at the joints.
+
+In the previous discussion, we considered the motors angular positions mapped in a bijection with the joints angular positions. In this new formulations, these variables will be independent, and their displacement will be considered in elastic potential energy accumulated in the transmissions. 
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/joint_elasticity.drawio.pdf}
+\end{figure}
+We denote $\q$ the  $n$ link angular positions and $\btheta$ the $n$ motor positions after the reduction ratio. In this way the number of generalized coordinates becomes $2n$. The kinetic energy of the links is the usual\begin{equation}
+    T_q=\frac{1}{2}\dq^T M(\q)\dq 
+\end{equation}
+we add to this the kinetic energy of the motors already described in equation \eqref{kinetic_energy_rotor}.\begin{equation}
+    T_m=\frac{1}{2}\dot{\btheta}^TM_m\dot{\btheta}
+\end{equation}
+so the total kinetic energy will be\begin{equation}
+    T=\frac{1}{2}(\dq^T M(\q)\dq +\dot{\btheta}^TM_m\dot{\btheta})
+\end{equation}
+We denote $U_g$ the gravitational potential energy that we used until now. To that, we add the \textbf{elastic potential energy} $U_e$, for each link this is given by:\begin{equation}
+    U_{ei}=\frac{1}{2}K_i(q_i-\theta_i)^2
+\end{equation}
+where $K_i$ is a positive real coefficient. Notice how this is a simple model of the elasticity, despite that, it describes pretty well the dynamics of flexible joints. The coefficients $K_i$ are organized in a positive and diagonal matrix of \textbf{joint stiffness} $K$ and the  total elastic potential energy is\begin{equation}
+    U_e=\sum_{i=1}^{n}U_{ei}=\frac{1}{2}(\dq-\btheta)^TK(\dq-\btheta).
+\end{equation}
+After putting together all these terms and defining the Lagrangian, we apply the Euler-Lagrange equations with respect to $\btheta$ and $\q$ in order to obtain the model of $2n$ second order differential equations:\begin{align}
+    \label{first_n}M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+K(\q-\btheta)=\mathbf 0&\\ 
+    M_m\ddot{\btheta}+K(\btheta-\q)=\btau&
+\end{align}
+notice how in the first $n$ equations \eqref{first_n} there is a zero on the right side, since we are assuming that there are no external torques performing work on $\q$ if the robot is in free space.
+
+When applying a torque commands on $\btau$, this will influence $\ddot{\btheta}$ that through the elastic potential energy will control the joint angular positions $\q$.
 \end{document}
  
