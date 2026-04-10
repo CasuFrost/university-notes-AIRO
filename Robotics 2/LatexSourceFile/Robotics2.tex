@@ -3206,7 +3206,7 @@ After putting together all these terms and defining the Lagrangian, we apply the
 notice how in the first $n$ equations \eqref{first_n} there is a zero on the right side, since we are assuming that there are no external torques performing work on $\q$ if the robot is in free space.
 
 When applying a torque commands on $\btau$, this will influence $\ddot{\btheta}$ that through the elastic potential energy will control the joint angular positions $\q$.
-\section{State Equations}\label{StateDescription}
+\section{Hamilton Equations}\label{StateDescription}
 The Euler-Lagrange formulation provides a dynamic model of $n$ second order differential equations:\begin{equation}\label{model_in_conf}
     M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u 
 \end{equation}
@@ -3227,34 +3227,34 @@ the unknowns of this model are the trajectories in the \textit{configuration spa
 \end{equation}
 notice how is in the form $\mathbf f(\mathbf x)+G(\mathbf x)\mathbf u$ where $\mathbf f$ is a $2n$ vector and $G$ a $2n\times n$ matrix, the model is linear in the non conservative terms $\mathbf u$.
 
-Another choice of coordinates relies on the \textbf{phase space} representation. \begin{boxdefinition}{Conjugate Momentum}{}
-    Let $\mathcal L(\q,\dq)$ be the Lagrangian of our robotic system. The $i$-th \textbf{Conjugate Momentum} $p_i$ is the partial derivative of the Lagrangian respect to the $i$-th joint velocity:\begin{equation}
+Another choice of coordinates relies on the \textbf{phase space} representation. \begin{boxdefinition}{Conjugate Momenta}{}
+    Let $\mathcal L(\q,\dq)$ be the Lagrangian of our robotic system. The $i$-th \textbf{Conjugate Momenta} $p_i$ is the partial derivative of the Lagrangian respect to the $i$-th joint velocity:\begin{equation}
         p_i=\frac{\partial \mathcal L}{\partial \dot q_i}.
     \end{equation}
 \end{boxdefinition}
 Since the Lagrangian is\begin{equation}
     \mathcal L = \frac{1}{2}\dq^T M(\q)\dq - U(\q)
 \end{equation}
-the vector of Conjugate Momentum $\mathbf p$ is\begin{equation}
+the vector of conjugate momenta $\mathbf p$ is\begin{equation}
     \mathbf p=\frac{\partial \mathcal L}{\partial\dq}=M(\q)\dq.
 \end{equation}
-The \textbf{phase space} is the set of all the couples of configurations and conjugate momentum:\begin{equation}
+The \textbf{phase space} is the set of all the couples of configurations and conjugate momenta:\begin{equation}
     (\q,\mathbf p)=\left(\q,M(\q)\dq\right)\in \R^{2n}
 \end{equation}
 and is the set of coordinates used in the so called \textit{Hamiltonian Approach} (we will not dive into the details). The \textbf{Hamilton equations of motion} describe the dynamical model of the robot as a set of $2n$ first order differential equations in the unknowns $(\q,\mathbf p)$.
 We describe the model by the  time evolution of $(\q,\mathbf p)$:
 \begin{itemize}
-    \item From the definition of momentum $\mathbf p$, the time evolution of the configuration is\begin{equation}
-        \dq=M(\q)^{-1}\mathbf p
+    \item From the definition of momenta $\mathbf p$, the time evolution of the configuration is\begin{equation}
+        \dq=M^{-1}(\q)\mathbf p
     \end{equation}
-    \item the evolution of the momentum is given by\begin{equation}\label{dotp}
+    \item the evolution of the momenta is given by\begin{equation}\label{dotp}
         \dot{\mathbf p}=\dot M(\q)\dq+M(\q)\ddq
     \end{equation}
-    \item from the model \eqref{model_in_conf} we know that\begin{equation}
+    \item from the model \eqref{model_in_conf} we know that\begin{equation}\label{Mq}
         M(\q)\ddq=\mathbf u-\mathbf c(\q,\dq)-\mathbf g(\q)
     \end{equation}
-    \item we substitute in equation \eqref{dotp} and get\begin{equation}
-        \dot{\mathbf p} = \dot{M}(\q)M(\q)^{-1}\mathbf  p - \mathbf  c(\q, M(\q)^{-1}\mathbf p) -\mathbf  g(\mathbf q) +\mathbf  u.
+    \item we substitute in equation \eqref{dotp} and get\begin{equation}\label{derivata_p}
+        \dot{\mathbf p} = \dot{M}(\q)M^{-1}(\q)\mathbf  p - \mathbf  c(\q, M^{-1}(\q)\mathbf p) -\mathbf  g(\mathbf q) +\mathbf  u.
     \end{equation}
 \end{itemize}
 So, by denoting $\tilde{\mathbf x}=(\q,\mathbf p)$ the phase space vector, the Hamilton equations of motion  are\begin{equation}
@@ -3262,8 +3262,8 @@ So, by denoting $\tilde{\mathbf x}=(\q,\mathbf p)$ the phase space vector, the H
         \dq\\ 
         \dot{\mathbf p}
     \end{pmatrix}=\begin{pmatrix}
-        M(\q)^{-1}\mathbf p\\
-        \dot{M}(\q)M(\q)^{-1}\mathbf  p - \mathbf  c(\q, M(\q)^{-1}\mathbf p) -\mathbf  g(\mathbf q)
+        M^{-1}(\q)\mathbf p\\
+        \dot{M}(\q)M^{-1}(\q)\mathbf  p - \mathbf  c(\q, M^{-1}(\q)\mathbf p) -\mathbf  g(\mathbf q)
     \end{pmatrix}+\begin{pmatrix}
         \begin{matrix}
         0&\dots&0\\
@@ -3280,9 +3280,66 @@ of the Lagrangian:\begin{equation}
     \mathcal H(\q,\mathbf p)=\sum_{i=1}^{n}p_i\dot q_i-\mathcal L(\q,\dq)
 \end{equation}
 in the robotics context the Hamiltonian is just the \textbf{total energy} of the system:\begin{equation}
-    \mathcal{H}=T+U.
+    \mathcal{H}=T+U=\frac{1}{2}\dq^TM(\q)\dq-U(\q).
 \end{equation}
-The following diagram is an example of block diagram in Simulink to simulate the time evolution of a generic 2dof manipulator.
+Since $\q=M^{-1}(\q)\mathbf p$ it is easy to see how the Hamiltonian is in function of the generalized coordinates $\q$ and the conjugate momenta $\mathbf p$:\begin{equation}
+    \mathcal H(\q,\mathbf p)=\frac{1}{2}\mathbf p^TM^{-1}(\q)\mathbf p+U(\q)
+\end{equation}
+the derivatives of the Hamiltonian function respect to the conjugate momenta is\begin{equation}
+    \nabla_\mathbf p\mathcal H =\left(\frac{\partial \mathcal H}{\partial \mathbf p}\right)^T=\nabla_\mathbf p T =M^{-1}(\q)\mathbf p
+\end{equation}
+for the derivatives respect to the coordinates we have to take in account that the inertia matrix depends from $\q$:\begin{equation}\label{dH_q}
+     \nabla_\q\mathcal H =\left(\frac{\partial \mathcal H}{\partial \q}\right)^T=\nabla_\q T+\nabla_\q U=\nabla_\q T+\mathbf g(\q)
+\end{equation}
+$\mathbf g(\q)$ is the gravity term of our usual model, $\nabla_\q T$ instead is the vector where the $i$-th component is\begin{equation}
+    \frac{\partial T}{\partial q_i}=\frac{1}{2}\mathbf p^T\frac{\partial M^{-1}}{\partial q_i}\mathbf p
+\end{equation}
+we denote $$\frac{1}{2}\left(\mathbf p^T\frac{\partial M^{-1}}{\partial q_i}\mathbf p\right) $$
+this column vector,
+\begin{equation}
+     \nabla_\q\mathcal H =\mathbf g(\q)+\frac{1}{2}\left(\mathbf p^T\frac{\partial M^{-1}}{\partial q_i}\mathbf p\right).
+\end{equation}
+Notice how:\begin{equation}\label{first_hamilton}
+    \mathbf p=M(\q)\dq\implies \dq=M^{-1}(\q)\mathbf p = \nabla_{\mathbf p}\mathcal H
+\end{equation}
+that is exactly the gradient of the Hamiltonian respect to the conjugate momenta. From the equations \eqref{derivata_p} we know that the time evolution of the conjugate momenta is:\begin{equation}
+     \dot{\mathbf p} = \dot{M}(\q)M^{-1}(\q)\mathbf  p - \mathbf  c(\q, M^{-1}(\q)\mathbf p) -\mathbf  g(\mathbf q) +\mathbf  u
+\end{equation}
+consider the following term in the previous equation:
+$$ 
+\dot{M}(\q)M^{-1}(\q)\mathbf  p - \mathbf  c(\q, M^{-1}(\q)\mathbf p) -\mathbf  g(\mathbf q)
+$$
+and lets swap the sign:\begin{equation}
+    -\dot{M}(\q)M^{-1}(\q)\mathbf  p + \mathbf  c(\q, M^{-1}(\q)\mathbf p) + \mathbf  g(\mathbf q)
+\end{equation}
+without giving the proof, the term $-\dot{M}(\q)M^{-1}(\q)\mathbf  p + \mathbf  c(\q, M^{-1}(\q)\mathbf p)$ is exactly the gradient of the kinetic energy respect to $\q$, so by observing the equation \eqref{dH_q} we have that\begin{align}
+    &-\dot{M}(\q)M^{-1}(\q)\mathbf  p + \mathbf  c(\q, M^{-1}(\q)\mathbf p) + \mathbf  g(\mathbf q)=\\ 
+    & \nabla_\q T+\mathbf g(\q)\implies \\
+    &\label{second_hamilton} \dot{\mathbf p}=-\nabla_\q\mathcal H+\mathbf u.
+\end{align}
+\noindent From the equations \eqref{first_hamilton} and \eqref{second_hamilton} we arrive to the following crucial result.
+\begin{boxproposition}{Hamilton Equations}{}
+    The time evolution of the system is described by the Hamilton equations defined as follows:
+    \begin{align}
+        &\dq=\nabla_{\mathbf p}\mathcal H\\
+        &\dot{\mathbf p}=-\nabla_{\q}\mathcal H.
+    \end{align}
+\end{boxproposition}
+\noindent Knowing that, the state equations can be rewritten in the following form:\begin{equation}
+    \begin{pmatrix}
+        \dq\\ \dot{\mathbf p}\end{pmatrix}=\begin{pmatrix}
+            \mathcal O& I_n\\ 
+            -I_n&\mathcal O
+        \end{pmatrix}\begin{pmatrix}
+            \nabla_{\mathbf p}\mathcal H\\
+            \nabla_{\q}\mathcal H
+        \end{pmatrix}+\begin{pmatrix}
+            \mathcal O\\ I_n 
+        \end{pmatrix}\mathbf u
+\end{equation}
+where we denoted $\mathcal O$ the $n\times n$ full zero matrix.\bigskip
+
+\noindent The following diagram is an example of block diagram in Simulink to simulate the time evolution of a generic 2dof manipulator.
 \begin{figure}[H]    
 \centering 
      \includegraphics[width=0.5\textwidth ]{images/simulink_2dof.png}
@@ -3347,7 +3404,7 @@ The transformation of coordinates is given by  a \textit{local diffeomorphism} $
 \end{itemize}
 We will denote $\mathbf p=f(\q)$ the transformed coordinates. Note how \begin{itemize}
     \item The Jacobian denoted $J$ here  is not the Jacobian of the direct kinematics that we have used until now, but the Jacobian of a general coordinate transformation $f$.
-    \item With $\mathbf p$ we are just denoting the new set of coordinates, this have nothing to do with the conjugate momentum defined in Section \ref{StateDescription}.
+    \item With $\mathbf p$ we are just denoting the new set of coordinates, this have nothing to do with the conjugate momenta defined in Section \ref{StateDescription}.
 \end{itemize}
 Given $\mathbf p\in \R^n$ we can return to the old set of coordinates:\begin{equation}
     \q=f^{-1}(\mathbf p)
@@ -3444,5 +3501,18 @@ The dynamic model in the coordinates $\mathbf p$ is:\begin{equation}
     .
 \end{equation}
 \section{Dynamic Redundancy in the Task Space}
+In this section, we will describe the dynamic model in the task space, by writing the dynamic equations in the unknowns $\mathbf y=k(\q)$. Furthermore, we take into account the redundancy of the joints, by letting the number of degree of freedom $n$ greater than the dimension of the task vector $m$. As the first step, we isolate $\ddq$ in the dynamic model:\begin{equation}
+    \ddq=M^{-1}(\btau-\mathbf n).
+\end{equation}
+Let $H$ be a generalized inverse of the Jacobian transpose $$ J^THJ^T =J^T$$
+We decide to decompose $\btau\in \R^n$ in two complementary spaces, since\begin{eqnarray}
+    \R^n=\mathcal R(J^T)\oplus\mathcal N(J^TH)
+\end{eqnarray}
+we use the projection operator on $J^TH$ defined as\begin{equation}
+    I-J^TH
+\end{equation}
+let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use as our control input, and let $\btau_N\in \R^n$ be a ''preferred'' torque, the decomposition of $\btau$ that we use is the following:\begin{equation}
+    \btau=J^T\mathbf F+(I-J^TH)\btau_N.
+\end{equation}
 \end{document}
  
