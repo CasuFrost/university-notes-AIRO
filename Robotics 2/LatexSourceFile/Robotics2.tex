@@ -1495,7 +1495,7 @@ I-(JW)^\#J
     \right)\dq_N
 \end{equation}
 where\begin{itemize}
-    \item $W$ is a diagonal matrix such that the entries are 0 or 1 and is needed to select which joint will saturate. 
+    \item $W$ is a diagonal matrix such that the entries are 0 or 1 and is needed to select which joint will saturate. If we want to saturate the joint $i$, then $W_{ii}=0$, else, if the joint is ''free'' $W_{ii}=1$.
     \item $s$ is the scaling factor of the required task velocity $\dy$.
     \item $\dq_N$ is the vector of the saturated (full speed) joint velocities.
 \end{itemize}
@@ -3322,7 +3322,7 @@ without giving the proof, the term $-\dot{M}(\q)M^{-1}(\q)\mathbf  p + \mathbf  
     The time evolution of the system is described by the Hamilton equations defined as follows:
     \begin{align}
         &\dq=\nabla_{\mathbf p}\mathcal H\\
-        &\dot{\mathbf p}=-\nabla_{\q}\mathcal H.
+        &\dot{\mathbf p}=-\nabla_{\q}\mathcal H+\mathbf u.
     \end{align}
 \end{boxproposition}
 \noindent Knowing that, the state equations can be rewritten in the following form:\begin{equation}
