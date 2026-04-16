@@ -2636,7 +2636,7 @@ Let's analyze each component\begin{itemize}
 \end{figure}
 \end{itemize}
 After computing ${}^i\bomega_i$, ${}^i\mathbf v_i$ for all $i$, we compute ${}^i\mathbf v_{ci}$ using the relation \eqref{vel_rigid_bodies}, and from the König theorem we can compute the kinetic energy of the system (from which the inertia matrix is derived).
-\subsection{Dynamic Model of a 2R Robot}
+\subsection{Dynamic Model of a 2R Robot}\label{Dyn2R}
 We give an example of the algorithm at work by considering a planar 2R manipulator, with link length $l_1$ and $l_2$.
 \begin{figure}[H]    
 \centering 
@@ -3513,6 +3513,199 @@ we use the projection operator on $J^TH$ defined as\begin{equation}
 \end{equation}
 let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use as our control input, and let $\btau_N\in \R^n$ be a ''preferred'' torque, the decomposition of $\btau$ that we use is the following:\begin{equation}
     \btau=J^T\mathbf F+(I-J^TH)\btau_N.
+\end{equation}
+\redText{TODO}
+\section{Dynamic Scaling}
+\redText{TODO}
+\section{Linear Parametrization}
+A single link of a manipulator introduces 10 dynamic parameters:\begin{itemize}
+    \item the mass of the link, 1 real number
+    \item the position of the center of mass, 3 real numbers
+    \item the symmetric inertia matrix, 6 real numbers.
+\end{itemize}
+However, in a robot with $n$ joints, the dynamic model usually don't depends on all the $10n$ dynamic parameters, but only on some of them, usually in a non linear way, for example: $I_{ci,zz}+m_ir_{zi}^2$. The kinetic energy and the potential energy of link $i$ can be rewritten by using a different set of dynamic parameters $\boldsymbol{\pi}_i$, for which $T$ and $U$ are linear, since the dynamic model are derived from $T-U$ through linear operations, it will be linear in $\boldsymbol{\pi}_i$ too.
+
+The kinetic energy of a link is\begin{equation}\label{Ti}
+     T_i=\frac{1}{2}m_i\mathbf{v}_{ci}^T\mathbf{v}_{ci}+\frac{1}{2}\bomega_i^TI_{ci}\bomega_i 
+\end{equation}
+we recall the fundamental kinematic relation:\begin{equation}\label{kin_rel}
+    \mathbf v_{ci}=\mathbf v_i+\bomega_i\times \mathbf r_{ci}=\mathbf v_i-S(\mathbf r_{ci})\bomega_i 
+\end{equation}
+by substituting \eqref{kin_rel} in \eqref{Ti} we obtain:\begin{align}
+    &T_i=\frac{1}{2}m_i(\mathbf v_i-S(\mathbf r_{ci})\bomega_i )^T(\mathbf v_i-S(\mathbf r_{ci})\bomega_i )+\frac{1}{2}\bomega_i^TI_{ci}\bomega_i =\\
+    &
+    \frac{1}{2}m_i\mathbf v_i^T\mathbf v_i+\frac{1}{2}\bomega_i^T 
+    \blueText{(I_{ci}+m_iS^T(\mathbf r_{ci})S(\mathbf r_{ci}))}
+    \bomega_i-\mathbf v_i^T S(m_i\mathbf r_{ci})\bomega_i
+\end{align}
+We denote $I_i$ the matrix $\blueText{(I_{ci}+m_iS^T(\mathbf r_{ci})S(\mathbf r_{ci}))}$:\begin{equation}
+    I_i=\begin{pmatrix}
+        I_{i,xx}&I_{i,xy}&I_{i,xz}\\
+        &I_{i,yy}&I_{i,yz}\\
+        \text{symm}& & I_{i,zz}
+    \end{pmatrix}
+\end{equation}
+the kinetic energy is rewritten:\begin{equation}
+    T_i= \frac{1}{2}m_i\mathbf v_i^T\mathbf v_i+\frac{1}{2}\bomega_i^T 
+    I_i
+    \bomega_i-\mathbf v_i^T S(m_i\mathbf r_{ci})\bomega_i
+\end{equation}
+by denoting $\mathbf r_i$ the position of the reference frame $RF_i$ attached to link $i$, and $\mathbf r_{ci}$ the position of the center of mass of link $i$ in the reference frame $RF_i$, the position of the center of mass  of link $i$ in the base frame is\begin{equation}
+    \mathbf r_{0,ci}=\mathbf r_i+\mathbf r_{ci}
+\end{equation}
+the potential energy of link $i$ can be rewritten:\begin{equation}
+    U_i=-m_i\mathbf g_0^T\mathbf r_{0,ci}=-m_i\mathbf g_0^T(\mathbf r_i+\mathbf r_{ci})=-m_i\mathbf g_0^T\mathbf r_i-\mathbf g_0^T(m_i\mathbf r_{ci})
+\end{equation}
+So, as a result:\begin{align}
+    &T_i= \frac{1}{2}\blueText{m_i}\mathbf v_i^T\mathbf v_i+\frac{1}{2}\bomega_i^T 
+    \blueText{I_i}
+    \bomega_i+\blueText{m_i\mathbf r_{ci}}^TS(\mathbf v_i)\bomega_i
+    \\
+    &U_i=-m_i\mathbf g_0^T\mathbf r_i-\mathbf g_0^T(\blueText{m_i\mathbf r_{ci}})
+\end{align}
+$T_i$ and $U_i$ \textbf{depends linearly from} $I_i, m_i\mathbf r_{ci}$ and $m_i$. We group these new dynamic parameters in a vector $\boldsymbol{\pi}_i\in \R^{10}$ called the vector of the \textbf{standard parameters}:\begin{equation}
+    \boldsymbol{\pi}_i=\begin{pmatrix}
+        m_i& m_ir_{ci,x}&m_ir_{ci,y}&m_ir_{ci,z}&I_{i,xx}&I_{i,xy}&I_{i,xz}&I_{i,yy}&I_{i,yz}&I_{i,zz}
+    \end{pmatrix}^T.
+\end{equation}
+Besides these 10 parameters (for each link), we can include 4 additional dynamic quantities:\begin{itemize}
+    \item one inertia parameter for the motor, as reflected through its
+reduction ratio $$M_{mi}=I_{mi}n_{ri}^2 $$
+    \item at most three dissipative parameters for the joint/transmission, using
+viscous, Coulomb, and static friction models
+$$ \begin{pmatrix}
+    B_{vi}&B_{ci}&B_{si}
+\end{pmatrix}^T$$
+\end{itemize}
+Also this terms appear in a linear fashion in the dynamic model. We include these parameters in the $\boldsymbol{\pi}_i$ vector. Given $n$ joints, the total number of dynamic parameters is\begin{align}
+    &\text{for each link: }n_p=10+1+3=14\\
+    &\text{in total: }p=n_pn \\
+    &\boldsymbol{\pi}=\begin{pmatrix}
+        \boldsymbol{\pi}^T_1 &\dots &\boldsymbol{\pi}^T_n
+    \end{pmatrix}^T\in \R^p.
+\end{align}
+Due to the linearity, the dynamic model can be rewritten as follows:\begin{equation}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=Y_\pi(\q,\dq,\ddq)\boldsymbol{\pi}
+\end{equation}
+where $Y_{\pi}$ is called \textbf{regressor matrix} and have $n$ rows and $p$ columns. Due to the open chain structure, the $i$-th dynamic equation depends only on the dynamic parameters of the links going from the $i$-th to the $n$-th, hence the regressor matrix has a triangular structure:\begin{equation}
+    Y_\pi=\begin{pmatrix}
+        (Y_{1,1}\dots Y_{1,n_p})&(Y_{1,n_p+1}\dots Y_{1,2n_p})&\dots & (Y_{1,(n-1)n_p+1}\dots Y_{1,p})\\[1.5ex] 
+        \mathbf 0^T & (Y_{2,n_p+1}\dots Y_{2,2n_p})&\dots & 
+        (Y_{2,(n-1)n_p+1}\dots Y_{2,p})\\[1.5ex]
+        \vdots & & \ddots&\vdots \\[1.5ex]
+        \mathbf 0^T & \dots & \mathbf 0^T& 
+         (Y_{n,(n-1)n_p+1}\dots Y_{n,p})
+    \end{pmatrix}
+\end{equation}
+outlining the following property:\begin{quote}
+    the element $M_{ij}$ of $M(\q)$ depends at most on $(q_{k+1}\dots q_n)$ where $k=\min\{i,j\}$ and at most on the dynamic parameters of link $h$ up to $n$ where $h=\max\{i,j\}$.
+\end{quote}
+In the model $Y_\pi(\q,\dq,\ddq)\boldsymbol{\pi}$ we are using all the $p=n_pn$ dynamic parameters, but we already explained (and saw through past examples) that the model usually don't include all the parameters, the corresponding columns of this parameters are identically the zero column, so we can remove it from $Y_\pi$ and remove the ''no role'' parameters from $\boldsymbol{\pi}$. We denote $p_r<p$ the remaining parameters, and the remaining matrix $Y_{\pi}$ now have $n$ rows and $p_r$ columns. 
+
+It usually happens that some of the columns in $Y_\pi$ are \textbf{linearly dependent} from others, let's denote $Y_{ind}$ the sub matrix of $Y_{\pi}$ containing only linearly independent $r<p_r$ columns, and $Y_{dep}$ the columns that are linear combinations of elements in $Y_{ind}$. We also reorder the vector $\boldsymbol{\pi}$ by moving on top the first $r$ parameters associated to $Y_{ind}$, and the remaining one below, associated to $Y_{dep}$;\begin{equation}
+    Y_\pi\boldsymbol{\pi}=\begin{pmatrix}
+        Y_{ind}&Y_{dep}
+    \end{pmatrix}\begin{pmatrix}
+        \boldsymbol{\pi}_{ind}\\
+        \boldsymbol{\pi}_{dep}
+    \end{pmatrix}
+\end{equation}
+the matrix $Y_{dep}$ can be rewritten as a product between $Y_{ind}$ and a matrix $\Delta$:\begin{equation}
+Y_\pi\boldsymbol{\pi}=\begin{pmatrix}
+        Y_{ind}&Y_{ind}\Delta
+    \end{pmatrix}\begin{pmatrix}
+        \boldsymbol{\pi}_{ind}\\
+        \boldsymbol{\pi}_{dep}
+    \end{pmatrix}
+\end{equation}
+In this way we can rewrite the model as a product of a $n\times r$ matrix $Y_{ind}$ and an column vector of $r$ entries $ \boldsymbol{\pi}_{ind}+\Delta  \boldsymbol{\pi}_{dep}$:\begin{equation}
+    \begin{pmatrix}
+        Y_{ind}&Y_{ind}\Delta
+    \end{pmatrix}\begin{pmatrix}
+        \boldsymbol{\pi}_{ind}\\
+        \boldsymbol{\pi}_{dep}
+    \end{pmatrix}=Y_{ind}\begin{pmatrix}
+        \boldsymbol{\pi}_{ind}+\Delta \boldsymbol{\pi}_{dep}
+    \end{pmatrix}
+\end{equation}
+we denote $\boldsymbol{\rho}=\begin{pmatrix}
+        \boldsymbol{\pi}_{ind}+\Delta \boldsymbol{\pi}_{dep}
+    \end{pmatrix}$ the vector of the $r$ \textbf{dynamic coefficients} and we let $Y=Y_{ind}$.  The model is rewritten in its final form as follows:\begin{equation}
+        Y(\q,\dq,\ddq)\boldsymbol{\rho}=\btau
+    \end{equation}
+and each manipulator have a \textbf{minimal number} $r$ of dynamic coefficients that are strictly needed to define its dynamic model.\bigskip
+
+Determining a minimal parametrization $ Y(\q,\dq,\ddq)\boldsymbol{\rho}$ is important, if we don't have access to the dynamic parameters, we can register a set of experiment and guess the values of $\boldsymbol{\rho}$ by minimizing an error function. It is also useful in control problems in the presence of uncertain parameters.
+\subsection{Example with a Planar 2R}
+In the previous sections, we have derived the dynamic model of a planar 2R in scalar form:\begin{align}
+&(\rho_1 + 2\rho_2 c_2)\ddot{q}_1 + (\rho_2 c_2 + \rho_3)\ddot{q}_2 - \rho_2 s_2(\dot{q}_2^2 + 2\dot{q}_1 \dot{q}_2)
++ \rho_4 c_1 + \rho_5 c_{12} = u_1 \\
+&(\rho_2 c_2 + \rho_3)\ddot{q}_1 + \rho_3 \ddot{q}_2 + \rho_2 s_2 \dot{q}_1^2 + \rho_5 c_{12} = u_2
+\end{align}
+the values of $\rho_i$ are provided in Section \ref{Dyn2R}:
+\begin{align}
+    &\rho_1=I_{c1,zz} + m_1 d_{c1}^2 + I_{c2,zz} + m_2 d_{c2}^2 + m_2 l_1^2\\ 
+   &\rho_2=m_2l_1d_{c2}
+    \\ &\rho_3=I_{c2,zz} + m_2 d_{c2}^2
+    \\ &\rho_4=g_0(m_1d_{c1}+m_2l_1)
+    \\ &\rho_5=g_0m_2d_{c2}
+\end{align}
+We rewrite it by isolating the vector $\boldsymbol{\rho}$:\begin{equation}
+    \begin{pmatrix}
+        \ddot q_1&c_2(2\ddot q_1+\ddot q_2)-s_2(\dot q_2^2+2\dot q_1\dot q_2)&\ddot q_2&c_1&c_{12}\\
+        0&c_2\ddot q_1+d_2\dot q_1^2 & \ddot q_1+\ddot q_2&0&c_{12}
+    \end{pmatrix}\begin{pmatrix}
+        \rho_1\\\rho_2\\\rho_3\\\rho_4\\\rho_5
+    \end{pmatrix}=\begin{pmatrix}
+        u_1\\u_2
+    \end{pmatrix}
+\end{equation}
+despite the dynamic quantities are unknown, the kinematic quantities such as the link lengths and the gravity value $g_0$ are known and we an factor it out:\begin{align}
+    &\rho_2=l_1(m_2d_{c2})\implies \rho_2'=m_2d_{c2}\\ 
+    &\rho_5=g_0(m_2d_{c2})\implies \rho_5'=m_2d_{c2}=\rho_2'\\
+    &\rho_4'=m_1d_{c1}+m_2l_1
+\end{align} 
+and rewrite the model:\begin{equation}
+     \begin{pmatrix}
+        \ddot q_1&\redText{l_1}c_2(2\ddot q_1+\ddot q_2)-\redText{l_1}s_2(\dot q_2^2+2\dot q_1\dot q_2)+\redText{g_0}c{12}&\ddot q_2&g_0c_1\\
+        0&\redText{l_1}(c_2\ddot q_1+d_2\dot q_1^2)+\redText{g_0}c_{12} & \ddot q_1+\ddot q_2&0
+    \end{pmatrix}\begin{pmatrix}
+        \rho_1\\\rho_2'\\\rho_3\\\rho_4'\\
+    \end{pmatrix}=\begin{pmatrix}
+        u_1\\u_2
+    \end{pmatrix}
+\end{equation}
+4 is the minimal number of dynamic coefficients for this manipulator. Note how this parametrization is not unique, we can find another set of 4 dynamic coefficients and a different regressor matrix. This way to find the factorization is not systematic, in general, we should enumerate the standard parameters $\boldsymbol{\pi}$, write the system $Y_{\pi}\boldsymbol{\pi}=\mathbf u$ and look for linearly dependent columns in $Y_{\pi}$. For this robot the 5 standard parameters that plays a role in the model are\begin{align}
+    &\pi_1=m_1d_{c1}\\ 
+    &\pi_2=I_{1,zz}\\ 
+    &\pi_3=m_2\\ 
+    &\pi_4=m_2{d_{c2}}\\
+    &\pi_5=I_{2,zz}
+\end{align}
+and the regressor matrix is\begin{equation}
+   Y_{\pi} = \begin{pmatrix} 
+g_0 c_1 & \ddot{q}_1 & l_1^2 \ddot{q}_1 + l_1 g_0 c_1 & l_1 c_2 (2\ddot{q}_1 + \ddot{q}_2) - l_1 s_2 (2\dot{q}_1 \dot{q}_2 + \dot{q}_2^2) + g_0 c_{12} & \ddot{q}_1 + \ddot{q}_2 \\
+0 & 0 & 0 & l_1 (c_2 \ddot{q}_1 + s_2 \dot{q}_1^2) + g_0 c_{12} & \ddot{q}_1 + \ddot{q}_2 
+\end{pmatrix}
+\end{equation}
+the third column is a linear combination of the first two\begin{align}
+    &Y_{\pi 3}=l_1Y_{\pi 1}+l_1^2Y_{\pi _2}\implies \\
+    &\pi_3=\begin{pmatrix} 
+g_0 c_1 & \ddot{q}_1 & l_1 c_2 (2\ddot{q}_1 + \ddot{q}_2) - l_1 s_2 (2\dot{q}_1 \dot{q}_2 + \dot{q}_2^2) + g_0 c_{12} & \ddot{q}_1 + \ddot{q}_2 \\
+0 & 0  & l_1 (c_2 \ddot{q}_1 + s_2 \dot{q}_1^2) + g_0 c_{12} & \ddot{q}_1 + \ddot{q}_2 
+\end{pmatrix}\begin{pmatrix}
+    l_1\\l_1^2\\0\\0
+\end{pmatrix}
+\end{align}
+so the vector of minimal dynamic coefficients is \begin{equation}
+    \begin{pmatrix}
+        \pi_1\\\pi_2\\\pi_4\\\pi_5
+    \end{pmatrix}+\Delta\pi_3=\begin{pmatrix}
+        m_1d_{c1}+l_1m_2\\
+        I_{1,zz}+l_1^2m_2\\
+        m_2{d_{c2}}\\
+        I_{2,zz}
+    \end{pmatrix}
 \end{equation}
 \end{document}
  
