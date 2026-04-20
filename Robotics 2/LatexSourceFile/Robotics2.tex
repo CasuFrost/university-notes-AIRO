@@ -317,7 +317,7 @@ the final dynamic equation with the inclusion of this term is \begin{equation}
      \caption{Discrete time simulation with $m=1,y_d=1,k_P=k_D=2,k_I=1, \Delta t = 0.0001$.}
      \label{fig:PID}
 \end{figure}
-\chapter{Advanced Topics on Kinematics}
+\chapter{Advanced Topics in Kinematics}
 \section{Calibration}
 A measurement system has a high repeatability if different measurements of the same quantity provides similar results, and is accurate if the measured quantity is near to the ground truth. A robot can be seen as a measurement system, the DH parameters are used in the direct kinematics to compute the task vector from a given configuration. If the predicted position of the end effector is far from the real position, the parameters are wrong, there is a lack in accuracy and the \textbf{calibration procedure} is needed. 
 
@@ -3344,7 +3344,8 @@ where we denoted $\mathcal O$ the $n\times n$ full zero matrix.\bigskip
 \centering 
      \includegraphics[width=0.5\textwidth ]{images/simulink_2dof.png}
 \end{figure}
-\section{Approximate Linearization}
+\section{Advanced Dynamics Analysis}
+\subsection{Approximate Linearization}
 Around a given operative condition, sometimes we can derive a \textit{linear model} of a manipulator that locally approximates the dynamic behavior.
 \begin{boxdefinition}{}{}
     An \textbf{equilibrium state} of the manipulator is a state $(\q_e,\dq_e)$ such that \begin{align}
@@ -3391,7 +3392,7 @@ this is exactly a linear system of first order differential equations of the for
     \dot{\Delta{\mathbf x}}=A\Delta{\mathbf x}+B\Delta{\mathbf u}
 \end{equation}
 \redText{TODO: equilibrium trajectory}
-\section{Coordinate Transformation}
+\subsection{Coordinate Transformation}
 In this section we describe how to manage a change of coordinates in the dynamic model. We rewrite the model by gathering together $\mathbf c$ and $\mathbf g$:\begin{equation}
     M(\q)\ddq+\mathbf n(\q,\dq)=\mathbf u_q
 \end{equation}
@@ -3500,7 +3501,7 @@ The dynamic model in the coordinates $\mathbf p$ is:\begin{equation}
     \end{pmatrix}
     .
 \end{equation}
-\section{Dynamic Redundancy in the Task Space}
+\subsection{Dynamic Redundancy in the Task Space}
 In this section, we will describe the dynamic model in the task space, by writing the dynamic equations in the unknowns $\mathbf y=k(\q)$. Furthermore, we take into account the redundancy of the joints, by letting the number of degree of freedom $n$ greater than the dimension of the task vector $m$. As the first step, we isolate $\ddq$ in the dynamic model:\begin{equation}
     \ddq=M^{-1}(\btau-\mathbf n).
 \end{equation}
@@ -3515,7 +3516,7 @@ let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use 
     \btau=J^T\mathbf F+(I-J^TH)\btau_N.
 \end{equation}
 \redText{TODO}
-\section{Dynamic Scaling}
+\subsection{Dynamic Scaling}
 \redText{TODO}
 \section{Linear Parametrization}
 A single link of a manipulator introduces 10 dynamic parameters:\begin{itemize}
@@ -3705,7 +3706,110 @@ so the vector of minimal dynamic coefficients is \begin{equation}
         I_{1,zz}+l_1^2m_2\\
         m_2{d_{c2}}\\
         I_{2,zz}
+    \end{pmatrix}.
+\end{equation}
+\subsection{Identification}
+To exploit the dynamic model of a manipulator in order to improve the control system, we need to know the numeric value of the dynamic coefficients, despite the robot manufacturers usually don't provide these values in the technical sheet (except for the link masses).
+
+To know these values, one can perform a numeric estimation with CAD tools, by having a digital model of the manipulator, but some of the dynamic parameters, like the viscous friction that depend on the lubrication of the joints, can change over time, or the 10 standard parameters of the last link that change if we have attached a payload to it.
+
+Due to the linear behavior of the coefficients $\brho$ in the model, we can identify these parameters by experimentation:\begin{enumerate}
+    \item First of all, we choose a joint trajectory $\q_d(t)$ that ''excites'' the model, explore the workspace and involves all the dynamic coefficients, usually a periodic trajectory with different frequency components.
+    \item We approximately execute this motion by a simple PD law that doesn't need the model\begin{equation}
+        \btau=K_p(\q_d-\q)+K_d(\dq_d-\dq).
+    \end{equation}
+    \item While performing this motion, we measure the value of the encoders $\q$ (and if possible, also the velocities $\dq$) every discrete time step, by obtaining $n_c$ measurements$$\q(t_1)\dots \q(t_k)\dots \q(t_{n_c}).$$
+    \item We estimate the value of $\ddq$ and $\dq$ (if not available) by using these measurements: For example, to measure $\dq(t_k)$, we fit a polynomial function $g$ in $\q(t_{k-1}),\q(t_{k}),\q(t_{k+1})$ and we take the analytical derivative $\frac{dg}{dt}$ in $t_k$.
+    \begin{figure}[H]    
+    \centering 
+        \includegraphics[width=\textwidth ]{images/estimate_derivative.eps}
+    \end{figure}
+    \item At each time step $t_k$, we also have the value used for the  torque $\btau(t_k)$, so we evaluate the regressor matrix and obtain the linear system:\begin{equation}
+        Y(\q(t_k),\dq(t_k),\ddq(t_k))\brho=\btau(t_k).
+    \end{equation}
+\end{enumerate}
+This procedure is repeated for all the $n_c$ measurements and we set up the system of linear equations:\begin{equation}\label{identification_system}
+    \underbrace{\begin{pmatrix}
+        Y(\q(t_1),\dq(t_1),\ddq(t_1))\\ \vdots \\ 
+        Y(\q(t_{n_c}),\dq(t_{n_c}),\ddq(t_{n_c}))
+    \end{pmatrix}}_{\overline Y}\brho=\underbrace{\begin{pmatrix}
+        \btau(t_1)\\ \vdots \\ \btau(t_{n_c})
+    \end{pmatrix}}_{\overline\btau}
+\end{equation}
+the number of rows of this system is $n_c\cdot n$, a sufficiently ''exciting'' trajectory and a large number of samples will guarantee that the rank of this matrix is full, at this point we can find our estimation of $\brho$ by the pseudo inverse:\begin{equation}
+    \brho = \overline{Y}^\#\overline\btau=(\overline Y^T\overline Y)^{-1}\overline Y^T\overline\btau 
+\end{equation}
+Let's denote $Y_i$ the $i$-th row of the regressor matrix $Y$ and $\tau_i$ the $i$-th entry of the vector $\btau$:\begin{align}
+    &Y(t_k)=\begin{pmatrix}
+        (Y_1(\q(t_k),\dq(t_k),\ddq(t_k)))\\ 
+        \vdots \\ 
+         (Y_n(\q(t_k),\dq(t_k),\ddq(t_k)))
+    \end{pmatrix}\\[2ex]
+    &\btau(t_k)=\begin{pmatrix}
+        \tau_1(t_k)\\ \vdots \\ \tau_n(t_k)
+    \end{pmatrix}
+\end{align}
+the linear system in \eqref{identification_system} in a more explicit form is:\begin{equation}
+    \begin{pmatrix}
+         (Y_1(\q(t_1),\dq(t_1),\ddq(t_1)))\\ 
+        \vdots \\ 
+         (Y_n(\q(t_1),\dq(t_1),\ddq(t_1)))\\ \vdots \\ 
+         (Y_1(\q(t_{n_c}),\dq(t_{n_c}),\ddq(t_{n_c})))\\ 
+        \vdots \\ 
+         (Y_n(\q(t_{n_c}),\dq(t_{n_c}),\ddq(t_{n_c})))
+    \end{pmatrix}\brho=\begin{pmatrix}
+        \tau_1(t_1)\\ \vdots \\ \tau_n(t_1) \\ \vdots \\ \tau_1(t_{n_c})\\ \vdots \\ \tau_n(t_{n_c})
     \end{pmatrix}
 \end{equation}
+it is convenient to \textit{reorder} the rows of the system as follows:\begin{equation}
+     \begin{pmatrix}
+         (Y_1(\q(t_1),\dq(t_1),\ddq(t_1)))\\ 
+        \vdots \\ 
+         (Y_1(\q(t_{n_c}),\dq(t_{n_c}),\ddq(t_{n_c})))\\ \vdots \\ 
+         (Y_n(\q(t_{1}),\dq(t_{1}),\ddq(t_{1})))\\ 
+        \vdots \\ 
+         (Y_n(\q(t_{n_c}),\dq(t_{n_c}),\ddq(t_{n_c})))
+    \end{pmatrix}\brho=\begin{pmatrix}
+        \tau_1(t_1)\\ \vdots \\ \tau_1(t_{n_c}) \\ \vdots \\ \tau_n(t_{1})\\ \vdots \\ \tau_n(t_{n_c})
+    \end{pmatrix}
+\end{equation}
+in this way the matrix $\overline Y$ preserves the triangular structure of $Y$ and to check if $\overline Y$ is full rank becomes easier. Furthermore, if sufficiently rich friction models are not included in $Y\brho$, we can discard the data collected at joint velocities close to zero.
+The whole procedure of identification can be summarized in the diagram in Figure \ref{identification_diagram}.\bigskip
+\begin{figure}    
+    \centering 
+        \includegraphics[width=0.4\textwidth ]{images/identification_diagram.png}
+        \caption{Dynamic coefficients estimation.}
+        \label{identification_diagram}
+    \end{figure}
+
+\noindent How the dynamic parameters change when we add a \textbf{load on the end effector}? Since this one is added on the last link, only these parameters will change. The mass $m_n$ will be simply added to the mass of the load:\begin{equation}
+    m_n\longrightarrow m_n+m_L
+\end{equation}
+the new center of mass will be a weighted average of the the two centers of the two object:\begin{equation}
+    \mathbf r_{cn}m_n\longrightarrow \mathbf r_{cn}m_n+\mathbf c_Lm_l
+\end{equation}
+the inertia tensor of the link is added to the inertia tensor of the load if these two are expressed with respect to the same reference frame:\begin{equation}
+    I_n\longrightarrow I_n+I_L.
+\end{equation}
+For the 2R planar robot:\begin{equation}
+    \boldsymbol{\rho} = \begin{pmatrix}
+\frac{1}{2} \left( m_2 a_2^2 + I_{2zz} \right) + a_2 c_{2x} m_2 \\
+c_{2x} m_2 + a_2 m_2 \\
+c_{2y} m_2 \\
+\frac{1}{2} \left( I_{1zz} + a_1^2 m_1 + a_1^2 m_2 \right) + a_1 c_{1x} m_1 \\
+c_{1x} m_1 + a_1 m_1 + a_1 m_2 \\
+c_{1y} m_1
+\end{pmatrix}\end{equation}becomes\begin{equation}\boldsymbol{\rho}^L = \begin{pmatrix}
+\frac{1}{2} \left( a_2^2 (m_2 + m_L) + I_{2zz} + I_{Lzz} \right) + a_2 (c_{2x} m_2 + c_{Lx} m_L) \\
+c_{2x} m_2 + c_{Lx} m_L + a_2 (m_2 + m_L) \\
+c_{2y} m_2 + c_{Ly} m_L \\
+\frac{1}{2} \left( I_{1zz} + a_1^2 m_1 + a_1^2 (m_2 + m_L) \right) + a_1 c_{1x} m_1 \\
+c_{1x} m_1 + a_1 m_1 + a_1 (m_2 + m_L) \\
+c_{1y} m_1
+\end{pmatrix}.
+\end{equation}\begin{itemize}
+    \item Unloaded robot dynamics: $Y\brho=\btau$.
+    \item Loaded robot dynamics: $Y^L\brho^L=\btau$.
+\end{itemize}
 \end{document}
  
