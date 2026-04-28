@@ -2384,7 +2384,7 @@ in this case
         u_2=A\omega^2\cos(\omega t)(-m_2d_{c2})
     \end{cases}
 \end{equation}
-the frequency of the commands is identical but the direction is inverted.\subsection{Factorization and Energy Conservation}
+the frequency of the commands is identical but the direction is inverted.\subsection{Factorization and Energy Conservation}\label{FactorAndEnergyCons}
 Now, we compute the factorization of $\mathbf c$ through a matrix $C$ in order to write the model in the form of equation \eqref{dynModel}.\begin{align}
     &\mathbf c = \begin{pmatrix}
         -m_2d_{c2}\cos q_2\dot q_2^2\\ 
@@ -4010,5 +4010,281 @@ A robotic manipulator is a dynamic system that needs to be appropriately control
     \item accurate execution of a trajectory 
     \item zeroing a position error. 
 \end{itemize}
-The performance of a control system can be evaluated in different ways, the quality of execution in nominal conditions regards the velocity/speed of task completion, the accuracy and repeatability and the consumed energy. Another way to evaluate a control system regard how it behaves in presence of \textit{disturbances} and \textit{perturbations}, how it adapts to changing environment and how can be improved by the use of a feedback loop.
+The performance of a control system can be evaluated in different ways, the quality of execution in nominal conditions regards the velocity/speed of task completion, the accuracy and repeatability and the consumed energy. Another way to evaluate a control system regard how it behaves in presence of \textit{disturbances} and \textit{perturbations}, how it adapts to changing environment and how can be improved by the use of a feedback loop. There are various control schemes:\begin{itemize}
+    \item \textbf{Feedback control}: the classical closed loop control law, is insensitive to mild disturbances and different initial conditions.
+    \item \textbf{Robust control}: the design of a control law that takes into account an amount of bounded uncertainties.
+    \item \textbf{Adaptive control}: when the uncertainties are too large or not known in advanced, improves the performance online by adapting the control law to uncertainties and parameter variations.
+    \item \textbf{AI based control}: used of data driven model to improve the performance, often through \textit{learning} methods.
+\end{itemize}
+There are some limits in implementing a control scheme in industrial robotics, first of all, these robots have a closed control architectures (with few examples), difficult to interface with external programs (usually, they can be directly controlled only with position or velocity reference). Furthermore, these industrial manipulator do not use automatically the extra degree of freedom to accomplish some performance metrics, and are not robust to singularity (that are usually solved case by case).
+
+At a lowe level, there are a lot of factors to consider while designing a control law (flexible transmissions, dry friction and backlash at the joints, reduction of accuracy on fast motion trajectories etc...).\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.4\textwidth ]{images/ControlUnitFuncStructure.png}
+    \includegraphics[width=0.4\textwidth ]{images/ControlUnitFuncStructure2.png}
+\end{figure}
+
+The choice of the control law depend on the type of task and on the definition of the error (joint space, cartesian space, more general task space), the following table relates the specific required control law for each problem.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.5\textwidth ]{images/controlLaws.png}
+\end{figure}
+In the most common case we will command the torques produced by the actuators, this quantity $\tau_c$ can be directly command by the electrical current $i_c$ on the motor since these two are proportional $\tau_c=K_I i_c$. In case of elastic joint, a torque measure $\btau_j=K(\btheta-\q)$ might be required. The torque control is best suited for high performance and transparent control of interaction forces. In position control, we directly command $\q,\dq$ or $\ddq$, these quantities are given to the low level torque controller that works at high frequencies, usually assumed to be perfect.
+\section{Regulation in the Joint Space}
+\subsection{Lyapunov Stability}
+Let's consider the model of a generic robot in the state space representation ($\mathbf x_1=\q,\mathbf x_2=\dq$):\begin{equation}
+    \dot{\mathbf x}=\begin{pmatrix}
+        \dot{\mathbf x}_1\\\dot{\mathbf x}_2
+    \end{pmatrix}=\begin{pmatrix}
+        \mathbf x_2\\ 
+        -M^{-1}(\mathbf c+\mathbf g)
+    \end{pmatrix}+\begin{pmatrix}
+        \mathbf 0\\ \mathbf M^{-1}
+    \end{pmatrix}\mathbf u
+\end{equation}
+the general form of this non linear system is\begin{equation}
+    \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x_1)\mathbf u
+\end{equation}
+$\mathbf x_e$ is an \textbf{unforced equilibrium state} when $\dot{\mathbf x}=\mathbf 0$ having $\mathbf u=\mathbf 0$:\begin{equation}
+     \dot{\mathbf x}_e=f(\mathbf x_e)=\mathbf 0\implies\begin{cases}
+        \mathbf x_{e2}=\dq=\mathbf 0\\
+        -M^{-1}(\mathbf c+\mathbf g)=\mathbf 0\implies \mathbf g=\mathbf 0
+     \end{cases}.
+\end{equation}
+A \textbf{forced equilibrium state} is defined when $\mathbf u\ne 0$:\begin{equation}
+    \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x_1)\mathbf u=\mathbf 0\implies\begin{cases}
+        \mathbf x_{e2}=\dq=\mathbf 0\\
+        \mathbf u=\mathbf g \  \text{ joint torques must balance gravity
+at the equilibrium}
+    \end{cases}.
+\end{equation}
+Some equilibrium states are desirable (the state converge to that equilibrium) and others are less desirable (a small perturbation may leads the state far from the equilibrium).\bigskip
+
+Let's consider a closed loop system with the control law defined on the state. We denote $$ \dot{\mathbf x}=f(\mathbf x)$$
+the general non linear system. $\mathbf x_e$ is an equilibrium if
+$f(\mathbf x_e)=\mathbf 0$, the concept of \textbf{stability} is relative to a given equilibrium state.
+\begin{boxdefinition}{Stability of $\mathbf x_e$}{}
+    The equilibrium state $\mathbf x_e$ is stable if and only if\begin{equation}
+        \forall \varepsilon>0, \ \exists \delta_{\varepsilon} \text{ s.t. } 
+        \|\mathbf x(t_0)-\mathbf x_e\|<\delta_{\varepsilon}\implies  \|\mathbf x(t)-\mathbf x_e\|< \varepsilon, \ \forall t\ge t_0.
+    \end{equation}
+\end{boxdefinition}
+If the current state at time $t_0$ is at distance $\delta_{\varepsilon}$ (that depends on $\varepsilon$), then for all the next time steps $t>t_0$, the system will evolve while remaining at a bounded distance $\varepsilon$ from the equilibrium state.
+\begin{boxdefinition}{Asymptotic Stability of $\mathbf x_e$}{}
+    The equilibrium state $\mathbf x_e$ is asymptotically stable if and only if\begin{equation}
+        \exists\delta>0 \text{ s.t. } \|\mathbf x(t_0)-\mathbf x_e\|<\delta\implies \lim_{t\rightarrow +\infty}\|\mathbf x(t)-\mathbf x_e\|=0.
+    \end{equation}
+\end{boxdefinition}
+This is a stronger condition, if the system is close enough to the equilibrium, it will evolve by converging to that equilibrium state. In some cases, asymptotic stability might be \textbf{global}: $\forall \delta > 0$. This condition, denoted GAS is possible if and only if there are only one equilibrium point.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.8\textwidth ]{images/equilibrium.eps}
+\end{figure}
+\begin{boxdefinition}{Exponential Stability of $\mathbf x_e$}{}
+     The equilibrium state $\mathbf x_e$ is exponentially stable if and only if\begin{equation}
+    \exists\delta, c,\lambda \text{ s.t. }
+    \|\mathbf x(t_0)-\mathbf x_e\|<\delta \implies 
+    \|\mathbf x(t)-\mathbf x_e\|\le ce^{-\lambda (t-t_0)}\|\mathbf x(t_0)-\mathbf x_e\|.
+    \end{equation}
+\end{boxdefinition}
+The larger is $\lambda$, faster $e^{-\lambda (t-t_0)}$ goes to zero, when $c=1$, when $t-t_0=\nicefrac{3}{\lambda}$, the initial error is reduced to $5\%$. The dynamics of every linear system is exponential, so locally any system behaves in this way when sufficiently close to an equilibrium point.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/taxonomySystems.png}
+\end{figure}
+Let's consider the following linear system\begin{equation}
+    \begin{cases}
+        \dot x_1=1-x_1^3\\
+        \dot x_2=x_1-x_2^2
+    \end{cases}
+\end{equation}
+the equilibrium points are easy to find
+\begin{equation}
+    \begin{cases}
+        \dot x_1=0\\
+        \dot x_2=0
+    \end{cases}\implies\begin{cases}
+        x_1=1\\ 
+        x_2\in \{-1,1\}
+    \end{cases}.
+\end{equation}
+Given these equilibrium points\begin{equation}
+    \mathbf x_e'=\begin{pmatrix}
+        1\\1
+    \end{pmatrix} \ \ 
+    \mathbf x_e''=\begin{pmatrix}
+        1\\-1
+    \end{pmatrix} 
+\end{equation}
+how can we know if are stable or not? We can't compute all system trajectories starting from all possible initial states, but we can plot the velocity field $\dot {\mathbf x}=f(\mathbf x)$.
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/vel_field.eps}
+\end{figure}
+The most used method to assess the asymptotic stability of an equilibrium point is through a Lyapunov function, a scalar function $V$ that is evaluated along the state trajectories of the system.
+\begin{boxdefinition}{Lyapunov Candidate}{}
+    Given a system $\dot {\mathbf x}=f(\mathbf x)$ and an equilibrium point $\mathbf x_e$, a \textbf{Lyapunov candidate function} is a scalar function $V:\R^n\rightarrow \R$ such that:\begin{align}
+        &V(\mathbf x_e)=0\\ 
+        &V(\mathbf x)>0, \ \forall \mathbf x\ne \mathbf x_e.
+    \end{align}
+\end{boxdefinition}
+The derivative of $V$ can imply stability condition of the system.
+\begin{boxtheorem}{Lyapunov Stability}{}
+    Given a system $\dot {\mathbf x}=f(\mathbf x)$, an equilibrium point $\mathbf x_e$ and a Lyapunov candidate function $V$:\begin{itemize}
+        \item If $\dot V\le 0$ along the trajectories of the system, the system is stable.
+        \item If $\dot V< 0$ along the trajectories of the system except in $\mathbf x=\mathbf x_e$, the system is asymptotically stable.
+        \item If $\dot V> 0$ along the trajectories of the system, the system is unstable.
+    \end{itemize}
+\end{boxtheorem}
+The derivative of $V$ along the  trajectories is given by\begin{equation}
+    \dot V=\frac{dV}{dt}=\frac{\partial V}{\partial \mathbf x}\frac{d\mathbf x}{dt}=\frac{\partial V}{\partial \mathbf x}\blueText{\dot{\mathbf x}}=\frac{\partial V}{\partial \mathbf x}f(\mathbf x)
+\end{equation}
+obtained by \blueText{ substituting } $\dot{\mathbf x}$ with the dynamics of the system.
+Another important result to assess the stability is the following.
+\begin{boxdefinition}{Invariant Set}{}
+    A set $\mathcal M\subset \R^n$ is \textbf{invariant} for a system 
+    $\dot {\mathbf x}=f(\mathbf x)$ if\begin{equation}
+        \mathbf x(t_0)\in \mathcal M\implies \mathbf x(t)\in \mathcal M, \ \forall t\ge t_0.
+    \end{equation}
+\end{boxdefinition}
+A set is said to be invariant with respect to a dynamical system if, once a trajectory enters that set, it never leaves it again.
+\begin{boxtheorem}{LaSalle}{}
+    If $\exists V$ candidate such that $\dot V\le 0$ along the trajectories of $\dot {\mathbf x}=f(\mathbf x)$, then the system converge to the largest invariant set $\mathcal M$ that is a subset of \begin{equation}
+        S=\{\mathbf x\in \R^n\ : \ \dot V(\mathbf x)=0\}.
+    \end{equation}
+\end{boxtheorem}
+\noindent As a corollary, if $\mathcal M=\{\mathbf x_e\}$, the equilibrium point is asymptotically stable.\bigskip
+
+\noindent\textbf{Example}: We consider the dynamics of a simple pendulum:\begin{equation}\label{Simple_pendulum}
+    ml^2\ddot \theta+b\dot\theta+mlg_0\sin\theta=0.
+\end{equation}
+We rewrite it as a first order system of two equations in the state space representation:\begin{align}
+    &\dot x_1=x_2\\ 
+    &\dot x_2=-\frac{g_0}{l}\sin x_1-\frac{b}{ml^2}x_2
+\end{align}
+by setting $x_1=\theta, x_2=\dot \theta$.
+There are two equilibrium points
+\begin{align}
+    &x_1=0, \ x_2=0\\ 
+    &x_2=\pi, \ x_2=0
+\end{align}
+the first one is asymptotically stable, and we want to prove that. We choose as Lyapunov function the total energy of the system:\begin{equation}
+    V=\frac{1}{2}ml^2\dot \theta^2+mlg_0(1-\cos\theta)
+\end{equation}
+this is a good candidate since it is never negative. Notice how is zero only when $\dot\theta=\theta=0$ (on the equilibrium). Let's compute the derivative of $V$:\begin{equation}
+    \dot V =\dot\theta(ml^2\ddot\theta+mlg_0\sin\theta)
+\end{equation}
+From the dynamics in equation \eqref{Simple_pendulum} we can substitute in $-b\dot\theta$:
+\begin{equation}
+    \dot V =\dot\theta(-b\dot \theta)=-b\dot\theta^2
+\end{equation}
+let's notice how $\dot V\le 0$, so we can state that the system is at least stable. The set $S$ where $\dot V$ is identically, is represented by the couples $(x_1,x_2)$ where $x_2=\dot\theta=0$\begin{equation}
+    S=\{(x_1,0) \ : \ x_1\in \R\}.
+\end{equation}
+When $x_2=0$, the dynamics of the system is\begin{equation}
+    \begin{cases}
+        \dot x_1=0\\ 
+        \dot x_2 =-\frac{g_0}{l}\sin x_1
+    \end{cases}\implies \ddot\theta =-\frac{g_0}{l}\sin \theta
+\end{equation}
+and\begin{equation}
+    \ddot\theta =-\frac{g_0}{l}\sin \theta=0\iff \theta=0 \text{ (or $\pi$)}
+\end{equation}
+so the system is asymptotically stable around $\mathbf x=(0,0)$.\bigskip 
+
+\noindent For a general \textbf{time varying} system $\dot {\mathbf x}=f(\mathbf x,t)$ we use the following result.\begin{boxlemma}{Barbalat}{}
+    if\begin{itemize}
+        \item $V(\mathbf x,t)$ is lower bounded 
+        \item $\dot V(\mathbf x,t)\le 0$
+    \end{itemize}
+    then $\exists c\in \R$ such that $\displaystyle\lim_{t\rightarrow \infty} V(\mathbf x,t)=c$. In addition to the previous conditions, if\begin{itemize}
+        \item $\ddot V(\mathbf x,t)$ is bounded
+    \end{itemize}
+    then
+    \begin{equation}
+        \lim_{t\rightarrow \infty}\dot V(\mathbf x,t)=0.
+    \end{equation}
+\end{boxlemma}
+If a Lyapunov candidate $V(\mathbf x,t)$ satisfies the Barbalat lemma along the trajectories of $\dot {\mathbf x}=f(\mathbf x,t)$, the conclusions of LaSalle theorem holds. 
+
+Another important definition of stability (useful in robust control) is the following.\begin{boxdefinition}{Uniformly Ultimately Bounded Stability}{}
+    A system is U.U.B. stable over a set $S$ if exists a positive $T\in \R$ that depends on $S$ and $\mathbf x(t_0)$ such that\begin{equation}
+        \mathbf x(t)\in S, \ \forall t\ge t_0+T.
+    \end{equation}
+\end{boxdefinition}
+The sufficient conditions for U.U.B stability are the following:\begin{enumerate}
+    \item it exists a candidate $V$ such that $S$ is a level set of $V$ for a given $c_0$:\begin{equation}
+        S=\{\mathbf x\in \R^n \ : \ V(\mathbf x)\le c_0\}
+    \end{equation}
+    \item $\dot V<0$ along the trajectories of $\dot {\mathbf x}=f(\mathbf x)$ where $\mathbf x \notin S$.
+\end{enumerate}
+For the time invariant linear systems $\dot{\mathbf x}=A\mathbf x$, $\mathbf x=\mathbf 0$ is always an equilibrium state. As taught in the basic control courses, the following 5  properties are all equivalent:\begin{itemize}
+    \item the system is asymptotically stable 
+    \item the system is globally asymptotically stable 
+    \item the system is exponentially asymptotically stable 
+    \item all the eigenvalues of the matrix $A$ have negative real part 
+    \item for all the positive definite matrices $Q$, it does not exists a positive definite matrix $P$ such that\begin{equation}
+        A^TP+PA=-Q. 
+    \end{equation}
+    The quadratic form $\frac{1}{2}\mathbf x^TP\mathbf x$ is a Lyapunov candidate. If $\mathbf x=\mathbf 0$ is asymptotically stable, is also the unique equilibrium.
+\end{itemize}
+A local result regards the linearization of the system around an equilibrium point $\mathbf x_e$, let $\Delta\mathbf x=\mathbf x-\mathbf x_e$, the derivative on $\mathbf x_e$ is\begin{equation}
+    \dot{\Delta\mathbf x}=\frac{df}{d\mathbf x}\Big |_{\mathbf x=\mathbf x_e}(\mathbf x-\mathbf x_e)=A\Delta\mathbf x 
+\end{equation}
+we study the matrix $A$, if all the eigen values have negative part, the original system ius exponentially stable at the equilibrium $\mathbf x_e$ (this is a local result, used also to estimate the domain of attraction). If one eigenvalue have positive real part, the equilibrium $\mathbf x_e$ is unstable.
+\subsection{PD Control}
+Let's consider the dynamic model of a generic manipulator:\begin{equation}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\btau 
+\end{equation}
+the goal is to reach a desired joint configurations $\q=\q_d$, while remaining there $\dq=\mathbf 0$, so we need to close the loop of the system to make $\q_d$ an asymptotically stable equilibrium state of the system. The \textbf{Proportional Derivative} control law is called in this way since the input depends linearly from the error and its derivative, and is defined as follows:\begin{equation}
+    \btau=K_P(\q_d-\q)-K_D\dq 
+\end{equation}
+where $K_P$ and $K_D$ are two positive definite symmetric matrices. The closed loop system becomes\begin{equation}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=K_P(\q_d-\q)-K_D\dq
+\end{equation}
+\begin{boxtheorem}{GAS Under the PD Law}{}
+    In absence of gravity ($\mathbf g=0$), the robot state $(\q_d,\mathbf 0)$ under the PD control law is globally asymptotically stable.
+\end{boxtheorem}
+\noindent\textit{Proof}: We denote the error\begin{equation}
+    \mathbf e=\q_d-\q\implies \dot{\mathbf e}=-\dq
+\end{equation}
+as Lyapunov candidate, we choose the following function:\begin{equation}
+    V=\frac{1}{2}\dq^TM\dq+\frac{1}{2}\mathbf e^TK_P\mathbf e 
+\end{equation}
+the derivative is\begin{equation}
+    \dot V=
+    \dq^TM\ddq+\frac{1}{2}\dq^T\dot M\dq-\mathbf e^TK_P\dq
+\end{equation}
+We substitute $M\ddq$ using the closed loop dynamic model:\begin{align}
+    &\dq^T\blueText{M\ddq}+\frac{1}{2}\dq^T\dot M\dq-\mathbf e^TK_P\dq=\\
+    &\dq^T\blueText{(K_P(\q_d-\q)-K_D\dq-\mathbf N\dq)}+\frac{1}{2}\dq^T\dot M\dq-\mathbf e^TK_P\dq=
+\end{align}
+$\mathbf g$ is null, and we have written the Coriolis and centrifugal term using the factorization $N\dq$. By simplifying the equation we get:\begin{equation}
+    \dot V=\dq^T(K_P(\q_d-\q)-K_D\dq-\sapText{\mathbf N\dq+\frac{1}{2}\dot M\dq})-\mathbf e^TK_P\dq=
+\end{equation}
+The \sapText{red } term is identically zero, due to energy conservation, if we push $\dq^T$ in, that term becomes\begin{equation}
+    -\dq^TN\dq+\dq^T\frac{1}{2}\dot M\dq=\frac{1}{2}\dq^T(\dot M-2N)\dq
+\end{equation}
+and $\dq^T(\dot M-2N)\dq$ is null for every $\dq$ as shown in Section \ref{FactorAndEnergyCons}, equation \eqref{conditionEnergyCons}.
+After simplify that term, the remaining $\dot V$ is:
+\begin{align}
+    &\dot V=\dq^T(K_P(\q_d-\q)-K_D\dq)-\mathbf e^TK_P\dq=\\
+    &\dq^TK_P\mathbf e-\dq^TK_D\dq-\mathbf e^TK_P\dq
+\end{align}
+since $K_P$ is symmetric, $\dq^TK_P\mathbf e=\mathbf e^TK_P\dq$, so:\begin{equation}
+    \dot V=-\dq^TK_D\dq \le 0 
+\end{equation}
+by the symmetry of $K_D$, $\dot V$ is always non positive, and is zero if and only if $\dq=\mathbf 0$, hence the system is stable.
+The closed loop dynamic when $\dq=\mathbf 0$ is\begin{equation}
+    M\ddq=K_P\mathbf e\implies \ddq=M^{-1}K_P\mathbf e
+\end{equation}
+$M^{-1}K_P$ is invertible, hence $\ddq$ is zero if and only if $\mathbf e$ is zero:\begin{equation}
+    \dq=\mathbf 0,\ddq=\mathbf 0\iff \mathbf e=\mathbf 0
+\end{equation}
+so the only invariant subset of \begin{equation}
+    \{(\q,\dq) \ : \ \dot V = 0\}
+\end{equation}
+is $\q=\q_d$ (so the error is null) and $\dq=\mathbf 0$, for the LaSalle theorem, the system asymptotically converge to $(\q,\dq)=(\q_d,\mathbf 0)$.\hfill$\blacksquare$\bigskip
+
+\noindent When $K_D$ and $K_P$ are diagonal, the control law is fully decentralized and local to each joint. Furthermore, when these matrices are diagonal, the joints behave like a spring-damper system, $K_P$ correspond to the stiffness of ''virtual'' springs, and $K_P$ is the viscosity of the ''virtual'' dampers placed at each joint.
 \end{document}
