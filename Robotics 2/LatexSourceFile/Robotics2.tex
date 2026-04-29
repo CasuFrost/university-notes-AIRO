@@ -4299,10 +4299,20 @@ The choice of this gains affect the transient and the settling time of the manip
 
 When there is viscous friction at the joints: $-B_v\dq$, the derivative term on the PD is not necessary anymore since the friction acts like a derivative term, despite that, an inclusion of $-K_D\dq$ is often used since $K_D$ can be modulated at will.\bigskip 
 
-In absence of tachometers, to realize the control law we have to estimate $\dq$ by the measurements of $\q$ over time: The control law in the Laplace domain is\begin{equation}
+In absence of tachometers, to realize the control law we have to estimate $\dq$ by the measurements of $\q$ over time: The control law in the Laplace domain is\begin{equation}\label{PD_laplace_domain}
     \btau(s)=(K_P+K_Ds)\mathbf e(s)
 \end{equation}
-this is an improper transfer function, that violates the causality principle and can't be realized, with the choice of $\gamma>0$ we add an high frequency pole to build a derivative limited in bandwidth:\begin{equation}
-     \btau(s)=\left(K_P+\frac{K_Ds}{1+\gamma s}\right)\mathbf e(s)
+this is an improper transfer function, that violates the causality principle and can't be realized, with the choice of $\gamma>0$ we add an high frequency pole to build a derivative limited in bandwidth:\begin{equation}\label{PD_laplace_domain_rel}
+     \btau(s)=\left(K_P+\frac{K_Ds}{1+\gamma s}\right)\mathbf e(s).
+\end{equation}
+The $\mathcal Z$-transform of the control law  in \eqref{PD_laplace_domain} is\begin{equation}
+    \btau(z)=\left(
+        K_P+K_D\frac{1-z^{-1}}{T_C}
+    \right)\mathbf e(z)
+\end{equation}
+where $T_C$ is the sampling time. We recall that multiplying by $z^{-1}$ in the $\mathcal Z$-domain is equivalent to go back to the previous time step. The $\mathcal Z$-transform of the realizable control law in \eqref{PD_laplace_domain_rel} is\begin{equation}
+    \btau(z)=\left(
+        K_P+K_D\frac{\frac{1-z^{-1}}{T_C}}{1+\gamma\frac{1-z^{-1}}{T_C}}
+    \right)\mathbf e(z)
 \end{equation}
 \end{document}
