@@ -4158,9 +4158,10 @@ A set is said to be invariant with respect to a dynamical system if, once a traj
 \noindent\textbf{Example}: We consider the dynamics of a simple pendulum:\begin{equation}\label{Simple_pendulum}
     ml^2\ddot \theta+b\dot\theta+mlg_0\sin\theta=0.
 \end{equation}
-We rewrite it as a first order system of two equations in the state space representation:\begin{align}
-    &\dot x_1=x_2\\ 
-    &\dot x_2=-\frac{g_0}{l}\sin x_1-\frac{b}{ml^2}x_2
+We rewrite it as a first order system of two equations in the state space representation:\begin{align}\begin{cases}
+    \dot x_1=x_2\\ 
+    \dot x_2=-\frac{g_0}{l}\sin x_1-\frac{b}{ml^2}x_2
+    \end{cases}
 \end{align}
 by setting $x_1=\theta, x_2=\dot \theta$.
 There are two equilibrium points
@@ -4178,19 +4179,16 @@ From the dynamics in equation \eqref{Simple_pendulum} we can substitute in $-b\d
 \begin{equation}
     \dot V =\dot\theta(-b\dot \theta)=-b\dot\theta^2
 \end{equation}
-let's notice how $\dot V\le 0$, so we can state that the system is at least stable. The set $S$ where $\dot V$ is identically, is represented by the couples $(x_1,x_2)$ where $x_2=\dot\theta=0$\begin{equation}
+$\dot V\le 0$, so we can state that the system is at least stable. The set $S$ where $\dot V$ is identically zero, is represented by the couples $(x_1,x_2)$ where $x_2=\dot\theta=0$\begin{equation}
     S=\{(x_1,0) \ : \ x_1\in \R\}.
 \end{equation}
-When $x_2=0$, the dynamics of the system is\begin{equation}
-    \begin{cases}
-        \dot x_1=0\\ 
-        \dot x_2 =-\frac{g_0}{l}\sin x_1
-    \end{cases}\implies \ddot\theta =-\frac{g_0}{l}\sin \theta
+Now we impose the \textit{invariance}, if the system must remain in this set $S$, then $\dot\theta$ should remain zero for each $t$, hence its derivative must be zero\begin{equation}
+    \ddot\theta=0
 \end{equation}
-and\begin{equation}
-    \ddot\theta =-\frac{g_0}{l}\sin \theta=0\iff \theta=0 \text{ (or $\pi$)}
+by substituting $\dot\theta=\ddot\theta=0$ in the dynamics of the system in equation \eqref{Simple_pendulum} we have\begin{equation}
+    0+0+mlg_0\sin\theta=0
 \end{equation}
-so the system is asymptotically stable around $\mathbf x=(0,0)$.\bigskip 
+the solutions of this equation are $\theta\in\{0,\pi\}$, the equilibrium that is asymptotically stable is $\mathbf x=(0,0)$.\bigskip 
 
 \noindent For a general \textbf{time varying} system $\dot {\mathbf x}=f(\mathbf x,t)$ we use the following result.\begin{boxlemma}{Barbalat}{}
     if\begin{itemize}
@@ -4284,7 +4282,27 @@ $M^{-1}K_P$ is invertible, hence $\ddq$ is zero if and only if $\mathbf e$ is ze
 so the only invariant subset of \begin{equation}
     \{(\q,\dq) \ : \ \dot V = 0\}
 \end{equation}
-is $\q=\q_d$ (so the error is null) and $\dq=\mathbf 0$, for the LaSalle theorem, the system asymptotically converge to $(\q,\dq)=(\q_d,\mathbf 0)$.\hfill$\blacksquare$\bigskip
+is $\q=\q_d$ (the error is null) and $\dq=\mathbf 0$, for the LaSalle theorem, the system asymptotically converge to $(\q,\dq)=(\q_d,\mathbf 0)$.\hfill$\blacksquare$\bigskip
 
-\noindent When $K_D$ and $K_P$ are diagonal, the control law is fully decentralized and local to each joint. Furthermore, when these matrices are diagonal, the joints behave like a spring-damper system, $K_P$ correspond to the stiffness of ''virtual'' springs, and $K_P$ is the viscosity of the ''virtual'' dampers placed at each joint.
+\noindent If we plot the Lyapunov function over time we might get something similar to the following figure:
+\begin{figure}[H]    
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/LyapunovPlot.png}
+\end{figure}
+There are some \textit{isolated} time instants where $\dot V=0$ but $\ddq\ne \mathbf 0$, this happens when there is an inversion of motion for all the joints at the same time.\bigskip
+
+When $K_D$ and $K_P$ are diagonal, the control law is fully decentralized and local to each joint. Furthermore, when these matrices are diagonal, the joints behave like a spring-damper system, $K_P$ correspond to the stiffness of ''virtual'' springs, and $K_P$ is the viscosity of the ''virtual'' dampers placed at each joint.\bigskip 
+
+
+
+The choice of this gains affect the transient and the settling time of the manipulator, it is hard to define an ''optimal'' value for the whole workspace, usually $K_P$ and $K_D$ are chosen in order to have desired eigenvalues to the linear approximation of the robot around the desired state $(\q_d,\mathbf 0)$.
+
+When there is viscous friction at the joints: $-B_v\dq$, the derivative term on the PD is not necessary anymore since the friction acts like a derivative term, despite that, an inclusion of $-K_D\dq$ is often used since $K_D$ can be modulated at will.\bigskip 
+
+In absence of tachometers, to realize the control law we have to estimate $\dq$ by the measurements of $\q$ over time: The control law in the Laplace domain is\begin{equation}
+    \btau(s)=(K_P+K_Ds)\mathbf e(s)
+\end{equation}
+this is an improper transfer function, that violates the causality principle and can't be realized, with the choice of $\gamma>0$ we add an high frequency pole to build a derivative limited in bandwidth:\begin{equation}
+     \btau(s)=\left(K_P+\frac{K_Ds}{1+\gamma s}\right)\mathbf e(s)
+\end{equation}
 \end{document}
