@@ -4315,4 +4315,115 @@ where $T_C$ is the sampling time. We recall that multiplying by $z^{-1}$ in the 
         K_P+K_D\frac{\frac{1-z^{-1}}{T_C}}{1+\gamma\frac{1-z^{-1}}{T_C}}
     \right)\mathbf e(z)
 \end{equation}
+the discrete time implementation of these two control laws (both realizable) are the following:\begin{align}
+    &\btau_k=K_P\mathbf e_k+K_D\frac{\mathbf e_k-\mathbf e_{k-1}}{T_c}\\[2ex]
+    &\btau_k=K_p\mathbf e_k+\frac{K_D}{\gamma+T_c}(\mathbf e_k-\mathbf e_{k-1})+\frac{\gamma}{\gamma+T_c}(\btau_{k-1}-K_P\mathbf e_{k-1}).
+\end{align}
+\subsection{Gravity Compensation}
+In presence of gravity, if $\mathbf g(\q)$ is available, we can add this term to the control law:\begin{equation}\label{gravity_cancellation}
+    \btau=K_P(\q_d-\q)-K_D\dq+\mathbf g(\q)
+\end{equation}
+and can be easily proved that GAS is guaranteed under this law, named \textbf{gravity cancellation}. Despite that, this control law is non linear, and requires information on the model (not always available). If we have only an approximation of $\mathbf g(\q)$, denoted $\hat{\mathbf g}(\q)$, the system reach the global asymptotically stable equilibrium $\q_e\ne \q_d$, that satisfies\begin{equation}
+    K_P(\q_d-\q_e)+\hat{\mathbf g}(\q_e)-\mathbf g(\q_e)=\mathbf 0.
+\end{equation}
+If not taken into account, the gravity is seen as a disturbance, and without an integral action, the error at steady state will not be zero. One way to implement a law similar to \eqref{gravity_cancellation} is to add into the PD law a \textit{feed forward constant term}, that is the value of $\mathbf g$ evaluated on the desired point $\q_d$:\begin{equation}\label{gravity_compensation}
+     \btau=K_P(\q_d-\q)-K_D\dq+\mathbf g(\q_d)
+\end{equation}
+this law is called \textbf{gravity compensation}, is linear and less expensive to implement respect to the gravity cancellation, it does not need to compute $\mathbf g$ at each time step, but it still requires information about the model.\bigskip
+
+We want to prove that the law \eqref{gravity_compensation} assess GAS, to do that we need an assumption: The norm of the Hessian matrix of the potential energy is bounded:\begin{equation}\label{alpha_bound}
+    \exists\alpha >0 \text{ s.t. }\left\|\frac{\partial^2 U}{\partial \q^2}\right\|=
+   \left\|\frac{\partial\mathbf g}{\partial \q}\right\|\le \alpha, \ \forall \q
+\end{equation}
+this matrix can be computed by deriving the gravity term $\mathbf g$ respect to $\q$, we recall that the induced norm of a matrix in this context, is the square root of the maximum eigenvalue:\begin{equation}
+    \|A\|=\sqrt{\lambda_{\text{max}}(A^TA)}.
+\end{equation}
+The condition in equation \eqref{alpha_bound} implies that:\begin{equation}\label{alpha_bound2}
+    \|\mathbf g(\q)-\mathbf g(\q_d)\|\le\alpha\|\q-\q_d\|.
+\end{equation} 
+The assumption of the bounded norm is not particularly strong, this is always true when the robot have all revolute joints, or when the variables of the prismatic joints does not appear in $\mathbf g(\q)$. Of course is true if all the prismatic joints have a limited range (all the real world cases).
+\begin{boxtheorem}{PD Law + Gravity Compensation}{}
+    Let $K_{P,m}$ to be the minimum eigenvalue of $K_P$
+    $$ K_{P,m}=\sqrt{\lambda_{\text{min}}(K_P^TK_P)}
+    $$
+    and $\alpha$ the bound on the norm of $\left\|\frac{\partial\mathbf g}{\partial \q}\right\|$. If $K_{P,m}>\alpha$, the PD law + gravity compensation in equation \eqref{gravity_compensation} have the state $(\q_d,\mathbf 0)$ as the global asymptotically stable equilibrium.
+\end{boxtheorem}
+\noindent\textit{Proof}: The closed loop system under this law is\begin{equation}
+    M\ddq+\mathbf c+\mathbf g=K_P\mathbf e-K_D\dq+\mathbf g(\q_d)
+\end{equation}
+the state variables are $(\q,\dq)$, the equilibrium is when the velocity and the acceleration are null, in the equilibrium the dynamics is\begin{align}
+   &\mathbf g=K_P\mathbf e+\mathbf g(\q_d)\implies\\ 
+   &K_P\mathbf e=\mathbf g(\q)-\mathbf g(\q_d)\label{equilibrium_grav_comp}
+\end{align}
+this last identity holds if and only if $\q=\q_d$, instead, if  $\q\ne \q_d$, we know that\begin{equation}
+    \|K_P\mathbf e\|\ge K_{P,m}\|\mathbf e\|
+\end{equation}
+for assumption $K_{P,m}>\alpha$ so\begin{equation}
+    K_{P,m}\|\mathbf e\|>\alpha\|\mathbf e\|
+\end{equation}
+furthermore\begin{equation}
+    \alpha\|\mathbf e\|=\alpha\|\q-\q_d\|
+\end{equation}
+for the condition assumed on the bounded norm in equation \eqref{alpha_bound2}, we have\begin{equation}
+    \alpha\|\mathbf e\|=\alpha\|\q-\q_d\|\ge \|\mathbf g(\q)-\mathbf g(\q_d)\|
+\end{equation}
+hence\begin{equation}
+     \|K_P\mathbf e\|> \|\mathbf g(\q)-\mathbf g(\q_d)\|
+\end{equation}
+so for any $\q\ne \q_d$, we can't have $\|K_P\mathbf e\| = \|\mathbf g(\q)-\mathbf g(\q_d)\|$, it follows that the only equilibrium point of the system is $(\q_d,\mathbf 0)$. We choose the following Lyapunov candidate:\begin{equation}
+    V=\frac{1}{2}\dq^TM\dq+\frac{1}{2}\mathbf e^TK_P\mathbf e+U(\q)-U(\q_d)+\mathbf e^T\mathbf g(\q_d).
+\end{equation}
+We want to show that $V$ is never negative, and zero only in $(\q_d,\mathbf 0)$. First we show that $V$ is convex in $\dq$:\begin{align}
+    &\left(\frac{\partial V}{\partial \dq}\right)^T=M\dq=\mathbf 0 \iff \dq=\mathbf 0\\[1.5ex]
+    &\frac{\partial^2 V}{\partial \dq^2}=M\succ 0 \text{ positive definite.}
+\end{align}
+Now we show that $V$ is convex in $\mathbf e$ when $\dq=\mathbf 0$. \begin{align}
+    &V(\dq=\mathbf 0)=\frac{1}{2}\mathbf e^TK_P\mathbf e+U(\q)-U(\q_d)+\mathbf e^T\mathbf g(\q_d)\\[1.5ex]
+    &\left(\frac{\partial V_{|\dq=\mathbf 0}}{\partial\mathbf e}\right)^T
+    =K_P\mathbf e-\left(\frac{\partial U}{\partial \q}\right)^T+\mathbf g(\q_d)=\\
+    &K_P\mathbf e+\mathbf g(\q_d)-\mathbf g(\q)=\mathbf 0 \iff \q=\q_d.
+\end{align}
+the Hessian matrix is always positive definite:\begin{equation}
+    \frac{\partial^2 V_{|\dq=\mathbf 0}}{\partial\mathbf e^2}=K_P+\frac{\partial^2 U}{\partial \q^2}\succ 0 
+\end{equation}
+since \begin{align}
+    &\left\|\frac{\partial^2 U}{\partial \q^2}\right\|\le\alpha \\
+    &\|K_P\|\ge K_{P,m}>\alpha.
+\end{align}
+It follows that $(\q_d,\mathbf 0)$ is a \textit{global minimum} of $V$. Now we have to show that $\dot V$ is never increasing over time.\begin{align}
+    &\dot V=\dq^T\left(
+        M\ddq+\frac{1}{2}\dot M\dq
+    \right)-\mathbf e^TK_P\dq+\underbrace{\frac{\partial U}{\partial \q}}_{\mathbf g(\q)}\dq-\dq^T\mathbf g(\q_d)\\[1.5ex]
+    &=\dq^T\Big(
+        \btau-\mathbf g - \underbrace{N\dq+\frac{1}{2}\dot M\dq}_{=0}
+    \Big)-\mathbf e^TK_P\dq+\dq^T(\mathbf g(\q)-\mathbf g(\q_d))\\[1.5ex]
+    &=\sapText{\dq^TK_P\mathbf e}-\dq^TK_D\dq+\blueText{\dq^T(\mathbf g(\q_d)-\mathbf g(\q))}-\sapText{\mathbf e^TK_P\dq}+\blueText{\dq^T(\mathbf g(\q)-\mathbf g(\q_d))}\\[1.5ex]
+    &=-\dq^TK_D\dq\le 0.
+\end{align}
+So the unique equilibrium $(\q_d,\mathbf 0)$ is at least stable. Now we want to use LaSalle to prove that is asymptotically stable, first of all we check for the states that makes $\dot V$ null:\begin{equation}
+    \dot V=-\dq^TK_D\dq=\mathbf 0 \iff \dq=\mathbf 0.
+\end{equation}
+Now we see how the model behaves when $\dq=\mathbf 0$:\begin{equation}
+    M\ddq+\mathbf g(\q)=K_P\mathbf e+\mathbf g(\q_d)
+\end{equation}
+the largest invariant set requires that $\ddq=\mathbf 0$:\begin{equation}
+    \ddq=M^{-1}(K_P\mathbf e+\mathbf g(\q_d)-\mathbf g(\q))=\mathbf 0\iff \mathbf e=0\iff \q=\q_d 
+\end{equation}
+so the largest invariant set is composed by the single state\begin{equation}
+   \begin{cases}
+    \q=\q_d\\ 
+    \dq=\mathbf 0 
+   \end{cases}
+\end{equation}
+for the LaSalle theorem, it follows that the unique equilibrium $(\q_d,\mathbf 0)$ is globally asymptotically stable.\hfill$\blacksquare$\bigskip 
+
+\noindent\textbf{Example}: We have a single link with a revolute joint as shown in figure \ref{single_link}. The dynamic model is\begin{equation}
+    I\ddot\theta+mg_0d\sin\theta=\tau.
+\end{equation}
+\begin{figure}  
+\centering 
+     \includegraphics[width=0.2\textwidth ]{images/single_link.eps}
+     \caption{A single actuated arm.}
+     \label{single_link}
+\end{figure}
 \end{document}
