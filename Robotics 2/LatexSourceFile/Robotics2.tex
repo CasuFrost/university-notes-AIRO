@@ -280,7 +280,7 @@ the system is still linear. We track the error and it's derivatives\begin{equati
 We express the dynamics in term of the errors and we get the second order equation:\begin{equation}
     m\ddot e+k_Pe+k_D\dot e = 0
 \end{equation}
-this homogeneous equation can be solved analytically by knowing $m,k_P,k_D$ and the initial condition. The value of $e(t)$ converges to zero if $m,k_D$ and $k_P$ have the same sign, since $m$ is the mass (and is always positive), it is sufficient to choose positive values for $k_P,k_D$. This law works even if there are some disturbance, we can combine the feed forward action with the feedback loop by choosing a force command\begin{equation}
+this homogeneous equation can be solved analytically by knowing $m,k_P,k_D$ and the initial condition. The value of $e(t)$ converges to zero if $m,k_D$ and $k_P$ have the same sign, since $m$ is the mass (and is always positive), it is sufficient to choose positive values for $k_P,k_D$. This law works even if there are some disturbance, we can combine the feedforward action with the feedback loop by choosing a force command\begin{equation}
     F=F_f+k_P(x_f-x)+k_D \dot (\dot x_f-\dot x)
 \end{equation}
 where $F_f(t)$ realizes the desired trajectory in nominal condition and $x_f(t)$ is the evolution over time of $x$ in the nominal condition.\bigskip
@@ -4326,7 +4326,7 @@ In presence of gravity, if $\mathbf g(\q)$ is available, we can add this term to
 and can be easily proved that GAS is guaranteed under this law, named \textbf{gravity cancellation}. Despite that, this control law is non linear, and requires information on the model (not always available). If we have only an approximation of $\mathbf g(\q)$, denoted $\hat{\mathbf g}(\q)$, the system reach the global asymptotically stable equilibrium $\q_e\ne \q_d$, that satisfies\begin{equation}
     K_P(\q_d-\q_e)+\hat{\mathbf g}(\q_e)-\mathbf g(\q_e)=\mathbf 0.
 \end{equation}
-If not taken into account, the gravity is seen as a disturbance, and without an integral action, the error at steady state will not be zero. One way to implement a law similar to \eqref{gravity_cancellation} is to add into the PD law a \textit{feed forward constant term}, that is the value of $\mathbf g$ evaluated on the desired point $\q_d$:\begin{equation}\label{gravity_compensation}
+If not taken into account, the gravity is seen as a disturbance, and without an integral action, the error at steady state will not be zero. One way to implement a law similar to \eqref{gravity_cancellation} is to add into the PD law a \textit{feedforward constant term}, that is the value of $\mathbf g$ evaluated on the desired point $\q_d$:\begin{equation}\label{gravity_compensation}
      \btau=K_P(\q_d-\q)-K_D\dq+\mathbf g(\q_d)
 \end{equation}
 this law is called \textbf{gravity compensation}, is linear and less expensive to implement respect to the gravity cancellation, it does not need to compute $\mathbf g$ at each time step, but it still requires information about the model.\bigskip
@@ -4420,10 +4420,177 @@ for the LaSalle theorem, it follows that the unique equilibrium $(\q_d,\mathbf 0
 \noindent\textbf{Example}: We have a single link with a revolute joint as shown in figure \ref{single_link}. The dynamic model is\begin{equation}
     I\ddot\theta+mg_0d\sin\theta=\tau.
 \end{equation}
-\begin{figure}  
+We want to regulate the link position to the upward equilibrium: $\theta=\pi$, in this configuration the gravity vector is null: $g(\theta)=0$, so the control law will be a simple PD, since the gravity compensation is zero:\begin{equation}
+    \tau=k_P(\pi-\theta)-k_D\dot\theta.
+\end{equation}
+The potential energy is $U=mg_0d\cos\theta$, so\begin{equation}
+    \left\|\frac{\partial^2 U}{\partial \theta^2}\right\|=mg_0d\|\cos\theta\|\le mg_0d=\alpha
+\end{equation}
+the proportional gain is a single scalar, and should be larger than $\alpha$:\begin{equation}
+    k_P>mg_0d, \ \ k_D>0.
+\end{equation}
+\begin{figure}[H]  
 \centering 
      \includegraphics[width=0.2\textwidth ]{images/single_link.eps}
      \caption{A single actuated arm.}
      \label{single_link}
 \end{figure}
+For the experimental results, let $I=0.9333$ and $mg_0d=19.62$. The following plots shows a simulation of the time evolution of the model under the control law with different gains:\begin{figure}[H]  
+\centering 
+     \includegraphics[width=0.6\textwidth ]{images/single_link_experiments.png}
+\end{figure}
+When $k_p<\alpha$ (in the second experiment), the controller can't assess the desired condition, here $k_p>\alpha$ is not only a sufficient condition, but also necessary. Notice how the control effort in the first instants are large, in presence of high gains might become unfeasible for the actuators.
+\subsection{PID Control}
+We saw how the gravity cancellation/compensation requires an accurate model of the manipulator, if the gravity is seen as a disturbance, we can add an \textbf{integral} error that \textit{collects the story of the error}. We know that in linear systems, the integral action is required to eliminate a constant error at steady state, in robots, the PID controller may be used to recover such a position error due
+to an incomplete (or absent) gravity compensation/cancellation, in fact, the integral ''learns'' the compensation term $\mathbf g(q_d)$. The control law is\begin{equation}
+    \btau=K_P\mathbf e+K_I\int_{t_0}^t\mathbf e(\sigma)d\sigma-K_D\dq
+\end{equation}
+this law is \textit{model free}, i.e. independent from any term of the dynamic model, if the desired closed loop equilibrium is asymptotically stable, the integral term is loaded with the gravity compensation value:\begin{equation}
+    K_I\int_{t_0}^\infty\mathbf e(\sigma)d\sigma=\mathbf g(q_d)
+\end{equation}
+however, the addition of an integral term does not guarantee stability anymore, in fact asymptotic stability can be guaranteed only \textit{locally} near $\q_d$ under complex conditions (inequalities) on $K_P,K_I,K_D$ and the initial error $\mathbf e$.
+\begin{boxproposition}{}{}
+    There is no guarantee that a robotic regulation task under PID control will remain stable.
+\end{boxproposition}
+We want to show an example for a one dimensional linear system, of a mass that moves on the vertical plane under gravity, controlled by a force $F$, the dynamic equation is\begin{equation}
+    m\ddot q+mg_0=F
+\end{equation}
+where $q$ is the vertical position. The PID control law for the desired position $q_d$ is\begin{equation}
+    F=k_P(q_d-q)-k_D\dot q+k_I\int_0^t(q_d-q(\sigma))d\sigma 
+\end{equation}
+the closed loop dynamic is\begin{equation}
+      m\ddot q+mg_0=k_P(q_d-q)-k_D\dot q+k_I\int_0^t(q_d-q(\sigma))d\sigma 
+\end{equation}
+the Laplace  transform leads to\begin{equation}
+   ms^2Q(s)=k_P(Q_d(s)-Q(s))-k_DsQ(s)+\frac{k_I}{s}(Q_d(s)-Q(s)) 
+\end{equation}
+$Q_d(s)$ is our step input (desired position), we isolate $Q(s)$ and $Q_d(s)$:\begin{equation}
+    Q(s) \left( m s^2 + k_D s + k_P + \frac{k_I}{s} \right) = Q_d(s) \left( k_P + \frac{k_I}{s} \right)
+\end{equation}
+the transfert function is $G(S)=\frac{Q(s)}{Q_d(s)}$:\begin{equation}
+    G(s) = \frac{k_Ps + k_I}{m s^3 + k_D s^2 + k_Ps + k_I}
+\end{equation}
+and the system is stable if and only if all the poles have negative real part. The polynomial at the denominator is \begin{equation}
+   m s^3 + k_D s^2 + k_Ps + k_I
+\end{equation}
+instead of finding the roots we apply the Routh criterion:\begin{equation}
+    \begin{bmatrix}
+        3 & m & k_P\\ 
+        2 & k_D & k_I \\
+        1& \frac{(k_Dk_P-mk_I)}{k_D}& \\
+        0&k_I& 
+    \end{bmatrix}
+\end{equation}
+the elements on the first column should not change in sign, since $m$ is a mass (always positive) all the elements should be positive, so the conditions are\begin{align}
+    &k_D>0\\ 
+    &K_I>0\\
+    &k_P>\frac{mk_I}{k_D}>0.
+\end{align}
+This example shows that non trivial conditions must be satisfied on the gains in case we have an integral action, even if the system is one dimensional and linear, this shows how difficult it can be to guarantee stability conditions for a robot, which is a non-linear multi-dimensional system.\bigskip
+
+We can modify the integral action, defining a non linear PID law that adds a \textbf{saturation function} inside the integral\begin{equation}
+     \btau=K_P\mathbf e+K_I\int_{t_0}^t\boldsymbol{\phi}(\q_d-\q(\sigma))d\sigma-K_D\dq
+\end{equation}
+the function $\boldsymbol{\phi}$ have a limited image, usually $[-1,1]$, for example:\begin{equation}
+    \boldsymbol{\phi}(x)=\tanh x 
+\end{equation}
+or\begin{equation}
+    \boldsymbol{\phi}(x)=\begin{cases}
+        \sin x &\text{ if }|x|\le\frac{\pi}{2}\\ 
+         1 &\text{ if }x>\frac{\pi}{2}\\ 
+          -1 &\text{ if }x<-\frac{\pi}{2}
+    \end{cases}
+\end{equation}
+the saturation prevents the error to accumulate too much, helping to achieve global asymptotic stability.\bigskip
+
+\noindent\textbf{Limits of robot regulation controllers}:\begin{itemize}
+    \item The response time to reach the desired position is not easily predictable, heavily depends on the gains, the required displacement and the specific area of the workspace. The integral terms might accumulate too much error, large initial errors contributes to this accumulation, some anti-windup schemes are needed to stop the integration when the commands saturate.
+    \item Control efforts in the few first instants of motion typically exceed by far
+those required at steady state, especially for high positional gains and may lead to saturation (hard nonlinearity) of robot actuators.
+\end{itemize}
+To overcome some of these problems, in industrial robots that have a kinematic control mode (the user can impose position or velocity commands, given to the closed low level control loop) use a reference trajectory to assess regulation tasks:\begin{itemize}
+    \item A desired trajectory $\q_r(t)$ is defined even if the task require only regulation 
+    \item this trajectory is smooth enough and have a desired transfer time $T$ (large enough for the actuators)
+    \item the reference trajectory interpolates the initial and final desired position (the initial error is zero, hence there is no large control effort in the first time instants):\begin{align}
+        &\q_r(0)=\q(0)\\
+        &\q_r(t\ge T)=\q_d.
+    \end{align}
+\end{itemize}
+With this approach the torque control law uses a time varying reference, for example, with a PD + gravity compensation:\begin{equation}
+    \btau=K_P(\q_r(t)-\q)+K_D(\dq_r(t)-\dq)+\mathbf g(\q).
+\end{equation}
+This approach can also be used just to reach the vicinity of the final desired position without having peaks on the control effort, and then solve the classical regulation problem with a simple PD/PID law. Furthermore, the settling time is more predictable, given by the chosen $T$.
+\section{Iterative Learning}
+There is a way to guarantee global convergence to the desired configuration in presence of gravity, without using any information about the model, neither high gains. We apply an \textbf{iterative control schemes}, that consists in aa PD control on joint position, with an addition of a constant feedforward term that gets updated at every iteration. We still need the assumption of bounded derivative of the gravity term:\begin{equation}
+    \left\|\frac{\partial\mathbf g}{\partial\q}\right\|\le \alpha.
+\end{equation}
+The control law at the $i$-th iteration is the following\begin{equation}
+    \btau=\gamma K_P\mathbf e-K_D\dq+\mathbf u_{i-1}, \ \ \gamma > 0 
+\end{equation}
+the constant feedforward term $\mathbf u_{i-1}$ gets updated at each iteration, and acts like a constant compensation of gravity. \begin{enumerate}
+    \item At the first iteration, we let $\mathbf u_0=\mathbf 0$, or  $\mathbf u_0=\hat {\mathbf g}$ if $\hat {\mathbf g}$ is the best approximation of $\mathbf g(\q_d)$ that we have.
+    \item We execute the control law, that will reach an equilibrium $$ (\q=\q_i, \dq=\mathbf 0)$$
+    different from the desired one $(\q=\q_d, \dq=\mathbf 0)$. 
+    \item After we are at steady state in the $i$-th equilibrium, we update the constant feedforward term\begin{equation}
+        \mathbf u_i=\gamma K_P(\q_d-\q_i)+\mathbf u_{i-1}
+    \end{equation}
+    and execute again the control law.
+\end{enumerate}
+Notice how, at the steady state of the $i$-th iteration, we have\begin{equation}
+    \mathbf u_i=\mathbf g(\q_i)=\gamma K_P(\q_d-\q_i)+\mathbf u_{i-1}
+\end{equation}
+so the method is learning the gravity compensation for each equilibrium reached.\begin{boxtheorem}{}{}
+    If\begin{align}
+        &\lambda_{\text{min}}(K_P)>\alpha\label{a}\\
+        &\gamma\ge 2\label{b}
+    \end{align}
+    the sequence of steady states $\{\q_0,\q_1,\q_2\dots\}$ given by the iterative learning method converges to $(\q=\q_d,\dq=\mathbf 0)$ for any initial value $\q_0$.
+\end{boxtheorem}
+\noindent\textit{Proof}: Let $\mathbf e_i=\q_d-\q_i$ to be the error at steady state on the $i$-th iteration.  We know that $ \mathbf u_i=\mathbf g(\q_i)$ so\begin{equation}
+    \|\mathbf u_i-\mathbf u_{i-1}\|=
+    \|\mathbf g(q_i)-\mathbf g(q_{i-1})\|
+\end{equation}
+due to the bound on the norm of $\frac{\partial \mathbf g}{\partial \q}$:\begin{equation}
+    \|\mathbf g(q_i)-\mathbf g(q_{i-1})\|\le \alpha\|\q_i-\q_{i-1}\|
+\end{equation}
+we add and subtract $\q_d$ on the right side\begin{equation}
+     \alpha\|\q_i-\q_{i-1}\|= \alpha\|\q_i-\q_d-\q_{i-1}+\q_d\|=
+     \|\le\alpha\|\mathbf e_i+\mathbf e_{i-1}\|\le
+     \alpha(\|\mathbf e_i\|+\|\mathbf e_{i-1}\|)
+\end{equation}
+at the end:\begin{equation}\label{a1}
+     \|\mathbf u_i-\mathbf u_{i-1}\|\le  \alpha(\|\mathbf e_i\|+\|\mathbf e_{i-1}\|).
+\end{equation}
+On the other hand, from the update law we have\begin{align}
+     &\mathbf u_i=\gamma K_P(\q_d-\q_i)+\mathbf u_{i-1}\implies\\ 
+     &\|\mathbf u_i-\mathbf u_{i-1}\|=\gamma\|K_P\mathbf e_i\|\label{a2}
+\end{align}
+Now we combine the two relations \eqref{a1},\eqref{a2}, and use the assumption \eqref{a}:\begin{equation}
+   \gamma\alpha\|\mathbf e_i\| < \gamma\lambda_{\text{min}}(K_P)\|\mathbf e_i\| \le \gamma\|K_P\mathbf e_i\|\le \alpha(\|\mathbf e_i\|+\|\mathbf e_{i-1}\|)
+\end{equation}
+so\begin{align}
+    &\gamma\alpha\|\mathbf e_i\| <\alpha(\|\mathbf e_i\|+\|\mathbf e_{i-1}\|)\implies \\ 
+    &\|\mathbf e_i\|<\frac{1}{\gamma}\|\mathbf e_i\|+\frac{1}{\gamma}\|\mathbf e_{i-1}\|.
+\end{align}
+We rewrite the inequality as follows\begin{equation}
+    \|\mathbf e_i\|<\frac{1}{\gamma-1}\|\mathbf e_{i-1}\|
+\end{equation}
+from the assumption \eqref{b} we know that this is a \textit{contraction mapping}, so that\begin{equation}
+    \lim_{i\rightarrow\infty}\|\mathbf e_i\|=0.
+\end{equation}
+\hfill$\blacksquare$\bigskip 
+
+practically, the robot progressively approaches the desired configuration
+through successive steady-state conditions, this method can be seen as a discrete time integral action, that accumulates the error only on the $i$-th equilibrium, and learns the value of the gravity compensation. The gains $K_P,K_D$ affect each transient phase, while $\gamma$ drives the convergence rate of intermediate steady states
+to the final one.\bigskip 
+
+The conditions \eqref{a},\eqref{b} can be combined by defining the law without the term $\gamma$:\begin{equation}
+    \btau=\widehat K_P\mathbf e-K_D\dq+\mathbf u_{i-1}
+\end{equation}
+the new sigle condition is \begin{equation}
+    \lambda_{\text{min}}(\widehat K_P)>2\alpha.
+\end{equation}
+We recall that this condition is sufficient, but not necessary, in some case we might have convergence even if $\lambda_{\text{min}}(\hat K_P)\le2\alpha$.
+
+Iterative learning of gravity compensation at the desired configuration $\q_d$ typically achieves convergence within a few iterations. While the condition on the proportional gain $K_{Pi}$ provides a sufficient criterion for stability, violating it does not strictly preclude convergence; in some cases, it may instead induce limit cycles between incorrect equilibrium configurations. Refined analyses allow for the derivation of lower bounds for $K_{Pi}$, which are particularly effective for distal joints. In practical implementations, the feedforward term is updated exclusively when the robot approaches a steady state, defined by keeping joint velocities and position variations within specified thresholds.
 \end{document}

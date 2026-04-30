@@ -3,6 +3,7 @@
         "Denavit",
         "eigen",
         "Farkas",
+        "feedforward",
         "Hartenberg",
         "Hirsh",
         "iperpiani",
