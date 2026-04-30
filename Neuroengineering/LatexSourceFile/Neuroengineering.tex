@@ -714,7 +714,7 @@ the reconstructed signal is corrupted
     \includegraphics[width=0.7\textwidth]{images/segLimitatoBanda6.eps}
 \end{center}
 Real signals have components at sufficiently high frequencies that a sufficiently high sampling frequency is not possible, therefore it is inevitable that there is aliasing, which is why analog filters are used upstream before sampling.
-\subsection{Recap on Stochastic Signals}
+\subsection{Randomness in Signals}
 In the real life, we deal with system that are not completely deterministic, and they have some intrinsic randomness. We need some tools to evaluate the properties of systems of this kind.
 
 The word ''random'' can refers to different levels of complexity in the context of stochastic behaviors. A whole signal can be ''random'', and can't be known in advance, but we can predict the probability that the signals (for example) reaches at some point a given value.\bigskip 
@@ -766,7 +766,7 @@ the variance and the standard distribution are\begin{align}
      &\sigma_Z^2=\frac{1}{N}\sigma_X^2\\ 
      &\sigma_Z=\frac{1}{\sqrt N}\sigma_X.
 \end{align}
-\subsection{Spectral Analysis}
+\section{Spectral Analysis}
 There are four kinds of ways to perform the Fourier analysis on a function:\begin{itemize}
      \item Let $x(t)$  be a continuous function periodic in $[0,T]$. We know that this function is a linear combination of infinite but discrete trigonometric functions.
      The coefficients of its Fourier series are given by the complex-valued function $X:\Z\rightarrow\C$  defined as follows: \begin{align}
@@ -838,5 +838,173 @@ The DFT is a linear transformation $W$:\begin{equation}
 where $W$ is the $N\times N$ matrix defined as follows\begin{equation}
      W_{n,m}=\exp\left(-j\frac{2\pi}{N}mn\right).
 \end{equation}
-\redText{continua da min 40:00}
+Let's recap some relationship between the sampling quantities for periodic signals:
+For a time domain signal sampled with the first sample in time zero and the last sample in time $T$ (the signal is $T$-periodic), the frequency domain will be $\Delta f$ discrete where\begin{equation}
+     \Delta f=\frac{1}{T}
+\end{equation}
+i.e., each sample in the frequency domain is at distance $\Delta f$, furthermore, the sampling time is $T_S$ (distance between each sample in the time domain) and\begin{equation}
+      \Delta f=\frac{1}{T}=\frac{1}{NT_S}
+\end{equation}
+where $N$ is the number of samples. The frequency domain is $f_S$-periodic, where \begin{equation}
+     f_S=\frac{1}{T_S}.
+\end{equation}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/sampling_values.eps}
+\end{figure}
+If we take the Fourier transform of a sampled signal, we will have a periodic frequency domain representation, in a dual way, by taking the anti-transformation of a sampled frequency spectrum, we will have a periodic signal.\bigskip 
+
+To represent graphically the DFT of a signal we use two plots, one for the magnitudes of each sample, one for the phases:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.9\textwidth]{images/graphical_repre.eps}
+\end{figure}
+The magnitude spectrum is symmetrical, while the phase spectrum is anti symmetrical, since a real sample satisfies the following relation:\begin{equation}
+     x(t)\in\R \xLeftrightarrow{\mathcal F} X(f)=X^*(-f)
+\end{equation}
+where $X^*$ is the complex conjugate of $X$. The left side $f<0$ does not contain any information, so it is practical to represent the plots only for positive frequencies $f\ge 0$.\bigskip 
+
+\noindent\textbf{Example}: Let's consider two signals, one have the power spread to all the spectrum (white noise), while the other have most of its power concentrated in a limited frequency band (sine wave). Assume that we have a signal that is a sine wave corrupted by this white noise, and we would like to see the sine wave within noise.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/corrupted_sin.png}
+\end{figure}
+The spectrum of this signal is\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/corrupted_sin2.png}
+\end{figure}
+The magnitude spectrum is not a perfect Dirac delta, we can see the ''leakage'' due to the white noise, even if in the time domain the signal is pretty corrupted, in the frequency domain the peak is still visible.\subsection{Zero Padding}
+\noindent Now we show a technique for spectral estimation, called \textit{Zero Padding}:
+Let's consider a signal $x(t)$, that last half a second, and is a triangular wave (rising ramp then falling ramp). We sample the signal with a sampling frequency of 1 kHz ($T_S=0.001$ s).
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/triangle.eps}
+\end{figure}
+So we take 500 samples of the signal. We can observe the spectrum of frequencies from 0 to 500 Hz. The distance between each sample in the spectrum is $\Delta f=\frac{1}{T}=2$ Hz. Let's take into account only the first 6 samples of the spectrum (from $f=0$ Hz to $f=10$ Hz):
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/first6Samples.png}
+\end{figure}
+Now, let's take the same original signal $x(t)$,  we extend this signal by adding (after the first half second) a zero value for 1 and an half second:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/triangle2.eps}
+\end{figure}
+We are not adding any information, now that $T=2$, the distance between two points in the spectrum will be $\Delta f=\frac{1}{2}$ Hz, i will have a more dense sampling in the spectrum:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/first6Samples2.png}
+\end{figure}
+\begin{boxdefinition}{Zero Padding}{}
+     Adding a row of zeros at the end of the signal allows to (artificially) increase the spectral
+     resolution, even with dealing with short signals.
+\end{boxdefinition}
+This does not add any information to the spectrum, it is used just to make the spectrum more ''visible'' and better understandable: it is \underline{just a visual improvement}.
+\subsection{Windowing}
+When we want to estimate  the properties of a stochastic signal, we need (in principle) to know the signal for an infinite amount of time. Let's see what happens (even to a deterministic signal) when this is not possible.\bigskip 
+
+Let $x(t)$ to be a signal defined on all the real line $\R$, we don't have access to all the signal, but only to a short recording $x'(t)$:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/recording.png}
+\end{figure}
+\textit{Question}: How does the spectral properties of $x'(t)$ relates to the spectral properties of the original infinite time signal $x(t)$?
+
+We have introduced the \textbf{window function} $w(t)$, that is zero before and after the recording time, and 1 during the period of recording. $x'(t)$ is just the result of $x(t)w(t)$. What happens in the frequency domain? We know that multiplication in the time domain is equivalent to convolution in the frequency domain:\begin{equation}
+     x'(t)=x(t)w(t) \xLeftrightarrow{\mathcal F} X(f)*W(f)=X'(f)
+\end{equation}
+The only thing that we can compute is the Fourier transform of $x'(t)$, denoted $X'(f)$, the spectrum of the rect function $w(t)$ is the sinc function: $W(f)=\frac{\sin f}{f}$.\bigskip 
+
+When we convolute the original spectrum with the sinc wave we have a spectrum leakage, the power of each sine component of $x(t)$ is ''spread'', and no anymore concentrated. \bigskip 
+
+Since every $x(t)$ can be decomposed as an infinite sum of sinewaves, we can see this phenomena by looking at how the convolution with $W(f)$ acts when $x(t)=\sin(2\pi f_0 t)$, in this case $X(f)$ results in two concentrated impulse (Dirac delta) in $f=f_0$ and $f=-f_0$
+\begin{equation}
+     X(f)=\frac{1}{2i} [\delta(f - f_0) - \delta(f + f_0)]
+\end{equation}
+convolving this impulse centered at $f_0$ with $\frac{\sin f}{f}$ results in the identical sinc wave centered on $f_0$. The finite amount of time of recording produce \textbf{spectral leakage}.\bigskip
+
+The multiplication with the window function $w(t)$ introduce discontinuity, this is another point of view to see the cause of leakage, this discontinuity makes the signal $x'(t)$ ''fast'', with very high frequencies, so it's creating energy at high frequencies that was not there.\begin{boxobservation}{}{}
+     Discontinuity introduce energy at new frequencies.
+\end{boxobservation}
+Instead of starting and stopping the recording, that are modeled by the rect function that is sharp, we might start a recording with a zero gain, rise the gain slowly, and then at the end, reduce the gain, having smooth transition, defining a new windowing function.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/windowingFunctions.png}
+     \caption{Some examples of non rectangular windowing functions.}
+\end{figure}
+Let's take in account the Hamming and Blackman windowing functions, these two introduce less leakage respect to the rect function.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.45\textwidth]{images/windowingFunctionsFT.png}
+     \caption{Fourier transforms of the windowing functions.}
+\end{figure}
+For the Fourier transforms of the windowing functions we define the \textbf{main lobe} and the \textbf{secondary lobes}:\begin{itemize}
+     \item The main lobe is the central peak, the widest and with the greatest amplitude. The width of the main lobe defines how close two frequency components can be for the system to distinguish them as two separate peaks. The narrower the main lobe, the better the resolution. However, it is physically impossible to have an infinitely narrow main lobe (the ideal would be a Dirac pulse), so a compromise is accepted.
+     \item The secondary lobes are the minor oscillations that propagate to the sides of the main lobe. They determine the spectral leakage (or dispersion). When a signal has a strong component at a certain frequency, the energy of this component "leaks" through the secondary lobes into other nearby frequencies. This creates artifacts and reduces the dynamic range of the system. The lower the amplitude of the secondary lobes compared to the main lobe, the lower the background noise caused by leakage.
+\end{itemize}
+It is not possible to simultaneously minimize the width of the main lobe (better resolution) and the width of the secondary lobes (less leakage), there is an intrinsic trade-off between these two elements.
+With a logarithmic scale for the Fourier transforms we can see the difference in the primary and secondary lobes.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.45\textwidth]{images/windowingFunctionsFT2.png}
+     \caption{Fourier transforms of the windowing functions.}
+\end{figure}
+\subsection{Stochastic Signals}
+\begin{boxdefinition}{Power Spectrum (Density)}{}
+     The power spectrum describes the power of the signal in each frequency band of the spectrum. A basic
+estimation (called periodogram) can be obtained by taking the square of the absolute value of the DFT of the
+signal.\begin{equation}
+     PS(f)=|DFT(x(t))|^2.
+\end{equation}
+\end{boxdefinition}
+This is not the formal definition, but is the one required for our purposes. The sum of the amplitudes of the DFT is the total energy of the signal, the power spectral density (PSD) is the Power Spectrum divided by the width of frequency bins.
+
+Note that the periodogram is not appropriate to analyze a stochastic signal. In fact, estimating the properties
+of the generating stochastic process from a single realization of the signal yields a large variance of the
+estimate (though it is unbiased it is a non consistent estimator).\bigskip
+
+\redText{TODO lezione 2026-04-08 minuto 56 circa}
+\section{Digital Filters}
+A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Usually signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal/noise ratio}.
+
+In real filters, the signal passes almost unaltered, and the noise is almost removed (never completely blocked). There are four families of filters, and they differs in how they modify the spectrum of a signal:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.55\textwidth]{images/filters.png}
+\end{figure}
+The passband refers to those frequencies that are passed, while the stopband contains those frequencies
+that are blocked. The transition band is between. A fast \textbf{roll-off }means that the transition band is very
+narrow.
+
+The division between the passband and transition band is called the \textbf{cutoff frequency}. In analog filter design,
+the cutoff frequency is usually defined to be where the amplitude is reduced to 0.707 times the input (i.e. -3dB). Digital filters often specify different attenuation at the cutoff frequency, depending on the synthesis
+process.\bigskip
+
+\noindent Let's see three properties that measures how well a filter performs. The first one is the already mentioned roll-off, to separate closely spaced frequencies, the filter must have a fast roll-off:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/roll_off.png}
+\end{figure}
+For the passband frequencies to move through the filter unaltered, there must be no passband ripple:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/ripple.png}
+\end{figure}
+\noindent Lastly, to adequately block the stopband frequencies, it is necessary to have good stopband attenuation:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/attenuation.png}
+\end{figure}
+\subsection{FIR and IIR Filters}
+We have divided the filters in 4 families, by distinguish them from the band that they attenuate. There is an other different classification in 2 families, \textbf{Finite Input Response (FIR)} and \textbf{Infinite Input Response (IIR)}.\bigskip
+
+FIR filters are systems where the output is calculated based solely on the current and past input values. Because they lack feedback loops, their impulse response eventually hits zero and remains there after a finite number of steps. In FIR filters the output $y[i]$ is computed by combining samples of the input:\begin{equation}
+     y[i]=\sum_{k=0}^{N}b_kx[i-k]
+\end{equation}
+is a weighted sum of the $N$ inputs $x[i],x[i-1]\dots x[i-N]$. The definition of the coefficients $b_k$ defines the behavior of the filter. These filters are not much used in practice. On the other hand, an IIR filter have the output computed by combining samples of the input and previous samples of the output:\begin{equation}
+     y[i]=\sum_{k=0}^{M}b_kx[i-k]-\sum_{k=1}^{N}a_ky[i-k].
+\end{equation}
+The order $\max(N,M)$ of a filter indicates how many recent samples are used to compute the output. 
+
+\redText{TODO lezione 2026-04-15 minuto 54 circa}
 \end{document}
