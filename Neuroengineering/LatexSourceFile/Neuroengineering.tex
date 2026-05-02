@@ -2,6 +2,7 @@
 % !TeX program = xelatex
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
+\usepackage{multirow}
 \newcommand{\titolo}{Neuroengineering }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -380,7 +381,7 @@ The brain's spatial organization is a multi-level hierarchy spanning from microm
 \end{figure}
 
 \section{Brain Plasticity}
-\textbf{Brain plasticity} is the organ's ability to modify its structure and function based on experience, a concept first hypothesized by William James in 1890. In 1949, Donald Hebb formalized this through \textbf{Hebbian Learning}, governed by the principle: "cells that fire together, wire together." This theory states that repeated simultaneous activation of neurons increases \textbf{synaptic efficiency}, reinforcing neural pathways. This physical adaptation serves as the biological foundation for learning, habit formation, and memory throughout the lifespan.\bigskip
+\textbf{Brain plasticity} is the organ's ability to modify its structure and function based on experience, a concept first hypothesized by William James in 1890. In 1949, Donald Hebb formalized this through \textbf{Hebbian Learning}, governed by the principle: ''cells that fire together, wire together.'' This theory states that repeated simultaneous activation of neurons increases \textbf{synaptic efficiency}, reinforcing neural pathways. This physical adaptation serves as the biological foundation for learning, habit formation, and memory throughout the lifespan.\bigskip
 
 Neural plasticity evolves throughout the lifespan, peaking during the \textbf{critical period} (ages 0--2) when fundamental, often irreversible, connections are formed. While most potent in youth—enhancing the efficiency of neurorehabilitation—plasticity persists into adulthood and seniority through learning and memory consolidation. This adaptability is further evidenced by functional reorganization following \textbf{sensory deprivation} or limb loss. Ultimately, the brain's lifelong capacity to restructure in response to lesions or physiological changes provides the foundational principle for clinical neurorehabilitation.\bigskip
 
@@ -391,7 +392,7 @@ Plasticity mechanisms vary by temporal scale: while neurogenesis is mostly limit
 \end{figure}
 Short-term practice leads to \textbf{functional facilitation}, a transient increase in neurotransmitter release that enhances synaptic effectiveness without anatomical changes. Conversely, consistent long-term repetition induces \textbf{structural plasticity}, involving physical modifications such as increased receptor density. These stable anatomical changes provide the biological basis for long-term skill retention and expertise.\bigskip 
 
-Plasticity also involves architectural changes through \textbf{axonal sprouting} (forming new synapses) and \textbf{pruning} (selective removal of redundant ones). During early development, the brain undergoes massive "over-sprouting," which is metabolically unsustainable. Consequently, between ages 2 and 10, extensive \textbf{synaptic pruning} occurs. This is an optimization strategy rather than a loss of information: by eliminating unnecessary connections, the brain maximizes metabolic efficiency and ensures high-performance processing without excessive energy consumption.
+Plasticity also involves architectural changes through \textbf{axonal sprouting} (forming new synapses) and \textbf{pruning} (selective removal of redundant ones). During early development, the brain undergoes massive ''over-sprouting,'' which is metabolically unsustainable. Consequently, between ages 2 and 10, extensive \textbf{synaptic pruning} occurs. This is an optimization strategy rather than a loss of information: by eliminating unnecessary connections, the brain maximizes metabolic efficiency and ensures high-performance processing without excessive energy consumption.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.7\textwidth]{images/reconstructionAxon.png}
@@ -412,7 +413,353 @@ Plasticity also involves architectural changes through \textbf{axonal sprouting}
     \textbf{Neural redundancy} involves latent, inactive synaptic connections that serve as a functional backup. When a primary pathway is disrupted by a \textbf{lesion}, these dormant circuits are activated through a process called \textbf{unmasking}. Unlike the slow timeline of axonal regeneration, unmasking allows for rapid functional compensation by utilizing pre-existing structural over-provisioning, demonstrating the brain's inherent resilience to damage.
   \end{minipage}
 \end{figure}
+\chapter{Signals, Encoding and Decoding}
+\section{Electrical Correlates of the Brain Activity}
+Neuroengineering techniques for monitoring brain activity are governed by a trade-off between spatial resolution and invasiveness, spanning from direct Intracellular Potentials (IP) to non-invasive Electroencephalography (EEG). Intermediate approaches include Extracellular Potentials (EP), Local Field Potentials (LFP), Stereo-electroencephalography (S-EEG), and Electrocorticography (ECoG). Notably, while IP provides a direct measurement, the other listed methods capture only physiological correlates—phenomena influenced by, rather than equivalent to, actual brain activity.
+\subsection{Single-Cell Recordings}
+Intracellular recordings utilize hollow glass electrodes filled with an electrolyte, paired with a reference electrode placed in the extracellular medium. There are two primary techniques: sharp electrodes, which penetrate the membrane, and patch electrodes, which establish a seal on the membrane surface to contact the cell's interior. Although these methods are technically challenging to execute, they provide the most accurate measurement of actual membrane potential, offering exceptionally high temporal resolution.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/sharp_path_electr.png}
+\end{figure}
+Intracellular recordings are technically more complex than extracellular methods and are typically conducted in in vitro experiments. They are primarily performed on the soma or dendrites to record graduate and action potentials, as capturing signals along the axon is notably difficult due to its extreme thinness and the high risk of structural damage. Despite these technical challenges and the difficulty of maintaining precise measurements, this technique has been instrumental in advancing our fundamental understanding of cellular neurophysiology.\bigskip 
 
+\textbf{Extracellular} recording involves positioning electrodes in the extracellular fluid near the cell membrane to monitor neural activity. While this method cannot detect subtle sub-threshold voltage changes or waveform details, it is highly effective at identifying the exact timing of action potentials. It is particularly valuable for in vivo studies, as it allows for reliable event detection without disrupting the cell's natural environment.
+
+The intracellular recordings captures the subthreshold and the action potentials, the extracellular records a signal temporally correlated with the action potential.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/intraextrarec.png}
+\end{figure}
+\subsection{Recordings from Neural Population}
+\textbf{Local Field Potentials} (LFPs) represent the aggregate electrical activity within a local tissue volume, specifically reflecting the summation of postsynaptic potentials rather than individual action potentials. These signals are characterized by low-frequency oscillations, typically below 300 Hz. Because they capture the synchronized activity of neural populations and reflect regional inputs, LFPs serve as a critical tool for investigating large-scale circuit dynamics and neural oscillations within the brain.
+\bigskip 
+
+Electroencephalography (EEG) operates at a macroscopic scale, recording the synchronous postsynaptic activity of large populations of neurons. By utilizing the principle of volume conduction—where electrical fields propagate through brain tissue, cerebrospinal fluid, and the skull—EEG enables the non-invasive measurement of neural activity from the scalp. While this technique provides exceptional temporal resolution for investigating global brain dynamics, the summation of signals across diverse cortical regions significantly limits its spatial precision compared to localized recording methods.
+\begin{itemize}
+     \item \textbf{Stereo-Electroencephalography (S-EEG)}: Invasive way to record the neuron activity with electrodes placed inside the brain, the spatial resolution is quite high, the weakness is that the surgeon have to make holes on the skulls, so this is not done routinely, since it would require a surgery only to acquire data, so is ethically allowed only when it's in the interest of the patient. The most common application of this is epilepsy.
+     \begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/SEEG.png}
+     \end{figure}
+     \item \textbf{Electrocorticography (ECoG)}: This method is similar but focused on the cortex, is slightly less invasive since requires the electrodes to be put on the cortex, it can be very detailed. The subcortical activity is spread through the head so this method measure both cortical (more clearly) and subcortical activity. The advantages of this measure is the spatial resolution and is clear the activity of the cortex. As cons, is invasive and is focused on specific regions (not all the brain).
+     \begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/ECoG.png}
+     \end{figure}
+     \item The \textbf{scalp EEG} is the only method that is completely non invasive, since the electrodes are just putted on the scalp, the first measurement of electrical signals from the scalp occurred in 1929 by the German psychiatrist Hans Berger. The easiest signal to detect through this method is the alpha rhythm.
+\end{itemize}
+The quality of the scalp EEGs acquired in the last century was not much different to the actual registrations.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/1929.png}
+\end{figure}
+\subsection{Generation of the EEG Signals}
+The \textbf{pyramidal neurons} are named for their pyramid-shaped soma and possess both apical and basal dendrites, with the apical dendrites extending towards the cortical surface. Importantly, these neurons are arranged in parallel groups called ''palisades'' that are oriented perpendicular to the surface of the cortex. This specific alignment and structure are fundamental for the generation of EEG signals.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/pyramidalNeurons.eps}
+\end{figure}
+The neural electrical activity functions like a ''current dipole'', which is essential for understanding how brain signals are captured by EEG. When synapses are active, they cause local changes in electrical charge, creating both intracellular and extracellular ''return'' currents. These currents generate a dipole potential field that is strong enough to be detected at a distance, such as on the scalp. However, because a single neuron produces a very weak signal, the EEG readings we observe are the result of the combined, synchronized activity of many neurons rather than a single one.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/dipole.png}
+\end{figure}
+The apical and basal dendrites function as a ''point source'' and ''sink'' for electrical current. Furthermore, the extracellular charges and currents are the reverse of the intracellular ones. The orientation of this dipole is not fixed; if the input synapse is inhibitory, the resulting dipole is reversed.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.45\textwidth]{images/dipole2.png}
+\end{figure}
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/source_sink.png}
+\end{figure}
+The direction of the dipole depends on where the synapses contact the neuron:\begin{itemize}
+     \item \textbf{talamo-cortical (TC)}: these connection comes for the talamo, they connect directly with the basal dendrite. 
+     \item \textbf{cortical-cortical (CC)}: these comes from the cortex, these connections tends to connect to the apical dendrite, since the contact point is far from the cell body, the resulting dipole has a different orientation than that generated by the thalamic input.
+\end{itemize}
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/TC_CC.png}
+\end{figure}
+Because the cortex's pyramidal neurons are aligned parallel to each other, when many neurons receive the same type of input simultaneously, their small dipoles add up. If the dipoles were disordered, they would cancel each other out. Thanks to this neat geometric organization, the signals become strong enough to be detected by electrodes placed on the scalp.\bigskip 
+
+To determine the direction of the dipole, the nervous system combines two factor:\begin{itemize}
+     \item Nature of the synapse: inhibitory or excitatory.
+     \item Position of the synapse: CC or TC.
+\end{itemize}
+\begin{table}[H]
+     \centering
+\begin{tabular}{l|l|l|}
+\cline{2-3}
+                        & CC   & TC   \\ \hline
+\multicolumn{1}{|l|}{E} & down & up   \\ \hline
+\multicolumn{1}{|l|}{I} & up   & down \\ \hline
+\end{tabular}
+\end{table}
+Despite they exists four different configurations, we can observe only two results (up or down direction). If a scalp electrode detects an ''up'' oriented dipole, it cannot know for sure whether it is caused by an excitatory TC input OR an inhibitory DC input.\begin{quote}
+     \textbf{Conclusion}: The same signal measured externally can be produced by profoundly different cellular mechanisms.
+\end{quote} 
+
+The EEG is much more sensitive to activity that occurs in the gyri  than that that occurs in the sulci:\begin{itemize}
+     \item \textbf{Gyri}: Their orientation is ''favorable'', because the top of the gyrus faces directly toward the scalp, the dipole is oriented perpendicular to the surface of the skull. This creates an electrical potential that points straight towards the electrode.
+     \item \textbf{Sulci}: Here a physical problem arises. Neurons in the sulci are oriented ''sideways'' (tangentially) to the surface of the skull. Furthermore, because the sulcus is made up of two opposite walls, the neurons on the left wall point to the right and those on the right wall point to the left. The dipoles of the two opposite walls of the groove tend to cancel each other out (vector sum close to zero).
+\end{itemize}
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/gyrysulci2.png}
+\end{figure}
+Furthermore, the sulci are deeper. Since the electric field decays with the square (or cube, depending on the model) of the distance, being deeper means that the signal reaches the scalp much more attenuated.\bigskip 
+
+The EEG doesn't simply measure the brain activity, but the \textbf{synchronized activity}:\begin{itemize}
+     \item If millions of neurons fire at random times, their electric fields cancel each other out (destructive interference). The resulting signal is minimal. In this situation the signal is proportional to the square root of the number of neurons that are firing. 
+     \item When neurons ''agree'' and fire at the same time (constructive interference), the signal becomes proportional to the linear number of neurons.
+\end{itemize}
+The electrical signal on the EEG is huge not because there are ''more'' active neurons, but because they are \textbf{coordinated}. Synchrony acts as a natural amplifier. As already mentioned, sulci produce little or no EEG signals, the orientation is not favorable to the scalp surface, the gyri produce most of the EEG signal, thanks to the summation due to the palisade disposition.\bigskip 
+
+To determine if the signal produced by the neurons will reach the electrode, we introduce the concept of closed and open field:\begin{itemize}
+     \item A \textbf{closed field} is produced by neurons that have a symmetric or radial structure, even if the neurons are active, if they are asynchronous the signal received is practically null, the electric field is ''trapped'', and the signal can't reach the scalp.
+     \item When the neurons are in a pyramidal structure, parallel aligned and synchronized, their electric dipoles add constructively (\textbf{open field}). The electric field propagates outward, making the signal measurable in the EEG.
+\end{itemize}
+As a resume, an open field is measurable by the EEG on the scalp, instead a closed field do not reach the scalp.\bigskip 
+
+\noindent Now the question is: \textit{What are we measuring when we observe an EEG trace?} The answer is that the EEG is almost exclusively the effects of post synaptic potentials (PSPs).
+
+Because PSPs last much longer than action potentials (APs), it is much more likely that the activities of many different neurons overlap over time.
+
+\subsection{Limitations and Advantages of the Scalp EEG}
+The EEG is not a perfect way to measure the brain activity, but at the same time it is irreplaceable. The limitations of the EEG are the following:\begin{itemize}
+     \item \textbf{Spatial Blur}: As the signal must pass through tissue, bone and skin, the potential lines ''spread out'' and become attenuated. It's like trying to understand who's speaking in a room through a closed door: the sound becomes muffled and less localizable.
+     \item \textbf{Correlation and Overlap}: Because the electrodes are close together, they often measure the same background signal. This makes it difficult to understand which specific area the activity is coming from.
+     \item \textbf{Reference Problem}: Every voltage measurement is relative. EEG measures the potential difference between an active electrode and a ''reference''. If the reference is not truly neutral (and there is no truly neutral point in the body), it contaminates the entire signal.
+     \item \textbf{Deep Source}: As we have seen, neurons must be arranged in an ''open'' manner to be seen. Deep sources (subcortical structures) often generate closed fields or are too far away, being ''turned off'' by signal attenuation.
+\end{itemize}
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/LimitationEEG.png}
+\end{figure}
+Despite the limitations listed above, EEG remains the standard in many clinical and research fields for practical and technical reasons:\begin{itemize}
+     \item \textbf{Temporal Resolution}:EEG has a temporal resolution of milliseconds. For studying the rapid dynamics of the brain, there is nothing better.
+     \item \textbf{Practicality}: It is non-invasive, economical, portable and easy to use. It allows recording brain activity in real-life contexts or in patients where other technologies would be too cumbersome or dangerous.
+     \item \textbf{Coverage}: It provides an overview of the entire cortical surface simultaneously, allowing the connectivity between different brain areas to be studied.
+\end{itemize}
+\section{Neural Encoding}
+With \textbf{encoding} we describe the process of how an external stimuli (light, sounds) is transformed by the nervous system in a series of electrical signals. The \textbf{decoding} is the inverse process: we take the series of spikes (the raw data coming out of the brain) and try to reconstruct the original information.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/encoding.png}
+\end{figure}
+Let $R$ to be the neural response, $S$ the stimulus and $f$ the function describing how the neural system respond to that stimulus:\begin{equation}
+     R=f(S)
+\end{equation}
+Our goal is to find a mathematical model that approximate $f$, in that way we no longer need to test every single possibility. I can insert a new stimulus $S_{new}$ and predict (calculate) what the neuron's response $R$ will be. This is the ''Holy Grail'' of brain-computer interfaces (BCIs). The neural decoding is the inverse process\begin{equation}
+     S=f^{-1}(R)
+\end{equation}
+that aim to find a model of $f^{-1}$. We will live under the assumption of \textbf{Rate-Coding Hypothesis}:\begin{itemize}
+     \item Neurons communicate electrical ''shoots'' called action potentials (spikes).
+     \item The content of the information is encoded in the frequency with which these spikes are repeated.
+     \item More spikes in one second = More intense stimulus.
+\end{itemize}
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/firingNeurons.png}
+\end{figure}
+\begin{boxdefinition}{Spike Train}{}
+     Let $\delta(t)$ to be the Dirac delta function, let $t_i$ to be the time in which the $i$-th spike of the $n$ total spikes occurred. The \textbf{spike train} is defined as follows:\begin{equation}
+          \rho(t)=\sum_{i=1}^n\delta(t-t_i).
+     \end{equation}
+     $\rho$ is called \textbf{neural response function}.
+\end{boxdefinition}
+We recall that $\delta$ is defined\footnote{
+     This is a ''practical'' and not formal definition of the Dirac delta, the formal definition requires theory of distributions.
+} as the function null everywhere except on the origin, such that \begin{equation}
+     \int_\R\delta(t)dt=1. 
+\end{equation}
+Suppose that we have recorded a spike train from time 0 to $T$, the number of spikes is given by\begin{equation}
+     \int_0^T\rho(t)dt=n 
+\end{equation}
+and the \textbf{spike-count firing rate} is the time average of the neural response function over the duration of the trial:\begin{equation}
+     r=\frac{n}{T}=\frac{1}{T} \int_0^T\rho(t)dt.
+\end{equation}
+When we analyze the data (spike train) we are not directly seeing the stimulus response, but the stimulus \textbf{filtered} by the biological property of the neuron. We have to make a distinction between different stimuli:\begin{itemize}
+     \item \textbf{Stationary Stimulus}: If the stimulus is constant (e.g. a fixed light), the firing rate of the neuron is stable. In this case, you can simply count how many spikes occur in a time interval $T$ (the ''spike-count'').
+     \item \textbf{Dynamic Stimulus}: If the stimulus changes quickly (e.g. a sequence of images or sounds), counting the spikes over a long period of time is useless, because you would ''spread'' the information and lose the quick details. In this case, a time-resolved definition is needed.
+\end{itemize}
+A single neuron is noisy and not reliable: We need to examine the relationships (correlations) between the discharge patterns of the entire population. If many neurons ''say'' the same thing at the same time, the signal becomes robust and the information is encoded with much more precision than a single cell would.\bigskip 
+
+Neural responses can vary across repetitions (trials) even
+when the same stimulus is presented repeatedly. We can't define a single rate $r$ to a stimulus, instead, we use a probabilistic approach, denoting $\langle r\rangle$ the \textbf{average firing rate} computed by averaging different trials.
+\begin{figure}[H] 
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/averageRate.png}
+\end{figure}
+The brain does not treat all stimuli the same. A neuron in the visual cortex, for example, could fire lots of impulses when it sees a line oriented at 45 degrees, but remain almost silent if the line is horizontal.
+\subsection{Tuning Curve}
+The \textbf{Tuning Curve} is the mathematical function that describes this relationship: How much does the neuron fire ($y$-axis) in response to a given value of a stimulus property ($x$-axis)?\bigskip
+
+We focus on a single property $s$ of a stimulus (for example, the degree of a line of light captured by the eyes), and define $f$ as the tuning curve of the neural response, that relates the average firing rate given the property $s$:\begin{equation}
+     \langle r \rangle = f(s)
+\end{equation}
+we assume that $s$ is stationary along each trial.\bigskip
+
+
+\noindent\textbf{Example 1}: An example of tuning curve is represented in Figure \ref{TunCurve}, in that case the analytic definition of $f$ is\begin{equation}
+     f(s)=r_{max}\exp\left(
+          -\frac{1}{2}\left(\frac{s-s_{max}}{\sigma_f}\right)^2
+     \right).
+\end{equation}
+\begin{figure}
+          \centering
+          \includegraphics[width=0.55\textwidth]{images/tuningCurve.png}
+          \caption{Example (1) of tuning curve.}
+          \label{TunCurve}
+\end{figure}
+This curve have been estimated by experimentation on an animal subject (monkey) on the primary visual cortex, $s_{max}$ is the angle evoking the maximum response, and $\sigma_f$ is the amplitude of the tuning curve.\bigskip
+
+\noindent\textbf{Example 2}: This example regards the neuron in the primary motor cortex of a monkey trained to reach in different directions. The firing rate of the cell is correlated with the direction of arm movement $s$ (in degrees). 
+\begin{figure}
+          \centering
+          \includegraphics[width=0.8\textwidth]{images/tuningCurve2.png}
+          \caption{Example (2) of tuning curve.}
+          \label{TunCurve2}
+\end{figure}
+The curve shown in figure \ref{TunCurve2} is defined as follows:\begin{equation}
+     f(s)=r_0+(r_{max}-r_0)\cos(s-s_{max})
+\end{equation}
+where $s_{max}$ is the angle evoking the maximum response, and $r_0$ is an offset to avoid negative firing rate.\bigskip
+
+\noindent\textbf{Example 3}: This experiment is done on the primary visual cortex of a cat, reacting to \textit{retinal disparity} (a
+difference in the retinal
+location of an image
+between the two eyes). The curve in figure \ref{TunCurve3} represent the tuning curve, where $s$ is the binocular retinal disparity in degrees, $\Delta_s$ controls how quickly the firing rate increases as a function of $s$ and $s_{\nicefrac{1}{2}}$ is the disparity inducing a response equal to $\frac{1}{2}$ of the maximum rate $r_{max}$.\begin{equation}
+     f(s)=\frac{r_{max}}{1+\exp\left(
+          \frac{s_{\nicefrac{1}{2}}-s}{\Delta_s}
+     \right)}.
+\end{equation}
+\begin{figure}
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/tuningCurve3.png}
+          \caption{Example (3) of tuning curve.}
+          \label{TunCurve3}
+\end{figure}
+\subsection{The Poisson Spike Generator}
+We want to build a stochastic model of the neuronal response. The Figure \ref{Hodgkin} represents the famous Hodgkin-Huxley model. It is an equivalent electrical circuit that perfectly describes the neuronal membrane:\begin{itemize}
+     \item Each ion channel ($Na^+, K^+, Cl^-$, etc.) is modeled as a conductance (variable resistance) and a battery (reversal potential).
+     \item To calculate exactly when a neuron fires an action potential, you would have to solve a system of nonlinear differential equations for every single bit of membrane on every single neuron in the network you are studying.
+\end{itemize}
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/Hodgkin.png}
+          \caption{Hodgkin-Huxley model.}
+          \label{Hodgkin}
+\end{figure}
+To simulate an entire cortical network in this way is computationally impossible: We need a statistical model that allows us to estimate the
+probability of an arbitrary spike sequence occurring, based on
+our knowledge of the responses actually recorded.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/stochGen.png}
+\end{figure}
+If the probability of generating an action potential is independent of the presence or timing of other spikes the firing rate $r$ is all we need to compute the probabilities for all possible action potential sequences.
+Our statistical model is called \textbf{Poisson Process}:\begin{itemize}
+     \item In biological reality, neurons have a "refractory period" (after a spike, the neuron needs an instant to "recharge"). The Poisson model ignores this biological detail for simplicity. It's an approximation, but it's incredibly useful because it allows us to use very simple mathematical tools to calculate the probability of entire sequences of spikes.
+\end{itemize}
+We focus on the \textbf{homogeneous} model where the firing rate $r$ is constant over time. Imagine a neuron that, in a resting state, fires an average of 10 spikes per second. Since the rate is fixed, the probability calculation is immediate.\bigskip
+
+We treat the action potentials as \textbf{discrete event}, a Poisson stochastic process produces an integer non-negative number of statistically independent events. We divide the trial duration $T$ in small intervals $\Delta t$ such that no more than a single spike occurs in a single interval.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/spikes.png}
+\end{figure}
+The \textbf{Poisson Spike Generator} is a stochastic model of the neural response to a stimulus property $s$, it produces a spike trains with the same firing rate $r$ of the neural response:\begin{enumerate}
+     \item We estimate the firing rate $r_{est}$ with experiments, and approximate the tuning curve $f$. 
+     \item We build the spike generator based on a Poisson distribution with $r=r_{est}$.
+\end{enumerate} 
+The generator will produce a spike train that seems irregular and random, exactly like the activity of many real neurons. The following algorithm simulates the statistical results of the membrane:\bigskip
+
+\noindent\textbf{Hypothesis}: The probability to generate a spike during the time interval $\Delta t$ is $r_{est}\Delta t$.
+\begin{enumerate}
+     \item We discretize the time in small intervals $\Delta t$. 
+     \item At each time step, a random number $x_{rand}\in [0,1]$ is generated, with uniform probability. 
+     \item For each time step $\Delta t$, if $r_{est}\Delta t>x_{rand}$, a spike is fired, otherwise not.
+\end{enumerate}
+By running this algorithm in a time interval $[0,T]$ divided in small step each of lenght $\Delta t$, we generate a spike train similiar to the original one measured by the sensors. We recall that $r_{est}$ depends on the stimulus property $s$ according to the experiments done.\bigskip 
+
+This simulator is easy to setup but have an issue, in the real cell, having to consecutive spikes is impossible due to the refractory period of the ion channels, the generator does not take into account this phenomena, so it produces results slightly different from the real data:\begin{quotation}
+     In the actual neuron the minimum inter spike distance is constrained, in the Poisson spike generator not.
+\end{quotation}
+We can build a more complex generator that includes such constraint.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=\textwidth]{images/p_isi.eps}
+          \caption{isi: Inter Spike Interval. }
+\end{figure}
+\section{Neural Decoding}
+The input (stimulus) of the brain can be either external or internal, the output is a series of spike, with \textbf{neural decoding} we want to go back from the effect to the cause.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/decoding.png}
+\end{figure}
+Our goal is to compute the probability $\Prob(s|r)$ that a given stimulus $s$ produced the firing rate $r$. To explain the decoding process, we will use for the rest of the discussion the following case study: We have a human subject trained to recognize the \textit{motion direction} of dots on a screen. At each trial, the subject have to guess if the dots are moving upwards ($+$) or downward ($-$), in addition of that, there are a set of dots that moves randomly (neither upward or downward) and represents ''noise'' in the experiments. We call \textbf{coherence} the percentage of dots that moves  up (or downward), when the coherence is 0\%, all points moves randomly, when is 100\%, all dots moves together upward (or downward).\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/dots.png}
+\end{figure}
+We observe in the behavioral data that the percentage of correct answer by a subject heavily depends on the coherence: If the coherence is 100\%, the percentage of correct answer is 100\%: the subject always discriminate the correct direction. When the coherence is 0\%, the subject guess the correct direction only in half of the trials. The ratio between correct answer and coherence is not linear:\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.3\textwidth]{images/coherence.png}
+\end{figure}
+With 90\% of dots that moves randomly, the subject is still able to correct identify more than 80\% of the trial: our brain recognize movement even in presence of noise. \bigskip 
+
+The \textbf{goal of our neural decoder} is to guess if the dots were moving upward or downward \textbf{by observing the neural response} from the behavioral data.
+Observe the hystogram in figure \ref{his_dot}, that have been constructed from behavioral data after 60 trials for each combination of the two factors (direction and coherence).
+\begin{figure}
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/histoDots.png}
+          \caption{Dots experiment hystogram.}
+          \label{his_dot}
+\end{figure}
+When the coherence rise, from 0\% to 12.8\%, the stimulus becomes more clear, the white curve shows how the neurons increase the firing rate while increasing the strength of the stimulus (from noise to precise direction).\begin{itemize}
+     \item When the coherence is low, the two curves (representing the different directions) overlaps, the neuron behaves exactly the same.
+     \item When the coherence increase the neurons start to show a difference in the response, in particularly, when the direction is $(+)$, the firing rate increases: The cells are able to respond to the upward direction and the distribution shift to the right. 
+\end{itemize}
+The hystogram shows that the response of the neurons when the dots moves downward is identical to the response when the dots moves randomly, instead when the dots moves upward, the firing rate of the neurons increases respect to the random noise. The two curves are both Gaussians with the same variance $\sigma_r^2$ but different means $\langle r\rangle_+$ and $\langle r\rangle_-$. The hystogram shows how $\langle r\rangle_-$ doesn't depend on the coherence, while $\langle r\rangle_+$ yes.\bigskip 
+
+We define the \textbf{Discriminability}  $d'$ as follows\begin{equation}
+     d'=\frac{\langle r\rangle_+-\langle r\rangle_-}{\sigma_r}
+\end{equation}
+and is the capacity of distinguish between different stimuli, when the coherence increase, $\langle r\rangle_+$ increase, and so also the discriminability becomes larger, $d'$ is a measure of the quality of the neuronal signal. \bigskip
+
+In the hystogram, when the coherence is law, there is an overlap between the neuronal response when the direction is upward or downward. In this case, our decoder can't easily guess what was the preferred direction. Our neural decoder uses a threshold $z$ (decided by the designer) to guess the direction:\begin{itemize}
+     \item Let $r$ to be the observed firing rate.
+     \item If  $r\ge z$, the inferred direction is $+$.
+     \item If  $r< z$, the inferred direction is $-$.
+\end{itemize}
+When the coherence is low and there is overlap, the decoder will makes more mistake.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=\textwidth]{images/separator.eps}
+          \caption{When the coherence is 12.8\%, the given threshold $z$ correctly separates the two classes of stimuli. Instead, when the coherence is 0.8\%, the threshold misclassify the majority of trials with $(+)$ direction.}
+\end{figure}
+\begin{itemize}
+     \item true positive: The trial involved \textit{upward direction} and the threshold $z$ classified \textit{correctly} the trial.
+     \item false positive: The trial involved \textit{downward direction} and the threshold $z$ classified \textit{wrongly} the trial.
+     \item false negative: The trial involved \textit{upward direction} and the threshold $z$ classified \textit{wrongly} the trial.
+     \item true positive: The trial involved \textit{downward direction} and the threshold $z$ classified \textit{correctly} the trial.
+\end{itemize}
+We denote $\beta(z)=\Prob(r\ge z|+)$ the probability of classifying a trial correctly, when the trial involved upward direction (the probability of guessing true positives), while $\alpha(z)=\Prob(r\ge z|-)$ is the probability of classifying a trial wrongly, when the trial involved downward direction (the probability of guessing true negatives). 
+
+Ideally we would like $\beta(z)=1$ and $\alpha(z)=0$, we have to tune $z$ in order to reach this result.
+\begin{table}[H]
+     \centering
+\begin{tabular}{|c|cc|}
+\hline
+\multirow{2}{*}{probability} & \multicolumn{2}{c|}{stimulus}                     \\ \cline{2-3} 
+                             & \multicolumn{1}{c|}{+}            & -             \\ \hline
+$r\ge z$                     & \multicolumn{1}{c|}{$\beta(z)$}   & $\alpha(z)$   \\ \hline
+$r<z$                        & \multicolumn{1}{c|}{$1-\beta(z)$} & $1-\alpha(z)$ \\ \hline
+\end{tabular}
+\end{table}
+\chapter{Brain Networks}
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
 In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
@@ -715,7 +1062,7 @@ the reconstructed signal is corrupted
 \end{center}
 Real signals have components at sufficiently high frequencies that a sufficiently high sampling frequency is not possible, therefore it is inevitable that there is aliasing, which is why analog filters are used upstream before sampling.
 \subsection{Randomness in Signals}
-In the real life, we deal with system that are not completely deterministic, and they have some intrinsic randomness. We need some tools to evaluate the properties of systems of this kind.
+In real life, we deal with systems that are not completely deterministic, and they have some intrinsic randomness. We need some tools to evaluate the properties of systems of this kind.
 
 The word ''random'' can refers to different levels of complexity in the context of stochastic behaviors. A whole signal can be ''random'', and can't be known in advance, but we can predict the probability that the signals (for example) reaches at some point a given value.\bigskip 
 
@@ -940,7 +1287,7 @@ Let's take in account the Hamming and Blackman windowing functions, these two in
 \end{figure}
 For the Fourier transforms of the windowing functions we define the \textbf{main lobe} and the \textbf{secondary lobes}:\begin{itemize}
      \item The main lobe is the central peak, the widest and with the greatest amplitude. The width of the main lobe defines how close two frequency components can be for the system to distinguish them as two separate peaks. The narrower the main lobe, the better the resolution. However, it is physically impossible to have an infinitely narrow main lobe (the ideal would be a Dirac pulse), so a compromise is accepted.
-     \item The secondary lobes are the minor oscillations that propagate to the sides of the main lobe. They determine the spectral leakage (or dispersion). When a signal has a strong component at a certain frequency, the energy of this component "leaks" through the secondary lobes into other nearby frequencies. This creates artifacts and reduces the dynamic range of the system. The lower the amplitude of the secondary lobes compared to the main lobe, the lower the background noise caused by leakage.
+     \item The secondary lobes are the minor oscillations that propagate to the sides of the main lobe. They determine the spectral leakage (or dispersion). When a signal has a strong component at a certain frequency, the energy of this component ''leaks'' through the secondary lobes into other nearby frequencies. This creates artifacts and reduces the dynamic range of the system. The lower the amplitude of the secondary lobes compared to the main lobe, the lower the background noise caused by leakage.
 \end{itemize}
 It is not possible to simultaneously minimize the width of the main lobe (better resolution) and the width of the secondary lobes (less leakage), there is an intrinsic trade-off between these two elements.
 With a logarithmic scale for the Fourier transforms we can see the difference in the primary and secondary lobes.
@@ -952,7 +1299,7 @@ With a logarithmic scale for the Fourier transforms we can see the difference in
 \subsection{Stochastic Signals}
 \begin{boxdefinition}{Power Spectrum (Density)}{}
      The power spectrum describes the power of the signal in each frequency band of the spectrum. A basic
-estimation (called periodogram) can be obtained by taking the square of the absolute value of the DFT of the
+estimation called \textbf{periodogram}  can be obtained by taking the square of the absolute value of the DFT of the
 signal.\begin{equation}
      PS(f)=|DFT(x(t))|^2.
 \end{equation}
@@ -963,7 +1310,69 @@ Note that the periodogram is not appropriate to analyze a stochastic signal. In 
 of the generating stochastic process from a single realization of the signal yields a large variance of the
 estimate (though it is unbiased it is a non consistent estimator).\bigskip
 
-\redText{TODO lezione 2026-04-08 minuto 56 circa}
+A stochastic process is the source that generates a signals with some statistical properties, a realization is one specific instance generated from that process, an EEG is a realization of the brain that is the stochastic process that generates the time varying potential on the scalp. To estimate the properties of the stochastic process, we need several realizations of it.
+
+A stochastic process is \textbf{ergodic} if a single realization is enough to describe the stochastic process: Everything that the process can expressed is always summarized in just one realization. Despite that, we would need the realization defined in $t\in\R$ (whole time history of the signal), practically this is never the case, since we always register a time limited window of a signal.
+
+The best thing that we can do is understand what happens when we register this time limited realization.\bigskip 
+
+The periodogram is not a great estimator for the spectral properties of the signal, is unbiased but it is not consistent: even if we take a longer signal, the variability of the spectrum will not reduce.
+How can we get a better estimator? Instead of having one estimate, we take the average of several estimate: 
+\begin{itemize}
+     \item We record an EEG for one second.
+     \item We have 1000 samples.
+     \item We take a windowing function and compute the periodogram.
+     \item the resolution $\Delta f=\frac{1}{T}=1$ Hz depends only on the length of the signal.
+     \item Assume we are not interest in the 1 Hz resolution, assume we can  accept 2 Hz resolution. So we need just $\frac{1}{2}$ seconds of signal.
+     \item We take the first  $\frac{1}{2}$ seconds of signal and compute the periodogram, and do the same for the remaining  $\frac{1}{2}$ seconds.
+     \item We have two instances of the periodogram, we average that.
+     \item The variability is reduced by a factor\begin{equation}
+          \sqrt{\texttt{num\_samples}}=\sqrt{2}
+     \end{equation}
+\end{itemize}
+We can also identify another window that overlaps the original two, and compute the average of the three periodograms. In this case the segments are not independent and the central limit theorem does not apply, so the variability will not be exactly reduced by a factor $\sqrt{3}$.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/segments}
+\end{figure}
+\noindent In the general case, this procedure is called \textbf{Welch's method} and consists in the following steps.
+\begin{boxdefinition}{Spectral Averaging - Welch's Method}{}
+\begin{enumerate}
+     \item Take a short segment of the signal of length \texttt{nsamples}. 
+     \item Apply a windowing function $win(t)$.
+     \item Compute t he windowed periodogram $$
+     |DFT(win(t)\cdot x(t))|^2
+     $$
+     and store the resulting PSD.
+     \item Shifts \texttt{nsamples} to the right, (or a fraction of this amount, if overlapping segments are desired). 
+     \item Repeat the steps 1 to 4 until the end of the signal is reached, having in total \texttt{num\_samples}. 
+     \item Average all the PSDs.
+\end{enumerate}
+\end{boxdefinition}
+\noindent The reduction in spectral resolution is determined by the length of the segment\begin{equation}
+     \Delta f\propto \frac{1}{\texttt{nsamples}}
+\end{equation}
+and the variability of the PSD is reduced by a factor $\sqrt{\texttt{num\_samples}}$.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.45\textwidth]{images/avgPer.png}
+     \caption{Averaged periodogram.}
+     \label{avgPer}
+\end{figure}
+In figure \ref{avgPer} we can see the differences between the spectrum computed with the periodogram (left) and the spectrum after the Welch's method (right). \bigskip
+
+
+\noindent When the signal is \textbf{not stationary}, PSD should not be used to describe the signal's spectrum. If short
+segments of the signal can be considered stationary (the signal is pseudo-stationary), the evolution of the
+spectrum over time can be displayed using a spectrogram.
+\textbf{STFT} (short-time fourier transform) is the simplest method to achieve this goal.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/spectrogram.png}
+     \caption{Spectrogram.}
+\end{figure}
+Every vertical bar of this diagram is a spectrum, the spectrum is color coded, for each time window a spectrum is computed.
+
 \section{Digital Filters}
 A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Usually signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal/noise ratio}.
 
@@ -1005,6 +1414,35 @@ is a weighted sum of the $N$ inputs $x[i],x[i-1]\dots x[i-N]$. The definition of
      y[i]=\sum_{k=0}^{M}b_kx[i-k]-\sum_{k=1}^{N}a_ky[i-k].
 \end{equation}
 The order $\max(N,M)$ of a filter indicates how many recent samples are used to compute the output. 
+So, to recap the differences:\begin{itemize}
+     \item FIR: we have only the convolutive component of the computation of the output. 
+     \item IIR: we have both the convolutive component and a recursive component.
+\end{itemize}
+Some common design methods for FIR filters are:\begin{itemize}
+     \item windowed sinc 
+     \item minimax
+\end{itemize}
+on the other hand, design methods for IIR filters are:\begin{itemize}
+     \item Butterworth
+     \item Chebyshev (type I or II)
+     \item elliptic.
+\end{itemize}
+An RC filter is the simplest type of an analog Butterworth filter. \bigskip
 
-\redText{TODO lezione 2026-04-15 minuto 54 circa}
+\noindent\textbf{Example}: The following image shows the difference between a raw signal (blue) and the filtered signal (orange):
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/raw_filter.png}
+\end{figure}
+\noindent We can see how the filter ''smoothed'' the signal, practically reduced the amplitude of the signal, shifted the signal and eliminated (or at least attenuated) its high frequency components. The orange signal contains less high frequency components. The low frequency components are preserved, as we can see from the signal at a different scale (in a time window of 10 seconds):
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/raw_filter2.png}
+\end{figure}
+\noindent We applied a low-pass filter, the power/frequency plot of the filter is the following:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/raw_filter3.png}
+\end{figure}
+\noindent The blue line is the spectrum of the raw signal, the orange one is the spectrum of the filtered one. At the beginning the two signal have the same spectrum, the frequency components of 20 Hz or less are not attenuated. After 30 Hz (cut off frequency) there is a visible difference in attenuation, and the higher the frequency, the higher is the attenuation. 
 \end{document}
