@@ -313,6 +313,8 @@ The brain's anatomical composition is divided into \textbf{grey matter} (cell bo
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.5\textwidth]{images/DTIimage.png}
+     \caption{DTI scan.}
+     \label{DTI}
 \end{figure}
 The \textbf{corpus callosum} is the primary white matter tract ensuring inter-hemispheric connectivity; its degradation is a key clinical indicator of neural network breakdown. \bigskip
 
@@ -380,7 +382,7 @@ The brain's spatial organization is a multi-level hierarchy spanning from microm
      \includegraphics[width=0.5\textwidth]{images/brainStructure.png}
 \end{figure}
 
-\section{Brain Plasticity}
+\section{Brain Plasticity}\label{Plasticity}
 \textbf{Brain plasticity} is the organ's ability to modify its structure and function based on experience, a concept first hypothesized by William James in 1890. In 1949, Donald Hebb formalized this through \textbf{Hebbian Learning}, governed by the principle: ''cells that fire together, wire together.'' This theory states that repeated simultaneous activation of neurons increases \textbf{synaptic efficiency}, reinforcing neural pathways. This physical adaptation serves as the biological foundation for learning, habit formation, and memory throughout the lifespan.\bigskip
 
 Neural plasticity evolves throughout the lifespan, peaking during the \textbf{critical period} (ages 0--2) when fundamental, often irreversible, connections are formed. While most potent in youth—enhancing the efficiency of neurorehabilitation—plasticity persists into adulthood and seniority through learning and memory consolidation. This adaptability is further evidenced by functional reorganization following \textbf{sensory deprivation} or limb loss. Ultimately, the brain's lifelong capacity to restructure in response to lesions or physiological changes provides the foundational principle for clinical neurorehabilitation.\bigskip
@@ -662,7 +664,7 @@ our knowledge of the responses actually recorded.
 \end{figure}
 If the probability of generating an action potential is independent of the presence or timing of other spikes the firing rate $r$ is all we need to compute the probabilities for all possible action potential sequences.
 Our statistical model is called \textbf{Poisson Process}:\begin{itemize}
-     \item In biological reality, neurons have a "refractory period" (after a spike, the neuron needs an instant to "recharge"). The Poisson model ignores this biological detail for simplicity. It's an approximation, but it's incredibly useful because it allows us to use very simple mathematical tools to calculate the probability of entire sequences of spikes.
+     \item In biological reality, neurons have a ''refractory period'' (after a spike, the neuron needs an instant to ''recharge''). The Poisson model ignores this biological detail for simplicity. It's an approximation, but it's incredibly useful because it allows us to use very simple mathematical tools to calculate the probability of entire sequences of spikes.
 \end{itemize}
 We focus on the \textbf{homogeneous} model where the firing rate $r$ is constant over time. Imagine a neuron that, in a resting state, fires an average of 10 spikes per second. Since the rate is fixed, the probability calculation is immediate.\bigskip
 
@@ -759,7 +761,183 @@ $r\ge z$                     & \multicolumn{1}{c|}{$\beta(z)$}   & $\alpha(z)$  
 $r<z$                        & \multicolumn{1}{c|}{$1-\beta(z)$} & $1-\alpha(z)$ \\ \hline
 \end{tabular}
 \end{table}
+A nice way to plot the performance of the decoder, with a given threshold $z$ is through the \textbf{Receiver Operating Characteristic (ROC) curves}: We consider a plane where the $x$-axis represents the value of $\alpha(z)$ and the $y$-axis the value of $\beta(z)$, both going from 0 to 1, given a choice for $z$, we plot on the plane the point relative to that choice, for example:
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.3\textwidth]{images/ROC1.eps}
+\end{figure}
+We let $z$ to change for 0 toa certain frequency, and plot different ROC curves for different values of coherence:
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/ROC2.png}
+\end{figure}
+All the curves shares the same starting and ending point, of course the best value of $z$ is the one relative to the point nearest to $(0,1)$.
+
+When the coherence is near to 0\%, the curve is near the line $\alpha=\beta$, in this case choosing different values of $z$ does not increase performance and the points remain close to this line. The increasing coherence makes the ROC curves to be ''attracted'' by the point $(0,1)$. Given a certain curve, the best choice of $z$ can be derived just by looking at the point nearest to the top left corner.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.25\textwidth]{images/ROC3.eps}
+\end{figure}
+The performances of a classifier are evaluated by the area under the ROC curve (AUC), and represents the percentage of correct classifications. Of course the best possible value for the AUC is 1, and the worst possible value is the area under the curve $\alpha=\beta$ that is $\nicefrac{1}{2}$: That is also the result of trying to guess randomly.
+\bigskip
+
+This classifier is not sophisticated, but performs similar to the behavioral data fetched from the human experiments. The neural decoding task is involved, we need to study how the brain works in a probabilistic fashion, we need to understand how the neurons works and build distributions, in order to develop a strategy to decode the information. An accurate decoder would require complex computation, a conflicting requirement with respect to the bit rate (how fast we can decode the data), so in real applications there is a trade of between these two requirements.
 \chapter{Brain Networks}
+To extract useful information from biological signals such as EEG, we must decide with which ''lens'' to observe these signals. The fundamental distinction in neuroengineering is that between univariate and multivariate approaches.\begin{itemize}
+     \item \textbf{Univariate Analysis}: We treat each signal as a single entity, we calculate statistics, averages or variations on that signal without worrying about what the other signals are doing at the same time.
+     \item \textbf{Multivariate Analysis}: The human brain is a complex system with communicating parts. Multivariate analysis doesn't just look at the signals, but looks for the relationships, correlations and interdependencies between them.
+\end{itemize}
+\section{Network Neuroscience}
+In \textbf{Network Neuroscience} the nervous system is seen as a complex network, this discipline aims to map, record, analyze and model the elements and interactions between neurobiological systems.
+
+The objective is to estimate \textit{dynamic brain networks} at all levels  (among molecules, neurons, brain areas and social systems). In this discipline there is the intersection of two fundamental approaches:\begin{itemize}
+     \item Empirical Approach: It is based on the collection of real data (neuroimaging, electrophysiology, microscopy).
+     \item Computational Approach: It is based on mathematical modeling. Once we have the data, we use algorithms and simulations to predict how the system will behave in the future or how it will react to an injury or stimulus.
+\end{itemize}
+
+The functionally specialized regions of neurons are physically connected between them, through the axons, and interact within and between themselves, forming brain networks.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.6\textwidth]{images/brain_network.png}
+\end{figure}
+To correctly model the brain, we need two types of information, represented by the two incoming flows to the modeling center:\begin{itemize}
+     \item \textbf{Brain Activity}: It is the dynamic component. It tells us what is happening in the brain at any given moment (e.g. voltage fluctuations, changes in blood flow).
+     \item \textbf{Brain Connectivity}:  It is the structural and organizational component. It is the map of interactions. As you can see in the diagram, this is divided into \textit{three levels} of increasing complexity.
+\end{itemize}
+\subsection{Anatomical, Functional and Causal Connectivity}
+The \textbf{three levels} of brain connectivity are:\begin{enumerate}
+     \item Anatomical: It represents the white matter tracts, the axons that physically connect two brain areas. It is the static structure.
+     \item Functional: Represents a statistical dependency. If area $A$ and area $B$ show signals that vary together over time (correlation), we say they are ''functionally connected''.
+     \item Causal: It's the highest level. Here we model the directionality of influence. Does area $A$ have a causal influence on area $B$? It is the level necessary to understand the flow of information and control dynamics.
+\end{enumerate}
+The modeling of the brain have four main domains of applications: Understand the cognitive functions, understand how the brain evolves over time (plasticity), clinical applications and industrial applications.\bigskip
+
+The \textbf{anatomical connectivity} is the physical layer (like the axons) that physically connects the brain areas, or single neurons between them. This structure is stable in the short time, and does not change. Can change only at a longer time scale (plasticity), as already described in Section \ref{Plasticity}. There are two ways to study this layer:\begin{itemize}
+     \item Invasive (Tracing): Chemical tracers are used that are injected into neurons and ''go up'' or ''down'' along the axons to map the connections. It is very precise, but obviously it can only be done in pre-clinical studies (on animal models).
+     \item Non Invasive (Diffusion Weighted Imaging): A result of this technique is shown in figure \ref{DTI}. It exploits the way water molecules move within axons. Since water tends to diffuse along the direction of the nerve fibers, the computer can reconstruct the path of the fiber bundles. It is the technique that allows us to ''see'' the wiring of the human brain in vivo.
+\end{itemize}
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/anatomicalConn.png}
+\end{figure}
+Anatomical connectivity is at the basis of 
+functional/effective connectivity, but cannot 
+explain it.\bigskip
+
+While with anatomical connectivity we try to understand how the brain is built, with \textbf{functional connectivity} we try to understand how it is working at a given moment. The key distinction here is that, unlike other methods, functional connectivity is a purely statistical measure. At this level the principle of non-causality applies: if two brain areas ($A$ and $B$) show synchronized activity (e.g. their electrical signals rise and fall together), functional connectivity simply records this fact. It does not assume that $A$ is controlling $B$, nor that $B$ is controlling $A$. Being ''essentially descriptive'', this technique does not attempt to explain the biological mechanism behind the connection. It simply describes the state of the system through mathematical measurements. We quantify this synchrony trough:\begin{itemize}
+     \item Correlation: Calculates how linear the fluctuations of two signals are to each other.
+     \item Coherence: Measures the synchrony between two signals in the frequency domain.
+     \item Transfer Entropy: A more advanced measure that seeks to quantify how much the uncertainty about one signal is reduced by knowing the history of the other.
+\end{itemize}
+
+The highest level is the \textbf{causal connectivity}. Effective connectivity describes the direct and directional influence that one brain area has on another. We are no longer satisfied with saying ''$A$ and $B$ are active together''; we want to prove that ''$A$'s activity is causing a change in $B$'s activity''.
+Causal connectivity is guided by models, we need a model that describes how the area $A$ interacts with the area $B$, and then test this model with respect to the real data. In this approach we need an hypothesis \textbf{at priori} of how the system might work: We try different models from a wide model space, and check which model performs better (sticks better to the real data).
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/causality_graph.png}
+          \caption{Causality graph.}
+          \label{causality_graph}
+\end{figure}
+\noindent A simple model of causality is shown in figure \ref{causality_graph}. The nodes A1, A2 and A3 represents units of the system (populations of neurons or specific brain areas). If there is an edge from A2 to A1, it means: \textit{the activity of the population A2 causes a change in the activity of A1}. It's not a simple correlation; it is a dynamic impact hypothesis.
+
+The numbers on the edges represents weights or coupling parameters, they represent the ''strength'' of the influence. The two different graphs represents two different models (hypothesis). A comparison with the data will determine which of the two models better describes the brain. 
+\subsection{Correlation and Coherence}
+The \textbf{Hebbian Theory}  states that:\begin{quote}
+     ''Cells that fire together wire together''.
+\end{quote}
+Hence, region correlation (physical) can be associated to synchronization (and viceversa). The brain organize information on multiple dimensions, one of them is the following:\begin{itemize}
+     \item \textbf{Spectral}: The brain oscillates at different frequencies. Low frequencies (e.g. Delta, Theta) tend to coordinate distant areas and are involved in global integration processes or in sleep. High frequencies (e.g. gamma) are typical of local, fast and computationally intensive processes.
+\end{itemize}
+Due to their excellent temporal resolution, neuroelectrical measures (from invasive to scalp recorded EEG) keep the information coded in the brain rhythms.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.5\textwidth]{images/spectral.png}
+\end{figure}
+In this section we provide mathematical procedure to describe the correlation and coherence between two signals. For example, a trace of the EEG is stored as a discrete time signal: A time series $x[n]$ with sampling interval $T$.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.4\textwidth]{images/eegTrace.eps}
+\end{figure}
+We need two definitions.
+\begin{boxdefinition}{Auto Correlation Function}{}
+     Given a time series $x[n]$, the auto correlation function is the time series:\begin{eqnarray}
+          r_{xx}[k]=\sum_{n=-\infty}^{+\infty}x^*[n]x[n+k].
+     \end{eqnarray}
+\end{boxdefinition}
+\begin{boxdefinition}{Cross Correlation Function}{}
+      Given two time series $x[n]$ and $y[n]$, the cross correlation function is the time series:\begin{eqnarray}
+          r_{xy}[k]=\sum_{n=-\infty}^{+\infty}x^*[n]y[n+k].
+     \end{eqnarray}
+\end{boxdefinition}
+With $x^*[n]$ we denoted the complex conjugate of $x[n]$, for real signals like the EEG (that is measured in mV), the immaginary part is null, hence the complex conjugate is identical to the original sample. In the mathematical definitions the signals are defined from $t=-\infty$ to $t=+\infty$, of course the real signals are defined only in a limited time window.\bigskip 
+
+The auto correlation function describes the internal structure of the signal, while the cross correlation describe the interaction between two signals, the latter requires (obviously) tha the two signals are recorded simultaneously.
+\begin{boxdefinition}{Fourier Transform}{}
+     The Fourier transform of a time series $x[n]$ with sampling interval $T$ is the continuous function:\begin{equation}
+          X(f)=\sum_{n=-\infty}^{+\infty}x[n]\exp(-j2\pi fnT).
+     \end{equation}
+\end{boxdefinition}
+This definition is also given in the Chapter \ref{sig_proc}. As we know, it describes the signal in the frequency domain. We denoted $j$ the imaginary unit.
+\begin{boxdefinition}{Power Spectral Density}{}
+     The Power Spectral Density (PSD) of the time series $x[n]$ is the square amplitude of its Fourier transform:\begin{equation}
+          S_{xx}(f)=|X(f)|^2.
+     \end{equation}
+\end{boxdefinition}
+The PSD is a fundamental measurement in signal analysis that indicates how the power (or energy) of a signal is distributed over frequency.
+In practical terms, looking at a PSD graph allows you to immediately identify the dominant frequencies of a system. For example, if you analyze a signal, the PSD will show you high peaks at the frequencies where most of the activity is concentrated, while flatter areas indicate frequencies with less energy or simple background noise.
+\begin{boxtheorem}{Wiener-Khinchin (auto correlation)}{}
+     The PSD of a time series $x[n]$ can be computed by evaluating the Fourier transform of the auto correlation function of $x[n]$:\begin{equation}
+          S_{xx}(f)=\sum_{n=-\infty}^{+\infty}r_{xx}[n]\exp(-j2\pi fnT).
+     \end{equation}
+\end{boxtheorem}
+\noindent Another important quantity for two signals $x[n]$ and $y[n]$ is the \textbf{mutual PSD}.\begin{boxdefinition}{Mutual Power Spectral Density}{}
+     The mutual PSD of two time series  $x[n]$ and $y[n]$ is the following real function:\begin{equation}
+          S_{xy}(f)=X(f)Y^*(f)=Y(f)X^*(f)=S_{yx}(f).
+     \end{equation}
+\end{boxdefinition}
+\noindent The mutual PSD tells how much power two signals share at each frequency.
+\begin{boxtheorem}{Wiener-Khinchin (cross correlation)}{}
+     The mutual PSD of two time series $x[n]$ and $y[n]$ can be computed by evaluating the Fourier transform of the cross correlation function:\begin{equation}
+          S_{xy}(f)=\sum_{n=-\infty}^{+\infty}r_{xy}[n]\exp(-j2\pi fnT).
+     \end{equation}
+\end{boxtheorem}
+\noindent Given two signal $x[n]$ and $y[n]$ we can define the symmetrical \textbf{spectral matrix}:\begin{equation}
+     S(f)=\begin{pmatrix}
+          S_{xx}(f)&S_{xy}(f)\\
+          S_{yx}(f)&S_{yy}(f)
+     \end{pmatrix}.
+\end{equation}
+So the relations of these two signals in the frequency domain is embedded in this matrix $S(f)$, for each frequency $f$.
+As we already mentioned, with \textbf{coherence} measures the synchrony between two signals in the frequency domain.
+
+\begin{boxdefinition}{Ordinary Coherence}{}
+     The \textbf{Ordinary Coherence} $C_{xy}(f)$ is the \textit{linear correlation} between two signals at a given frequency:\begin{equation}
+          C_{xy}(f)\frac{|S_{xy}|^2}{S_{xx}(f)S_{yy}(f)}.
+     \end{equation}
+\end{boxdefinition}
+
+
+It's the Mutual Power Spectral Density divided by the 
+product of their individual power spectral densities. The ordinary coherence is a spectral function (depends on the frequency $f$) and it's normalized between 0 and 1. For a given frequency $f'$:\begin{itemize}
+     \item $C_{xy}(f')=0 \ \implies$ the two signals are \textbf{independent} at that frequency.
+     \item $C_{xy}(f')=1 \ \implies$ the two signals are \textbf{maximally correlated} at that frequency. 
+\end{itemize}
+The ordinary coherence does not contain any information about the direction of the interaction, it measures only the synchronicity but not causality. this is a problem since a simple correlation between two events does not directly imply that one of these cause the other (and viceversa). For example, if the two events are the effects of a common source, these two will have an high correlation, although they have no causal relationship between them.
+
+\subsection{Causality}
+
+The determination of causal relationships in neural networks is mainly articulated through two distinct approaches. The first, defined \textit{Physical Influence} (or interventional approach), is based on direct experimental manipulation (e.g. via electrical stimulation or ultrasound) of a node in the network; this physical intervention isolates the influence of the manipulated node, allowing its distal effects to be measured, representing the \textit{gold standard} for defining causality, although it is limited by constraints of experimental practicality. The second approach, based on \textit{Temporal Precedence}, is observational in nature and postulates that the cause must temporally precede the effect; in this context, causality is inferred via computational analyzes that evaluate the predictive ability of temporally distinct neural events, allowing directional influences to be derived from raw data without the need for invasive physical manipulations.\bigskip
+
+
+The first definition of causality in a statistical framework was given by Norbert Wiener in 1956.\begin{boxdefinition}{Causality}{}
+Given two simultaneously measured signals, if one can 
+predict the first signal better by incorporating the past 
+information from the second signal than using only 
+information from the first one, then the second signal 
+can be called \textbf{causal} to the first one.
+\end{boxdefinition}
+\redText{TODO : Continua da lezione 8, slide 7 (Wiener-Granger causality)}
+
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
 In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
@@ -966,7 +1144,7 @@ In the bipolar montage the displacement and the connections effects the recordin
 \redText{TODO}
 \subsection{EEF Analysis}
 \redText{TODO}
-\chapter{Signal Processing}
+\chapter{Signal Processing}\label{sig_proc}
 This section is a small recap of some basic signal processing concepts.
 The bio-signal processing procedure follows a precise pipeline:\begin{enumerate}
      \item the bio signal (as electrical energy generated by ionic current) is perceived by a transducer
