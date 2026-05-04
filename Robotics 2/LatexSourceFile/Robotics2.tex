@@ -16,27 +16,7 @@
 \begin{document}
 
 %==================COPERTINA=======================%
-\begin{titlepage}
-    
-\begin{center}
-    %TOGLI COMMENTO SE USI XELATEX
-   %\setmainfont{Palace Script MT}
-   \HUGE Marco Casu\acc
-\end{center}
-\thispagestyle{empty}
-\begin{figure}[h]
-    \centering{
-        %l'immagine deve avere una risoluzione 2048x2048
-        \includegraphics[width=0.95\textwidth ]{images/Copertina.png}
-    }
-\end{figure}
-\vfill 
-\centering \includegraphics[width=0.4\textwidth ]{../../preamble/Stemma_sapienza.png} \acc
-\centering \Large \color{sapienza}Faculty of Information Engineering, Computer Science and Statistics\\
-Department of Computer, Control and Management Engineering\\
-Master's degree in Artificial Intelligence and Robotics
-\end{titlepage}
-
+\input{../../preamble/title.tex}
 %===================FINE COPERTINA======================%
 \newpage
 %\pagecolor{cartaRiciclata}%\setmainfont{Algerian}
@@ -3517,7 +3497,57 @@ let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use 
 \end{equation}
 \redText{TODO}
 \subsection{Dynamic Scaling}
-\redText{TODO}
+We have a smooth trajectory $\q_d(t)$ defined in the joint space for $t\in [0,T]$, we rescale this trajectory with a rescaling function $t\rightarrow r(t)$, that defines the new rescaled trajectory $\q_d(r(t))$, that is defined in $t\in [0,r(T)]$. Of course, $r(t)$ should be a strictly \textit{increasing} function (the trajectory should not be performed backwards).
+\bigskip
+
+We denote $\q_s(r)$ the rescaled trajectory, the path executed is identical, but performed in different instants of time:\begin{equation}
+    \q_d(t)=\q_s(r(t))
+\end{equation}
+this implies the following differential relation:\begin{eqnarray}
+    \dq_d(t)=\frac{d\q_d}{dt}=\frac{d \q_s}{dr}\frac{dr}{dt}=\q_s'(r)\dot r(t)
+\end{eqnarray}
+the second order differential relation is:\begin{equation}
+    \ddq_d(t)=\frac{d\dq_d}{dt}=\left(
+        \frac{d \q'_s}{dr}\frac{dr}{dt}
+    \right)\dot r +\q_s'\frac{d\dot r}{dt}=\q_s''(r)\dot r^2(t)+\dq_s'(r)\ddot r(t).
+\end{equation}
+We call \textbf{uniform scaling} when the function $r$ is linear in $t$:\begin{align}
+    &r(t)=kt, \ \ k>0\\ 
+    &\dq_d(t)=k\q_s'(kt)\label{dq_k}\\ 
+    &\ddq_d(t)=k^2\q_s''(kt).\label{ddq_k2}
+\end{align}
+We want to find the input torque needed to execute the scaled trajectory, this could be recomputed through the inverse dynamics for every $r=kt\in [0,kT]$ along the scaled trajectory:\begin{equation}
+    \btau_s(kt)=M(\q_s)\dq_s''+\mathbf c(\q_s,\q_s')+\mathbf g(\q_s)
+\end{equation}
+we are neglecting the dissipative terms. However, we can use the relations \eqref{dq_k} and \eqref{ddq_k2} in the inverse dynamics for $\q_d$, exploiting the fact that the model is linear in the acceleration and quadratic in the velocity:\begin{align}
+    &\btau_d(t)=M(\q_d)\ddq_d+\mathbf c(\q_d,\dq_d)+\mathbf g(\q_d)=\\
+    &M(\q_s)k^2\dq_s''+\mathbf c(\q_s,k\q_s')+\mathbf g(\q_s)=\\
+    &k^2(M(\q_s)\q_s''+\mathbf c(\q_s,\q_s'))+\mathbf g(\q_s)=\\
+    &k^2(\btau_s(kt)-\mathbf g(\q_s))+\mathbf g(\q_s)\label{tau_s}
+\end{align}
+hence, by using \eqref{tau_s}, we can compute the new input torque $\btau_s$ using the original input torque $\btau_d$ without recomputing the inverse dynamics from scratch:\begin{equation}
+    \btau_s(kt)=\frac{1}{k^2}(\btau_d(t)-\mathbf g(\q_d(t)))+\mathbf g(\q_d(t)).
+\end{equation}
+We see immediately an application: We want to use uniform time scaling to recover torque feasibility. We consider a robot with torques bounded as follows:\begin{equation}
+    |\tau_i|\le \tau_{i,max}, \ \ i=1,\dots n
+\end{equation}
+we assume that the torques are at least sufficient to sustain the gravity load at the joints: $\tau_{i,max}>|g_i(\q)|$. Let $\q_d(t)$ to be a trajectory that is dynamically unfeasible, i.e. at some point the required torques exceeds the limit:\begin{equation}
+    \exists \bar t \in [0,T] \text{ s.t. }|\tau_j(\q_d(\bar t))|> \tau_{j,max} \ \text{ for some joint } j.
+\end{equation}
+We want the \textbf{minimum scaling factor} $k^*>1$ that provides a feasible scaled trajectory $\q_s(k^*t)$ for all $t\in [0,T]$. We compute for each joint $i$ the normalized torque violations $k_i$:\begin{equation}
+    k_i=\max\left\{
+      1, \displaystyle\max_{t\in [0,T]} \left\{ 
+        \frac{\tau_i(t)-g_i(\q(t))}{\tau_{i,max}-g_i(\q(t))}, 
+        \frac{g_i(\q(t))-\tau_i(t)}{\tau_{i,max}+g_i(\q(t))}
+      \right\}
+    \right\}\ge 1
+\end{equation}
+when $k_i=1$, the joint $i$ is not violating the bound. At this point, we find the minimum scaling factor as\begin{equation}
+    k^*=\max_i \sqrt{k_i}>1.
+\end{equation}
+The new total time to perform the trajectory will be\begin{equation}
+    T_s=k^*T>T.
+\end{equation}
 \section{Linear Parametrization}
 A single link of a manipulator introduces 10 dynamic parameters:\begin{itemize}
     \item the mass of the link, 1 real number
