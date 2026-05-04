@@ -3,6 +3,7 @@
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
 \usepackage{multirow}
+\usepackage{booktabs}
 \newcommand{\titolo}{Neuroengineering }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -68,7 +69,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \begin{boxdefinition}{Neuron}{}
      A neuron, also known as a nerve cell, is the fundamental building block of the brain and nervous system. It is a specialized cell designed to transmit information to other nerve cells, muscle, or gland cells through electrical and chemical signals.
 \end{boxdefinition}
-A neuron have three main functions:\begin{itemize}
+A neuron has three main functions:\begin{itemize}
      \item To \textbf{collect} the information from multiple sources, like other neural cells or receptors.
      \item To \textbf{integrate} in time and space the incoming information to provide a binary decision.
      \item To \textbf{generate} and \textbf{propagate} a bit of information up to a target cell.
@@ -79,9 +80,9 @@ A neuron have three main functions:\begin{itemize}
 \end{figure}
 The neuron is covered by the \textbf{neuronal membrane}, a phospholipid bilayer\footnote{A phospholipid bilayer is a two-layered arrangement of phosphate and lipid molecules that form a cell membrane. It serves as a continuous barrier around cells and organelles, separating the internal contents from the outside environment.}  which acts as a fatty barrier between the inside of the cell (cytoplasm) and the outside environment. This membrane is \textit{selectively permeable}: charged ions cannot pass through the bilayer, this allows the neuron to maintain different concentrations of chemicals on either side.
 
-Since the membrane forms a barrier between the inside and the outside of the cell, the membrane use specialized proteins to bridge the gap: The \textbf{Ion Channels} are ''tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates an \textit{electrical difference} (voltage).\bigskip 
+Since the membrane forms a barrier between the inside and the outside of the cell, the membrane uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ''tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates an \textit{electrical difference} (voltage).\bigskip 
 
-\noindent The main ion families that pass acts in the neural cell are:\begin{itemize}
+\noindent The main ion families that act in the neural cell are:\begin{itemize}
      \item Na$^+$: Sodium 
      \item K$^+$: Potassium 
      \item Cl$^-$: Chloride
@@ -96,7 +97,7 @@ The notation for the \textbf{valence} is the following, if an elements have $n$ 
      \includegraphics[width=0.5\textwidth]{images/neuralMembrane.png}
      \caption{A representation of the neural membrane.}
 \end{figure}
-An \textbf{Ion Pumps} is an active transportation that requires an energy expenditure by
+An \textbf{Ion Pump} is an active transportation that requires an energy expenditure by
 the cell, it allow ions to move into
 and out of the cell by \textit{opening and
 closing} in response to voltage
@@ -180,7 +181,7 @@ The neuron is structured as a ramified structure called \textbf{dendritic tree},
 To a neuron, might arrive a burst of signals from the same synapses near in time, or different signals coming from different synapses, in this way the neuron receives a signal that is a \textit{summation} in time and space.\bigskip
 
 In an exchange of information, the neuron that send the signal is called \textit{presynaptic neuron}, the one that receives is the \textit{postsynaptic neuron}. 
-There are two typse of synapses:\begin{itemize}
+There are two types of synapses:\begin{itemize}
      \item \textbf{Electrical synapses}: The ions pass directly from the presynaptic to the postsynaptic cell. Is the fastest type of communication and is almost instantaneous.
      \item \textbf{Chemical synapses}: The chemical signals are mediated by the \textit{neurotransmitters} that cause the opening of specific ion gates channels, making the ions pass from a neuron to the other, pushed by the gradient.
 \end{itemize}
@@ -242,7 +243,7 @@ circumstances).
      \end{enumerate}
      \item  \textbf{The Potassium Channel}:\begin{enumerate}
           \item It is closed during rest and during the first rising phase of the spike.
-          \item It opens with a certain delay compared to that of sodium, typically when the spike has reached its peak.
+          \item It opens with a certain delay compared to that of sodium, typically when the spike has reached it's peak.
           \item When it opens, the potassium K$^+$ leaves the cell (because it is less concentrated outside). This release of positive charges causes the membrane potential to collapse, bringing it back down (repolarization).
           \item Because it closes slowly, too much potassium often escapes, bringing the membrane to a more negative value than rest (e.g. -80 mV), causing post-potential hyperpolarization (undershoot).
      \end{enumerate}
@@ -271,7 +272,7 @@ The absolute refractory causes the \textbf{unidirectional} of the action potenti
 
 In axons, the membrane is surrounded by an insulating sheath called myelin (formed by Schwann cells in the PNS and oligodendrocytes in the CNS).
 
-The myelin sheath functions as an electrical insulator which dramatically increases the membrane's resistance ($R_m$) and reduces its capacitance ($C_m$).
+The myelin sheath functions as an electrical insulator which dramatically increases the membrane's resistance ($R_m$) and reduces it's capacitance ($C_m$).
 The \textit{nodes of Ranvier} are short breaks in the sheath (about 1-2 $\mu$m) where the axon membrane is exposed to extracellular fluid. Only here is a very high density of voltage-gated sodium (Na$^+$) channels found.\bigskip 
 
 When a spike is generated in a node of Ranvier, sodium ions enter the cell. Because myelin prevents charges from ''leaking'' across the membrane (high $R_m$), electric current flows almost instantaneously within the axon to the next node.
@@ -383,7 +384,7 @@ The brain's spatial organization is a multi-level hierarchy spanning from microm
 \end{figure}
 
 \section{Brain Plasticity}\label{Plasticity}
-\textbf{Brain plasticity} is the organ's ability to modify its structure and function based on experience, a concept first hypothesized by William James in 1890. In 1949, Donald Hebb formalized this through \textbf{Hebbian Learning}, governed by the principle: ''cells that fire together, wire together.'' This theory states that repeated simultaneous activation of neurons increases \textbf{synaptic efficiency}, reinforcing neural pathways. This physical adaptation serves as the biological foundation for learning, habit formation, and memory throughout the lifespan.\bigskip
+\textbf{Brain plasticity} is the organ's ability to modify it's structure and function based on experience, a concept first hypothesized by William James in 1890. In 1949, Donald Hebb formalized this through \textbf{Hebbian Learning}, governed by the principle: ''cells that fire together, wire together.'' This theory states that repeated simultaneous activation of neurons increases \textbf{synaptic efficiency}, reinforcing neural pathways. This physical adaptation serves as the biological foundation for learning, habit formation, and memory throughout the lifespan.\bigskip
 
 Neural plasticity evolves throughout the lifespan, peaking during the \textbf{critical period} (ages 0--2) when fundamental, often irreversible, connections are formed. While most potent in youth—enhancing the efficiency of neurorehabilitation—plasticity persists into adulthood and seniority through learning and memory consolidation. This adaptability is further evidenced by functional reorganization following \textbf{sensory deprivation} or limb loss. Ultimately, the brain's lifelong capacity to restructure in response to lesions or physiological changes provides the foundational principle for clinical neurorehabilitation.\bigskip
 
@@ -399,7 +400,7 @@ Plasticity also involves architectural changes through \textbf{axonal sprouting}
      \centering
      \includegraphics[width=0.7\textwidth]{images/reconstructionAxon.png}
 \end{figure}
-\textbf{Axonal regeneration} is a critical but limited recovery mechanism, primarily associated with early development. In the event of a lesion, the process begins with \textbf{Wallerian degeneration}, where macrophages clear the distal axon segment. Subsequently, \textbf{Schwann cells} align to form a guiding pathway for the slow regrowth of the axon toward its target. Unlike rapid functional adaptations, successful reinnervation is a complex biological repair that can span months or years.
+\textbf{Axonal regeneration} is a critical but limited recovery mechanism, primarily associated with early development. In the event of a lesion, the process begins with \textbf{Wallerian degeneration}, where macrophages clear the distal axon segment. Subsequently, \textbf{Schwann cells} align to form a guiding pathway for the slow regrowth of the axon toward it's target. Unlike rapid functional adaptations, successful reinnervation is a complex biological repair that can span months or years.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.7\textwidth]{images/axonal_regeneration.png}
@@ -424,7 +425,7 @@ Intracellular recordings utilize hollow glass electrodes filled with an electrol
      \centering
      \includegraphics[width=0.4\textwidth]{images/sharp_path_electr.png}
 \end{figure}
-Intracellular recordings are technically more complex than extracellular methods and are typically conducted in in vitro experiments. They are primarily performed on the soma or dendrites to record graduate and action potentials, as capturing signals along the axon is notably difficult due to its extreme thinness and the high risk of structural damage. Despite these technical challenges and the difficulty of maintaining precise measurements, this technique has been instrumental in advancing our fundamental understanding of cellular neurophysiology.\bigskip 
+Intracellular recordings are technically more complex than extracellular methods and are typically conducted in in vitro experiments. They are primarily performed on the soma or dendrites to record graduate and action potentials, as capturing signals along the axon is notably difficult due to it's extreme thinness and the high risk of structural damage. Despite these technical challenges and the difficulty of maintaining precise measurements, this technique has been instrumental in advancing our fundamental understanding of cellular neurophysiology.\bigskip 
 
 \textbf{Extracellular} recording involves positioning electrodes in the extracellular fluid near the cell membrane to monitor neural activity. While this method cannot detect subtle sub-threshold voltage changes or waveform details, it is highly effective at identifying the exact timing of action potentials. It is particularly valuable for in vivo studies, as it allows for reliable event detection without disrupting the cell's natural environment.
 
@@ -437,9 +438,9 @@ The intracellular recordings captures the subthreshold and the action potentials
 \textbf{Local Field Potentials} (LFPs) represent the aggregate electrical activity within a local tissue volume, specifically reflecting the summation of postsynaptic potentials rather than individual action potentials. These signals are characterized by low-frequency oscillations, typically below 300 Hz. Because they capture the synchronized activity of neural populations and reflect regional inputs, LFPs serve as a critical tool for investigating large-scale circuit dynamics and neural oscillations within the brain.
 \bigskip 
 
-Electroencephalography (EEG) operates at a macroscopic scale, recording the synchronous postsynaptic activity of large populations of neurons. By utilizing the principle of volume conduction—where electrical fields propagate through brain tissue, cerebrospinal fluid, and the skull—EEG enables the non-invasive measurement of neural activity from the scalp. While this technique provides exceptional temporal resolution for investigating global brain dynamics, the summation of signals across diverse cortical regions significantly limits its spatial precision compared to localized recording methods.
+Electroencephalography (EEG) operates at a macroscopic scale, recording the synchronous postsynaptic activity of large populations of neurons. By utilizing the principle of volume conduction—where electrical fields propagate through brain tissue, cerebrospinal fluid, and the skull—EEG enables the non-invasive measurement of neural activity from the scalp. While this technique provides exceptional temporal resolution for investigating global brain dynamics, the summation of signals across diverse cortical regions significantly limits it's spatial precision compared to localized recording methods.
 \begin{itemize}
-     \item \textbf{Stereo-Electroencephalography (S-EEG)}: Invasive way to record the neuron activity with electrodes placed inside the brain, the spatial resolution is quite high, the weakness is that the surgeon have to make holes on the skulls, so this is not done routinely, since it would require a surgery only to acquire data, so is ethically allowed only when it's in the interest of the patient. The most common application of this is epilepsy.
+     \item \textbf{Stereo-Electroencephalography (S-EEG)}: Invasive way to record the neuron activity with electrodes placed inside the brain, the spatial resolution is quite high, the weakness is that the surgeon has to make holes on the skulls, so this is not done routinely, since it would require a surgery only to acquire data, so is ethically allowed only when it's in the interest of the patient. The most common application of this is epilepsy.
      \begin{figure}[H] 
           \centering
           \includegraphics[width=0.6\textwidth]{images/SEEG.png}
@@ -449,7 +450,7 @@ Electroencephalography (EEG) operates at a macroscopic scale, recording the sync
           \centering
           \includegraphics[width=0.6\textwidth]{images/ECoG.png}
      \end{figure}
-     \item The \textbf{scalp EEG} is the only method that is completely non invasive, since the electrodes are just putted on the scalp, the first measurement of electrical signals from the scalp occurred in 1929 by the German psychiatrist Hans Berger. The easiest signal to detect through this method is the alpha rhythm.
+     \item The \textbf{scalp EEG} is the only method that is completely non invasive, since the electrodes are just placed on the scalp, the first measurement of electrical signals from the scalp occurred in 1929 by the German psychiatrist Hans Berger. The easiest signal to detect through this method is the alpha rhythm.
 \end{itemize}
 The quality of the scalp EEGs acquired in the last century was not much different to the actual registrations.
 \begin{figure}[H] 
@@ -587,7 +588,7 @@ When we analyze the data (spike train) we are not directly seeing the stimulus r
      \item \textbf{Stationary Stimulus}: If the stimulus is constant (e.g. a fixed light), the firing rate of the neuron is stable. In this case, you can simply count how many spikes occur in a time interval $T$ (the ''spike-count'').
      \item \textbf{Dynamic Stimulus}: If the stimulus changes quickly (e.g. a sequence of images or sounds), counting the spikes over a long period of time is useless, because you would ''spread'' the information and lose the quick details. In this case, a time-resolved definition is needed.
 \end{itemize}
-A single neuron is noisy and not reliable: We need to examine the relationships (correlations) between the discharge patterns of the entire population. If many neurons ''say'' the same thing at the same time, the signal becomes robust and the information is encoded with much more precision than a single cell would.\bigskip 
+A single neuron is noisy and unreliable: We need to examine the relationships (correlations) between the discharge patterns of the entire population. If many neurons ''say'' the same thing at the same time, the signal becomes robust and the information is encoded with much more precision than a single cell would.\bigskip 
 
 Neural responses can vary across repetitions (trials) even
 when the same stimulus is presented repeatedly. We can't define a single rate $r$ to a stimulus, instead, we use a probabilistic approach, denoting $\langle r\rangle$ the \textbf{average firing rate} computed by averaging different trials.
@@ -879,7 +880,7 @@ The auto correlation function describes the internal structure of the signal, wh
 \end{boxdefinition}
 This definition is also given in the Chapter \ref{sig_proc}. As we know, it describes the signal in the frequency domain. We denoted $j$ the imaginary unit.
 \begin{boxdefinition}{Power Spectral Density}{}
-     The Power Spectral Density (PSD) of the time series $x[n]$ is the square amplitude of its Fourier transform:\begin{equation}
+     The Power Spectral Density (PSD) of the time series $x[n]$ is the square amplitude of it's Fourier transform:\begin{equation}
           S_{xx}(f)=|X(f)|^2.
      \end{equation}
 \end{boxdefinition}
@@ -926,7 +927,7 @@ The ordinary coherence does not contain any information about the direction of t
 
 \subsection{Causality}
 
-The determination of causal relationships in neural networks is mainly articulated through two distinct approaches. The first, defined \textit{Physical Influence} (or interventional approach), is based on direct experimental manipulation (e.g. via electrical stimulation or ultrasound) of a node in the network; this physical intervention isolates the influence of the manipulated node, allowing its distal effects to be measured, representing the \textit{gold standard} for defining causality, although it is limited by constraints of experimental practicality. The second approach, based on \textit{Temporal Precedence}, is observational in nature and postulates that the cause must temporally precede the effect; in this context, causality is inferred via computational analyzes that evaluate the predictive ability of temporally distinct neural events, allowing directional influences to be derived from raw data without the need for invasive physical manipulations.\bigskip
+The determination of causal relationships in neural networks is mainly articulated through two distinct approaches. The first, defined \textit{Physical Influence} (or interventional approach), is based on direct experimental manipulation (e.g. via electrical stimulation or ultrasound) of a node in the network; this physical intervention isolates the influence of the manipulated node, allowing it's distal effects to be measured, representing the \textit{gold standard} for defining causality, although it is limited by constraints of experimental practicality. The second approach, based on \textit{Temporal Precedence}, is observational in nature and postulates that the cause must temporally precede the effect; in this context, causality is inferred via computational analyzes that evaluate the predictive ability of temporally distinct neural events, allowing directional influences to be derived from raw data without the need for invasive physical manipulations.\bigskip
 
 
 The first definition of causality in a statistical framework was given by Norbert Wiener in 1956.\begin{boxdefinition}{Causality}{}
@@ -936,7 +937,43 @@ information from the second signal than using only
 information from the first one, then the second signal 
 can be called \textbf{causal} to the first one.
 \end{boxdefinition}
-\redText{TODO : Continua da lezione 8, slide 7 (Wiener-Granger causality)}
+Granger introduced a new concept of causality, at it's core, his theory states that:\begin{quotation}
+     ''Causality is a matter of prediction.''
+\end{quotation} 
+If the activity of a signal $x[n]$ helps you predict the future of signal $y[n]$ better than you can by looking only at the past history of $y[n]$, then $x$ \textbf{Granger-cause} $y$. In an informal way:\begin{itemize}
+     \item i have the time series $x[n],y[n]$ for $0\le n\le T$. I want to predict $y[T+1]$
+     \item i use $y[0]\dots y[T]$ to have a prediction $\hat y[T+1]$, having an error $e_y=|\hat y[T+1]-y[T+1]$|.
+     \item i use $y[0]\dots y[T]$ and $x[0]\dots x[T]$ to have a prediction $\hat y'[T+1]$ (for now we do not specify how the signal $x$ should be used to predict $y$), having an error $e_{yx}=|\hat y'[T+1]-y[T+1]|$
+     \item if $e_{yx}<e_y$, then $x$ \textbf{Granger-cause} $y$.
+\end{itemize}
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.7\textwidth]{images/grangerCause.eps}
+\end{figure}
+We have to define how to perform the prediction.
+If we have to use only the past values of $x$ from 0 to $n-1$, the value of $x[n]$ can be predicted by the previous $p$ samples $x[n-1],x[n-2]\dots x[n-p]$ by a \textbf{Linear Autoregressive Model}:\begin{align}\label{lin_autore}
+     &\hat x[n]=\sum_{k=1}^pa[k]x[n-k] \ + e[n]
+     \\
+     &=a[1]x[n-1]+a[2]x[n-2]+\dots +a[p]x[n-p]+e[n]
+\end{align}
+where $a[1]\dots, a[p]$ are real coefficients, and $$e[n]=x[n]-\hat x[n]$$ is the error between the prediction and the real value. $p$ is the \textbf{order} of the model (how many previous step we use to predict the future). We assume that the error $e[n]$ is a zero mean uncorrelated white noise.
+
+To define a good model we have to determine the coefficients $a[k]$ that minimizes the squared error $e[n]$, this can be done by solving an optimization problem over experimental data.\bigskip 
+
+Now, the Granger-causality is modeled through a \textbf{Bivariate Autoregressive Model}, let $x$ to be the signal that we want to predict, we have also another signal $y$. We want to use $x[0]\dots, x[n-1]$ and $y[0]\dots, y[n-1]$ to predict $x[n]$, the bivariate autoregressive model (of order $p$) for the prediction $\hat x[n]$ is defined as follows:\begin{equation}\label{biv_autore}
+     \hat x[n]=\sum_{k=1}^p a_{xy}[k]x[n-k] 
+     +\sum_{k=1}^p b_{xy}[k]y[n-k]  \ +e_{xy}[n].
+\end{equation}
+The regressive model to predict $y[n]$ using $x$ and $y$ is defined in a similar way as follows:
+\begin{equation}
+     \hat y[n]=\sum_{k=1}^p a_{yx}[k]y[n-k] 
+     +\sum_{k=1}^p b_{yx}[k]x[n-k]  \ +e_{yx}[n].
+\end{equation}
+If we use experimental data to define two models to predict $x[n]$, one using just $x$ (linear autoregressive) as defined in equation \eqref{lin_autore}, and the other using both $y$ and $x$ (bivariate autoregressive) as defined in equation \eqref{biv_autore}, and we observe that $e_{xy}[n]<e[n]$, then we know that $y$ Granger-cause $x$.
+\begin{figure}[H]
+          \centering
+          \includegraphics[width=0.9\textwidth]{images/predictions.eps}
+\end{figure}
 
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
@@ -992,9 +1029,12 @@ Clearly, the alpha rhythm is in the alpha band (around 8 to 13 Hz), also the mu 
 \begin{boxdefinition}{Trial}{}
      A \textbf{trial} is a segment of the EEG after a sensory stimulus, and the latency is the time delay between the stimulus and the trial, as we already mentioned, we takes many individual trial and then average the data to see the global response. 
 \end{boxdefinition}
-\begin{center}
+\begin{figure}[H]
+     \centering
      \includegraphics[width=1\textwidth]{images/trials.eps}
-\end{center} 
+     \caption{Averaging different trials of an EEG.}
+     \label{AVG_EEG}
+\end{figure} 
 \subsection{EEG Instrumentation}
 The EEG measurements are very tiny (microvolt), the electrodes are sensors that measure these voltages, and are usually made of silver with a surface layer of silver
 chloride. Some properties that an electrode should have is\begin{itemize}
@@ -1128,7 +1168,7 @@ Observe the Figure  \ref{bipolar_monopolar}.
 \end{boxdefinition}
 In the left diagram, we are acquiring data from different electrodes by using the same reference electrode, this is a \textbf{Monopolar Montage}: All the channel shares the same potential as a reference.\bigskip
 
-In case of \textbf{Bipolar Montage}, there is no a single reference potential, for each channel to record we use a different reference. Usually, there is a ''line'' of electrodes, and for each channel we use as active electrode, the one that was a reference electrode in the previous channel. In the image, the bipolar montage is placed in a longitudinal way.
+In case of \textbf{Bipolar Montage}, there is not a single reference potential, for each channel to record we use a different reference. Usually, there is a ''line'' of electrodes, and for each channel we use as active electrode, the one that was a reference electrode in the previous channel. In the image, the bipolar montage is placed in a longitudinal way.
 
 As we can observe in the example of figure \ref{bipolar_monopolar}, the potential is distributed in such way to have a peak on the vertex. The monopolar montage in this case mount the reference electrode near the ear where the potential is minimum, and waveform recorded by the channels faithfully represent the potential distribution.
 
@@ -1139,17 +1179,46 @@ In the bipolar montage the displacement and the connections effects the recordin
      \caption{The phase reversal makes easier to identify the peaks in the potential.}
 \end{figure}
 \subsection{Data Collection}
-\redText{TODO}
+Successful EEG experimentation requires meticulous planning and adherence to strict protocols to ensure high-quality, artifact-free data. The following guidelines summarize the key phases of data collection:\bigskip
+
+\noindent\textbf{Planning and Documentation}:
+Regardless of whether the experiment is formal or exploratory, rigorous organization is essential:
+\begin{itemize}
+    \item \textbf{Protocol adherence:} Follow strict experimental protocols at all times.
+    \item \textbf{Systematic logging:} Accurately document conditions for every run.
+    \item \textbf{Metadata management:} Save explanatory metadata, such as time markers, alongside the primary data for future analysis.
+\end{itemize}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=\textwidth]{images/datacollection.png}
+\end{figure}
+
+\noindent\textbf{Subject and Electrode Preparation}:
+Proper preparation is critical to reducing signal noise and interference:
+\begin{itemize}
+    \item \textbf{Subject hygiene:} Instruct subjects to wash their hair and skin prior to arrival and avoid cosmetic products.
+    \item \textbf{Electrode application:} Utilize conductive gel, applied through the top of the electrode using a blunted needle or syringe.
+    \item \textbf{Skin preparation:} Use the blunted needle for light abrasion of the scalp skin when necessary.
+    \item \textbf{Impedance targets:} Aim for electrical impedances of less than 5-10 k$\Omega$ to ensure optimal signal quality.
+\end{itemize}
+
+\noindent\textbf{Experimental Execution and Monitoring}:
+Maintaining the integrity of the data stream during the session:
+\begin{itemize}
+    \item \textbf{Session structure:} Divide the recording session into smaller, manageable ''runs'' or blocks, interspersed with breaks.
+    \item \textbf{Subject comfort:} Consistently remind subjects to relax muscles, minimize eye blinks, and avoid head or body movements to prevent artifacts.
+    \item \textbf{Continuous monitoring:} Monitor brain signals online throughout the session to detect and address technical issues or artifacts immediately.
+\end{itemize}
 \subsection{Artifacts}
-\redText{TODO}
-\subsection{EEF Analysis}
-\redText{TODO}
+\redText{TODO pack of slides 1.04}
+\subsection{EEG Analysis}
+\redText{TODO pack of slides 1.05}
 \chapter{Signal Processing}\label{sig_proc}
 This section is a small recap of some basic signal processing concepts.
 The bio-signal processing procedure follows a precise pipeline:\begin{enumerate}
      \item the bio signal (as electrical energy generated by ionic current) is perceived by a transducer
      \item there is an amplifier that makes the signal readable 
-     \item the analog signal is converted in a digital signal 
+     \item the analog signal is converted into a digital signal 
      \item the digital signal is stored in a buffer and processed by a computer 
      \item the processed signal is displayed.
 \end{enumerate}
@@ -1158,20 +1227,20 @@ The bio-signal processing procedure follows a precise pipeline:\begin{enumerate}
      \includegraphics[width=0.7\textwidth]{images/sig_processing.png}
 \end{figure}
 \section{Sampling and Quantization}
-The signal processed by the bio signal aplifier is a continous signal in the time domain and in the amplitude domain, we need to digitalize the signal by discretizing the time and amplitude axes.
+The signal processed by the bio signal aplifier is a continous signal in the time domain and in the amplitude domain, we need to digitalize the signal by discretizing the time (sampling) and amplitude axis (quantization).
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.6\textwidth]{images/discretization.png}
 \end{figure} 
-Of course we have to consider a limited (and finite) number of possible amplitudes for the signal, due to the fact that these information are stored in a computer as bytes of data.  This is a two-step process, first we discretize time, by considering only the function samples on some equi-distant time step, and then we discretize the amplitudes by considering the nearest value that can be represented in bit.\begin{itemize}
+We have to consider a limited (and finite) number of possible amplitudes for the signal, due to the fact that these information are stored in a computer as bytes of data.  This is a two-step process, first we discretize time, by considering only the function samples on some equi-distant time steps, and then we discretize the amplitude by considering the nearest value that can be represented in bit.\begin{itemize}
      \item \textbf{Sampling}: time discretization.
      \item \textbf{Quantization}: amplitude discretization.
 \end{itemize}
 When we quantize a signal $x(t)$ we allow only a finite number of available levels for the amplitude, let's denote $x^*(t)$ the quantized signal (still continuous in time).
-By doing that, we are introducing an erro between the real signal and the quantized one, this profile is called \textit{quantization noise} and is exactly the difference between the quantized signal and the original one\begin{equation}
+By doing that, we are introducing an error between the real signal and the quantized one, this profile is called \textit{quantization noise} and is exactly the difference between the quantized signal and the original one\begin{equation}
      n(t)=x(t)-x^*(t).
 \end{equation} 
-We called \textit{allowed levels} the values of discrete amplitude that we consider in $x^*(t)$.\begin{itemize}
+We call \textit{allowed levels} the values of discrete amplitudes that we consider in $x^*(t)$.\begin{itemize}
      \item allowed levels: $X=\{a_1,a_2\dots a_k\}$
      \item original signal: $x(t)$
      \item let $t_0$ to be a particular time value:\begin{equation}
@@ -1185,14 +1254,14 @@ We called \textit{allowed levels} the values of discrete amplitude that we consi
 The range of the error is exactly the distance between two allowed levels. In the noise $n(t)$, every value of the image is equally probable to be found (there is a uniform probability distribution). To reduce the noise, we have to choose a smaller distance between two allowed levels.
 
 Let $V_{LSB}$ to be the distance between two close amplitude levels. The noise $n(t)$ is uniformly distributed between $[-\nicefrac{V_{LSB}}{2},\nicefrac{V_{LSB}}{2}]$. So the expected value of the noise is 0 and the standard deviation is $$\sigma=\frac{1}{\sqrt{12}}V_{LSB}\simeq 0.29V_{LSB}.$$
-The quantization is made in binary and is characterized by the number of bits involved. If $bits$ is the number of bits, the number of allowed levels is $2^{bits}$. The range of the measured signal is\begin{equation}
-     range=V_{LSB}\cdot 2^{bits}
+The quantization is made in binary and is characterized by the number of bits involved. If \texttt{bits} is the number of bits, the number of allowed levels is $2^{\texttt{bits}}$. The range of the measured signal is\begin{equation}
+     range=V_{LSB}\cdot 2^{\texttt{bits}}
 \end{equation}
 for example, if we are measuring a signal that we know can change between 0 and 14 mV, and we are storing each  sample with 8 bit, the distance between two allowed levels is\begin{equation}
       14=V_{LSB}\cdot 2^{8}\implies V_{LSB}=0.0546875 \text{ mV}.
 \end{equation}
 The original signal measured already contain some noise due to artifacts or other sources. The total noise of the quantized signal is given by the original signal noise and the noise provided by the quantization\begin{equation}
-     noise_{tot}=\sqrt{noise_{signal}^2+noise_{quant}^2}
+     noise_{tot}=\sqrt{(noise_{signal})^2+(noise_{quant})^2}
 \end{equation}
 is important to use a sufficient number of bits in order to decrease the quantization noise such that is negligible (or at least comparable) respect to $noise_{signal}$.\bigskip 
 
@@ -1253,7 +1322,7 @@ $Im(X)$ is the image set of the variable $X$.
 We denote $\mu_X$ the real mean:\begin{equation}
      \lim_{N\rightarrow \infty}\bar X=\mu_X
 \end{equation}
-this estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates. The \textbf{variance} $\sigma_X^2$ instead, is a measure of how much the data points in a set differ from the mean, calculated as the average of the squared deviations. Can be estimated through the observation of $N$ samples $\{x_i\}$, resulting in the \textbf{sampled variance}:\begin{equation}
+this estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates. The \textbf{variance} $\sigma_X^2$ instead, is a measure of how much the data points in a set differs from the mean, calculated as the average of the squared deviations. Can be estimated through the observation of $N$ samples $\{x_i\}$, resulting in the \textbf{sampled variance}:\begin{equation}
      s_X^2=\frac{1}{N-1}\sum_{i=0}^{N-1}(x_i-\bar X)^2
 \end{equation}
 of course is true that\begin{equation}
@@ -1262,6 +1331,9 @@ of course is true that\begin{equation}
 The \textbf{standard deviation} is just the square root of the variance:\begin{equation}
      s_X=\sqrt{\frac{1}{N-1}\sum_{i=0}^{N-1}(x_i-\bar X)^2}.
 \end{equation}
+The currents produced by the population of neurons are not deterministic, hence it is a stochastic process, on which each EEG measurement over time is a realization. To get the sample mean of an EEG under static conditions (the patient remain still) we can register $N$ trials, and then average all the trials to get an idea of the mean value for the EEG, as shown in figure \ref{AVG_EEG}.
+\bigskip
+
 An important tool used in stochastic signal theory is the \textit{Gaussian White Noise}, the amplitude of that signal at any given time follows a normal distribution with zero mean. This means small fluctuations are common, while extreme spikes are rare.
 \begin{center}
     \includegraphics[width=0.7\textwidth]{images/gwn.png}
@@ -1293,20 +1365,20 @@ the variance and the standard distribution are\begin{align}
 \end{align}
 \section{Spectral Analysis}
 There are four kinds of ways to perform the Fourier analysis on a function:\begin{itemize}
-     \item Let $x(t)$  be a continuous function periodic in $[0,T]$. We know that this function is a linear combination of infinite but discrete trigonometric functions.
-     The coefficients of its Fourier series are given by the complex-valued function $X:\Z\rightarrow\C$  defined as follows: \begin{align}
+     \item Let $x(t)$  be a continuous function periodic in $[0,T]$. We know that this function is a linear combination of an infinite (but countable) number of trigonometric functions.
+     The coefficients of it's Fourier series are given by the complex-valued function $X:\Z\rightarrow\C$  defined as follows: \begin{align}
           &X[m]=\frac{1}{T}\int_{0}^{T}x(t)\exp(-j2\pi mft)dt, \ \ \ m\in \Z\\ 
           &f=\nicefrac{1}{T}
      \end{align}
      We are denoting $j=\sqrt{-1}$ the imaginary unit.
-     \item An \textit{aperiodic} continuous function $x(t)$ is a linear combination of a continuous infinite number of basic harmonics,  its fourier transform identifies the coefficients of this linear combination:\begin{equation}
+     \item An \textit{aperiodic} continuous function $x(t)$ is a linear combination of an infinite (not countable) number of basic harmonics, it's fourier transform identifies the coefficients of this linear combination:\begin{equation}
           X(f)=\int_{-\infty}^{+\infty}x(t)\exp(-j2\pi ft)dt.
      \end{equation}
-     \item A discrete periodic function $x[n]$ of $N$ samples can be analyzed in the frequency domain through its discrete time Fourier series, which its coefficients are given by\begin{align}
+     \item A discrete periodic function $x[n]$ of $N$ samples can be analyzed in the frequency domain through it's discrete time Fourier series, which it's coefficients are given by\begin{align}
           &X[m]=\sum_{n=1}^N x[n]\exp(-j2\pi m n \nicefrac{1}{N})\\ 
           &m=0,\pm 1, \pm 2,\dots \pm \nicefrac{N}{2}.
      \end{align}
-     \item For an aperiodic discrete function $x[n]$ its discrete time Fourier transform is given by\begin{equation}
+     \item For an aperiodic discrete function $x[n]$ it's discrete time Fourier transform is given by\begin{equation}
           X(f)=\sum_{n=-\infty}^{+\infty}x[n]\exp(-j2\pi nf ).
      \end{equation}
 \end{itemize}
@@ -1314,8 +1386,7 @@ We are interested in decomposing signals into sum of sinewaves, in order to anal
 \begin{boxdefinition}{}{}
      A signal $x$ is said to be \textit{bandwidth limited} if there exists a maximum frequency $M$ such that $X[M]=0, \ \forall |m|>M$.
 \end{boxdefinition}
-\noindent Notice how we usually denote $x$ a signal in the time domain and $X$ its frequency representation. 
-
+\noindent Notice how we usually denote $x$ a signal in the time domain and $X$ it's frequency representation. 
 Let's consider a sinewave characterized by three parameters, the amplitude $A$, the frequency $f$ and the phase $\phi$\begin{equation}\label{sinewave}
      A\cos(2\pi ft+\phi)
 \end{equation}
@@ -1328,7 +1399,7 @@ and the amplitude and phase can be extracted as follows \begin{align}
 \end{align}
 the continuous wave in equation \eqref{sinewave} can be identified by a complex number (that represent the amplitude and the phase) and a real number $f$ that is the frequency. If the frequency is fixed, the wave is identified exactly by a single complex number $ z=Ae^{j\phi}$.
 
-Each discrete time sampled signal is a periodic signal made up by the sum of a finite number of sinewaves of different frequencies, represented as complex numbers, the DFT is exactly this map between the signal $x[n]$ and the set of complex numbers $X[m]$ that identifies these sinewaves.
+Each discrete time sampled signal is a periodic signal made up by the sum of a finite number of sinewaves of different frequencies, represented as complex numbers, we are interested in the map between the signal $x[n]$ and the set of complex numbers $X[m]$ that identifies these sinewaves.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=\textwidth]{images/DFT.eps}
@@ -1336,7 +1407,7 @@ Each discrete time sampled signal is a periodic signal made up by the sum of a f
 The DFT is exactly the relationship between the time domain samples $x[n]$ of the signal and the amplitude and phase relative to a specific frequency $m$:\begin{equation}\label{DFT}
      X[m]=\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\nicefrac{1}{N})
 \end{equation}
-the product over the summation $\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\frac{1}{N})$ is a  \textit{similarity measure} between the signal $x[n]$ and the specific harmonics $\exp(-j2\pi mn\frac{1}{N})$ of frequency $m$.\begin{quote}
+the product over the summation $\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\frac{1}{N})$ is a  \textbf{similarity measure} between the signal $x[n]$ and the specific harmonic $\exp(-j2\pi mn\frac{1}{N})$ of frequency $m$.\begin{quote}
      \textit{the contribution of the sinewave in the signal is given by the dot product between these two.}
 \end{quote}
 In fact, in the vector space of continuous function periodic in $[0,T]$, the dot product between two functions $f$ and $g$ is given by\begin{equation}
@@ -1377,7 +1448,24 @@ where $N$ is the number of samples. The frequency domain is $f_S$-periodic, wher
      \centering
      \includegraphics[width=0.7\textwidth]{images/sampling_values.eps}
 \end{figure}
-If we take the Fourier transform of a sampled signal, we will have a periodic frequency domain representation, in a dual way, by taking the anti-transformation of a sampled frequency spectrum, we will have a periodic signal.\bigskip 
+If we take the Fourier transform of a sampled signal, we will have a periodic frequency domain representation, in a dual way, by taking the anti-transformation of a sampled frequency spectrum, we will have a periodic signal.
+
+\begin{table}[H]
+    \centering
+    \caption{Sampling relations for periodic signals}
+    \label{tab:campionamento}
+    \begin{tabular}{cll}
+        \toprule
+        \textbf{Notation} & \textbf{Description} & \textbf{Relation} \\
+        \midrule
+        $T$ & Total Duration / Signal Period & $T = N \cdot T_S$ \\
+        $T_S$ & Sampling period (time between samples) & $T_S = 1 / f_S$ \\
+        $N$ & Total number of samples & $N = T / T_S$ \\
+        $\Delta f$ & Frequency resolution (distance between samples in freq.) & $\Delta f = \frac{1}{T} = \frac{1}{N \cdot T_S}$ \\
+        $f_S$ & Sampling rate & $f_S = \frac{1}{T_S}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 To represent graphically the DFT of a signal we use two plots, one for the magnitudes of each sample, one for the phases:
 \begin{figure}[H] 
@@ -1389,7 +1477,7 @@ The magnitude spectrum is symmetrical, while the phase spectrum is anti symmetri
 \end{equation}
 where $X^*$ is the complex conjugate of $X$. The left side $f<0$ does not contain any information, so it is practical to represent the plots only for positive frequencies $f\ge 0$.\bigskip 
 
-\noindent\textbf{Example}: Let's consider two signals, one have the power spread to all the spectrum (white noise), while the other have most of its power concentrated in a limited frequency band (sine wave). Assume that we have a signal that is a sine wave corrupted by this white noise, and we would like to see the sine wave within noise.
+\noindent\textbf{Example}: Let's consider two signals, one have the power spread to all the spectrum (white noise), while the other have most of it's power concentrated in a limited frequency band (sine wave). Assume that we have a signal that is a sine wave corrupted by this white noise, and we would like to see the sine wave within noise.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.5\textwidth]{images/corrupted_sin.png}
@@ -1410,7 +1498,7 @@ So we take 500 samples of the signal. We can observe the spectrum of frequencies
      \centering
      \includegraphics[width=0.4\textwidth]{images/first6Samples.png}
 \end{figure}
-Now, let's take the same original signal $x(t)$,  we extend this signal by adding (after the first half second) a zero value for 1 and an half second:
+Now, let's take the same original signal $x(t)$,  we extend this signal by adding (after the first half second) a zero value for 1.5 seconds:
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.7\textwidth]{images/triangle2.eps}
@@ -1612,7 +1700,7 @@ An RC filter is the simplest type of an analog Butterworth filter. \bigskip
      \centering
      \includegraphics[width=0.5\textwidth]{images/raw_filter.png}
 \end{figure}
-\noindent We can see how the filter ''smoothed'' the signal, practically reduced the amplitude of the signal, shifted the signal and eliminated (or at least attenuated) its high frequency components. The orange signal contains less high frequency components. The low frequency components are preserved, as we can see from the signal at a different scale (in a time window of 10 seconds):
+\noindent We can see how the filter ''smoothed'' the signal, practically reduced the amplitude of the signal, shifted the signal and eliminated (or at least attenuated) it's high frequency components. The orange signal contains less high frequency components. The low frequency components are preserved, as we can see from the signal at a different scale (in a time window of 10 seconds):
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.5\textwidth]{images/raw_filter2.png}

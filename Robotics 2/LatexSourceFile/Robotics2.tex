@@ -236,7 +236,7 @@ That fully describes the model.
 \section{Planning vs Feedback Control}
 We review some concepts already explored in the course of Robotics 1 about the differences between planning and feedback control. We recall that a good controller in every robotics application, should incorporate the offline planning procedure with an online closed loop system.\bigskip
 
-We take as an example a simple body with mass $m$ that lies on a plane with zero friction. This body can move only along the direction parallel to the plane, and it's position is defined by the variable $x$, and it is applied an horizontal force $F$, the equation that describes the dynamics of the object is of course $F=m\ddot x$.
+We take as an example a simple body with mass $m$ that lies on a plane with zero friction. This body can move only along the direction parallel to the plane, and its position is defined by the variable $x$, and it is applied an horizontal force $F$, the equation that describes the dynamics of the object is of course $F=m\ddot x$.
 
 We want to plan a motion, starting from the initial condition \begin{equation}
     \begin{pmatrix}
@@ -270,7 +270,7 @@ The feedback approach consists in using the state variables in the commands, it 
 where $u$ is the control rule. We consider the following PD law:\begin{equation}
     m\ddot x=k_P(x_d-x)-k_D \dot x
 \end{equation}
-the system is still linear. We track the error and it's derivatives\begin{equation}
+the system is still linear. We track the error and its derivatives\begin{equation}
     \begin{pmatrix}
         e=x_d-x\\ 
         \dot e = -\dot x\\ 
@@ -1003,7 +1003,7 @@ Another useful choice for $G$ comes from the midpoints of the joints ranges, let
 to be the ranges for each joint $i$. The following function will be greater when the value of each joint is near to their mid point $\bar q_i$:\begin{equation}
     G_{mid}(\mathbf q)=\frac{1}{2}\sum_{i=1}^{n}\left(\frac{q_i-\bar q_i}{q_{iM}-q_{im}}\right)^2
 \end{equation}
-These choice of $G$ are all differentiable, so it's always possible to compute the gradient $\nabla G$. The following function is not differentiable.\begin{boxdefinition}{Clearance}{}
+These choice of $G$ are all differentiable, so its always possible to compute the gradient $\nabla G$. The following function is not differentiable.\begin{boxdefinition}{Clearance}{}
     The \textbf{clearance} is the minimum distance between a point of the robot and an obstacles in the workspace.
 \end{boxdefinition}
 Let $robot\subset\R^3$ to be the set of all points on the surface of the robot structure, and let $obstacles\subset\R^3$ to be the set of points on the surface of all the obstacles in the workspace. Clearly, the points in $robot$ change with the configuration $\mathbf q$ according to the direct kinematics.
@@ -1111,7 +1111,7 @@ At each time step, the algorithm to compute $\dq$ is the following\begin{enumera
 \end{enumerate}
 This method is analytically simpler respect to the projected gradient since doesn't require to calculate the pseudo inverse $J^\#$, but requires to search a non-singular minor $J_a$.
 \subsection{Task Augmentation}
-Instead of defining a performance index $G$ and use it's gradient, in \textit{task augmentation} we add $s\le n-m$ additional task formulated as equalities, let's denote $k_1$ the direct kinematics:\begin{equation}
+Instead of defining a performance index $G$ and use its gradient, in \textit{task augmentation} we add $s\le n-m$ additional task formulated as equalities, let's denote $k_1$ the direct kinematics:\begin{equation}
     k_1(\mathbf q)=\mathbf y_1\implies \begin{cases}
         k_{11}(\mathbf q)=y_{11}\\
         k_{12}(\mathbf q)=y_{12}\\ \vdots \\ 
@@ -1297,7 +1297,7 @@ Up to now, we have solved the redundancy problem for the joint velocities $\dq$,
 \begin{boxdefinition}{Tangent Bundle}{}
     The \textbf{tangent bundle} is the set of couples $(\mathbf q,\dq)$ where $\mathbf q$ is a point of the configuration space $\mathcal C$ and $\dq$ is a point of the tangent space $T_{\mathbf q}\mathcal C$. If the points $\q$ are called configurations, the points $(\q,\dq)$ are called \textbf{states}. 
 \end{boxdefinition}
-In a given configuration $\mathbf q$, we know that the differential problem becomes linear in $\dq$, since $J=J(\mathbf q)$ evaluates becoming a linear operator. The same argument applies at acceleration level, in a given point of the tangent bundle $(\mathbf q, \dq)$, the Jacobian $J=J(\mathbf q)$ and it's derivative $\dot J=\dot J(\mathbf q,\dq)$ evaluates and the expression $\ddy=J\ddq+\dot J\dq$ becomes linear in $\ddq$\begin{equation}
+In a given configuration $\mathbf q$, we know that the differential problem becomes linear in $\dq$, since $J=J(\mathbf q)$ evaluates becoming a linear operator. The same argument applies at acceleration level, in a given point of the tangent bundle $(\mathbf q, \dq)$, the Jacobian $J=J(\mathbf q)$ and its derivative $\dot J=\dot J(\mathbf q,\dq)$ evaluates and the expression $\ddy=J\ddq+\dot J\dq$ becomes linear in $\ddq$\begin{equation}
    J\ddq = \ddy -\dot J\dq.
 \end{equation}
 A solution for $\ddq$ can be found with the null space method:\begin{equation}
@@ -1449,7 +1449,7 @@ Until now, we have seen how the joint velocities solution $\dq$ that we seek dur
     &\arg\min_\dq \dq^T W\dq\\ 
     &\text{s.t. }J\dq=\dy
 \end{align}
-where $W$ is usually positive definite. The set of solutions is defined by the $m$ \textit{equality} constraints $J\dq=\dy$, but in it's general formulation, a quadratic program have the solutions defined in a convex set given by both equality and inequality constraints:
+where $W$ is usually positive definite. The set of solutions is defined by the $m$ \textit{equality} constraints $J\dq=\dy$, but in its general formulation, a quadratic program have the solutions defined in a convex set given by both equality and inequality constraints:
 \begin{align}
     &\dq^*=\arg\min_\dq^T \dq W\dq\\ 
     &\text{s.t. }\begin{matrix}
@@ -1590,7 +1590,7 @@ where $t_k$ is the current time step, and $q_{k,i}=q_i(t_k)$. Let $T$ to be the 
         \sqrt{2A_{max,i}(Q_{min,i}-q_{k,i})}
         \right\}
 \end{align*} 
-In this way, if $q_i$ is approaching one of it's bound, the maximum velocity for $\dot q_i$ will decrease to zero.\bigskip
+In this way, if $q_i$ is approaching one of its bound, the maximum velocity for $\dot q_i$ will decrease to zero.\bigskip
 
 The Equation \eqref{eq:SNS} define how the solution will be evaluated, the control law of the SNS algorithm works to decide what are the joints to exceeds and what is the maximum scaling factor to consider, by choosing at each time step the matrix $W$ and the scalar value $s$.
 
@@ -1612,7 +1612,7 @@ The Equation \eqref{eq:SNS} define how the solution will be evaluated, the contr
     \If{$s>s^*$}\label{alg:largesr_factor_obtained}
     \State $s^*=s$, $W^*=W$, $\dq_N^*=\dq_N$
     \EndIf 
-    \State $j=$ the most critical joint (closest to it's bound) \label{alg:disable_crit1}
+    \State $j=$ the most critical joint (closest to its bound) \label{alg:disable_crit1}
     \State $W_{jj}=0$\label{alg:disable_crit2}
     \State $\dot q_{N,j}=\begin{cases}
         \dot Q_{max,j} \ \text{if }\overline{\dot q_j} > \dot Q_{max,j}\\ 
@@ -1740,14 +1740,14 @@ where $\mathbf u=\begin{pmatrix}
 \end{equation}
 From these equations we will derive the dynamic model in the $n$ Lagrangian coordinates $\q$. We will also see how, the total energy of a manipulator is computed by adding together the energies of each link.\subsection{The Actuated Pendulum Example}
 Now, we consider the model of an actuated pendulum, in order to find the dynamic equation with the Lagrangian approach. This simple system is one-dimensional (angular position of the pendulum), so we expect to derive a single equation. Observe the diagram in Figure \ref{fig:actuadedPendulum}:\begin{itemize}
-    \item \texttt{Dynamic parameter}: $I_m$ is the moment of inertia of the motor around it's rotation axis. 
+    \item \texttt{Dynamic parameter}: $I_m$ is the moment of inertia of the motor around its rotation axis. 
     \item \texttt{Control command}: $\tau_m$ is the torque provided by the actuators that makes the motor to accelerate.
     \item \texttt{Variable/configuration of the system}: $\theta_m$ is the angular position of the motor.
     \item \texttt{Dynamic parameter}: $b_m$ is the viscous friction on the motor that acts as a damping factor, and $b_l$ is the viscous friction on the link.
     \item \texttt{Kinematic parameter}: $n_r$ is the reduction ratio between the motor and the link. 
     \item \texttt{Control command}: $\tau$ is the torque on the link and depends on $\tau_m$ according to the reduction ratio.
     \item \texttt{Variable/configuration of the system}: $\theta$ is the angular position of the link and depends on $\theta_m$ according to the reduction ratio.
-    \item \texttt{Dynamic parameter}: $m$ is the mass of the link and $I_l$ is the moment of inertia of the link around the axis parallel to the joint axis that pass through it's center of mass. 
+    \item \texttt{Dynamic parameter}: $m$ is the mass of the link and $I_l$ is the moment of inertia of the link around the axis parallel to the joint axis that pass through its center of mass. 
     \item \texttt{Kinematic parameter}:  $d_c$ is the distance between the joint axis and the center of mass, and $l$ is the length of the link.
     \item \texttt{Control command}: $F_x$ is an external force that can be applied on the tip of the link, and is only horizontal (orthogonal to both the joint axis and the direction of the gravity).
     \item \texttt{External force}: $mg_0$ is the gravity applied on the link.
@@ -1758,7 +1758,7 @@ Now, we consider the model of an actuated pendulum, in order to find the dynamic
      \caption{Simple model of an actuated pendulum.}
      \label{fig:actuadedPendulum}
 \end{figure}
-The system is one dimensional and it's configuration is described by $\theta$ or $\theta_m$ since these two are mapped one to the other:\begin{align}
+The system is one dimensional and its configuration is described by $\theta$ or $\theta_m$ since these two are mapped one to the other:\begin{align}
    & \dot \theta_m=n_r\dot\theta\\ 
    &  \theta_m=n_r\theta\\ 
    &\tau=n_r\tau_m.
@@ -1766,7 +1766,7 @@ The system is one dimensional and it's configuration is described by $\theta$ or
 So, our Lagrangian coordinate will be $q=\theta$. We want to compute the kinetic energy of the system, that is given by the sum between the kinetic energy of the motor and the kinetic energy of the link. The kinetic energy of the motor can be easily computed:\begin{equation}
     T_m=\frac{1}{2}I_m\dot\theta^2_m
 \end{equation}
-To compute $T_l$ instead we need to consider the inertia of the link around the joint axis, since the link rotate around that axis and not around it's center of mass. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint axis and the center of mass, we can compute the inertia:\begin{equation}
+To compute $T_l$ instead we need to consider the inertia of the link around the joint axis, since the link rotate around that axis and not around its center of mass. From the theorem of the parallel axes, by knowing that $d_c$ is the distance between the joint axis and the center of mass, we can compute the inertia:\begin{equation}
     I_l+md_c^2
 \end{equation}
 the kinetic energy is \begin{equation}
@@ -2006,7 +2006,7 @@ since $T$ is the kinetic energy, is always non negative, and is null if and only
 \end{equation}
 hence, $M(\q)$ is \textbf{always invertible}.\bigskip 
 
-Now that we have given a full discussion about the kinetic energy, we can proceed to the potential energy. Luckily, this computation is much easier, since the potential energy of a single rigid body is given only by his mass and the position of it's center of mass. So, for the $i$-th link we have\begin{equation}
+Now that we have given a full discussion about the kinetic energy, we can proceed to the potential energy. Luckily, this computation is much easier, since the potential energy of a single rigid body is given only by his mass and the position of its center of mass. So, for the $i$-th link we have\begin{equation}
     U_i=-m_i\mathbf g_0^T\mathbf r_{0,ci}
 \end{equation}
 where $m_i$ is the mass, $\mathbf g_0$ is the gravity vector (depends on where the manipulator is placed) and $\mathbf r_{0,ci}$ is the position of the center of mass of the $i$-th link expressed in the base frame $RF_0$, depend only on $\q$:\begin{equation}
@@ -2145,7 +2145,7 @@ the derivative is simply
 so\begin{equation}
     \| \mathbf v_{c1}\|^2=\dot q_1^2.
 \end{equation}
-The first link never rotate, so it's angular velocity $\bomega_1$ is always null, hence the kinetic energy is simply computed (from the König Theorem) as follows:\begin{equation}
+The first link never rotate, so its angular velocity $\bomega_1$ is always null, hence the kinetic energy is simply computed (from the König Theorem) as follows:\begin{equation}
     T_1=\frac{1}{2}m_1\dot q_1^2.
 \end{equation}
 For the second link, we have to compute $ \mathbf v_{c2}=\dot{\mathbf p}_{c2}$. The position of the center of mass is\begin{equation}
@@ -2958,7 +2958,7 @@ The velocity of the centers of mass is obtained by differentiating $\mathbf p_{c
         \dot q_1l_1c_1-\dot q_2l_{c4}c_2
     \end{pmatrix}.
 \end{align}
-We have all the ingredients to compute the kinetic energy for each link, we denote $I_{ci,zz}$ the bottom right entry of the inertia matrix $I_{ci}$ of the $i$-th link respect its center of mass:\begin{align}
+We have all the ingredients to compute the kinetic energy for each link, we denote $I_{ci,zz}$ the bottom right entry of the inertia matrix $I_{ci}$ of the $i$-th link respect to its center of mass:\begin{align}
     &T_1=\frac{1}{2}m_1l_{c1}^2\dot q_1^2+\frac{1}{2}I_{c1,zz}\dot q_1^2\\[1.5ex]
     &T_2=\frac{1}{2}m_2l_{c2}^2\dot q_2^2+\frac{1}{2}I_{c2,zz}\dot q_2^2\\[1.5ex]
     &T_3 = \frac{1}{2} m_3 (l_2^2 \dot{q}_2^2 + l_{c3}^2 \dot{q}_1^2 + 2l_2 l_{c3} c_{2-1} \dot{q}_1 \dot{q}_2) + \frac{1}{2} I_{c3,zz} \dot{q}_1^2 \\[1.5ex]
@@ -4441,7 +4441,7 @@ For the experimental results, let $I=0.9333$ and $mg_0d=19.62$. The following pl
 \end{figure}
 When $k_p<\alpha$ (in the second experiment), the controller can't assess the desired condition, here $k_p>\alpha$ is not only a sufficient condition, but also necessary. Notice how the control effort in the first instants are large, in presence of high gains might become unfeasible for the actuators.
 \subsection{PID Control}
-We saw how the gravity cancellation/compensation requires an accurate model of the manipulator, if the gravity is seen as a disturbance, we can add an \textbf{integral} error that \textit{collects the story of the error}. We know that in linear systems, the integral action is required to eliminate a constant error at steady state, in robots, the PID controller may be used to recover such a position error due
+We saw how the gravity cancellation/compensation requires an accurate model of the manipulator, if the gravity is seen as a disturbance, we can add an \textbf{integral} term that \textit{collects the story of the error}. We know that in linear systems, the integral action is required to eliminate a constant error at steady state, in robots, the PID controller may be used to recover such a position error due
 to an incomplete (or absent) gravity compensation/cancellation, in fact, the integral ''learns'' the compensation term $\mathbf g(q_d)$. The control law is\begin{equation}
     \btau=K_P\mathbf e+K_I\int_{t_0}^t\mathbf e(\sigma)d\sigma-K_D\dq
 \end{equation}
@@ -4539,7 +4539,7 @@ the constant feedforward term $\mathbf u_{i-1}$ gets updated at each iteration, 
 Notice how, at the steady state of the $i$-th iteration, we have\begin{equation}
     \mathbf u_i=\mathbf g(\q_i)=\gamma K_P(\q_d-\q_i)+\mathbf u_{i-1}
 \end{equation}
-so the method is learning the gravity compensation for each equilibrium reached.\begin{boxtheorem}{}{}
+so the method is learning the gravity compensation for each equilibrium reached.\begin{boxtheorem}{Convergence of Iterative Learning}{}
     If\begin{align}
         &\lambda_{\text{min}}(K_P)>\alpha\label{a}\\
         &\gamma\ge 2\label{b}
