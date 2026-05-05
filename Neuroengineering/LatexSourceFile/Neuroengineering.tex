@@ -1559,7 +1559,7 @@ estimate (though it is unbiased it is a non consistent estimator).\bigskip
 
 A stochastic process is the source that generates a signals with some statistical properties, a realization is one specific instance generated from that process, an EEG is a realization of the brain that is the stochastic process that generates the time varying potential on the scalp. To estimate the properties of the stochastic process, we need several realizations of it.
 
-A stochastic process is \textbf{ergodic} if a single realization is enough to describe the stochastic process: Everything that the process can expressed is always summarized in just one realization. Despite that, we would need the realization defined in $t\in\R$ (whole time history of the signal), practically this is never the case, since we always register a time limited window of a signal.
+A stochastic process is \textbf{ergodic} if a single realization is enough to describe it completely: Everything that the process can express is always summarized in just one realization. Despite that, we would need that realization to be defined in $t\in\R$ (whole time history of the signal), practically this is never the case, since we always register a time limited window of a signal.
 
 The best thing that we can do is understand what happens when we register this time limited realization.\bigskip 
 
@@ -1587,7 +1587,7 @@ We can also identify another window that overlaps the original two, and compute 
 \begin{enumerate}
      \item Take a short segment of the signal of length \texttt{nsamples}. 
      \item Apply a windowing function $win(t)$.
-     \item Compute t he windowed periodogram $$
+     \item Compute the windowed periodogram $$
      |DFT(win(t)\cdot x(t))|^2
      $$
      and store the resulting PSD.
@@ -1621,7 +1621,7 @@ spectrum over time can be displayed using a spectrogram.
 Every vertical bar of this diagram is a spectrum, the spectrum is color coded, for each time window a spectrum is computed.
 
 \section{Digital Filters}
-A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Usually signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal/noise ratio}.
+A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Most of the time, signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal/noise ratio}.
 
 In real filters, the signal passes almost unaltered, and the noise is almost removed (never completely blocked). There are four families of filters, and they differs in how they modify the spectrum of a signal:
 \begin{figure}[H] 
