@@ -3738,7 +3738,7 @@ so the vector of minimal dynamic coefficients is \begin{equation}
         I_{2,zz}
     \end{pmatrix}.
 \end{equation}
-\subsection{Identification}
+\subsection{Identification}\label{Identification}
 To exploit the dynamic model of a manipulator in order to improve the control system, we need to know the numeric value of the dynamic coefficients, despite the robot manufacturers usually don't provide these values in the technical sheet (except for the link masses).
 
 To know these values, one can perform a numeric estimation with CAD tools, by having a digital model of the manipulator, but some of the dynamic parameters, like the viscous friction that depend on the lubrication of the joints, can change over time, or the 10 standard parameters of the last link that change if we have attached a payload to it.
@@ -4034,7 +4034,7 @@ with $\dot M-2C$ skew symmetric. With this method, we can set $\dq_r=\mathbf e_i
     \widehat{NE}_\alpha(\q,\dq,\mathbf e_i,\mathbf 0)=C(\q,\dq)\mathbf e_i=C_i(\q,\dq)
 \end{equation}
 in this way, one can compute the $C$ matrix with $n$ calls.
-\chapter{Control}
+\chapter{Introduction to Control}
 A robotic manipulator is a dynamic system that needs to be appropriately controlled. In the robotic context, \textit{control} have different meanings:\begin{itemize}
     \item successfully complete a task
     \item accurate execution of a trajectory 
@@ -4623,4 +4623,341 @@ the new sigle condition is \begin{equation}
 We recall that this condition is sufficient, but not necessary, in some case we might have convergence even if $\lambda_{\text{min}}(\hat K_P)\le2\alpha$.
 
 Iterative learning of gravity compensation at the desired configuration $\q_d$ typically achieves convergence within a few iterations. While the condition on the proportional gain $K_{Pi}$ provides a sufficient criterion for stability, violating it does not strictly preclude convergence; in some cases, it may instead induce limit cycles between incorrect equilibrium configurations. Refined analyses allow for the derivation of lower bounds for $K_{Pi}$, which are particularly effective for distal joints. In practical implementations, the feedforward term is updated exclusively when the robot approaches a steady state, defined by keeping joint velocities and position variations within specified thresholds.
+\section{Trajectory Tracking}
+Given the dynamic model of a rigid robot manipulator $M(\q)\ddq+\mathbf n(\q,\dq) = \btau$ and a twice-differentiable desired trajectory $\q_d(t)$, the feedforward torque in nominal condition is
+$$ 
+\btau_d=M(\q_d)\ddq_d+\mathbf n(\q_d,\dq_d).
+$$
+In practice this feedforward action is not sufficient, if the initial state doesn't match with the trajectory, the desired path will not be achieved, hence there are unknowns or un-modeled dynamics phenomena, and disturbances on actuators, a feedback action is required. We assume that we don't have a perfect model of the manipulator, let $\hat M$ to be the estimation of $M$ and $\hat{\mathbf n}$ to an estimation of $\mathbf n$. With these estimation we can compute the approximate feedforward torque $\hat\btau_d$, by using the NE procedure\begin{equation}
+    \hat\btau_d=\widehat{NE}_\alpha(\q_d,\dq_d,\ddq_d)
+\end{equation} 
+$\widehat{NE}$ means that the algorithm is computed using the estimated dynamic model. Now we present a series of possible trajectory controllers:\begin{enumerate}
+    \item The simplest one use the feedforward action + a PD controller:\begin{equation}
+        \btau=\hat\btau_d+K_P(\q_d-\q)+K_D(\dq_d-\dq).
+    \end{equation}
+     In nominal condition ($\hat M=M, \ \hat{\mathbf n}=\mathbf n $) this controller achieve local stabilization of the trajectory error $\mathbf e(t)=\q_d(t)-\q(t)$.
+    \item We can consider an alternative controller that multiplies the PD controller with the inertia matrix, in this way the proportional and derivative gains are variable: larger inertia needs larger gains, this simple controller is one of the most used in industry:\begin{equation}
+        \btau=\hat\btau_d+\hat M(\q_d)(K_P(\q_d-\q)+K_D(\dq_d-\dq)).
+    \end{equation}
+    In nominal condition ($\hat M=M, \ \hat{\mathbf n}=\mathbf n $) this controller achieve global asymptotic stability.
+    \item The \textbf{feedback linearization (FBL)} is the best performing controller (in nominal conditions). It uses the dynamic model to cancel the non linear terms:\begin{equation}
+        \btau=\hat M(\q)(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq))+\hat{\mathbf n}(\q,\dq)
+    \end{equation}
+    can also be completed with an integral action:
+    \begin{equation}
+        \btau=\hat M(\q)\left(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq)+K_I\int(\q_d-\q)dt\right)+\hat{\mathbf n}(\q,\dq)
+    \end{equation}
+\end{enumerate}
+\subsection{Feedback Linearization}
+The FBL controller in nominal conditions cancels the non linear terms of the model, in this way the robot is seen as a double integrator, and global exponential stability can be achieved. The block diagram of the model is the following:
+\begin{figure}[H]  
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/FBL1.drawio.pdf}
+\end{figure}
+The closed loop system with the FBL controller is the following
+\begin{figure}[H]  
+\centering 
+     \includegraphics[width=\textwidth ]{images/FBL2.drawio.pdf}
+\end{figure}
+The closed loop equations, when $\hat M=M$ and $\hat{ \mathbf n}=\mathbf n$ (nominal conditions) becomes
+\begin{align}
+        &M(\q)\ddq+\mathbf n(\q,\dq)=\hat M(\q)(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq))+\hat{\mathbf n}(\q,\dq)\implies \\
+        &M(\q)\ddq+\mathbf n(\q,\dq)= M(\q)(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq))+\mathbf n(\q,\dq)\implies \\
+        &\ddq= \mathbf a=\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq).
+\end{align}
+The system is \textit{linearized}, and becomes a simple double integrator, in this way, global exponential stability is guaranteed.\begin{figure}[H]  
+\centering 
+     \includegraphics[width=0.7\textwidth ]{images/FBL3.drawio.pdf}
+\end{figure}
+Of course, it requires $K_P,K_D$ to be diagonal and positive definite. The evolution of the error is\begin{equation}
+    \ddot{\mathbf e}+K_D\dot{\mathbf e}+K_P\mathbf e=\mathbf 0 
+\end{equation}
+since the dynamic is decoupled:
+\begin{equation}
+    \ddot{ e_i}+k_{Di}\dot{ e_i}+k_{Pi} e_i= 0 
+\end{equation}
+for each joint $i$. In the Laplace domain:\begin{equation}
+    (s^2+k_{Di}s+k_{Pi})e_i(s)=0 
+\end{equation}
+so in order to have the roots of $s^2+k_{Di}s+k_{Pi}$ to be on the left side of the complex plane, is sufficient to choose $k_{Di}>0, k_{Pi}>0$. The choice of the elements $k_{Di},k_{Pi}$ shapes the error transient (as we know from basic courses in control):\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.4\textwidth ]{images/underdamped.pdf}
+     \caption{Underdamped (oscillating): $k_{di}^2<2k_{pi}$.}
+      \includegraphics[width=0.4\textwidth ]{images/critically_damped.pdf}
+     \caption{Critically damped: $k_{di}^2=2k_{pi}$.}
+     \includegraphics[width=0.4\textwidth ]{images/no_overshoot.pdf}
+     \caption{No overshoot: $k_{di}^2=4k_{pi}$.}
+     \includegraphics[width=0.4\textwidth ]{images/no_overshoot.pdf}
+     \caption{Overdamped (too slow): $k_{di}^2>4k_{pi}$.}
+\end{figure}
+We can complete the FBL controller by adding an integral term that accumulates the error:\begin{equation}
+    \ddq=\mathbf a=\ddq_d+K_D(\dq_d-\dq)+K_P(\q_d-\q)+K_I\int (\q_d-\q)d\tau.
+\end{equation}
+In this way we can write the error evolution (for each joint) as follows\begin{equation}
+    \ddot e_i+k_{Di}\dot e_i+k_{Pi}e_i+k_{Ii}\int e_id\tau=0
+\end{equation}
+in the Laplace domain:
+\begin{equation}
+    (s^3+k_{Di}s^2+k_{Pi}s+k_{Ii})e_i(s)=0 
+\end{equation}
+from the Routh criterion, stability is guaranteed if and only if\begin{align}
+    &k_{Di}>0\\ 
+    &k_{Ii}>0\\ 
+    &\frac{k_{Di}k_{Pi}-k_{Ii}}{k_{Di}}>0.
+\end{align}
+\noindent\textbf{Remarks and Comments}:\begin{itemize}
+    \item The desired joint trajectory can be generated from a desired cartesian trajectory by using the inverse kinematics and inverse differential kinematics.
+    \item To compute the FBL control input $\mathbf u_{FBL}$, we can first compute $\mathbf a$ using $K_D,K_P$ and then plug it into the Newton-Euler procedure as the joint acceleration:\begin{equation}
+        \mathbf u_{FBL}=\widehat{NE}_\alpha(\q,\dq,\mathbf a).
+    \end{equation}
+    \item The feedback linearization is a technique used also in non-robotics applications.
+    \item The sampling time must be chosen in order to have a trade off between computational time and accuracy. 
+    \item An estimation of $\hat M,\hat{\mathbf n}$ can be done in advance exploiting the linearity of the dynamic coefficient, as shown in Section \ref{Identification}.
+\end{itemize}
+The FBL can be applied also to robots with elastic joints, in that case the dynamic model have $2n$ generalized coordinates and $4n$ state variables $(\q,\btheta,\dq,\dot\btheta)$.\begin{align}
+    M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+K(\q-\btheta)=\mathbf 0&\\
+    M_m\ddot{\btheta}+K(\btheta-\q)=\btau&
+\end{align}
+$\btheta$ are the motor angular positions (different from the joint positions $\q$), $K$ is the diagonal positive definite matrix of  stiffness of the joints, and $M_m$ the inertia matrix of the motors. We give an intuition of how we linearize the system:\begin{itemize}
+    \item We start from the dynamic equation of the link
+    $$M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+K(\q-\btheta)=\mathbf 0$$
+    and we derive it two times until $\ddot{\btheta}$ appears (also $\frac{d^4\q}{dt^4}$ will appear in the equation). We call $\star$ this equation\begin{equation}
+        \star = \frac{d^2}{dt^2}(M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+K(\q-\btheta))=\mathbf 0.
+    \end{equation}
+    \item From the joint equation \begin{equation}
+        M_m\ddot{\btheta}+K(\btheta-\q)=\btau
+    \end{equation}
+    we get \begin{eqnarray}
+        \ddot{\btheta}=M_m^{-1}(\btau-K(\btheta-\q))
+    \end{eqnarray}
+    and we substitute this in $\star$ to get an equation of the following structure\begin{equation}
+        \frac{d^4\q}{dt^4}=\mathbf f(\q,\btheta,\dq,\dot\btheta)+B(\q,\btheta,\dq,\dot\btheta)\btau.
+    \end{equation}
+\end{itemize}
+Then we choose a control law that cancels all the non linear terms:\begin{align}
+    &\btau=\boldsymbol{\alpha}(\q,\btheta,\dq,\dot\btheta)+\beta(\q,\btheta,\dq,\dot\btheta)\mathbf a\implies \\
+    &\frac{d^4\q}{dt^4}=\mathbf f(\q,\btheta,\dq,\dot\btheta)+B(\q,\btheta,\dq,\dot\btheta)(\boldsymbol{\alpha}(\q,\btheta,\dq,\dot\btheta)+\beta(\q,\btheta,\dq,\dot\btheta)\mathbf a)\implies \\
+    &\mathbf a = \frac{d^4\q}{dt^4}.
+\end{align}
+We are not entering in the details, but is clear that we should have\begin{align}
+    &\mathbf f (\q,\btheta,\dq,\dot\btheta)=-B(\q,\btheta,\dq,\dot\btheta)\boldsymbol{\alpha}(\q,\btheta,\dq,\dot\btheta)\\ 
+    &B (\q,\btheta,\dq,\dot\btheta)\beta (\q,\btheta,\dq,\dot\btheta)=I.
+\end{align}
+\subsection{Alternative Trajectory Controller}
+Now we analyze a controller that doesn't cancel the nonlinearities:\begin{equation}
+    \btau=M(\q)\ddq_d+C(\q,\dq)\dq_d+\mathbf g(\q)+B_v\dq_d+K_P\mathbf e+K_D\dot{\mathbf e}.
+\end{equation}
+Notice how this time we included also the viscous friction $B_v$. We used the special factorization $C(\q,\dq)$ for the Coriolis/centrifugal terms. Not how the terms of the model appear in a mixed fashion\begin{itemize}
+    \item $M(\q)$ is computed on the current configuration $\q$ but is multiplied by the desired acceleration $\ddq_d$.
+    \item $C(\q,\dq)$ is computed on the current state  but is multiplied by the desired velocity $\dq_d$.
+    \item Due to this mixed nature, the control input at each time step requires 4 computations of the standard NE procedure, or just 1 computation of the modified one (with 4 arguments).
+\end{itemize}
+This law does not produce a linear and decoupled behavior, but achieves global asymptotic stability for the trajectory error $(\mathbf e,\dot{\mathbf e})$ (of course, assuming that the model is perfect). The closed loop system is\begin{equation}
+    M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)+B_v\dq_d
+    =M(\q)\ddq_d+C(\q,\dq)\dq_d+\mathbf g(\q)+B_v\dq_d+K_P\mathbf e+K_D\dot{\mathbf e}
+\end{equation}
+we want to express the dynamics in term of the error. First of all we simplify the equation by cancelling the gravity\begin{equation}
+    M(\q)\ddq+C(\q,\dq)\dq+B_v\dq
+    =M(\q)\ddq_d+C(\q,\dq)\dq_d+B_v\dq_d+K_P\mathbf e+K_D\dot{\mathbf e}
+\end{equation}
+then we can simply group the terms under $M$,$B_v$ and $C$:\begin{align}
+    &M(\q)(\ddq_d-\ddq)+C(\q,\dq)(\dq_d-\dq)+K_P\mathbf e+(K_D+B_v)\dot{\mathbf e}\implies \\ 
+    &M(\q)\ddot{\mathbf e}=-C(\q,\dq)\de-(K_D+B_v)\de-K_P\mathbf e\label{Mdde}
+\end{align}
+To prove GAS, we proceeds with the definition of the following Lyapunov candidate:\begin{equation}
+    V=\frac{1}{2}\de^TM(\q)\de+\frac{1}{2}\mathbf e^TK_P\mathbf e
+\end{equation}
+$M$ and $K_P$ are positive definite so $V\ge 0$. The derivative is\begin{equation}
+    \dot V=\frac{1}{2}\de^T\dot M(\q)\de+\de^T M(\q)\ddot{\mathbf e}+\mathbf e^T K_P\de.
+\end{equation}
+Now we can substitute in the equation \eqref{Mdde}:\begin{align}
+    &\dot V=\frac{1}{2}\de^T\dot M(\q)\de+\de^T \blueText{M(\q)\ddot{\mathbf e}}+\mathbf e^T K_P\de\\ 
+    &=\frac{1}{2}\de^T\dot M(\q)\de+\de^T \blueText{(-C(\q,\dq)\de-(K_D+B_v)\de-K_P\mathbf e)}+\mathbf e^T K_P\de\\
+    &=\de^T(\frac{1}{2}\dot M(\q)\de-\mathbf c(\q,\dq)\de - (K_D+B_v)\de) -\de^TK_P\mathbf e + \mathbf e^T K_P\de\end{align}
+Since $K_P$ is diagonal, and $\de^T(\frac{1}{2}\dot M(\q)-\mathbf C(\q,\dq))\de = 0$ we end up with:\begin{equation}
+    \dot V=-\de^T(K_D+B_v)\de\le 0 
+\end{equation}
+and is $0$ if and only if $\de=\mathbf 0$. Before applying LaSalle, we have to use the Barbalat lemma since the system is time varying (due to the time varying trajectory $\q_d(t)$), in order to prove that $\dot V$ tends to zero with $t\rightarrow\infty$. The only condition to check is on the second derivative of $V$:\begin{equation}
+    \ddot V=-2\de^T(K_D+B_v)\ddot e 
+\end{equation}
+since $V$ is lower bounded and $\dot V\le 0$, we know that $\mathbf e$ and $\de$ are bounded. To prove that $\ddot V$ is bounded we have to prove that $\ddot{\mathbf e}$ is bounded. This is equals to \begin{equation}
+    \ddot{\mathbf e}=M^{-1}(\q)[C(\q,\dq)\de+(K_D+B_v)\de+K_P\mathbf e]
+\end{equation}
+since\begin{itemize}
+    \item $\mathbf e$ and $\de$ are bounded 
+    \item $M^{-1}, C$ are bounded and $K_P,B_v$ are constants 
+\end{itemize}
+we can conclude that $\ddot{\mathbf e}$ and $\ddot V$ are bounded, so:\begin{equation}
+    \lim_{t\rightarrow\infty}\dot V=0\implies \lim_{t\rightarrow\infty}\mathbf e=\mathbf 0
+\end{equation}
+In this situation the closed loop dynamics is\begin{equation}
+    M(\q)\ddot{\mathbf e}=-K_P\mathbf e 
+\end{equation}
+that is invariant if and only if $\ddot{\mathbf e}=\mathbf 0 \implies \mathbf e = \mathbf 0$, so  global asymptotic stability for $(\mathbf e,\de)=(\mathbf 0,\mathbf 0)$ will be achieved. \bigskip
+
+\noindent\textbf{Regulation}: What happens if we let $\q_d$ to be constant (solve the regulation problem with the trajectory controllers)? 
+
+With the FBL technique, no special simplification appears, the control law is the following:\begin{equation}
+    \btau=M(\q)(K_P(\q_d-\q)-K_D\dq)+\mathbf n(\q,\dq)
+\end{equation}
+this solution have exponential stability due to the linearization. With the alternative controller presented in this section, the control law when $\dq_d=\mathbf 0$ becomes:\begin{equation}
+    \btau=K_P(\q_d-\q)-K_D\dq+\mathbf g(\q)
+\end{equation}
+this is the simple PD controller + gravity cancellation.
+\subsection{Iterative Trajectory Learning Control}
+Until now, we have showed some control laws that achieves global asymptotic stability (in some cases exponential), with the assumption of having a perfect model of the manipulator. Of course, this is almost never the case in practical application, since there is always a degree of uncertainty over the dynamic parameters (also because the end effector may hold payloads of different weight).\bigskip 
+
+Despite that, it is still possible to reproduce a desired trajectory in case of \textit{ripetitive motion tasks}, through an iterative approach, that ''learns'' the dynamics of the model (for that specific task). The general law is a PD controller, with an additional varying feed forward term:\begin{equation}
+    \btau=K_P(\q_d-\q)+K_D(\dq_d-\dq)+\mathbf v_k 
+\end{equation}
+where $\mathbf v_k$ is the feed forward term at the $k$-th iteration.\begin{itemize}
+    \item We have our feedforward term $\mathbf v_{k}$. At the beginning, $\mathbf v_0=\mathbf 0$
+    \item We execute the control law and try to match with $\q_d(t)$
+    \item There will be an error that are stored and used to compute $\mathbf v_{k+1}$
+    \item The robot is reinitialized at the same initial state of the beginning, and we execute again the control law with the new feedforward term, restarting the iterative process.
+\end{itemize}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/iteratrve_traj.png}
+\end{figure}
+The feedforward term $\mathbf v_k$ is computed using the error $\mathbf e_k$ and the term $\mathbf v_{k-1}$ of the previous iteration.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/iterative_traj_learning.drawio.pdf}
+\end{figure}
+We denoted $P(s)$ the model of the robot.
+Let $C(s)$ to be our controller, for the PD law\begin{equation}
+    K_P\mathbf e(t)+K_D\de(t)
+\end{equation}
+in the Laplace domain the feedback action is
+\begin{equation}
+    C(s)\mathbf e(s)=\mathbf u'(s)
+\end{equation}
+the control input for the robot model at iteration $k$  will be the PD action plus the feed forward term\begin{equation}
+    \mathbf u_k(s)=C(s)\mathbf e(s)+\mathbf v_k(s)
+\end{equation}
+the expression of the output is\begin{equation}
+    \q(s)=\frac{P(s)C(s)}{1+P(s)C(s)}\q_d(s)+\frac{P(s)}{1+P(s)C(s)}\mathbf v_k(s)=W(s)\q_d(s)+\frac{P(s)}{1+P(s)C(s)}\mathbf v_k(s).
+\end{equation}
+The \textbf{update law} of the feedforward term is designed as\begin{equation}
+    \mathbf v_{k+1}(s)=\alpha(s)\mathbf u'(s)+\beta(s)\mathbf v_k(s)
+\end{equation}
+where $\alpha$ and $\beta$ are suitable filters.
+\\\redText{TODO finire pacco di slide 10 pagina 21}
+\section{Online Learning}
+Some controllers performs perfectly when the model is known. In unknown condition, we want a control law that acquires the missing information, and use feedback to process the error trough machine learning techniques: We construct a regressor that with the collected data estimates the missing information about the dynamics of the manipulator. This method, called \textbf{online learning}, assess fast convergence if we start with a reasonably good estimation of the model.
+
+The dynamic model of the manipulator is\begin{equation}
+    M(\q)\ddq+\mathbf n(\q,\dq)=\btau 
+\end{equation}
+where \begin{align}
+    &M=\hat M+\Delta M\\
+    &\mathbf n=\hat{\mathbf n}+\Delta\mathbf n 
+\end{align}
+let $\hat M$ and $\hat{\mathbf n}$ to be our estimation of the model, the model based \textit{approximate} feedback linearization law that we perform is\begin{equation}
+    \btau_{FBL}=\hat M(\q)\mathbf a+\hat{\mathbf n}(\q,\dq)
+\end{equation}
+where $\mathbf a$ is the desired acceleration that we want to impose. The closed loop dynamics with this law is\begin{align}
+    &M(\q)\ddq+\mathbf n(\q,\dq)=\hat M(\q)\mathbf a+\hat{\mathbf n}(\q,\dq)\\ 
+    &\ddq =M^{-1}(\q)(\hat M(\q)\mathbf a+\hat{\mathbf n}(\q,\dq)-\mathbf n(\q,\dq))\\ 
+    &=\mathbf a + (M^{-1}\hat M-I)\mathbf a+M^{-1}(\hat{\mathbf n}-\mathbf n)\\ 
+    &=\mathbf a +\boldsymbol{\delta}(\q,\dq,\mathbf a)
+\end{align}
+we denoted $\boldsymbol{\delta}(\q,\dq,\mathbf a)$ the \textbf{perturbation} resulting from the uncertainties on the model. The control law at iteration $k$ consists in a PD action with a feedforward term (of the desired trajectory), plus a \textbf{learning regressor}:\begin{equation}
+    \mathbf a_k = \underbrace{\ddq_{d,k}+K_P(\q_{d,k}-\q_k)+K_D(\dq_{d,k}-\dq_k)}_{\mathbf u_k}+\boldsymbol{\varepsilon}_k
+\end{equation}
+with this law the closed loop equation at iteration $k$ is\begin{equation}
+    \ddq_k=\ddq_{d,k}+K_P(\q_{d,k}-\q_k)+K_D(\dq_{d,k}-\dq_k)+\boldsymbol{\varepsilon}_k+\boldsymbol{\delta}(\q,\dq,\mathbf a)
+\end{equation}
+the goal of the regressor $\boldsymbol{\varepsilon}_k$ is to learn the perturbation $\boldsymbol{\delta}$ in order to linearize the system.
+
+We use a \textbf{Gaussian Process (GP) Regressor}, let\begin{equation}
+    \mathbf x_k=(\q_k,\dq_k,\mathbf u_k)
+\end{equation}
+to be the current state of the manipulator plus the control command. The observed output $\mathbf y_k$ represents the error and is computed as the difference between the input command and the measured acceleration\begin{equation}
+    \mathbf y_k=\ddq_k-\mathbf u_k
+\end{equation}
+we assume that these measurements are noisy, dirtied by a Gaussian noise with zero mean and covariance $\Sigma_\omega$. The GP assumes that the last $n_d$ observations follows a normal distribution.\\\redText{TODO finire pacco di slide 10 pagina 30}
+\section{Control in the Task Space}
+\subsection{Regulation}
+The control input can be evaluated with the error in the task space, denoted $\mathbf e_y=\y_d-\y$, where $\y_d$ is the desired task trajectory. The goal of a control law in the task space for \textbf{regulation} is to achieve asymptotic stability of the end effector pose (or other task vector), having $\y=\y_d$, and $\dq=\mathbf 0$, we don't require directly $\dy=\mathbf 0$ since, in case of redundancy, this might be achieved with a non zero joint velocity (self motion).\bigskip 
+
+The first law that we consider is the following:\begin{equation}\label{regulation_cartesian}
+    \btau=J^T(\q)K_P(\y_d-\y)-K_D\dq+\mathbf g(\q).
+\end{equation}
+This is a mixed law that consider the position error in the task space, but the velocity error in the joint space (as we already said, to avoid self motion). Is a simple PD law + gravity cancellation. 
+\begin{boxtheorem}{}{}
+    The control law defined in equation \eqref{regulation_cartesian} will let the robot to converge asymptotically to the set of states \begin{equation}
+        A=\{(\q,\dq) \ \text{ s.t. } \ \dq=\mathbf 0 \land K_P(\y_d-k(\q))\in \mathcal N(J^T(\q))  \}
+    \end{equation}
+\end{boxtheorem}
+\noindent\textit{Proof}: We notice that the robot will not converge to a single state, but on a set of state on which the configuration satisfies the following relation:\begin{equation}
+    K_P(\y_d-k(\q))\in \mathcal N(J^T(\q))
+\end{equation}
+all the configuration satisfying this will be mapped on the desired task position:\begin{equation}
+    k(\q)=\y_d.
+\end{equation} 
+We define the following Lyapunov candidate\begin{equation}
+    V=\frac{1}{2}\dq^TM(\q)\dq+\frac{1}{2}\mathbf e_y^TK_P\mathbf e_y 
+\end{equation}
+that is never negative and is zero only if $\dq=\mathbf 0$ and $\mathbf e_y=\mathbf 0\implies k(\q)=\y_d$.
+Now we differentiate $V$:\begin{align}
+    \dot V&=\dq^T(M\ddq+\frac{1}{2}\dot M\dq)-\mathbf e_y^TK_P\dy\\ 
+    &=\dq^T(\btau\sapText{-N\dq}-\mathbf g+\sapText{\frac{1}{2}\dot M\dq})-\mathbf e_y^TK_P\blueText{\dy}\\
+    &=\dq^T(\btau-\mathbf g)-\mathbf e_y^TK_P\blueText{J\dq}\\
+    &=\dq^T(
+    J^TK_P(\y_d-\y)-K_D\dq+\mathbf g    
+    -\mathbf g)-\mathbf e_y^TK_PJ\dq\\ 
+    &=\dq^T(
+    \sapText{J^TK_P\mathbf e_y}-K_D\dq)-\sapText{\mathbf e_y^TK_PJ\dq}\\ 
+    &=-\dq^TK_D\dq \le 0.
+\end{align}
+And $\dot V=0$ if and only if $\dq=\mathbf 0$. In these conditions the closed loop equations become:\begin{align}
+    &M\ddq=J^TK_P\mathbf e_y\implies\\ 
+    &\ddq=M^{-1}(J^TK_P\mathbf e_y)
+\end{align}
+that is zero if and only if $J^TK_P\mathbf e_y=\mathbf 0 \iff K_P\mathbf e_y\in\mathcal N(J^T)$. By applying LaSalle, the thesis follows.\hfill$\blacksquare$\bigskip
+
+\noindent\textbf{Corollary}: For a given initial state $(\q(0),\dq(0))$, if the robot does not encounter any singularities of $J^T(\q)$ during its motion, then there is asymptotic stabilization to a set of states such that\begin{equation}
+    \mathbf e_y=\dq=\mathbf 0.
+\end{equation}
+A variant of this control law is defined with the velocity error computed in the task space:
+\begin{equation}
+    \btau=J^T(\q)K_P(\y_d-\y)-K_D\dy+\mathbf g(\q).
+\end{equation}
+In this case the virtual damping effect is performed on the task vector (suppose that is the end effector position), with the virtual spring placed on the end effector, but it does not guarantee that the joint will stop moving. Instead, the control law in equation \ref{regulation_cartesian}, place the virtual dampers directly on the joints, and the virtual spring on the end effector.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.9\textwidth ]{images/cartesian_control.png}
+     \caption{Mechanical interpretation.}
+\end{figure}
+\subsection{Feedback Linearization in the Task Space}
+Let's consider the second derivative of the task vector:\begin{equation}
+    \ddy=J\ddq+\dot J\dq 
+\end{equation}
+we substitute $\ddq$ with the dynamic model:\begin{equation}\label{dynModTaskSpace}
+    \ddy=JM^{-1}(\btau-\mathbf c-\mathbf g)+\dot J\dq.
+\end{equation}
+\begin{boxtheorem}{}{}
+    For a non-redundant robot, it is possible to exactly linearize and
+decouple the dynamic behavior at the task level if and only if $\det J(\q)\ne0$.
+\end{boxtheorem}
+We want to apply the feedback linearization on the dynamic model in the task space in equation \eqref{dynModTaskSpace}. The FBL control law is\begin{equation}
+    \btau=MJ^{-1}\mathbf a+\mathbf c+\mathbf g-MJ^{-1}\dot J\dq 
+\end{equation}
+with $\mathbf a$ the control input of the linearized system (desired force + PD action), the closed loop equation is:\begin{align}
+    &\ddy=JM^{-1}((MJ^{-1}\mathbf a+\mathbf c+\mathbf g-MJ^{-1}\dot J\dq )-\mathbf c-\mathbf g)+\dot J\dq=\mathbf a.
+\end{align}
+If we substitute $\btau$ in the dynamic model in the joint space we end up with a system that is still non linear and coupled:\begin{equation}
+    \ddq=J^{-1}\mathbf a-J^{-1}\dot J\dq 
+\end{equation}
+despite that, is purely kinematic. As a physical interpretation, when we linearize the system and $\dy$ is the pose of the end effector, the latter will be seen as a unitary (or arbitrary) mass in the space without gravity, that can be accelerated under the effect of a force at will.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.8\textwidth ]{images/cartesian_linearization.png}
+\end{figure}
+in this way the control force $\mathbf F$ accelerate the end effector in the same direction of $\mathbf F$, while without linearization, the applied force $\mathbf F$ generates a torque $J^T\mathbf F$ that accelerate the end effector in a different direction (in the general case).
+\\\redText{TODO pacco di slide 13 pagina 10}
+\chapter{Advanced Control Laws}
+\section{Adaptive Control}
 \end{document}
