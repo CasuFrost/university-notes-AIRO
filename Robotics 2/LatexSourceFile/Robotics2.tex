@@ -3322,10 +3322,11 @@ where we denoted $\mathcal O$ the $n\times n$ full zero matrix.\bigskip
 \noindent The following diagram is an example of block diagram in Simulink to simulate the time evolution of a generic 2dof manipulator.
 \begin{figure}[H]    
 \centering 
-     \includegraphics[width=0.5\textwidth ]{images/simulink_2dof.png}
+     \includegraphics[width=0.7\textwidth ]{images/simulink_2dof.png}
 \end{figure}
 \section{Advanced Dynamics Analysis}
 \subsection{Approximate Linearization}
+\begin{comment}
 Around a given operative condition, sometimes we can derive a \textit{linear model} of a manipulator that locally approximates the dynamic behavior.
 \begin{boxdefinition}{}{}
     An \textbf{equilibrium state} of the manipulator is a state $(\q_e,\dq_e)$ such that \begin{align}
@@ -3333,7 +3334,7 @@ Around a given operative condition, sometimes we can derive a \textit{linear mod
         &(\q,\dq)=(\q_e,\mathbf 0)\implies \ddq=\mathbf 0
     \end{align}
 \end{boxdefinition}
-When the model is at en equilibrium state, the dynamic equations simplifies:\begin{align}
+\noindent When the model is at en equilibrium state, the dynamic equations simplifies:\begin{align}
    & M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\mathbf u_e\implies \\ 
    &g(\mathbf q_e)=\mathbf u_e.
 \end{align}
@@ -3371,7 +3372,58 @@ in the state space representation where $\mathbf x=(\q,\dq)$:\begin{equation}
 this is exactly a linear system of first order differential equations of the form:\begin{equation}
     \dot{\Delta{\mathbf x}}=A\Delta{\mathbf x}+B\Delta{\mathbf u}
 \end{equation}
-\redText{TODO: equilibrium trajectory}
+\end{comment}
+Approximate linearization is a technique that allows us to derive a linear dynamic model that approximates  the behavior of the robot around a given operative condition.
+
+This method approximate the model around an \textit{equilibrium state}, for a general dynamic system $\dot{\mathbf x}=f(\mathbf x)$, $\mathbf x_e$ is an equilibrium state if $f(\mathbf x)=\mathbf 0$. An equilibrium state for our robot $\q_e$ implies $\dq=\ddq=\mathbf 0$ (the dynamics is stopped and the manipulator remains in the equilibrium configuration). In that case, the dynamic equations becomes:\begin{equation}
+    \mathbf g(\q_e)=\mathbf u_e 
+\end{equation}
+where $\mathbf u_e$ are the non conservative forces that balances exactly the gravity in the equilibrium state. We approximate by expanding the Taylor series up to the first order.\bigskip 
+
+Let $\Delta\q$ to be a sufficiently small (but finite) variation in the configuration:\begin{align}
+    &\q=\q_e+\Delta\q\\ 
+    &\dq=\dq_e+\dot{\Delta \q}=\dot{\Delta \q}\\ 
+    &\mathbf u = \mathbf u_e+\Delta \mathbf u
+\end{align} 
+Since the Coriolis and centrifugal terms $\mathbf c(q, \dot{q})$ have a quadratic dependence on the velocity, they become negligible around zero. The resulting linearized model is:\begin{equation}
+    M(\q_e)\ddot{\Delta\q}+G(\q_e)\Delta \q=\Delta \mathbf u 
+\end{equation}
+where $G(\q_e)=\frac{\partial \mathbf g}{\partial \q}\Big |_{\q=\q_e}$. In the state space format with $\Delta{\mathbf x}=\begin{pmatrix}
+    \Delta\q & \dot{\Delta \q }
+\end{pmatrix}^T$ the system is\begin{equation}
+    \dot{\Delta \mathbf x}=\begin{pmatrix}
+        0&I\\ 
+        -M^{-1}(\q_e)G(\q_e)&0
+    \end{pmatrix}
+    \Delta\mathbf x+\begin{pmatrix}
+        0\\ 
+        M^{-1}(\q_e)
+    \end{pmatrix}\Delta{\mathbf u}
+\end{equation}
+that is exactly a linear system of first order differential equations of the form:\begin{equation}
+    \dot{\Delta{\mathbf x}}=A\Delta{\mathbf x}+B\Delta{\mathbf u}.
+\end{equation}
+When the robot follows a desired trajectory, we have to take into account the time varying terms, the variations are defined with respect to the nominal values:\begin{equation}
+    M(\q_d+\Delta \q)(\ddq_d+\ddot{\Delta \q})+\mathbf c(\q_d+\Delta\q, \dq_d+\dot{\Delta\q})+\mathbf g(\q_d+\Delta \q)=\mathbf u_d+\Delta \mathbf u
+\end{equation}
+Developing each term to the first order:\begin{align}
+    &M(\q_d+\Delta\q)\simeq M(\q_d)+\sum_{i=1}^{n}\frac{\partial M_i}{\partial\q}\Big |_{\q=\q_d}\mathbf e_i^T\Delta\q\\ 
+    &\mathbf g(\q_d+\Delta \q)\simeq \mathbf g(\q_d)+G(\q_d)\Delta \q\\ 
+    &\mathbf c(\q_d+\Delta\q, \dq_d+\dot{\Delta\q})\simeq \mathbf c(\q_d,\dq_d)+\underbrace{\frac{\partial \mathbf c}{\partial \q}\Big |_{\q=\q_d}}_{C_1}\Delta \q+\underbrace{\frac{\partial \mathbf c}{\partial \dq}\Big |_{\q=\q_d}}_{C_2}\Delta \dq.
+\end{align}
+where $\mathbf e_i$ is the $i$-th vector of the canonical base of $\R^n$. After the appropriate simplifications, a second order model is obtained:\begin{equation}
+    M(\q_d)\ddot{\Delta \q} + C_2(\q_d, \dot{\q}_d)\dot{\Delta \q} + D(\q_d, \dot{\q}_d, \ddot{\q}_d)\Delta \q = \Delta \mathbf u
+\end{equation}
+The $D$ matrix collects the contributions of gravity, the derivatives of the Coriolis terms and the variations of the inertia matrix:\begin{equation}
+    D(\q_d, \dot{\q}_d, \ddot{\q}_d) = G(\q_d) + C_1(\q_d,\dq_d) + \sum_{i=1}^{n} \frac{\partial M_i}{\partial \q}\Big|_{\q=\q_d} \ddot{\q}_d \mathbf e_i^T.
+\end{equation}
+In the state space format:\begin{equation}
+    \dot{\Delta \mathbf x} = \begin{pmatrix} 0 & I \\ -M^{-1}(\q_d)D & -M^{-1}(\q_d)C_2 \end{pmatrix} \Delta \mathbf x + \begin{pmatrix} 0 \\ M^{-1}(\q_d) \end{pmatrix} \Delta \mathbf u
+\end{equation} 
+that is a linear time varying system of the form:\begin{equation}
+    A(t)\Delta\mathbf x + B(t)\Delta \mathbf u.
+\end{equation}
+This formulation is much more complex than the previous one since the matrices $A(t)$ and $B(t)$ explicitly depend on time through the nominal trajectory. 
 \subsection{Coordinate Transformation}
 In this section we describe how to manage a change of coordinates in the dynamic model. We rewrite the model by gathering together $\mathbf c$ and $\mathbf g$:\begin{equation}
     M(\q)\ddq+\mathbf n(\q,\dq)=\mathbf u_q
@@ -3495,7 +3547,33 @@ we use the projection operator on $J^TH$ defined as\begin{equation}
 let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use as our control input, and let $\btau_N\in \R^n$ be a ''preferred'' torque, the decomposition of $\btau$ that we use is the following:\begin{equation}
     \btau=J^T\mathbf F+(I-J^TH)\btau_N.
 \end{equation}
-\redText{TODO}
+by rewriting the control torque in this way in the dynamic model we get:\begin{equation}
+    \ddq=M^{-1}(J^T\mathbf F+(I-J^TH)\btau_N-\mathbf n)
+\end{equation}
+since $\ddy=J\ddq+\dot J\dq$ the dynamic model in the task space is:\begin{equation}
+    \ddy=JM^{-1}(J^T\mathbf F+(I-J^TH)\btau_N-\mathbf n)+\dot J\dq
+\end{equation}
+we isolate the generalized forces $\mathbf F$ by multiplying both sides by $(JM^{-1}J^T)^{-1}$\begin{align}
+    &(JM^{-1}J^T)^{-1}\ddy=\mathbf F+\\ 
+    &(JM^{-1}J^T)^{-1}\big(JM^{-1}((I-J^TH)\btau_N-\mathbf n)+\dot J\dq\big)
+\end{align}
+we let $H$ to be the transpose of the inertia weighted pseudo inverse:\begin{equation}
+    H=(JM^{-1}J^T)^{-1}JM^{-1}=(J^\#_M)^T=(J^T)_M^\#
+\end{equation}
+in this way, the desired joint torque component $\btau_N$ will never affect the task acceleration $\ddy$:
+\begin{equation}
+    JM^{-1}(I-J^TH)\btau_N = JM^{-1}(I-J^T((JM^{-1}J^T)^{-1}JM^{-1}))\btau_N=(JM^{-1}-JM^{-1})\btau_N=\mathbf{0}.
+\end{equation}
+The dynamic equations in the task space become:\begin{equation}
+    \underbrace{(JM^{-1}J^T)^{-1}}_{M_y}\ddy = \blueText{\mathbf F}+
+    \underbrace{(JM^{-1}J^T)^{-1}(\dot J\dq-JM^{-1}\mathbf n)}_{-\mathbf n_y}
+\end{equation}
+$M_y$ is the inertia matrix in the task space and $\mathbf n_y$ is the gravity/centrifugal/Coriolis terms in the task space:\begin{equation}
+    M\ddy+\mathbf n_y=\mathbf F.
+\end{equation}
+The interaction forces in the task space can be added directly to the right hand side\begin{equation}
+    M\ddy+\mathbf n_y=\mathbf F+\mathbf F_{int}.
+\end{equation}
 \subsection{Dynamic Scaling}
 We have a smooth trajectory $\q_d(t)$ defined in the joint space for $t\in [0,T]$, we rescale this trajectory with a rescaling function $t\rightarrow r(t)$, that defines the new rescaled trajectory $\q_d(r(t))$, that is defined in $t\in [0,r(T)]$. Of course, $r(t)$ should be a strictly \textit{increasing} function (the trajectory should not be performed backwards).
 \bigskip
@@ -4687,7 +4765,7 @@ so in order to have the roots of $s^2+k_{Di}s+k_{Pi}$ to be on the left side of 
      \caption{Critically damped: $k_{di}^2=2k_{pi}$.}
      \includegraphics[width=0.4\textwidth ]{images/no_overshoot.pdf}
      \caption{No overshoot: $k_{di}^2=4k_{pi}$.}
-     \includegraphics[width=0.4\textwidth ]{images/no_overshoot.pdf}
+     \includegraphics[width=0.4\textwidth ]{images/overdamped.pdf}
      \caption{Overdamped (too slow): $k_{di}^2>4k_{pi}$.}
 \end{figure}
 We can complete the FBL controller by adding an integral term that accumulates the error:\begin{equation}
@@ -4869,15 +4947,61 @@ we denoted $\boldsymbol{\delta}(\q,\dq,\mathbf a)$ the \textbf{perturbation} res
 with this law the closed loop equation at iteration $k$ is\begin{equation}
     \ddq_k=\ddq_{d,k}+K_P(\q_{d,k}-\q_k)+K_D(\dq_{d,k}-\dq_k)+\boldsymbol{\varepsilon}_k+\boldsymbol{\delta}(\q,\dq,\mathbf a)
 \end{equation}
-the goal of the regressor $\boldsymbol{\varepsilon}_k$ is to learn the perturbation $\boldsymbol{\delta}$ in order to linearize the system.
+the goal of the regressor $\boldsymbol{\varepsilon}_k$ is to learn the perturbation $\boldsymbol{\delta}$ in order to linearize the system.\bigskip
 
 We use a \textbf{Gaussian Process (GP) Regressor}, let\begin{equation}
     \mathbf x_k=(\q_k,\dq_k,\mathbf u_k)
 \end{equation}
-to be the current state of the manipulator plus the control command. The observed output $\mathbf y_k$ represents the error and is computed as the difference between the input command and the measured acceleration\begin{equation}
-    \mathbf y_k=\ddq_k-\mathbf u_k
+to be the current state of the manipulator plus the control command. The observed output $\mathbf y_k$ represents the perturbation $\boldsymbol{\delta}$ that we wants to nullify:\begin{equation}
+    \mathbf y_k=\ddq_k-\mathbf u_k.
 \end{equation}
-we assume that these measurements are noisy, dirtied by a Gaussian noise with zero mean and covariance $\Sigma_\omega$. The GP assumes that the last $n_d$ observations follows a normal distribution.\\\redText{TODO finire pacco di slide 10 pagina 30}
+We assume that the observation are noisy, with a Gaussian withe noise $\bomega\sim\mathcal N(\mathbf 0, \Sigma_\omega)$, so we don't measure directly $\boldsymbol{\delta}$ but $\boldsymbol{\delta}+\bomega$.\bigskip 
+
+The Gaussian Process (GP) assumes that the unknown function $\boldsymbol{\delta}$ is a random variable and that every finite set of observations follows a joint Gaussian distribution. For a set of $n_d$ observations, the distribution is\begin{equation}
+    \begin{pmatrix}
+        \y_{1:n_d-1}\\ 
+        \y_{n_d}
+    \end{pmatrix}\sim \mathcal N\left(\mathbf 0,\begin{pmatrix}
+        K& \mathbf k\\ \mathbf k^T& \kappa(\mathbf x_{n_d},\mathbf x_{n_d}) 
+    \end{pmatrix} \right)
+\end{equation}
+where\begin{itemize}
+    \item $K$ is the covariance matrix of all the previous training samples\begin{equation}
+        K_{ij}=\kappa(\mathbf x_i,\mathbf x_j).
+    \end{equation}
+    \item $\kappa$ is a \textbf{kernel function} that measure the similarity between two points $\mathbf x_i,\mathbf x_j$. If two points are near, we expect that the perturbations are related.
+    \item $\mathbf k$ is the covariance vector between $\mathbf x_{n_d}$ and the previous points:\begin{equation}
+        \mathbf k=\begin{pmatrix}
+            \kappa(\mathbf x_1,\mathbf x_{n_d})\\ 
+            \kappa(\mathbf x_2,\mathbf x_{n_d})\\\vdots \\ 
+            \kappa(\mathbf x_{n_d-1},\mathbf x_{n_d}).
+        \end{pmatrix}
+    \end{equation}
+\end{itemize}
+The goal is to compute the distribution of $\boldsymbol{\delta}(\mathbf x)$ for a generic point $\mathbf x$. The predicted distribution $\boldsymbol{\varepsilon}(\mathbf x)$ is still a Normal distribution:\begin{equation}
+    \boldsymbol{\varepsilon}(\mathbf x)\sim\mathcal N(\bmu(\mathbf x),\bsigma^2(\mathbf x))
+\end{equation}
+the mean and the covariance are\begin{align}
+    &\bmu(\mathbf x)=\mathbf k^T(\mathbf x)(K+\Sigma_\omega)^{-1}Y\\ 
+    &\bsigma^2(\mathbf x)=\kappa(\mathbf x,\mathbf x)-\mathbf k^T(\mathbf x)(K+\Sigma_\omega)^{-1}\mathbf k(\mathbf x)
+\end{align}
+where\begin{equation}
+        \mathbf k=\begin{pmatrix}
+            \kappa(\mathbf x_1,\mathbf x)\\ 
+            \kappa(\mathbf x_2,\mathbf x)\\\vdots \\ 
+            \kappa(\mathbf x_{n_d-1},\mathbf x)
+        \end{pmatrix}
+    \end{equation}
+and $Y$ is the set of all the previous observation for the output:\begin{equation}
+    Y=\begin{pmatrix}
+        \y_1\\ \vdots \\ \y_{n_d}
+    \end{pmatrix}=\begin{pmatrix}
+        \ddq_1-\mathbf u_1\\ \vdots \\ \ddq_{n_d}-\mathbf u_{n_d}
+    \end{pmatrix}.
+\end{equation}
+ So at each time step, the regressor $\boldsymbol{\varepsilon}_k$ is computed as follow:\begin{equation}
+    \boldsymbol{\varepsilon}_k=\boldsymbol{\varepsilon}(\mathbf x)=\mathcal N(\bmu(\mathbf x_k),\bsigma^2(\mathbf x_k)).
+ \end{equation}
 \section{Control in the Task Space}
 \subsection{Regulation}
 The control input can be evaluated with the error in the task space, denoted $\mathbf e_y=\y_d-\y$, where $\y_d$ is the desired task trajectory. The goal of a control law in the task space for \textbf{regulation} is to achieve asymptotic stability of the end effector pose (or other task vector), having $\y=\y_d$, and $\dq=\mathbf 0$, we don't require directly $\dy=\mathbf 0$ since, in case of redundancy, this might be achieved with a non zero joint velocity (self motion).\bigskip 
@@ -4942,7 +5066,7 @@ we substitute $\ddq$ with the dynamic model:\begin{equation}\label{dynModTaskSpa
     For a non-redundant robot, it is possible to exactly linearize and
 decouple the dynamic behavior at the task level if and only if $\det J(\q)\ne0$.
 \end{boxtheorem}
-We want to apply the feedback linearization on the dynamic model in the task space in equation \eqref{dynModTaskSpace}. The FBL control law is\begin{equation}
+We want to apply the feedback linearization on the dynamic model in the task space in equation \eqref{dynModTaskSpace}. The FBL control law is\begin{equation}\label{exact_lin}
     \btau=MJ^{-1}\mathbf a+\mathbf c+\mathbf g-MJ^{-1}\dot J\dq 
 \end{equation}
 with $\mathbf a$ the control input of the linearized system (desired force + PD action), the closed loop equation is:\begin{align}
@@ -4956,8 +5080,246 @@ despite that, is purely kinematic. As a physical interpretation, when we lineari
     \centering 
      \includegraphics[width=0.8\textwidth ]{images/cartesian_linearization.png}
 \end{figure}
-in this way the control force $\mathbf F$ accelerate the end effector in the same direction of $\mathbf F$, while without linearization, the applied force $\mathbf F$ generates a torque $J^T\mathbf F$ that accelerate the end effector in a different direction (in the general case).
-\\\redText{TODO pacco di slide 13 pagina 10}
+in this way the control force $\mathbf F$ accelerate the end effector in the same direction of $\mathbf F$, while without linearization, the applied force $\mathbf F$ generates a torque $J^T\mathbf F$ that accelerate the end effector in a different direction (in the general case).\bigskip
+
+When $m=n$, the exact linearizing control law \eqref{exact_lin} can be rewritten in cartesian terms using the wrench vector $\mathbf F$ due to the relation $\mathbf F=J^{-T}\btau$:\begin{align}
+    \mathbf F&=\underbrace{(J^{-T}MJ^{-1})}_{M_y}\mathbf a+\underbrace{J^{-T}(\mathbf c-MJ^{-1}\dot J\dq )}_{\mathbf c_y}+\underbrace{J^{-T}\mathbf g}_{\mathbf g_y}\\
+    &=M_y\mathbf a + \mathbf c_y+\mathbf g_y
+\end{align}
+with the dynamics terms expressed in the cartesian space.\bigskip
+
+\noindent\textbf{Remarks}:\begin{itemize}
+    \item The design of the control law is completed by stabilizing the tracking error in the task space by setting $\mathbf a$ as a PD action with a feedforward term:\begin{equation}
+        \mathbf a=\ddy_d+K_D(\dy_d-\dy)+K_P(\y_d-\y)
+    \end{equation}
+    with $K_P,K_D$ diagonal positive definite matrices.
+    \item Due to the linearized behavior, the desired trajectory is exponentially stable and the transient depend on the choice of $K_P,K_D$. 
+    \item If $\y_d$ is constant, there are no particular simplification, the computation of the desired torque is heavier with respect to a regulation law, but the linearization provide exponential stability, the control law becomes:\begin{equation}
+        \btau=MJ^{-1}(K_P\mathbf e_y-K_DJ\dq)+\mathbf c+\mathbf g-MJ^{-1}\dot J\dq.
+    \end{equation}
+    \item The cartesian pose $\y$ can be measured by an external sensor (e.g., cameras) or computed trough the direct kinematics by measuring the current configuration $\q$.
+\end{itemize}
+\textbf{Redundant Case}: If $m<n$, we can't compute $MJ^{-1}=(JM^{-1})^{-1}$, instead we use the weighted pseudo inverse for a given matrix $W$:\begin{equation}
+    (JM^{-1})^\#_W=W^{-1}M^{-1}J^T(JM^{-1}W^{-1}M^{-1}J^T)^{-1}
+\end{equation}
+the control law becomes:\begin{equation}
+    \btau=(JM^{-1})^\#_W\mathbf a+\mathbf c+\mathbf g-(JM^{-1})^\#_W\dot J\dq 
+\end{equation}
+can be rewritten as follow:
+\begin{equation}
+    \btau=(JM^{-1})^\#_W\big(\mathbf a-\dot J\dq+JM^{-1}(\mathbf c+\mathbf g )\big)
+\end{equation}
+the extra $n-m$ degree of freedom can be controlled by a desired torque $\btau_N$ to project on the null space:
+\begin{align}
+    \btau=&(JM^{-1})^\#_W(\mathbf a-\dot J\dq+JM^{-1}(\mathbf c+\mathbf g ))+\\ 
+    &\big(I-(JM^{-1})^\#_WJM^{-1}\big)
+    \btau_N.
+\end{align}
+Three common choices for $W$ are:\begin{align}
+    &W=I\\ &W=M^{-1}\\ &W=M^{-2}.
+\end{align}
 \chapter{Advanced Control Laws}
 \section{Adaptive Control}
+When the model of the manipulator is not available, and we don't want to use machine learning solutions, we can define a non linear control law that has at its own states, the values of the dynamic coefficients, this kind of technique is called \textit{Adaptive Control}. This control law aim to bring the trajectory error to zero, without converging necessarily to the true values of the dynamic coefficients.
+
+We assume that the kinematic parameters are given (Denavit-Hartenberg parameters). This law achieves global asymptotic stability for the error:\begin{align}
+   & \mathbf e = \q_d-\q\rightarrow \mathbf 0\\
+  &  \dot{\mathbf e} = \dq_d-\dq\rightarrow \mathbf 0.
+\end{align}
+We rely on the linear parametrization of the model with respect to the dynamic coefficients $\brho$:\begin{equation}
+    Y(\q,\dq,\ddq)\brho=\btau.
+\end{equation}
+Our controller is split in two control laws, the first one that updates the state of the robot can be an inverse dynamics feedforward plus a PD linear control:\begin{equation}
+    \btau = \hat M(\q_d)\ddq_d+\hat C(\q_d,\dq_d)\dq_d+\hat{\mathbf g}(\q_d)+\hat B_v\dq_d+K_P\mathbf e+K_D\de
+\end{equation}
+or a non linear control based on feedback linearization:\begin{equation}\label{adaptiveFBL}
+    \btau = \hat M(\q)(\ddq_d+K_P\mathbf e+K_D\de)+\hat C(\q,\dq)\dq_d+\hat{\mathbf g}(\q)+\hat B_v\dq.
+\end{equation}
+In both cases, $\hat M$,$\hat C $,$\hat{\mathbf g}$ and $\hat B_v$ are estimation of the dynamic terms in the model, given by the current coefficients estimation $\hat\brho$. The feedback linearization \eqref{adaptiveFBL} controller may lead to instability if the estimation of the dynamic coefficient is particularly bad. The third (and final) trajectory control law that we will use is a nonlinear controller (without cancellations) that achieves global asymptotic stabilization:\begin{equation}
+    \btau=\hat M(\q)\ddq_d+\hat C(\q,\dq)\dq_d+\hat{\mathbf g}(\q)+\hat B_v\dq_d+K_P\mathbf e+K_D\de.
+\end{equation}
+Without extra assumption, there is a particular problem that can arise in this situation: It may be possible that joint velocities become ''clamped'' to those of the desired trajectory (zero velocity error), but a residual position error would be left. To overcome this problem, we modify the desired velocity in the controller by defining:\begin{equation}
+    \dq_r=\dq_d+\Lambda(\q_d-\q)
+\end{equation}
+with $\Lambda$ a positive definite matrix (typically $\Lambda=K_D^{-1}K_P$).
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/enhancedVel.png}
+\end{figure}
+The new velocity error is\begin{equation}
+    \boldsymbol{\sigma}=\dq_r-\dq>\dq_d-\dq=\de.
+\end{equation}
+now we have to design also and update law for $\dot{\hat \brho}$.
+\begin{boxdefinition}{Adaptive Control Law}{}
+    The adaptive control law that updates both the state of the robot $(\q,\dq)$ and the dynamic coefficients estimation $\hat{\brho}$ is defined as follows:\begin{align}
+        \btau&=\hat M(\q)\ddq_r+\hat C(\q,\dq)\dq_r+\hat{\mathbf g}(\q)+\hat B_v\dq_r+K_P\mathbf e+K_D\de\\ 
+        &=Y(\q,\dq,\dq_r,\ddq_r)\hat{\brho}+K_P\mathbf e+K_D\de\label{adaptive1}\\[2ex] 
+        \dot{\hat\brho}&=\Gamma  Y^T(\q,\dq,\dq_r,\ddq_r)\underbrace{(\dq_r-\dq)}_{\boldsymbol{\sigma}}.\label{adaptive2}
+    \end{align}
+\end{boxdefinition}
+\noindent$\Gamma$ is a positive definite matrix that specifies the variation rate of the estimates.
+\begin{boxtheorem}{}{}
+    The adaptive control law defined in equations \eqref{adaptive1} and \eqref{adaptive2} makes the tracking error along the the
+desired trajectory globally asymptotically stable (converging to zero):\begin{align}
+   & \mathbf e = \q_d-\q\rightarrow \mathbf 0\\
+  &  \dot{\mathbf e} = \dq_d-\dq\rightarrow \mathbf 0.
+\end{align}
+\end{boxtheorem}
+\noindent\textit{Proof}: Let $\tilde{\brho}=\brho-\hat\brho$ to be the error in estimation of the dynamic coefficients. The Lyapunov candidate for the closed loop system that we choose is the following:\begin{equation}
+    V=\frac{1}{2}\boldsymbol{\sigma}^TM(\q)\boldsymbol{\sigma}+\frac{1}{2}\mathbf e^TQ\mathbf e+\frac{1}{2}\tilde\brho^T\Gamma^{-1}\tilde\brho\ge 0
+\end{equation}
+where $Q$ is a constant positive definite matrix to be specified later. Since $M,Q$ and $\Gamma^{-1}$ are positive definite, $V$ is equal to zero only if\begin{align}
+    &\hat\brho=\brho\\ 
+    &\q=\q_d \\ 
+    &\dq=\dq_d.
+\end{align}
+The time derivative of $V$ is\begin{equation}
+    \dot V = \frac{1}{2}\bsigma^T\dot M(\q)\bsigma+\bsigma^TM(\q)\dot\bsigma+\mathbf e^T Q \de-\tilde\brho^T\Gamma^{-1}\dot{\hat\brho}. 
+\end{equation}
+We want to show that $\dot V$ is never positive, before doing that, we have to derive another relation: The closed loop dynamics is given by\begin{align}
+    M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)+B_v\dq=
+    \hat M(\q)\ddq_r+\hat C(\q,\dq)\dq_r+\hat{\mathbf g}(\q)+\hat B_v\dq_r+K_P\mathbf e+K_D\de
+\end{align}
+now we multiply both sides for $-1$ and add $\blueText{M(\q)\ddq_r+C(\q,\dq)\dq_r+\mathbf g(\q)+B_v\dq_r}$:
+\begin{align}
+    &\blueText{M(\q)\ddq_r+C(\q,\dq)\dq_r+\mathbf g(\q)+B_v\dq_r}-(M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)+B_v\dq)=\\
+    &\blueText{M(\q)\ddq_r+C(\q,\dq)\dq_r+\mathbf g(\q)+B_v\dq_r}-(\hat M(\q)\ddq_r+\hat C(\q,\dq)\dq_r+\hat{\mathbf g}(\q)+\hat B_v\dq_r+K_P\mathbf e+K_D\de)
+\end{align}
+Notice how we can group as follows:
+\begin{align}
+    &M(\q)(\ddq_r-\ddq)+C(\q,\dq)(\dq_r-\dq)+B_v(\dq_r-\dq)=\\
+    &(M(\q)-\hat M(\q))\ddq_r+(C(\q,\dq)-\hat C(\q,\dq))\dq_r +
+    (\mathbf g(\q)-\hat{\mathbf g}(\q))+( B_v-\hat B_v)\dq_r - K_P\mathbf e-K_D\de.
+\end{align}
+We recall that $\sigma = \dq_r-\dq$.  We denote the current error in estimations:\begin{align}
+   & \tilde M = \hat M-M\\ 
+    & \tilde C=C-\hat C\\ 
+    &\tilde{\mathbf g}=\mathbf g-\hat{\mathbf g}\\ 
+    &\tilde B_v=B_v-\hat B_v 
+\end{align}
+the closed loop system can be rewritten as follows:\begin{align}
+    &M(\q)\dot{\bsigma}+(C(\q,\dq)+B_v)\bsigma=\\ 
+    &\tilde M(\q)\ddq_r+\tilde C(\q,\dq)\dq_r+\tilde{\mathbf g}(\q)+\tilde B_v\dq_r- K_P\mathbf e-K_D\de.
+\end{align}
+Since the model is linear in the dynamic coefficients:\begin{align}
+    &M(\q)\dot{\bsigma}+(C(\q,\dq)+B_v)\bsigma=\\ 
+    &Y(\q,\dq,\dq_r,\ddq_r)\tilde\brho- K_P\mathbf e-K_D\de
+\end{align}
+the following identity follows:\begin{equation}\label{Mdotsigma}
+    M(\q)\dot{\bsigma}=
+    Y(\q,\dq,\dq_r,\ddq_r)\tilde\brho- K_P\mathbf e-K_D\de-(C(\q,\dq)+B_v)\bsigma.
+\end{equation}
+Now we can consider again $\dot V$ and substitute $M(\q)\dq$ with the relation found in equation \eqref{Mdotsigma}:
+\begin{align}
+   & \dot V = \frac{1}{2}\bsigma^T\dot M(\q)\bsigma+\bsigma^T\blueText{M(\q)\dot\bsigma}+\mathbf e^T Q \de-\tilde\brho^T\Gamma^{-1}\dot{\hat\brho}\implies \\ 
+   &  \dot V = \frac{1}{2}\bsigma^T\dot M(\q)\bsigma+\bsigma^T\blueText{(Y(\q,\dq,\dq_r,\ddq_r)\tilde\brho- K_P\mathbf e-K_D\de-(C(\q,\dq)+B_v)\bsigma)}+\mathbf e^T Q \de-\tilde\brho^T\Gamma^{-1}\dot{\hat\brho}.
+\end{align}
+We can also substitute $\dot{\hat\brho}$ with $\Gamma Y^T \bsigma$ as defined in the control law:\begin{align}
+     \dot V =& \frac{1}{2}\bsigma^T\dot M(\q)\bsigma+\bsigma^T{(Y(\q,\dq,\dq_r,\ddq_r)\tilde\brho- K_P\mathbf e-K_D\de-(C(\q,\dq)+B_v)\bsigma)}\\ &+\mathbf e^T Q \de-\tilde\brho^T\underbrace{\Gamma^{-1}\Gamma }_{I}Y^T(\q,\dq,\dq_r,\ddq_r)\bsigma
+\end{align}
+for readability we drop the dependencies on the notation:
+\begin{align}
+     \dot V =& \frac{1}{2}\bsigma^T\dot M\bsigma+\bsigma^T{(Y\tilde\brho- K_P\mathbf e-K_D\de-(C+B_v)\bsigma)}\\ &+\mathbf e^T Q \de-\tilde\brho^TY^T\bsigma
+\end{align}
+we distribuite $\bsigma^T$:
+\begin{align}
+     \dot V =& \frac{1}{2}\bsigma^T\dot M\bsigma+\sapText{\bsigma^TY\tilde\brho}- \bsigma^TK_P\mathbf e-\bsigma^TK_D\de\\ &-\bsigma^TC\bsigma-\bsigma^TB_v\bsigma+\mathbf e^T Q \de-\sapText{\tilde\brho^TY^T\bsigma} \implies \\[2ex] 
+     \dot V =& \frac{1}{2}\bsigma^T\dot M\bsigma- \bsigma^TK_P\mathbf e-\bsigma^TK_D\de\\ &-\bsigma^TC\bsigma-\bsigma^TB_v\bsigma+\mathbf e^T Q \de
+\end{align}
+We can cancel $\dot M$ and $C$:\begin{align}
+     \dot V =& \frac{1}{2}\bsigma^T\dot M\bsigma- \bsigma^TK_P\mathbf e-\bsigma^TK_D\de\\ &-\bsigma^TC\bsigma-\bsigma^TB_v\bsigma+\mathbf e^T Q \de\implies \\[2ex]
+     \dot V =& \bsigma^T(\sapText{\dot M-2C})\bsigma- \bsigma^TK_P\mathbf e-\bsigma^TK_D\de\\ &-\bsigma^TB_v\bsigma+\mathbf e^T Q \de\implies \\[2ex]
+      \dot V =&-\bsigma^TK_P\mathbf e-\bsigma^TK_D\de-\bsigma^TB_v\bsigma+\mathbf e^T Q \de\implies \\[2ex]
+       \dot V =&-\bsigma^T(K_P\mathbf e+K_D\de)-\bsigma^TB_v\bsigma+\mathbf e^T Q \de.
+\end{align}
+Now we replace $\sigma=\de+\Lambda\mathbf e$:\begin{equation}
+    \dot V=-\mathbf e^T(\Lambda^TB_v\Lambda+\Lambda^TK_P)\mathbf e -
+    \mathbf e^T(2\Lambda^TB_v+\Lambda^TK_D+K_P-Q)\de-\de^T(B_v+K_D)\de
+\end{equation}
+We didn't defined  $Q$ and $\Lambda$ yet, by letting\begin{equation}
+    \Lambda=K_D^{-1}K_P, \ \ Q=2K_P(I+K_D^{-1}B_v)
+\end{equation}
+both positive definite, we have\begin{align}
+    \dot V=&-\mathbf e^T((K_D^{-1}K_P)^TB_v(K_D^{-1}K_P)+(K_D^{-1}K_P)^TK_P)\mathbf e \\
+    &-\mathbf e^T(2(K_D^{-1}K_P)^TB_v+(K_D^{-1}K_P)^TK_D+K_P-2K_P(I+K_D^{-1}B_v))\de-\de^T(B_v+K_D)\de
+\end{align}
+this is simplified in\begin{equation}
+    \dot V=-\mathbf e^T \underbrace{K_PK_D^{-1}(B_v+K_D)K_D^{-1}K_P}_{\text{pos. definite}}\mathbf e - 
+    \de^T\underbrace{(B_v+K_D)}_{\text{pos. definite}}\de\le 0
+\end{equation}
+and thus:\begin{equation}
+    \dot V=0\iff \mathbf e = \de = \mathbf 0. 
+\end{equation}
+By using the Barbalat lemma (we skip this part of the proof), the LaSalle theorem applies and the system is proven to be asymptotically stable around $(\q,\dq)=(\mathbf 0,\mathbf 0)$.\hfill$\blacksquare$\bigskip
+
+\noindent The maximal invariant set of states guarantee zero trajectory error, and a constant value for $\hat\brho$, but is not guaranteed that $\hat \brho = \brho$ (i.e. $\tilde\brho$ might be non zero).\bigskip
+
+\noindent\textbf{Remarks}:\begin{itemize}
+    \item The adaptive control law does not require the inversion of the inertia matrix.
+    \item The adaptation can also be made for a subset of the dynamic coefficients (in case some of them are known). 
+    \item If the desired trajectory $\q_d(t)$ is \textit{persistently exciting}\footnote{
+        for non linear system is hard to check if the trajectory is sufficiently exciting (a squared integral of motion should always be positively bounded from below).
+    }, the estimation of the dynamic coefficients converge to their true values.
+    \item A minimal linear parametrization is not strictly required, but is useful to reduce control complexity.
+    \item The non adaptive law, by using only \eqref{adaptive1}, with a good estimation of the parameters, is a global tracking controller with static feedback.
+\end{itemize}
+\noindent\textbf{Case Study}: We consider a single link under gravity (actuated pendulum), the model is\begin{equation}
+    I\ddot\theta+mg_0d_c\sin\theta+b_v\dot \theta=\tau 
+\end{equation}
+the linear parametrization is\begin{equation}
+    Y\brho=\begin{pmatrix}
+        \ddot\theta&\sin\theta&\dot\theta 
+    \end{pmatrix}\begin{pmatrix}
+        I\\ mg_0d_c\\ b_v 
+    \end{pmatrix}=\tau
+\end{equation}
+we denote \begin{equation}
+    I=\rho_1, \ mg_0d_c = \rho_2, \ b_v = \rho_3 
+\end{equation}
+the new enhanced velocity to avoid clamping is\begin{equation}
+    \dot\theta_r=\dot\theta_d+\underbrace{\frac{k_P}{k_D}}_{\Lambda}\underbrace{(\theta_d-\theta)}_{e}
+\end{equation}
+the adaptive control law is the following:\begin{align}
+    \tau=&\hat\rho_1\ddot\theta_r+\hat\rho_2\sin\theta+\hat\rho_3\dot\theta_r\\[1.5ex]
+    \dot{\hat\brho}=&\begin{pmatrix}
+        \gamma_1\ddot\theta_r\\ 
+        \gamma_2\sin\theta \\ 
+        \gamma_3\dot\theta_r
+    \end{pmatrix}(\dot\theta_r-\dot\theta)
+\end{align}
+with $\gamma_i>0$. We execute a simulation where the real dynamic coefficients are\begin{equation}
+    \rho_1=7.5, \ \ \rho_2=6, \ \ \rho_3=1
+\end{equation}the estimations:\begin{equation}
+   \hat \rho_1=5, \ \ \hat\rho_2=5, \ \ \hat\rho_3=2
+\end{equation}
+the control parameters:\begin{equation}
+    k_P=25, \ \ k_D=10, \ \ \gamma_i=5
+\end{equation}
+we test the system on two trajectories. The \textit{first trajectory} is $\theta_d(t)=-\sin t$, the \textit{second trajectory} is a periodic bang bang profile for the acceleration with $A=1 \frac{\text{rad}}{s^2}$ and $\omega=1\frac{\text{rad}}{s}$.\bigskip
+
+\noindent\textbf{Results}:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/adaptive1.png}
+\end{figure}\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/adaptive2.png}
+\end{figure}\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/adaptive3.png}
+\end{figure}
+\subsection{Adaptive Regulation}
+If $\q_d$ is constant, there are no further simplification with respect to the general tracking casa, since $\dq_r=\Lambda\mathbf e$, $\ddq_r=-\Lambda\dq$ do not vanish. Instead of using the trajectory controller \eqref{adaptive1}, if we let $\dq_r=\dq_d=\mathbf 0$ most of the dynamic terms cancels and  only adaptation of
+the gravity term is left over, so we use a linear parametrization only for the gravity term:\begin{equation}
+    \mathbf g(\q)=G(\q)\brho_g.
+\end{equation}
+\begin{boxdefinition}{Adaptive Regulation Controller}{}
+    The adaptive control law for the regulation case that adapts only the dynamic coefficients estimation $\hat\brho_g$ is the following\begin{align}
+        &\btau=G(\q)\hat\brho_g+K_P(\q_d-\q)-K_D\dq \\ 
+        &\dot{\hat\brho}_g=\gamma G^T(\q)\left(
+            \frac{2\mathbf e}{1+2\|\mathbf e\|}-\beta\dq
+        \right)
+    \end{align}
+    with $\gamma>0$ and $\beta>0$ is a constant coefficient to be chosen \textit{sufficiently large}. 
+\end{boxdefinition}
 \end{document}

@@ -955,6 +955,129 @@ If we use experimental data to define two models to predict $x[n]$, one using ju
           \centering
           \includegraphics[width=0.9\textwidth]{images/predictions.eps}
 \end{figure}
+\noindent\textbf{Causality Test}: The prediction performances for both models can be assessed by the \textit{variances} of the prediction errors:$$\begin{matrix}
+     V_{x|x}=\text{var}(e_x)& &  V_{x|x,y}=\text{var}(e_{xy})\\
+     V_{y|y}=\text{var}(e_y)& &  V_{y|y,x}=\text{var}(e_{yx})
+\end{matrix}$$
+$x|x$ indicate predicting $x$ by its past values alone and $x|x,y$ indicate predicting $x$ bt its past values and the past values of $y$. If $V_{x|x,y}<V_{x|x}$ then $y$ Granger-cause $x$ in the sense of Granger causality, and a measure of this causality is given by:\begin{equation}
+     G_{y\rightarrow x}=\ln\left(
+          \frac{V_{x|x}}{V_{x|x,y}}
+     \right)
+\end{equation}
+that measures ''how much'' $y$ cause $x$. To measure how $x$ cause $y$ we have:\begin{equation}
+     G_{x\rightarrow y}=\ln\left(
+          \frac{V_{y|y}}{V_{y|y,x}}
+     \right).
+\end{equation}
+If the past of $y$ does not improve the prediction of $x$, then $V_{x|x,y}\simeq V_{x|x}\implies G_{y\rightarrow x}\simeq 0$. Any improvement in prediction of $x$ by the inclusion of $y$ makes $V_{x|x,y}$ decrease, and consequently $G_{y\rightarrow x}$ increase. Any addition of information should never decrease the model accuracy: $V_{x|x,y}$  should not be greater than $V_{x|x}$ (if it does, there's probably something wrong with the modelling):\begin{equation}
+     G_{y\rightarrow x}\in [0,+\infty].
+\end{equation}
+\textbf{Advantages}:\begin{itemize}
+     \item Directionality: $G_{y\rightarrow x}\ne  G_{x\rightarrow y}$. 
+     \item Statistical meaning.
+\end{itemize}
+\textbf{Limitations}:\begin{itemize}
+     \item Defined in the time domain (in the time window we used to
+identify the model) provided that the signals are stationary in
+that window.
+     \item True causality can only be assessed if the set of two time series
+contains all possible relevant information and sources of
+activities for the problem.
+\end{itemize}
+\section{Pairwise and Multivariate Approaches}
+Let's consider a set of signals that we have sampled from a process:\begin{equation}
+     x_1[n], \ x_2[n] \ \dots \ x_i[n] \ \dots \ x_N[n]
+\end{equation}
+We might analyze all these signals pairwise and assess causality between each couple. The problem is that any pairwise model analyzing the relation between two signals cannot recognize the statistical link between them is due
+to the common effect of a third signal,
+which is not included in the model.\begin{center}
+     \includegraphics[width=0.6\textwidth]{images/Spurious_link.eps} 
+\end{center} 
+An \textbf{example} of this concept is the following: In summer the whether is hot, this means that ice cream shops sell more ice creams and that at three in the afternoon there are fewer people around: These two effects are related as they come from the same cause (the heat), despite this, they are not directly caused by each other.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/MVAR.png}
+\end{figure} 
+In a \textbf{Multivariate autoregressive model (MVAR)}, the prediction of each signal $x_i$ is take by considering all the available $N$ signals, the mathematical regressor (that analyze the past $p$ observations) is defined as follows:\begin{align}
+     & x_1[n]=-\sum_{k=1}^pa_{11}[k]x_1[n-k]-\sum_{k=1}^pa_{12}[k]x_2[n-k]-\dots -\sum_{k=1}^pa_{1N}[k]x_N[n-k]+e_1[n]\\ 
+     & x_2[n]=-\sum_{k=1}^pa_{21}[k]x_1[n-k]-\sum_{k=1}^pa_{22}[k]x_2[n-k]-\dots -\sum_{k=1}^pa_{2N}[k]x_N[n-k]+e_2[n]\\ &\vdots \\
+     & x_N[n]=-\sum_{k=1}^pa_{N1}[k]x_1[n-k]-\sum_{k=1}^pa_{N2}[k]x_2[n-k]-\dots -\sum_{k=1}^pa_{NN}[k]x_N[n-k] +e_N[n]
+\end{align}
+of course the estimations $\hat x_i[n]$ are defined in this way by removing the residual errors $e_i[n]$. The model parameters are:\begin{align}
+     &\bar a[1]=\begin{pmatrix}
+          a_{11}[1]&\dots & a_{1N}[1]\\ 
+          \vdots &\ddots&\vdots\\ 
+          a_{N1}[1]&\dots&a_{NN}[1]
+     \end{pmatrix}\\ &\vdots\\ 
+     &\bar a[p]=\begin{pmatrix}
+          a_{11}[p]&\dots & a_{1N}[p]\\ 
+          \vdots &\ddots&\vdots\\ 
+          a_{N1}[p]&\dots&a_{NN}[p]
+     \end{pmatrix}
+\end{align}
+and are exactly $pN^2$. The $N$ variances of the residual are\begin{equation}
+     S_e=\begin{pmatrix}
+          \sigma_1\\ \sigma_2\\\vdots \\ \sigma_N
+     \end{pmatrix}
+\end{equation}
+so the total number of parameters are $N(pN+1)$. Let's group the $N$ signals in vectors:\begin{equation}
+     \mathbf x[n]=\begin{pmatrix}
+          x_1[n]\\ \vdots \\ x_N[n]
+     \end{pmatrix}, \ \ \ \mathbf e[n]=\begin{pmatrix}
+          e_1[n]\\ \vdots \\ e_N[n]
+     \end{pmatrix}
+\end{equation}
+in this way the MVAR model can be rewritten in matrix form as follows:\begin{equation}
+     \mathbf x[n]+\sum_{k=1}^p\bar a[k]\mathbf x[n-k]=\mathbf e[n]
+\end{equation}
+We can rewrite the model in the homogeneous form by pushing $\mathbf x[n]$ inside the matrix multiplication and obtaining:\begin{equation}
+    \sum_{k=0}^pA[k]\mathbf x[n-k]=\mathbf e[n]
+\end{equation}
+where \begin{itemize}
+     \item $A[0]=I$
+     \item $\bar a[i]=A[i]$ for $i>0$.
+\end{itemize}
+Not how in the model is present a convolution between $A[k]$ and $\mathbf x[n-k]$, this in the frequency domain is a multiplication, the model after the Fourier transform is:\begin{equation}
+     \sum_{k=0}^pA[k]\mathbf x[n-k]=\mathbf e[n] \xrightarrow{\mathcal F}\tilde A(f)\tilde {\mathbf x}(f)=\tilde{\mathbf e}(f)
+\end{equation}
+where\begin{equation}
+     \tilde A_{ij}(f)=\sum_{k=0}^p a_{ij}[k]e^{-j2\pi fT k}.
+\end{equation}
+The \textbf{partial directed coherence (PDC)} between signal $i$ and $j$ is the squared norm of the element $i,j$ of the matrix $A$ in the frequency domain:\begin{equation}
+     \pi_{ij}(f)=|\tilde A_{ij}(f)|^2.
+\end{equation}
+Usually the PDC are normalized, for example:\begin{equation}
+     \pi_{ij}(f)=\frac{|\tilde A_{ij}(f)|^2}{\sum_{m=1}^N |\tilde A_{im}(f)|^2}
+\end{equation}
+where\begin{equation}
+     \sum_{n=1}^N\pi_{in}(f)=1.
+\end{equation}
+The PDC is directed since $\tilde A_{ij}(f)\ne\tilde A_{ji}(f)$, the value of the PDC $\pi_{ij}$ at a certain frequency represents the existence
+of a causality link directed from signal $j$ to signal $i$. As a recap:\begin{itemize}
+     \item The ordinary coherence $C_{ij}$ is a spectral bivariate quantity and is undirected.
+     \item The Granger causality index $G_{ij}$ is directed and bivariate, is not defined in the frequency domain. 
+     \item The PDC is a multivariate, directed spectral index.
+\end{itemize}
+\textbf{Bivariate Approach}:\begin{itemize}
+     \item Advantages:\begin{itemize}
+          \item No limit to the number of signals.
+          \item To be used when short data segments are available.
+     \end{itemize}
+     \item \textit{Limitations}:\begin{itemize}
+          \item Reduced accuracy.
+     \end{itemize}
+\end{itemize}
+\textbf{Multivariate Approach}:\begin{itemize}
+     \item Advantages:\begin{itemize}
+          \item Better estimation performances.
+          \item Allows for inserting all data sources in the model.
+     \end{itemize}
+     \item \textit{Limitations}:\begin{itemize}
+          \item Limitation in the number of channels/signal that can be
+modeled $\implies$ more data required.
+     \end{itemize}
+\end{itemize}
+\section{Graph Theory Recap}
 
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
