@@ -5322,4 +5322,110 @@ the gravity term is left over, so we use a linear parametrization only for the g
     \end{align}
     with $\gamma>0$ and $\beta>0$ is a constant coefficient to be chosen \textit{sufficiently large}. 
 \end{boxdefinition}
+\chapter{Interaction With the Environment}
+The end effector of a manipulator may interact with the environment, exchanging forces or modifying the state of it. For some tasks,  a force perception better helps with respect to visual perception (imagine a peg in hole task), and then a 6D force/torque (wrench) sensor becomes necessary. Generally speaking, we have to introduce some \textbf{compliance} in our control, this compliance can be introduced in two ways:\begin{itemize}
+    \item Active: The control law modify the behavior of the robot based on the force/torque sensor  measured information.
+    \item Passive: The robot end effector is equipped with mechatronic devices that introduce compliance.
+\end{itemize}
+An example of passive compliance is given by the \textbf{Remote Center of Compliance (RCC)}: Is a device made with two plates, between these plates there are springs or elastic elements, the top plate is attached to the robot, the bottom plate to the end effector. The compliance given by the springs provide tolerance, when a force is applied on the end effector, the bottom plate react by moving toward that direction (same behavior with angular forces). The RCC parameters (springs displacement) can be tuned.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/RCC.png}
+\end{figure}
+Usually a 6D force/torque sensor is placed on the wrist of the manipulator, or $n$ scalar torque sensors may be placed at each joint.
+In industry various tasks  involve  interaction with the environment, some examples:\begin{itemize}
+    \item Mechanical machining: deburring, surface finishing, polishing, assembly, bone machining in orthopedics surgery.
+    \item Tele-manipulation: force feedback improves performance of human operators in
+leader-follower systems.
+    \item Contact exploration for shape identification.
+    \item Cooperation of multi-robot systems.
+    \item Physical human-robot interaction.
+\end{itemize}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/machining.png}
+\end{figure}
+Most of the time te desired motion and execution should be integrated with complementary data for the desired force.
+\section{Constrained Robot Dynamics}
+Consider a mass that moves in the plane $(x,y)$, subject to two orthogonal control forces $f_x,f_y$. There is a infinitely stiff wall at $x=c$.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.45\textwidth ]{images/wall.png}
+\end{figure}
+The dynamics is given by\begin{align}
+    &m\ddot x=f_x+f_e\\ 
+    &m\ddot y=f_y.
+\end{align}
+$f_e$ is the force exerted by the environment, when $x<c$, $f_e=0$, instead, when $x=c$ and $f_x>0$, the dynamics is locked and the force exerted balances $f_x$\begin{align}
+    &\dot x=0\\ 
+    &\ddot x=0\\ 
+    &f_e=-f_x.
+\end{align}
+In other cases the wall might be compliant and not infinitely stiff.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.45\textwidth ]{images/wall2.png}
+\end{figure}
+The dynamics can be modelled with a spring:\begin{align}
+    &m\ddot x=f_x+f_e\\ 
+    &m\ddot y=f_y
+\end{align}
+and\begin{align}
+    &x<c\implies f_e=0\\ 
+    &x\ge c \implies f_e=K_e(x-c), \ \ \ K_e>0.
+\end{align}
+However, we need a general way to describe more complex  situations where the end effector is constrained to move on a curve or on a surface with nonlinear geometry.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.45\textwidth ]{images/constrained_circle.png}
+\end{figure}
+It is possible to use the geometric definition of the constraints in order to derive a dynamic model of the robot where the only motion admitted is the one that doesn't violate the constraints (the robot loses degrees of freedom).
+
+First of all, we assume that the constraints (defined in the task space) are defined in the general following form:\begin{equation}
+    \mathbf f(\mathbf y)=\mathbf 0
+\end{equation}
+where $\mathbf f(\y)$ is a $l$-dimensional vector defining the $l$-constraints.
+Since the dynamics is presented in the joint space, we compose this function with the direct kinematics $k$ in order to define the constraints in the joint space:\begin{equation}
+   \mathbf h(\q)=\mathbf f(k(\q))=\mathbf 0
+\end{equation}
+To derive the constrained robot dynamics, we define the augmented Lagrangian.
+\begin{boxdefinition}{Augmented Lagrangian}{}
+    \begin{equation}
+    \mathcal L_a(\q,\dq,\boldsymbol{\lambda})=\mathcal L(\q,\dq)+\boldsymbol{\lambda}^T\mathbf h(\q)=T(\q,\dq)-U(\q)+\boldsymbol{\lambda}^T\mathbf h(\q).
+\end{equation}
+\end{boxdefinition}
+
+$\boldsymbol{\lambda}$ is the $l$-components vector of the so called \textbf{Lagrangian multipliers} and is interpreted as the generalized  forces that arise at the contact when attempting to violate the constraints. The dynamics in the $n+l$ variables (joints and Lagrangian multipliers) is found by applying the Euler-Lagrange equations:\begin{align}
+    &\frac{d}{dt}\left(\frac{\partial\mathcal L_a}{\partial\dq}\right)^T-\left(\frac{\partial\mathcal L_a}{\partial\q}\right)^T=
+    \frac{d}{dt}\left(\frac{\partial\mathcal L}{\partial\dq}\right)^T-\left(\frac{\partial\mathcal L}{\partial\q}\right)^T-\left(
+        \frac{\partial}{\partial \q}(\boldsymbol{\lambda}^T\mathbf h(\q))
+    \right)^T=\btau
+    \\
+    &\left(\frac{\partial\mathcal L_a}{\partial\boldsymbol{\lambda}}\right)^T=\mathbf h(\q)=\mathbf 0
+\end{align}
+Since $\boldsymbol{\lambda}$ doesn't depend on $\q$, we can rewrite\begin{equation}
+    \left(
+        \frac{\partial}{\partial \q}(\boldsymbol{\lambda}^T\mathbf h(\q))
+    \right)=\boldsymbol{\lambda}^T\frac{\partial\mathbf h(\q)}{\partial \q}=\boldsymbol{\lambda}^TA(\q)
+\end{equation}
+hence the dynamic model is\begin{align}
+    &M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)=\btau+A^T(\q)\boldsymbol{\lambda}\label{constrained_dyn}\\
+    &\mathbf h(\q)=\mathbf 0. 
+\end{align}
+From now on we will assume that the Jacobian of the constraints $A$ is always full rank. Equation \eqref{constrained_dyn} describes the robot dynamics under the constraints, we want to get rid of the Lagrangian multipliers in order to have an equations only on the joint coordinates $\q$. We proceeds with the following steps:\begin{itemize}
+    \item We derive $\mathbf h$ with respect to the time two times:\begin{align}
+       & \dot{\mathbf h}=\frac{\partial \mathbf h(\q)}{\partial \q}\dq=A(\q)\dq\implies\\ 
+       & \ddot{\mathbf h}=A(\q)\ddq+\dot A(\q)\dq=\mathbf 0.
+    \end{align}
+    \item From the dynamic model in equation \eqref{constrained_dyn} we isolate the acceleration\begin{equation}
+        \ddq=M^{-1}(\q)(-\mathbf c(\q,\dq)-\mathbf g(\q)+\btau+A^T(\q)\boldsymbol{\lambda})
+    \end{equation}
+    and substitute in (we drop the notation of dependencies):\begin{align}
+        &A\blueText{\ddq}+\dot A\dq=\mathbf 0\implies\\
+        &A\blueText{M^{-1}(\btau+A^T\boldsymbol{\lambda}-\mathbf c-\mathbf g)}+\dot A\dq=\mathbf 0.
+    \end{align}
+    \item At this point we can solve for the multipliers:\begin{equation}
+        \boldsymbol{\lambda}=
+    \end{equation}
+\end{itemize}
 \end{document}
