@@ -5424,8 +5424,188 @@ From now on we will assume that the Jacobian of the constraints $A$ is always fu
         &A\blueText{\ddq}+\dot A\dq=\mathbf 0\implies\\
         &A\blueText{M^{-1}(\btau+A^T\boldsymbol{\lambda}-\mathbf c-\mathbf g)}+\dot A\dq=\mathbf 0.
     \end{align}
-    \item At this point we can solve for the multipliers:\begin{equation}
-        \boldsymbol{\lambda}=
-    \end{equation}
+    \item At this point we can solve for the multipliers:\begin{align}
+        &\boldsymbol{\lambda}=\underbrace{(AM^{-1}A^T)^{-1}(AM^{-1}}_{(A_M^\#)^{T}}(\mathbf c+\mathbf g-\btau)-\dot A\dq)\\ 
+        &\boldsymbol{\lambda}=(A_M^\#)^{T}(\mathbf c+\mathbf g-\btau)-(AM^{-1}A^T)^{-1}\dot A\dq.
+    \end{align}
 \end{itemize}
+We can replace $\boldsymbol{\lambda}$ in the dynamic model \eqref{constrained_dyn} in order to derive the final \textit{constrained dynamic model}:\begin{equation}\label{dyn_model_constr}
+    M\ddq=\underbrace{(I-A^T(A_M^\#)^T)}_{(I-A_M^\#A)^T}(\btau-\mathbf c-\mathbf g)-MA_M^\#\dot A\dq
+\end{equation}
+$(I-A^T(A_M^\#)^T)$ is the dynamically consistent projection matrix, the expanded form of the weighted pseudo inverse of $A$ is\begin{equation}
+    A_M^\#=M^{-1}A^T(AM^{-1}A^T)^{-1}.
+\end{equation}
+\begin{boxproposition}{}{}
+    If the robot state $(\q(0),\dq(0))$ at time $t=0$ satisfies the constraints\begin{equation}
+        \mathbf h(\q(0))=\mathbf 0, \ \ \ A(\q(0))\dq=\mathbf 0 
+    \end{equation}
+    then the robot evolution described by the dynamic model in \eqref{dyn_model_constr} will never violate the constraints for all $t\ge 0$.
+\end{boxproposition}
+\noindent\textbf{Example}: We consider the 2R robot, constrained to move the end effector on a circle:\begin{equation}
+    f(\mathbf p)=(x-x_c)^2+(y-y_c)^2-R^2=0 
+\end{equation}
+where $\mathbf p=\begin{pmatrix}
+    x&y
+\end{pmatrix}^T$ is the end effector position given by $k(\q)$:\begin{equation}
+    \mathbf p = k(\q)=\begin{pmatrix}
+        l_1c_1+l_2c_{12}\\ 
+        l_1s_1+l_2s_{12}
+    \end{pmatrix}
+\end{equation}
+the constraint in the joint space is\begin{equation}
+    h(\q)=( l_1c_1+l_2c_{12}-x_c)^2+(l_1s_1+l_2s_{12}-y_c)^2-R^2=0 
+\end{equation}
+$\begin{pmatrix}
+    x_c&y_c
+\end{pmatrix}^T$ is the center of the circle while $R$ is the radius.\begin{align}
+    &\dot h = \frac{\partial f}{\partial {\mathbf p}}\frac{\partial  {\mathbf p}}{\partial \q}\frac{d \q}{dt}=\begin{pmatrix}
+        2(x-x_c)&2(y-y_c)
+    \end{pmatrix}J\dq=\\
+    &\underbrace{\begin{pmatrix}
+        2(( l_1c_1+l_2c_{12})-x_c)&2(( l_1s_1+l_2s_{12})-y_c)
+    \end{pmatrix}J}_{A}\dq=A\dq.
+\end{align}
+\subsection{Reduced Robot Dynamics}
+We assume that the number of constraints is less than $n$: $n-l>0$. We can derive a reduced model defined in a $n-l$ dimensional configuration space. The first step is to choose (arbitrarily) a matrix $D(\q)$ that satisfies the following property:\begin{equation}
+    \begin{pmatrix}
+        A(\q)\\ D(\q)
+    \end{pmatrix}\text{ is a non singular $n\times n$ matrix}
+\end{equation}
+and\begin{equation}
+    \begin{pmatrix}
+        A(\q)\\ D(\q)
+    \end{pmatrix}^{-1}=\begin{pmatrix}
+        E(\q)& G(\q)
+    \end{pmatrix}.
+\end{equation}
+of course\begin{align}
+    &A(\q)^{-1}=E(\q)\\
+    &D(\q)^{-1}=G(\q).
+\end{align}
+We define the vector of \textbf{reduced velocities} as follows:\begin{equation}
+    \mathbf u=D(\q)\dq.
+\end{equation}
+About the notation: Previously the symbol $\mathbf u$ has been used to denote non-conservative forces in the dynamic model of a robot. In this context, $\mathbf u$ is in no way related to these forces, but is a ''virtual'' vector defined as the product of $D$ and $\dq$.
+
+The reduced acceleration is\begin{equation}
+    \dot{\mathbf u }=D(\q)\ddq+\dot D(\q)\dq. 
+\end{equation}
+The inverse relation is\begin{equation}
+    \dq=G(\q)\mathbf u 
+\end{equation}
+and\begin{equation}
+    \ddq=G(\q) \dot{\mathbf u }+\dot G(\q)\mathbf u 
+\end{equation}
+Usually, the matrix $G$ is provided only numerically (in fact, $A$ and $D$ are analytically defined, while $E$ and $G$ can be found numerically at each iteration), so we would like to avoid the computation of $\dot G$, to do so, we can use the following relation that follows from a series of properties:\begin{itemize}
+    \item We know that\begin{equation}
+        \begin{pmatrix}
+            A\\ D
+        \end{pmatrix}\begin{pmatrix}
+            E&G
+        \end{pmatrix}=\begin{pmatrix}
+            AE&AG\\ 
+            DE&DG
+        \end{pmatrix}=
+        \begin{pmatrix}
+            I&\mathcal O \\ 
+           \mathcal O  &I
+        \end{pmatrix}
+    \end{equation}
+    and \begin{equation}
+         \begin{pmatrix}
+            E&G
+        \end{pmatrix}\begin{pmatrix}
+            A\\ D
+        \end{pmatrix}=EA+GD=I 
+    \end{equation}
+    where we denoted $\mathcal O$ the zero matrix.
+    \item we differentiate with respect to the time this last identity:\begin{align}
+        &\dot EA+E\dot A+\dot GD+G\dot D=\mathcal O\implies \\
+        &\label{dotGD}\dot GD=-\dot EA-E\dot A-G\dot D.
+    \end{align}
+\end{itemize}
+By replacing $\mathbf u = D\dq$ we have the inverse relation:\begin{equation}
+    \ddq=G \dot{\mathbf u }+\dot GD\dq
+\end{equation}
+we substitute in \eqref{dotGD}:\begin{align}
+    &\ddq=G \dot{\mathbf u }-(\dot EA+E\dot A+G\dot D)\dq\implies\\
+    &\ddq=G \dot{\mathbf u }-(\dot EA+E\dot A+G\dot D)G\mathbf u\implies\\
+    &\ddq=G \dot{\mathbf u }-(\dot E\sapText{AG}+E\dot AG+G\dot DG)\mathbf u\implies\\
+    &\ddq=G \dot{\mathbf u }-(E\dot A+G\dot D)G\mathbf u.
+\end{align}
+At this point, $\mathbf u$ and $\dot{\mathbf u}$ are the reduced velocity and acceleration of the model, we would like to describe the time evolution of these quantities. Let's consider the dynamic model:\begin{equation}\label{model_const}
+    M\ddq+\mathbf c+\mathbf g=\btau+A^T\boldsymbol{\lambda} 
+\end{equation}
+We isolate the multipliers from \eqref{model_const} by left multiplying by $E^T$ since $AE=I$:\begin{equation}
+    E^T(M\ddq+\mathbf c+\mathbf g-\btau)=\boldsymbol{\lambda} 
+\end{equation}
+we can eliminate the multipliers from \eqref{model_const} by left multiplying by $G^T$ since $AG=\mathcal O$:\begin{equation}
+    G^TM\ddq=G^T(\btau-\mathbf c-\mathbf g).
+\end{equation}
+At this point we can use the inverse relations for $\mathbf u$ and $\dot{\mathbf u}$ to substitute in the model in order to derive the dynamic equations in the reduced velocities:
+    \begin{equation}\label{dotu}
+   ( G^TMG)\dot{\mathbf u}=G^T(\btau-\mathbf c-\mathbf g+M(E\dot A+G\dot D)G\mathbf u)
+\end{equation}
+which is the $n-l$-dimensional dynamic model. Similarly the multipliers value (general forces exerted on the end effector while trying to violate the constraints) can be computed with $\mathbf u,\dot{\mathbf u}$ as follows:\begin{equation}\label{lamdba_val}
+    \boldsymbol{\lambda}=E^T(MG\dot{\mathbf u}-M(E\dot A+G\dot D)G\mathbf u+\mathbf c+\mathbf g-\btau).
+\end{equation}
+
+\begin{boxdefinition}{Reduced Model Dynamics}{}\begin{enumerate}
+    \item we have the constrained model $M\ddq+\mathbf c+\mathbf g=\btau+A^T\boldsymbol{\lambda}$ 
+    \item we choose an appropriate $D(\q)$ and compute $E,G$ (numerically at each time step)
+    \item suppose that we are in the state $(\q,\dq)$ and we want to know the value of $\ddq$ under the constraints 
+    \item we use $(\q,\dq)$ to compute $\mathbf u=D(\q)\dq$
+    \item we use $\mathbf u,\q,\dq$ to compute $\dot{\mathbf u}$ with the equation \eqref{dotu}
+    \item by the relation $$ \ddq=G \dot{\mathbf u }-(E\dot A+G\dot D)G\mathbf u$$
+    we can compute the current constrained acceleration $\ddq$ and compute the next state.
+\end{enumerate}
+\end{boxdefinition}
+In this way is possible to simulate the time evolution of the constrained model, we recall that only $A$ and $D$ are given analytically (they have to be differentiated) while $E$ and $G$ are computed numerically.\bigskip
+
+\noindent\textbf{About the friction}: This way of modelling assumes that the constraints are \textit{purely geometric} and exerts \underline{zero friction} on the end effector, in fact, this friction is considered disturbances.\bigskip
+
+\noindent\textbf{Example}: We always use the 2R constrained on a circle example, we already defined the matrix $A$:\begin{equation}
+    A=\begin{pmatrix}
+        2(x-x_c)&2(y-y_c)
+    \end{pmatrix}J
+\end{equation}
+a feasible selection of $D$ is\begin{equation}
+    D=\begin{pmatrix}
+        -\frac{1}{2}(y-y_c)&-\frac{1}{2}(x-x_c)
+    \end{pmatrix}J
+\end{equation}
+the determinant of $\begin{pmatrix}
+    A\\ D
+\end{pmatrix}$ is $R^2\det J$, that is always non zero when the Jacobian is non singular. We have\begin{equation}
+    u=\begin{pmatrix}
+        -\frac{1}{2}(y-y_c)&-\frac{1}{2}(x-x_c)
+    \end{pmatrix}J\dq \in \R
+\end{equation}
+that is a scalar and represents the scalar tangential velocity to the circle.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/constrained_circle2.png}
+\end{figure}
+The constrained velocity $\dq$ is given by $G=D^{-1}$:\begin{equation}
+    \dq=Gu=J^{-1}\frac{-2}{R^2}\begin{pmatrix}
+        y-y_c\\ 
+        x-x_c
+    \end{pmatrix}u.
+\end{equation}
+Now let's talk about \textbf{controlling} a robot subject to constraints, this is quite simple since we can consider the reduced inverse dynamics and apply \textit{feedback linearization} to the constrained model:\begin{boxdefinition}{FBL Control Law for the Reduced Model}{}
+    \begin{equation}
+    \btau=(\mathbf c+\mathbf g-M(E\dot A+G\dot D)G\mathbf u)+MG\mathbf a-A^T\mathbf f.
+\end{equation}
+\end{boxdefinition}
+\noindent By substituting this law in \eqref{dotu} and \eqref{lamdba_val} we get:\begin{align}
+    &\dot{\mathbf u}=\mathbf a \\ 
+    &\boldsymbol{\lambda}=\mathbf f.
+\end{align}
+
+In the closed loop system $\mathbf a$ have to be chosen in order to impose a desired reduced acceleration $\dot{\mathbf u}$ and $\mathbf f$ to impose a desired interaction force with the environment, $\mathbf a$ can include a feed forward term plus a PD,PI or PID controller, for example:\begin{equation}
+    \mathbf a = \dot{\mathbf u}_d+K_P(\mathbf u_d-\mathbf u)+K_I\int(\mathbf u_d-\mathbf u)
+\end{equation}
+where $\mathbf u_d$ is the desired reduced velocity (can also be computed by a general desired velocity $\dq_d$ that will be projected on the constraints trough $D(\q)$).
+
+\redText{TODO continua da blocco 14 slide 41}
 \end{document}
