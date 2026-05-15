@@ -513,7 +513,7 @@ Without entering in the details (for now), the \textit{general redundancy resolu
     \item \textbf{Global methods}: Given a desired trajectory $\mathbf y(t)$ and an initial configuration $\mathbf q(t_0)$, to find an evolution over $[t_0,t_0+T]$, is involved a functional of the type\begin{equation}
      \int_{t_0}^{t_0+T}H(\mathbf q,\dq)dt   
     \end{equation}
-    that have to be minimized (or maximized) over $\mathbf q(t), t\in [t_0,t_0+T]$. This problem is usually too difficult to solve. 
+    that has to be minimized (or maximized) over $\mathbf q(t), t\in [t_0,t_0+T]$. This problem is usually too difficult to solve. 
     \item \textbf{Local methods}: Usually at each time step $t=kT_s$ ($T_s$ is the sampling time) given a task velocity $\dot{\mathbf y}$ to realize we solve the problem of finding the joint velocity $\dq$ that realizes such $\dot{\mathbf y}$ while optimizing a given function $H(\mathbf q,\dq)$. Then the discrete step of update is \begin{equation}
         \mathbf q((k+1)T_s)=\mathbf q(kT_s)+T_s\dq(kT_s)
     \end{equation}
@@ -793,7 +793,7 @@ This kind of solution is used to give more emphasis to some joints, for example,
         0&\dots & W_n
     \end{pmatrix}
 \end{equation}
-a large weight $W_i$ will impose to find a solution where $\dot q_i$ is small. This can be used to find a solution that uses more joint velocity for the last joints that are near the end effector, since they have to support a smaller weight (and not that of the entire structure) and therefore less torque is required to move them compared to the joints at the base of the structure.\bigskip
+a large weight $W_i$ will impose to find a solution where $\dot q_i$ is small. This can be used to find a solution that uses more joint velocity for the last joints that are near the end effector, since they has to support a smaller weight (and not that of the entire structure) and therefore less torque is required to move them compared to the joints at the base of the structure.\bigskip
 
 There is a last Jacobian based method, called \textbf{Damped Least Squares (DLS)}. It can be proved that, the solution given by the pseudo inverse $J^\#$ is equivalent to the solution $\dq$ of the following optimization problem:\begin{equation}
     \begin{matrix}
@@ -2091,7 +2091,7 @@ where the $k$-th component of is defined as follows\begin{align}
 \end{align}
 $M_k$ is the $k$-th column vector of the inertia matrix $M(\q)$.\bigskip
 
-On the right side of the equation we have the non conservative terms $\mathbf u$, these forces have to be expressed as components that perform work on the Lagrangian coordinate. Since for a manipulator the coordinates are the joint variables defined according to the DH convention, the terms $\mathbf u$ are expressed as torques. There are generally three kinds of non conservative torques:\begin{itemize}
+On the right side of the equation we have the non conservative terms $\mathbf u$, these forces has to be expressed as components that perform work on the Lagrangian coordinate. Since for a manipulator the coordinates are the joint variables defined according to the DH convention, the terms $\mathbf u$ are expressed as torques. There are generally three kinds of non conservative torques:\begin{itemize}
     \item We denote $\btau$ the torques produced by the motors (actuation). This is usually our control input. 
     \item We denote $\btau_{int}$ the torques produced by the interaction with the environment. Let $\mathbf f$ to be the vector of generalized forces (wrench) that are applied on the end effector.
     \begin{figure}[H]    
@@ -3005,7 +3005,7 @@ notice how we can still impose additional mechanical conditions on the structure
    & m_1l_{c1}+m_3l_{c3}+m_4l_1=0\\
    & m_2l_{c2}+m_3l_{2}-m_4l_{c4}=0
 \end{align}
-with the previous condition, the choice of the dynamics parameters have to satisfy the system of three equations:\begin{equation}
+with the previous condition, the choice of the dynamics parameters has to satisfy the system of three equations:\begin{equation}
     \begin{cases}
         m_1l_{c1}+m_3l_{c3}+m_4l_1=0\\
         m_2l_{c2}+m_3l_{2}-m_4l_{c4}=0\\
@@ -5322,6 +5322,7 @@ the gravity term is left over, so we use a linear parametrization only for the g
     \end{align}
     with $\gamma>0$ and $\beta>0$ is a constant coefficient to be chosen \textit{sufficiently large}. 
 \end{boxdefinition}
+\section{Visual Servoing}
 \chapter{Interaction With the Environment}
 The end effector of a manipulator may interact with the environment, exchanging forces or modifying the state of it. For some tasks,  a force perception better helps with respect to visual perception (imagine a peg in hole task), and then a 6D force/torque (wrench) sensor becomes necessary. Generally speaking, we have to introduce some \textbf{compliance} in our control, this compliance can be introduced in two ways:\begin{itemize}
     \item Active: The control law modify the behavior of the robot based on the force/torque sensor  measured information.
@@ -5602,10 +5603,140 @@ Now let's talk about \textbf{controlling} a robot subject to constraints, this i
     &\boldsymbol{\lambda}=\mathbf f.
 \end{align}
 
-In the closed loop system $\mathbf a$ have to be chosen in order to impose a desired reduced acceleration $\dot{\mathbf u}$ and $\mathbf f$ to impose a desired interaction force with the environment, $\mathbf a$ can include a feed forward term plus a PD,PI or PID controller, for example:\begin{equation}
+In the closed loop system $\mathbf a$ has to be chosen in order to impose a desired reduced acceleration $\dot{\mathbf u}$ and $\mathbf f$ to impose a desired interaction force with the environment, $\mathbf a$ can include a feed forward term plus a PD,PI or PID controller, for example:\begin{equation}
     \mathbf a = \dot{\mathbf u}_d+K_P(\mathbf u_d-\mathbf u)+K_I\int(\mathbf u_d-\mathbf u)
 \end{equation}
 where $\mathbf u_d$ is the desired reduced velocity (can also be computed by a general desired velocity $\dq_d$ that will be projected on the constraints trough $D(\q)$).
+\subsection{Compliance and Force Control}
+There are three possible cases of compliance in environment interaction:\begin{itemize}
+    \item The robot end effector is compliant (a force sensor always introduce some compliance) and the environment is rigid, we denote $K_s$ the robot stiffness. 
+    \item The robot is rigid but the environment is compliant. The situation is equivalent to the first one, we denote $K_e$ the environment stiffness.
+    \item Both the robot and the environment are compliant. In this case if intermediate mass (between the robot part after the force sensor and the environment) is negligible, this situation can be approximated as only one element is compliant, and the stiffness is \begin{equation}
+        K=\frac{K_sK_e}{K_s+K_e}.
+    \end{equation}
+\end{itemize}
+A robot end effector in contact with the environment can be approximated with a mass connected with a spring trough the environment, subject to viscous friction and friction given by the force/torque sensor:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/force_control1.eps}
+\end{figure}
+The sensor introduce the compliance $k_s$ with the environment and a proper friction $b_s$. For simplicity we consider the system one dimensional, $F$ is the horizontal force on the mass that we can apply trough the robot actuators. The equation describing the dynamics is\begin{equation}
+    m_r\ddot x_r=F-k_sx_r-(b_r+b_s)\dot x_r
+\end{equation}
+the transfert function between the input force $F$ and the output position $x_r$ is:\begin{align}
+   & m_rs^2x_r(s)=F(s)-k_sx_r(s)-(b_r+b_s)sx_r\implies\\ 
+   &(m_rs^2+k_s+(b_r+b_s)s)x_r(s)=F(s)\implies \\ 
+   &\frac{x_r(s)}{F(s)}=\frac{1}{m_rs^2+(b_r+b_s)s+k_s}.
+\end{align}
+let $F_c$ be the elastic force exerted on the environment
+$$ F_c=k_sx_r$$
+we want to exert a desired force $F_d$ so we close the loop with the controller\begin{equation}
+    F=k_f(F_d-F_c), \ \ k_f>0 
+\end{equation}
+the open loop transfer function between the control force and the exerted force $F_c$ is \begin{equation}
+    \frac{F_c(s)}{F(s)}=\frac{k_s}{m_rs^2+(b_r+b_s)s+k_s}.
+\end{equation}
+the closed loop equation is\begin{align}
+    &\frac{F_c(s)}{k_f(F_d(s)-F_c(s))}=\frac{k_s}{m_rs^2+(b_r+b_s)s+k_s}\implies \\[1.5ex]
+    &W(s)=\frac{F_c(s)}{F_d(s)}=\frac{k_sk_f}{m_rs^2+(b_r+b_s)s+k_s(1+k_f)}
+\end{align}
+the poles of $W(s)$ are\begin{equation}
+    s_{1,2} = \frac{-(b_r + b_s) \pm \sqrt{(b_r + b_s)^2 - 4 m_r k_s (1 + k_f)}}{2 m_r}
+\end{equation}
+for each choice of $k_f>0$ the system is stable.
+the steady state transfer function is\begin{equation}
+    \lim_{s\rightarrow 0}W(s)=\frac{k_f}{1+k_f}\ne 1
+\end{equation}
+so the steady state error is non zero (it goes to zero with $k_f\rightarrow \infty$). Now let's consider a situation where the robot is compliant and there is another degree of compliant given by the sensor:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.9\textwidth ]{images/force_control2.eps}
+\end{figure}
+In this situation the force exerted on the environment is $F_c=k_sx_2$. The dynamics is described by the following system of equations:\begin{equation}\begin{cases}
+    m_1 \ddot{x}_1 = \blueText{F} - b_1 \dot{x}_1 - k_2(x_1 - x_2) - b_2(\dot{x}_1 - \dot{x}_2)\\ 
+    m_2 \ddot{x}_2 = k_2(x_1 - x_2) + b_2(\dot{x}_1 - \dot{x}_2) - k_s x_2 - b_s \dot{x}_2\end{cases}
+\end{equation}
+The control force $F$ acts on $x_1$, but we want to control $F_c=k_sx_2$. We close the loop with $F=k_f(F_d-F_c)$ with $k_f>0$:
+\begin{align}
+    &m_1 \ddot{x}_1 = \blueText{k_f(F_d-k_sx_2)} - b_1 \dot{x}_1 - k_2(x_1 - x_2) - b_2(\dot{x}_1 - \dot{x}_2)\implies\\[1.5ex]
+    &m_1 \ddot{x}_1 = k_f F_d - k_f k_s x_2 - b_1 \dot{x}_1 - k_2(x_1 - x_2) - b_2(\dot{x}_1 - \dot{x}_2)
+\end{align}
+without entering in the details, this system becomes unstable when the value of $k_f$ is large enough, due to the phase lag between $x_1$ and $x_2$, the system starts ''chasing'' an error that it does not see in real time. The result is chatter: the robot begins to vibrate violently against the surface.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.35\textwidth ]{images/rootLocus.png}
+     \caption{Root locus method for this system.}
+\end{figure}
+\section{Impedance Control}
+Impedance control is applied in the context of environment interaction, it does not control neither the robot task vector nor the force exerted on the environment, but imposes a desired \textit{dynamic behavior} in the interaction. This kind of control may or not require force measurements.
 
-\redText{TODO continua da blocco 14 slide 41}
+the desired behavior is specified through an impedance model,
+namely a complete set of mass-spring-damper equations (typically
+chosen as linear and decoupled, but also nonlinear).
+
+The dynamic model of the manipulator when is in contact with the environment is\begin{equation}
+    M\ddq+\mathbf c+\mathbf g=\btau+\sapText{\btau_{int}}
+\end{equation}
+$\btau_{int}$ is the torque produced on the joints given by the wrench $\mathbf w$ exerted on the end effector by the environment, is given by the transpose Jacobian:\begin{equation}
+    \btau_{int}=J^T\mathbf w.
+\end{equation}
+When the robot is constrained, this interaction force is given by the Jacobian of the constraints:\begin{equation}
+    \btau_{int}=A^T\boldsymbol{\lambda}.
+\end{equation}
+The impedance control law is defined in the task space, we consider the task model:\begin{equation}
+    M_y\ddy+\mathbf c_y+\mathbf g_y=J^T\btau+\mathbf F_y 
+\end{equation}
+we denoted $\mathbf F_y$ the set of generalized forces acting on the end effector, we assume that $m=n$ (no redundancy) and we are out of singularity. We recall that the dynamic terms in the task space are given by\begin{align}
+    &M_y=J^{-T}MJ^{-1}\\ 
+    &\mathbf c_y=J^{-T}(\mathbf c-M\dot JJ^{-1}\dy)\\
+    &\mathbf g_y=J^{-T}\mathbf g
+\end{align}
+also this task model can be linearly parametrized in terms of a set of dynamic coefficients.\bigskip 
+
+The impedance model is constructed as follows\begin{enumerate}
+    \item We assume that we have force/torque measurement, hence $\mathbf F_y$ is available. 
+    \item First of all we \textit{feedback linearize} the task model:\begin{equation}
+        \btau=J^{T}(M_y\mathbf a+\mathbf c_y+\mathbf g_y-\mathbf F_y)
+    \end{equation}
+    this achieves the following closed loop system:\begin{equation}
+        \ddy=\mathbf a.
+    \end{equation}
+    \item We want to choose $\mathbf a$ in order to have the following closed loop system:\begin{equation}\label{impedance_model}
+        M_m(\ddy-\ddy_d)+B_m(\dy-\dy_d)+K_m(\y-\y_d)=\mathbf F_y 
+    \end{equation}
+    with $M_m,B_m$ and $K_m$ diagonal and positive definite.
+\end{enumerate}
+\begin{boxdefinition}{Impedance Control Law (with force measurement)}{}
+    After having applied the feedback linearization, the choice of $\mathbf a$ that realizes the model \eqref{impedance_model} is the following:\begin{equation}
+        \mathbf a = \ddy_d+M_m^{-1}(B_m(\dy_d-\dy)+K_m(\y_d-\y)+\mathbf F_y) 
+        .
+    \end{equation}
+\end{boxdefinition}
+Typically, the desired trajectory $\y_d$ slightly penetrates inside the compliant environment inducing a contact force $\mathbf F_y$ (if not, the latter would be zero). In case of $\mathbf F_y=\mathbf 0$, the law is a PD controller with an apparent ''virtual'' inertia matrix $M_m$ for the feedback linearized robot.\begin{itemize}
+    \item \textbf{In free motion}: The robot follows the programmed trajectory normally, moving smoothly.
+    \item \textbf{In contact}: Instead of pushing endlessly until it breaks something (or breaks itself), the robot ''gives in'' in a controlled way. The further it is pushed from its ideal trajectory, the more it resists, just like a spring being compressed.
+\end{itemize}
+\begin{boxdefinition}{Impedance Control Law (joint space, with force measurement)}{}
+    The complete control law in the joint space is the following:\begin{align}
+        \btau=&MJ^{-1}\big(
+        \ddy_d-\dot J\dq+M_m^{-1}(B_m(\dy_d-\dy)+K_m(\y_d-\y))    
+        \big)
+        \\ &+ \mathbf c+\mathbf g+J^T(M_yM_m^{-1}-I)\mathbf F_y.
+    \end{align}
+\end{boxdefinition}
+$(M_yM_m^{-1}-I)$ weights the measured contact forces $\mathbf F_y$. The last term can be rewritten as follows\begin{eqnarray}
+    J^T(M_yM_m^{-1}-I)\mathbf F_y=
+    (MJ^{-1}M_m^{-1}-J^T)
+    \mathbf F_y
+\end{eqnarray}
+in this way we eliminates the inertia matrix in the task space $M_y$ and we can work only with the model in the joint space. Even if the desired behavior is described in the cartesian space, the final control implementation is always at the robot joint level. The impedance model is particularly useful because:\begin{itemize}
+    \item Adapt/match to the dynamic characteristics of the environment (in particular, of its estimated stiffness) in a complementary way.
+    \item Avoid large impact forces due to uncertain geometric characteristics (position and/or orientation) of the environment.
+    \item Mimic the behavior of a human arm (fast and stiff in ''free'' motion, slow and compliant in ''guarded'' motion ).
+\end{itemize}
+The scalar $K_{m,i}$ should be small in the direction where there is a hard contact, in this way the robot becomes more compliant and exert less force on the hard environment (preventing damage). In the direction of free motion, $K_{m,i}$ should be large to provide good tracking.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/impedance..eps}
+\end{figure}
 \end{document}
