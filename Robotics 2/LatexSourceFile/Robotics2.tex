@@ -535,7 +535,7 @@ where $J$ have $m$ rows and $n$ columns, with $n>m$. We will consider solutions 
 where $K$ is a matrix with $n$ rows and $m$ columns. We want $K$ to satisfy the following condition\begin{equation}
     JKJ=J
 \end{equation}
-such a matrix is called a \textbf{generalized inverse} of $J$ (depends on the current configuration $\mathbf q$), there are infinite matrix that satisfies that condition. A generalized inverse can realize the desired task velocity $\dot{\mathbf y}$ if it is in the range of $J$.\begin{align}
+such a matrix is called a \textbf{generalized inverse} of $J$ (depends on the current configuration $\mathbf q$), there are infinite matrices that satisfies that condition. A generalized inverse can realize the desired task velocity $\dot{\mathbf y}$ if it is in the range of $J$.\begin{align}
     \forall \dot{\mathbf y}\in\mathcal R(J) \ : \ J(K\dot{\mathbf y})=JKJ\dq=J\dq=\dot{\mathbf y}
 \end{align}
 An example of a generalized inverse is the \textit{right inverse}, let $J$ to be a Jacobian of the form\begin{equation}
@@ -653,7 +653,7 @@ we denote $\mathbf u_i$ the $i$-th column vector of $U$ and $\mathbf v_i$ the $i
 \begin{boxproposition}{}{}
     The column vectors of $U$ are the eigenvectors of $JJ^T$ associated to the eigenvalues $\sigma_1^2\dots,\sigma_\rho^2$.
 \end{boxproposition}
-\textit{Proof}: We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
+\noindent\textit{Proof}: We want to show that a  vector $\mathbf u_i$ is an eigen vector of $JJ^T$. Since $J=U\Sigma V^T$ we have\begin{equation}
     JJ^T=U\Sigma V^T V \Sigma^T U^T
 \end{equation}
 since $V$ is orthonormal, we have that $V^T=V^{-1}$ so $V^TV=I$:\begin{align}
@@ -729,7 +729,7 @@ clearly $U \boldsymbol\delta_i$ is the $i$-th column vector of $U$ so\begin{equa
 \begin{boxtheorem}{}{}
     Consider the system $J\dq=\dy$ in the variables $\dq$, where $J$ is a full rank matrix with $n$ columns and $m$ rows ($n>m$). The solution given by $J^\#\dy=J^T(JJ^T)^{-1}\dy$ denoted $\dq_{PS}$ is the minimum norm solution that realizes $\dy$. 
 \end{boxtheorem}
-\textit{Proof}: let $\dq^*$ to be any other solution to $J\dq^*=\dy$. Since $J\dq^*=J\dq_{PS}$ it follows:\begin{align}
+\noindent\textit{Proof}: let $\dq^*$ to be any other solution to $J\dq^*=\dy$. Since $J\dq^*=J\dq_{PS}$ it follows:\begin{align}
     &J\dq^*=J\dq_{PS}\implies \\
     &J\dq^*-J\dq_{PS}=\mathbf 0\implies \\
     &J(\dq^*-\dq_{PS})=\mathbf 0.
@@ -807,7 +807,7 @@ this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ t
 this induces a robust behavior when crossing singularities and applies equally to square and non-square matrices. Since it is a quadratic form, it admits an analytical solution:\begin{equation}
     \dq=J_{DLS}\dy=J^T(JJ^T+\mu I_m)^{-1}\dy
 \end{equation}
-the larger the factor $\mu$, the more importance will be given to the norm respect to the task error. The task error is\begin{equation}
+the larger the factor $\mu$, the more importance will be given to the norm with respect to the task error. The task error is\begin{equation}
     \dot{\mathbf e}=\mu(JJ^T+\mu I_m)^{-1}\dy
 \end{equation}
 of course, $\mu$ can be variable: Since when crossing a singularity the required joint velocity $\dq$ grows, so we can make $\mu$ inversely proportional to the minimum singular value $\sigma_\rho$ of $J$, that can be seen as a measure of distance from a singularity.
@@ -873,7 +873,7 @@ In our Robotics context, the matrix $W$ is also positive definite\begin{equation
 This condition is sufficient to make the problem to have a minimum solution. A general LQ problem can be solved by adding $m$ additional variables $\boldsymbol{\lambda}$ called \textbf{Lagrangian multipliers} and by considering the following function called \textbf{Lagrangian}:\begin{equation}
     \mathcal L(\mathbf x,\boldsymbol{\lambda})=H(\mathbf x)+\boldsymbol{\lambda}^T(J\mathbf x-\mathbf b).
 \end{equation}
-These Lagrangian multipliers works as a way to ''violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
+These Lagrangian multipliers works as a way to ''violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient with respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
     &\nabla_{\mathbf x}\mathcal L=\begin{pmatrix}
         \frac{\partial\mathcal L}{\partial x_1}&\dots & \frac{\partial\mathcal L}{\partial x_n}
     \end{pmatrix}^T=W(\mathbf x-\mathbf x_N)+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
@@ -902,7 +902,7 @@ hence\begin{equation}\label{LQ2}
 By combining \eqref{LQ1} and \eqref{LQ2} we can find the general solution for $\mathbf x$:\begin{equation}
     \mathbf x=\mathbf x_N+W^{-1}J^T(JW^{-1}J^T)^{-1}(\mathbf b-J\mathbf x_N).
 \end{equation}
-here $\mathbf x_n$ acts as a preferred solution, in fact, if it satisfies the constraint $J\mathbf x_n=\mathbf b$, will be the solution. Let's switch back to the Robotics context. The problem to find a solution to $J\dq=\dy$ that minimizes the weighted squared norm $\|\dq\|_W^2$ is exactly an LQ problem.\begin{align*}
+here $\mathbf x_N$ acts as a preferred solution, in fact, if it satisfies the constraints $J\mathbf x_N=\mathbf b$, will be the solution. Let's switch back to the Robotics context. The problem to find a solution to $J\dq=\dy$ that minimizes the weighted squared norm $\|\dq\|_W^2$ is exactly an LQ problem.\begin{align*}
     &\min_{\dq} \frac{1}{2}(\dq-\dq_N)W(\dq-\dq_N)\\ 
     &\text{s.t. } J\dq=\dy
 \end{align*}
@@ -935,7 +935,7 @@ We know that $\mathcal C$ is a $n$-manifold, and $\mathcal T$ (the task space) i
     \caption{The vector $\nabla G$ is pointing where $G$ is greater than the actual configuration value $G(\mathbf q^*)$. In particular, the preferred direction will be the projection of the gradient on the null space of $J$.}
 \end{figure}
 \begin{boxdefinition}{Projected Gradient}{}
-    The \textbf{projected gradient} method is the procedure to use the gradient of the performance metric $G$ as the preferred direction $\dq_N$.
+    The \textbf{projected gradient} method is the procedure to use the gradient of a suitable performance metrics $G$ as the preferred direction $\dq_N$.
 \end{boxdefinition}
 Now let's see some example of metrics. One important choice, is to consider the \textit{distance from singularities} defined as follows\begin{equation}
     G_{man}(\mathbf q)=\sqrt{\det(J(\mathbf q)J^T(\mathbf q))}
@@ -1001,7 +1001,7 @@ Given these results, if we model the robotic structure and the obstacles as conv
     \centering
     \includegraphics[width=0.5\textwidth ]{images/clearence.eps}
 \end{figure}
-So if $H_{cle}$ is chosen as $G$, then the robot will try to move towards a configuration that maximizes the distance from the obstacles. The problem is that $H_{cle}$ is not differentiable, since the nearest object to the robot can change during the motion. For example, let's consider a toy example of a robot with one revolute joint, and two obstacles in the workspace.
+So if $H_{cle}$ is chosen as $G$, then the robot will try to move towards a configuration that maximizes the distance from the obstacles. The problem is that $H_{cle}$ is not differentiable, since the nearest object to the robot can change during the motion. Let's consider a toy example of a robot with one revolute joint, and two obstacles in the workspace.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth ]{images/ExampleClearance.eps}
@@ -1132,10 +1132,9 @@ We use a set of variable $\mathbf q$ where $q_i$ is the angle respect to the hor
     k_2(\mathbf q)=q_4=\nicefrac{\pi}{2} \ \ \ \ (s=1)
 \end{equation}
 in the augmented problem,the degree of redundancy decreases and becomes 1.
-
 The advantage of augmenting the task is that we get a \textit{better shaping} of the inverse kinematic solution.
 
-There are some advantages, it might occur an \textbf{algorithmic singularity}: The rank of the augmented Jacobian is not full, despite the ranks of $J_1$ and $J_2$ are full:\begin{equation}
+There are some problems, it might occur an \textbf{algorithmic singularity}: The rank of the augmented Jacobian is not full, despite the ranks of $J_1$ and $J_2$ are full:\begin{equation}
     \text{rank}J_1=m, \ \ \ \ \text{rank}J_2=s, \ \ \ \ \text{rank}J_A<m+s
 \end{equation}
 To avoid the linear dependency between the columns the following condition should be preserved:\begin{equation}
@@ -1835,12 +1834,12 @@ How to resolve the inverse dynamics in this redundant case? The equation \eqref{
         1&1
     \end{pmatrix}
       \begin{pmatrix}
-        u_1\\u_1
+        u_1\\u_2
     \end{pmatrix}=f(\theta_d,\dot\theta_d,\ddot\theta_d)
 \end{equation}
 As we well know, every time there is a system of equations $A\mathbf x=\mathbf b$ where $A$ have more columns than rows, we can solve the system by finding the minimum norm solution through the pseudo inverse (we abbreviate the right term with $f$):\begin{equation}
     \begin{pmatrix}
-        u_1\\u_1
+        u_1\\u_2
     \end{pmatrix}=\begin{pmatrix}
         1&1
     \end{pmatrix}^\#f=\begin{pmatrix}
@@ -2392,7 +2391,7 @@ this factorization is the one that satisfy the property of skew-symmetry for the
     $$ C[k,j]=c_{kj}=\sum_{i=1}^{n}c_{kij}(\q)\dq$$
     then $\dot M-2C$ is skew symmetric.
 \end{boxtheorem}
-\textit{Proof}: The $(k,j)$-th entry of $\dot M$ is\begin{equation}
+\noindent\textit{Proof}: The $(k,j)$-th entry of $\dot M$ is\begin{equation}
     \dot m_{kj}=\sum{i=1}{n}\frac{\partial m_{kj}}{\partial q_i}\dot q_i
 \end{equation}
 and the $(k,j)$-th entry of $2C$ is\begin{equation}
