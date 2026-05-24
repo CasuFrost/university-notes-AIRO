@@ -16,4 +16,8 @@
         "Servoing",
         "Tecnicalità"
     ]
+
+    "github.copilot.enable": {
+        "*": false
+    }
 }

@@ -1,4 +1,4 @@
-\documentclass[10pt, letterpaper]{report}
+\documentclass[10pt, a4paper]{report}
 % !TeX program = xelatex
 %==================PREAMBOLO=======================%
 \input{../../preamble/preamble.tex}
@@ -813,7 +813,7 @@ the larger the factor $\mu$, the more importance will be given to the norm with 
 of course, $\mu$ can be variable: Since when crossing a singularity the required joint velocity $\dq$ grows, so we can make $\mu$ inversely proportional to the minimum singular value $\sigma_\rho$ of $J$, that can be seen as a measure of distance from a singularity.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth ]{images/DLS}
+    \includegraphics[width=0.85\textwidth ]{images/DLS.pdf}
     \caption{DLS solution near a singularity for a $2\times 2$ Jacobian.}
 \end{figure}
 We have seen four different Jacobian based methods:\begin{itemize}
@@ -2392,7 +2392,7 @@ this factorization is the one that satisfy the property of skew-symmetry for the
     then $\dot M-2C$ is skew symmetric.
 \end{boxtheorem}
 \noindent\textit{Proof}: The $(k,j)$-th entry of $\dot M$ is\begin{equation}
-    \dot m_{kj}=\sum{i=1}{n}\frac{\partial m_{kj}}{\partial q_i}\dot q_i
+    \dot m_{kj}=\sum_{i=1}^{n}\frac{\partial m_{kj}}{\partial q_i}\dot q_i
 \end{equation}
 and the $(k,j)$-th entry of $2C$ is\begin{equation}
     2c_{kj}=2\sum_{i=1}^{n}c_{kij}(\q)\dot q_i=\sum_{i=1}^{n} \left( \frac{\partial m_{kj}}{\partial q_i} + \frac{\partial m_{ki}}{\partial q_j} - \frac{\partial m_{ij}}{\partial q_k} \right)\dot q_i
@@ -2565,7 +2565,7 @@ here, $\lambda_{\max}(A^TA)$ is the maximum eigenvalue of $A^TA$. For symmetric 
 \section{Computing the Kinetic Energy}
 The complexity of the dynamic model and the number of terms involved grows more than exponentially with the degrees of freedom, it is almost impossible to derive the full inertia matrix of a 6R manipulator by hand.
 
-In this section, a recursive method to compute symbolically the inertia matrix $M(\q)$ is presented, this matrix can characterize the full model since $\mathbf c(\q,\dq)$ is derived by $M(\q)$ and the gravity term $\mathbf g(\q)$ is easy to define. The method aims to compute recursively $\mathbf v_{ci}$ and $\bomega_{i}$ starting from the base toward the end effector considering all the link. We use the notation $^{i}\mathbf  u$ to denote the point $\mathbf u$ expressed in $RF_i$.
+In this section, a recursive method to compute symbolically the inertia matrix $M(\q)$ is presented, this matrix can characterize the full model since $\mathbf c(\q,\dq)$ is derived by $M(\q)$ and the gravity term $\mathbf g(\q)$ is easy to define. The method aims to compute recursively $\mathbf v_{ci}$ and $\bomega_{i}$ starting from the base toward the end effector considering all the links. We use the notation $^{i}\mathbf  u$ to denote the point $\mathbf u$ expressed in $RF_i$.
 
 Recall that the vector $\mathbf r_{ci}$, that identifies the position of the center of mass of link $i$, is always constant in the reference frame $RF_i$. The algorithm take advantage of the following rigid bodies relation:\begin{equation}\label{vel_rigid_bodies}
     \mathbf v_{ci}=\mathbf v_i+\bomega_i\times\mathbf r_{ci}
@@ -4146,7 +4146,7 @@ Let's consider the model of a generic robot in the state space representation ($
         \mathbf x_2\\ 
         -M^{-1}(\mathbf c+\mathbf g)
     \end{pmatrix}+\begin{pmatrix}
-        \mathbf 0\\ \mathbf M^{-1}
+        \mathbf 0\\  M^{-1}
     \end{pmatrix}\mathbf u
 \end{equation}
 the general form of this non linear system is\begin{equation}
@@ -4628,7 +4628,7 @@ With this approach the torque control law uses a time varying reference, for exa
 \end{equation}
 This approach can also be used just to reach the vicinity of the final desired position without having peaks on the control effort, and then solve the classical regulation problem with a simple PD/PID law. Furthermore, the settling time is more predictable, given by the chosen $T$.
 \section{Iterative Learning}
-There is a way to guarantee global convergence to the desired configuration in presence of gravity, without using any information about the model, neither high gains. We apply an \textbf{iterative control schemes}, that consists in aa PD control on joint position, with an addition of a constant feedforward term that gets updated at every iteration. We still need the assumption of bounded derivative of the gravity term:\begin{equation}
+There is a way to guarantee global convergence to the desired configuration in presence of gravity, without using any information about the model, neither high gains. We apply an \textbf{iterative control schemes}, that consists in a PD control on joint position, with an addition of a constant feedforward term that gets updated at every iteration. We still need the assumption of bounded derivative of the gravity term:\begin{equation}
     \left\|\frac{\partial\mathbf g}{\partial\q}\right\|\le \alpha.
 \end{equation}
 The control law at the $i$-th iteration is the following\begin{equation}
@@ -4750,7 +4750,7 @@ Of course, it requires $K_P,K_D$ to be diagonal and positive definite. The evolu
     \ddot{\mathbf e}+K_D\dot{\mathbf e}+K_P\mathbf e=\mathbf 0 
 \end{equation}
 since the dynamic is decoupled:
-\begin{equation}
+\begin{equation}\label{diff_eq_error}
     \ddot{ e_i}+k_{Di}\dot{ e_i}+k_{Pi} e_i= 0 
 \end{equation}
 for each joint $i$. In the Laplace domain:\begin{equation}
@@ -4759,15 +4759,54 @@ for each joint $i$. In the Laplace domain:\begin{equation}
 so in order to have the roots of $s^2+k_{Di}s+k_{Pi}$ to be on the left side of the complex plane, is sufficient to choose $k_{Di}>0, k_{Pi}>0$. The choice of the elements $k_{Di},k_{Pi}$ shapes the error transient (as we know from basic courses in control):\begin{figure}[H]
     \centering 
      \includegraphics[width=0.4\textwidth ]{images/underdamped.pdf}
-     \caption{Underdamped (oscillating): $k_{di}^2<2k_{pi}$.}
+     \caption{Underdamped (oscillating): $k_{Di}^2<2k_{Pi}$.}
       \includegraphics[width=0.4\textwidth ]{images/critically_damped.pdf}
-     \caption{Critically damped: $k_{di}^2=2k_{pi}$.}
+     \caption{Critically damped: $k_{Di}^2=2k_{Pi}$.}
      \includegraphics[width=0.4\textwidth ]{images/no_overshoot.pdf}
-     \caption{No overshoot: $k_{di}^2=4k_{pi}$.}
+     \caption{No overshoot: $k_{Di}^2=4k_{Pi}$.}
      \includegraphics[width=0.4\textwidth ]{images/overdamped.pdf}
-     \caption{Overdamped (too slow): $k_{di}^2>4k_{pi}$.}
+     \caption{Overdamped (too slow): $k_{Di}^2>4k_{Pi}$.}
 \end{figure}
-We can complete the FBL controller by adding an integral term that accumulates the error:\begin{equation}
+For each of these four cases, the analytical solution of the error over time is different. First of all we rewrite the differential equation in \eqref{diff_eq_error} in the following way:\begin{equation}
+ \ddot{ e_i}+2\zeta\omega_n\dot{ e_i}+\omega_n^2 e_i= 0 
+\end{equation}
+with\begin{equation}
+    \omega_n=\sqrt{\frac{k_{Pi}}{2}}, \ \ \ \ 
+    \zeta=\frac{k_{Di}}{\sqrt{2k_{Pi}}}.
+\end{equation}
+\begin{itemize}
+    \item \textbf{Underdamped} ($\zeta<1$):\begin{equation}
+        e_i(t)=e_{i}(0)\exp(-\sigma t)\left(
+            \cos(\omega_dt)+\frac{\sigma}{\omega_d}\sin(\omega_dt)
+        \right)
+    \end{equation}
+    where $\sigma$ is the decay rate and $\omega_d$ the natural frequency:\begin{equation}
+        \sigma=\frac{k_{Di}}{2}, \ \ \ \ \omega_d=\sqrt{\frac{k_{Pi}}{2}-\frac{k_{Di}^2}{4}}
+    \end{equation}
+    \item \textbf{Critically damped} ($\zeta=1$):\begin{equation}
+        e_i(t)=e_i(0)(1+\lambda t)\exp(-\lambda t)
+    \end{equation}
+    where $-\lambda$ is the real root of the polynomial in the Laplace domain:\begin{equation}
+        \lambda=\sqrt{\frac{k_{Pi}}{2}}
+    \end{equation}
+    \item \textbf{No overshoot} ($\zeta > 1$):\begin{equation}
+        e_i(t)=\frac{e_i(0)}{\lambda_2-\lambda_1}(\lambda_2\exp(-\lambda_1t)-\lambda_1\exp(-\lambda_2t))
+    \end{equation}
+    where $\lambda_1,\lambda_2$ are the two roots of the polynomial in the Laplace domain: \begin{equation}
+        \lambda_1=\frac{k_{Di}}{2}-\sqrt{\frac{k^2_{Di}}{4}-\frac{k_{Pi}}{2}}, \ \ \ \ 
+        \lambda_2= \frac{k_{Di}}{2}+\sqrt{\frac{k^2_{Di}}{4}-\frac{k_{Pi}}{2}}
+    \end{equation}
+    \item \textbf{Overdamped} ($\zeta\gg 1$):\begin{equation}
+        e_i(t)=C_1\exp(-\lambda_1t)+C_2\exp(-\lambda_2t)
+    \end{equation}
+    where\begin{equation}
+        C_1=e_i(0)\frac{\lambda_2}{\lambda_2-\lambda_1}, \ \ \ \  
+        C_2=-e_i(0)\frac{\lambda_1}{\lambda_2-\lambda_1}.
+    \end{equation}
+\end{itemize}
+
+
+\noindent We can complete the FBL controller by adding an integral term that accumulates the error:\begin{equation}
     \ddq=\mathbf a=\ddq_d+K_D(\dq_d-\dq)+K_P(\q_d-\q)+K_I\int (\q_d-\q)d\tau.
 \end{equation}
 In this way we can write the error evolution (for each joint) as follows\begin{equation}
@@ -5117,7 +5156,6 @@ the extra $n-m$ degree of freedom can be controlled by a desired torque $\btau_N
 Three common choices for $W$ are:\begin{align}
     &W=I\\ &W=M^{-1}\\ &W=M^{-2}.
 \end{align}
-\chapter{Advanced Control Laws}
 \section{Adaptive Control}
 When the model of the manipulator is not available, and we don't want to use machine learning solutions, we can define a non linear control law that has at its own states, the values of the dynamic coefficients, this kind of technique is called \textit{Adaptive Control}. This control law aim to bring the trajectory error to zero, without converging necessarily to the true values of the dynamic coefficients.
 
@@ -5738,4 +5776,145 @@ The scalar $K_{m,i}$ should be small in the direction where there is a hard cont
     \centering 
      \includegraphics[width=0.5\textwidth ]{images/impedance..eps}
 \end{figure}
+\noindent If we choose the \textit{apparent inertia} \textbf{equals} to the real inertia, the control law \textbf{simplifies notably}:
+\begin{boxdefinition}{Impedance Control Law Without Force Measurement}{}
+    By setting $M_m=M_y$:
+    \begin{align}
+    \btau=&MJ^{-1}(\ddy_d-\dot J\dq)+\mathbf c+\mathbf g\\ 
+    &+J^T(B_m(\dy_d-\dy)+K_m(\y_d-\y)).
+\end{align}
+\end{boxdefinition}
+Notice how the term $\mathbf F_y$ disappeared: Force feedback is not in the control law, hence a force/torque sensor is no longer required. In this way, the inertia matrix $M_m=M_y$ is no longer constant, but the closed loop system \eqref{impedance_model} does not contain any centrifugal or Coriolis term (that should be present when the inertia matrix is not constant over time). In this way, the resulting closed loop system does not represent a \textit{real mechanical system}. A real system should have the following form:\begin{equation}\label{impedance_and_Coriolis}
+    M_y(\q)(\ddy-\ddy_d)+(\blueText{C_y(\q,\dq)}+B_m)(\dy-\dy_d)+K_m(\y-\y_d)=\mathbf F_y 
+\end{equation}
+where $\mathbf C_y(\q,\dq)$ is the matrix that factorize the centrifugal/Coriolis terms in the task space, constructed from $M_y(\q)$. To obtain this closed loop system, the control law in the joint space becomes:\begin{align}
+    \btau=&MJ^{-1}(\ddy_d-\dot JJ^{-1}\dy_d)+CJ^{-1}\dy_d+\mathbf g\\
+    &+J^T(B_m(\dy_d-\dy)+K_m(\y_d-\y)).
+\end{align}
+This control law guarantees asymptotic convergence to zero tracking error in free space ($\mathbf F_y=\mathbf 0$). When $\y_d$ is constant (regulation), the control law simplifies in:\begin{equation}\label{impedance_regulation}
+    \btau=\mathbf g+J^T(K_m(\y_d-\y)-B_m\dy).
+\end{equation}
+that is a simple PD law with gravity cancellation, as defined in equation \eqref{gravity_cancellation}, in case $\mathbf F_y=\mathbf 0$, we already given the proof of asymptotic stability.\bigskip
+
+Now we want to analyze the case where $\mathbf F_y\ne\mathbf 0$, we model the environment with an elastic contact model:\begin{equation}
+    \mathbf F_y=K_e(\y_e-\y)
+\end{equation}
+where $\y_e$ is the rest position and $K_e\succ 0$. Without entering in the details of the proof, a suitable Lyapunov candidate is:\begin{equation}
+    V=\frac{1}{2}\dy^TM_y\dy+\frac{1}{2}(\y_d-\y)^TK_m(\y_d-\y)+\frac{1}{2}(\y_e-\y)^TK_e(\y_e-\y)
+\end{equation}
+its minimum is not necessary zero, but a constant positive number that can be subtracted to $V$ in order to make it a Lyapunov function.
+The derivative is:\begin{align}
+    \dot V=&\dy^TM_y\ddy+\frac{1}{2}\dy^T\dot M_y\dy-\dy^TK_m(\y_d-\y)-\dy^TK_e(\y_e-\y)=\\ 
+    &-\dy^TB_M\dy+\dy^T(\mathbf F_y-K_e(\y_e-\y))=-\dy^TB_m\dy\le 0.
+\end{align}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.3\textwidth ]{images/elastic_env.eps}
+\end{figure}
+\noindent At the equilibrium, when $\dy=\ddy=\mathbf 0$, the closed loop system \eqref{impedance_and_Coriolis} becomes:\begin{align}
+    &K_m(\y-\y_d)=\mathbf F_y \implies \\
+    &K_m(\y_d-\y)+K_e(\y_e-\y)=\mathbf 0 
+\end{align}
+which has the unique solution:\begin{equation}
+    \y=(K_m+K_e)^{-1}(K_m\y_d+K_e\y_e)=\y_E
+\end{equation}
+$\y_E$ is a point between $\y_d$ and $\y_e$ and can be proven by LaSalle that is the minimum of $V_2$ and is an asymptotically stable equilibrium.\begin{equation}
+    \y_E\simeq\begin{cases}
+        \y_e \text{ if }K_e\gg K_m\\ 
+        \y_d \text{ if }K_m\gg K_e 
+    \end{cases}.
+\end{equation}\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.3\textwidth ]{images/elastic_env2.pdf}
+\end{figure}
+\noindent This law acts like an RCC, if the distance from the desired position is small:\begin{equation}
+    \y_d-\y\simeq J(\q_d-\q)
+\end{equation}
+the velocity is small enough: $\dy\simeq\mathbf 0$ and the gravity is compensated, the control law \eqref{impedance_regulation} can be rewritten:\begin{equation}
+    \btau=J^T(\q)K_mJ(\q)(\q_d-\q)=K(\q)(\q_d-\q)
+\end{equation}
+notice how the constant cartesian stiffness $K_m$ at the joint level is variable $K(\q)$.
+\subsection{Admittance Control}
+When we don't have access to the low level controller (due to the closed architecture of an industrial robot), we can only provide velocity commands. For handling the interaction with the environment, one uses often
+\textbf{admittance control}: We sense the interaction force $\mathbf F_c$ and use it to generate a velocity command $\dq$:\begin{itemize}
+\item \textbf{Admittance}: Reads an external contact force ($\mathbf F_c$) via sensors $\rightarrow$ Calculates the speed ($\q$) or displacement ($\Delta \q$) that the robot must make to ''accommodate'' or react to that force.
+\end{itemize}
+We use a \textbf{compliance matrix} $C_q$ (semi-positive definite), its role is to decide how much and how the robot must be ''soft'' or ''yielding'' when faced with an external force. The higher the values  within these matrices, the more the robot will react by moving quickly to escape the force (very soft behavior). If they are zero, the robot will ignore the force and remain rigid. The control law is:\begin{equation}
+    \btau_c = J^T\mathbf F_c\implies \dq =C_q\btau_c\implies \dq = C_qJ^T\mathbf F_c
+\end{equation}
+Determines the compliance of the single joint with respect to the torques ($\tau_c$) generated by the external forces. Can be implemented also in the task space:\begin{equation}
+    \mathbf F_c\implies \dy\implies C_y\mathbf F_c\implies \dq=J^{-1}C_y\mathbf  F_c
+\end{equation}
+In case of redundancy, $J^\#$ is used instead of $J^{-1}$.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.3\textwidth ]{images/admittance.pdf}
+\end{figure}
+\section{Hybrid Control}
+We are in the context of a infinitely stiff environment, that naturally constraints the end effector position. We define a generalized task frame, usually attached to the end effector, that has 6 directions (3 direction for linear motion, and three for the angular motion). The environment constraints, also called \textbf{natural constraints}, prohibit motion along/around $k$ of these 6 directions, and the reaction forces/moments are absent along/around $6-k$ directions (where environment does not prevent end-effector motion).\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/hybrid.eps}
+\end{figure}
+These directions are characterized through the axes of a
+suitable end effector task frame $RF_t$. The execution of the task is performed by defining \textbf{artificial constraints}, that specify the desired values to be imposed by the control law. If $k$ direction of motion are blocked by the natural constraints, the motion on the remaining $6-k$ free direction are specified by the artificial constraints, similarly, the forces/moments along $k$ directions, admissible reaction of the environment can occur, are also specified by the artificial constraints. \bigskip
+
+\noindent It is hard to define the general framework of hybrid control, so we will show some examples, the first one is the following:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/hybrid2.eps}
+\end{figure}
+The task is to slide the cube along the guide, the natural geometric constraints are the following:\begin{align}
+     &\text{4 constraints on the motion }\begin{cases}
+        v_y=v_z=0\\ 
+        \omega_x=\omega_z=0\\ 
+    \end{cases}\\
+    &\text{2 constraints on the forces }
+    \begin{cases}
+         f_x=\mu_y=0
+    \end{cases}
+\end{align}
+we can see that the block can't be moved on the $y$ direction, nor on the $z$ direction (since must be kept in contact). For the same reason, can't be rotated around the $x$ or $z$ direction (is blocked by the guide), and we can't perceive a linear force along $x$ (since it is free to move) nor a moment around $y$ (the guide does not block the cube from rotating around $y$).
+
+The artificial constraints will specify the 2 remaining direction for motion (angular around $y$ and linear along $x$) and 4 force to be imposed. To avoid internal stress, we set:\begin{equation}
+    f_y=\mu_x=\mu_z=0
+\end{equation}
+then we impose $$ f_z=f_{z,des}$$ to keep the block in contact with the guide. The $6-k=2$ motion artificial constraints are\begin{itemize}
+    \item $\omega_y=0$ since we want to slide the cube, and not to roll 
+    \item $v_x=v_{x,des}$.
+\end{itemize}
+We parametrize the direction of free motion, we denote \begin{equation}
+    \mathbf t_e=\begin{pmatrix}
+        \mathbf v\\ \bomega 
+    \end{pmatrix}=\begin{pmatrix}
+        v_x\\v_y\\v_z\\\omega_x\\\omega_y\\\omega_z
+    \end{pmatrix}\in \R^6
+\end{equation}
+the twist (linear and angular velocity of the end effector), the desired motion components are written in a vector:\begin{equation}
+    \boldsymbol{\nu}=\begin{pmatrix}
+        v_x\\ \omega_y
+    \end{pmatrix}\in \R^2.
+\end{equation}
+$\mathbf t_e$ is set by using  $\bnu$ and a \textbf{selection matrix} $S_t$:\begin{equation}
+    \mathbf t_e=\begin{pmatrix}
+        1&0\\ 0&0 \\ 0&0 \\ 0&0 \\ 0&1\\ 0&0
+    \end{pmatrix}\begin{pmatrix}
+        v_x\\ \omega_y
+    \end{pmatrix}=S_t\bnu.
+\end{equation}
+the parametrization of the admissible reaction with the environment is given by a desired reaction vector $\blambda$ and a selection matrix $S_w$:\begin{equation}
+    \mathbf w_e=\begin{pmatrix}
+        \mathbf f\\ \bmu  
+    \end{pmatrix}=\begin{pmatrix}
+        0&0&0&0\\
+        1&0&0&0\\
+        0&1&0&0\\
+        0&0&1&0\\
+        0&0&0&0\\
+        0&0&0&1
+    \end{pmatrix}\begin{pmatrix}
+        f_y\\f_z\\\mu_x\\\mu_z 
+    \end{pmatrix}=S_w\blambda.
+\end{equation}\begin{itemize}
+    \item We can control $\bnu$ and $\blambda$\item these quantities are passed trough $S_t$ and $S_w$\item they providing the filtered motion and wrench commands to be passed to the low level control loop.
+\end{itemize}
 \end{document}
