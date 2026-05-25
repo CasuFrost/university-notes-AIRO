@@ -5858,7 +5858,9 @@ We are in the context of a infinitely stiff environment, that naturally constrai
 These directions are characterized through the axes of a
 suitable end effector task frame $RF_t$. The execution of the task is performed by defining \textbf{artificial constraints}, that specify the desired values to be imposed by the control law. If $k$ direction of motion are blocked by the natural constraints, the motion on the remaining $6-k$ free direction are specified by the artificial constraints, similarly, the forces/moments along $k$ directions, admissible reaction of the environment can occur, are also specified by the artificial constraints. \bigskip
 
-\noindent It is hard to define the general framework of hybrid control, so we will show some examples, the first one is the following:
+\noindent It is hard to define the general framework of hybrid control, so we will show some examples.\bigskip
+
+\newpage\noindent \textbf{Example 1}
 \begin{figure}[H]
     \centering 
      \includegraphics[width=0.5\textwidth ]{images/hybrid2.eps}
@@ -5916,5 +5918,116 @@ the parametrization of the admissible reaction with the environment is given by 
     \end{pmatrix}=S_w\blambda.
 \end{equation}\begin{itemize}
     \item We can control $\bnu$ and $\blambda$\item these quantities are passed trough $S_t$ and $S_w$\item they providing the filtered motion and wrench commands to be passed to the low level control loop.
+\end{itemize}\noindent \textbf{Example 2}\\
+A manipulator is holding a crank, that have to turn.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/hybrid3.png}
+\end{figure}
+Since it should firmly hold the crank, the natural constraints are:\begin{align}
+    &v_x=v_z=0\\ 
+    &\omega_x=\omega_y=0\\ 
+    &f_y=\mu_z=0
+\end{align}
+notice how $\omega_z$ is not necessarily zero, since the manipulator may spin the handle. The artificial constraints (given by the control requirements) are:\begin{align}
+    &f_x=f_z=0 \text{ don't stress the handle}\\
+    &\mu_x=\mu_y=0\\ 
+    &v_y=v_{y,des} \text{ the tangent speed of rotation}\\
+    &\omega_z=\omega_{z,des}
+\end{align}
+The reference frame $RF_t$ depends on the angle $\alpha$ that describe the configuration of the crank, its $z$-axis is always aligned with the $z$ axis of the base frame $RF_0$ (that is vertical), so the transformation between $RF_0$ and $RF_t$ is just a rotation around $z$:\begin{equation}
+    RF_0\xrightarrow{R_z(\alpha)}RF_t
+\end{equation}
+hence\begin{equation}
+    {}^0\mathbf u=R_z^T(\alpha){}^t\mathbf u 
+\end{equation}
+for a generic vector $\mathbf u$. We want to express the twist in the base frame and parametrize it according to the natural constraints:\begin{equation}
+    {}^0\mathbf t_e=\begin{pmatrix}
+        {}^0\mathbf v\\{}^0\bomega 
+    \end{pmatrix}=\begin{pmatrix}
+        R_z^T(\alpha)&\\ 
+        &R_z^T(\alpha)
+    \end{pmatrix}\begin{pmatrix}
+        0&0\\
+        1&0\\
+        0&0\\
+        0&0\\
+        0&0\\
+        0&1
+    \end{pmatrix}\begin{pmatrix}
+        v_y\\ \omega_z 
+    \end{pmatrix}=S_t(\alpha)\bnu.
+\end{equation}
+Then we parametrize the feasible reactions:\begin{equation}
+    {}^0\mathbf w_e=\begin{pmatrix}
+        {}^0\mathbf f\\{}^0\bmu 
+    \end{pmatrix}=\begin{pmatrix}
+        R_z^T(\alpha)&\\ 
+        &R_z^T(\alpha)
+    \end{pmatrix}\begin{pmatrix}
+        1&0&0&0\\
+        0&0&0&0\\
+        0&1&0&0\\
+        0&0&1&0\\
+        0&0&0&1\\
+        0&0&0&0
+    \end{pmatrix}\begin{pmatrix}
+        f_x\\ f_z\\\mu_x\\\mu_y
+    \end{pmatrix}=S_w(\alpha)\blambda.
+\end{equation}
+\noindent \textbf{Example 3}\\
+The last example regards the insertion of a screw.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/hybrid4.png}
+\end{figure}
+The parameter $p$ is intrinsic of the screw, is called \textit{pitch}, and is the vertical displacement of the screw for every full turn. This constraint the robot in a very unique way: The manipulator can't move on the $z$ axis without rotating on the same axis, and vice versa. The other natural constraints are trivial:\begin{align}
+    &v_z=v_y=0\\ 
+    &\omega_x=\omega_y=0
+\end{align}
+the artificial constraints are:\begin{align}
+    &f_x=f_y=0\\ 
+    &\mu_x=\mu_y=0 
+\end{align}
+the screw constraint relates the angular and the linear velocity in the following way:\begin{align}
+    &v_z=v_{z,des}\\ 
+    &\omega_z=\nicefrac{2\pi}{p}v_{z,des}
+\end{align}
+also the forces are one function of the other:\begin{align}
+    &f_z=f_{z,des}\\ 
+    &\mu_z=\mu_z(f_z).
+\end{align}
+We have to parametrize the twist:\begin{equation}
+    \mathbf t_e=\begin{pmatrix}
+        \mathbf v\\ \bomega
+    \end{pmatrix}=\begin{pmatrix}
+        0\\0\\1\\0\\0\\\frac{2\pi}{p}
+    \end{pmatrix}v_z=S_t\nu\implies \omega_z=\frac{2\pi}{p}v_z
+\end{equation}
+for the wrench:\begin{equation}
+    \mathbf w_e=\begin{pmatrix}
+        \mathbf f\\ \bmu 
+    \end{pmatrix}=\begin{pmatrix}
+        1&0&0&0&0\\
+        0&1&0&0&0\\
+        0&0&0&0&-\frac{2\pi}{p}\\
+        0&0&1&0&0\\
+        0&0&0&1&0\\
+        0&0&0&0&1
+    \end{pmatrix}\begin{pmatrix}
+        f_x\\f_y\\\mu_x\\\mu_y\\\mu_z 
+    \end{pmatrix}=S_w\blambda\implies f_z=-\frac{2\pi}{p}\mu_z.
+\end{equation}
+There are more frames to take into account in hybrid control:\begin{itemize}
+    \item the task frame $RF_t$ use to give a definition of the hybrid reference values, as well for computing the errors that drive the control law. 
+    \item the sensor frame $RF_e$ where the forces are measured (for example, the frame at the center of a force/torque sensor).
+    \item the base frame of the manipulator $RF_0$, where the end effector velocities are expressed.
 \end{itemize}
+\begin{boxobservation}{}{}
+    \textbf{\sapText{Important}}: all the quantities (usually the errors) should be expressed in the same reference frame (the task frame).
+\end{boxobservation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/task_frame2.eps}
+\end{figure}
 \end{document}
