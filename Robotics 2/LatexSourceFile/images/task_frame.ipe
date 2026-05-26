@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260525105902" modified="D:20260525105902"/>
+<info created="D:20260525105902" modified="D:20260525182320"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -313,63 +313,63 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black">
+<path layer="alpha" matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black">
 192 736 m
 232 732 l
 232 704 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black" fill="0.651 0.886 1">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black" fill="0.651 0.886 1">
 228 704 m
 236 704 l
 236 696 l
 228 696 l
 228 704 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black">
 228 684 m
 228 692 l
 236 692 l
 236 684 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black">
 232 692 m
 232 696 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black" fill="1">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black" fill="1">
 4 0 0 4 192 736 e
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black" fill="1">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black" fill="1">
 4 0 0 4 232 732 e
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black" fill="white">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black" fill="white">
 200 660 m
 220 688
 264 700 c
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="black" fill="white">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="black" fill="white">
 236 692 m
 236 684 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="0.502 0 1" fill="white" arrow="normal/normal">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="0.502 0 1" fill="white" arrow="normal/normal">
 232.029 687.61 m
 251.213 697.748 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="0.502 0 1" fill="white" arrow="normal/normal">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="0.502 0 1" fill="white" arrow="normal/normal">
 231.998 687.781 m
 223.135 706.601 l
 </path>
-<path matrix="0.412475 0.910969 -0.910969 0.412475 767.272 257.552" stroke="0 0.502 0.753" arrow="normal/normal" rarrow="normal/normal">
+<path matrix="0.635339 1.40317 -1.40317 0.635339 1088.91 -28.3941" stroke="0 0.502 0.753" arrow="normal/normal" rarrow="normal/normal">
 232 720 m
 232 700 l
 256 700 l
 </path>
-<path stroke="0 0.502 0.251" arrow="normal/normal" rarrow="normal/normal">
+<path matrix="1.54031 0 0 1.54031 -92.93 -425.103" stroke="0 0.502 0.251" arrow="normal/normal" rarrow="normal/normal">
 176 756 m
 176 736 l
 208 736 l
 </path>
-<text matrix="1 0 0 1 -4 -4" transformations="translations" pos="184 728" stroke="0 0.502 0.251" type="label" width="18.517" height="6.812" depth="1.49" valign="baseline" style="math">RF_0</text>
-<text matrix="1 0 0 1 20 44" transformations="translations" pos="184 728" stroke="0 0.502 0.753" type="label" width="18.326" height="6.812" depth="1.49" valign="baseline" style="math">RF_e</text>
-<text matrix="1 0 0 1 60 32" transformations="translations" pos="184 728" stroke="0.502 0 1" type="label" width="17.556" height="6.812" depth="1.49" valign="baseline" style="math">RF_t</text>
+<text matrix="1.54031 0 0 1.54031 -99.0912 -431.265" transformations="translations" pos="184 728" stroke="0 0.502 0.251" type="label" width="18.517" height="6.812" depth="1.49" valign="baseline" style="math">RF_0</text>
+<text matrix="1.54031 0 0 1.54031 -62.1238 -357.33" transformations="translations" pos="184 728" stroke="0 0.502 0.753" type="label" width="18.326" height="6.812" depth="1.49" valign="baseline" style="math">RF_e</text>
+<text matrix="1.54031 0 0 1.54031 -0.511505 -375.814" transformations="translations" pos="184 728" stroke="0.502 0 1" type="label" width="17.556" height="6.812" depth="1.49" valign="baseline" style="math">RF_t</text>
 </page>
 </ipe>

@@ -50,9 +50,9 @@ We consider the following example:\begin{center}
     \includegraphics[width=0.4\textwidth ]{images/no_dyn_example.eps}
 \end{center}
 It is clear that, considering the positive angular velocity $v>0$, in the next configuration the second link will rotate counter-clockwise, while the first joint remains fixed. If we have to take into account the dynamics, we should also consider\begin{itemize}
-    \item the center of mass of the first and the second link
-    \item the mass of the first and the second link
-    \item the inertia of the first and the second link
+    \item the center of mass of the first and the second links
+    \item the mass of the first and the second links
+    \item the inertia of the first and the second links
 \end{itemize}
 and instead of describing the control through angular velocities on the two joints, we define the torques $\tau_1,\tau_2$ applied on them. In this case (we ignore the effects of gravity), by applying a zero torque $\tau_1=0$ on the first joint, and a positive torque $\tau_2>0$ on the second joint, both joints will move, according to the laws of rigid body dynamics.\bigskip
 
@@ -60,7 +60,7 @@ Let's consider the following example of a 2R planar robot, with the joint axis o
 \begin{center}
     \includegraphics[width=0.4\textwidth ]{images/2R_example.eps}
 \end{center}
-where $I_1,I_2$ are the moment of inertia of the links around their center of mass, $d_{c_{1}},d_{c_{2}}$ are the distances along the links between the joint and the center of mass, $m_1,m_2$ are the mass of the links, and $l_1,l_2$ the lengths. The initial configuration at $t=0$ is \begin{equation}
+where $I_1,I_2$ are the moments of inertia of the links around their center of mass, $d_{c_{1}},d_{c_{2}}$ are the distances along the links between the joint and the center of mass, $m_1,m_2$ are the mass of the links, and $l_1,l_2$ the lengths. The initial configuration at $t=0$ is \begin{equation}
     \mathbf q_0 = \begin{pmatrix}
         0\\\frac{\pi}{2}
     \end{pmatrix} \ \ \ \  
@@ -68,7 +68,7 @@ where $I_1,I_2$ are the moment of inertia of the links around their center of ma
         0\\0
     \end{pmatrix}
 \end{equation}
-Consequently, also $\dot {\mathbf p}=\mathbf 0$ (the end effector velocity). We want to know, what will be $\ddot {\mathbf q}$ (and consequently $\ddot {\mathbf p}$) in the initial configuration at $t=0$, by considering the dynamics and the forces. The Jacobian matrix of this simple manipulator is\begin{equation}
+Consequently, also $\dot {\mathbf p}=\mathbf 0$ (the end effector velocity). We want to know what $\ddot {\mathbf q}$  will be  (and consequently $\ddot {\mathbf p}$) in the initial configuration at $t=0$, by considering the dynamics and the forces. The Jacobian matrix of this simple manipulator is\begin{equation}
     J=\begin{pmatrix}
         -l_1s_1-l_2s_{12} & -l_2s_{12}\\ 
         l_1c_1+l_2c_{12} & l_2c_{12}
@@ -90,22 +90,26 @@ since $\dq_0=\mathbf 0$
         l_1&0
     \end{pmatrix}\ddot{\mathbf q_0}
 \end{equation}
-we know that, by finding the initial joint acceleration $\ddot{\mathbf q_0}$ we can predict the next configuration and where the end effector will move. The full dynamic model is a system of differential equation and is the following\begin{equation}
+we know that, by finding the initial joint acceleration $\ddot{\mathbf q_0}$ we can predict the next configuration and where the end effector will move. The full dynamic model is a system of differential equations and is the following\begin{equation}
     M(\mathbf q)\ddot{\mathbf q}+\mathbf c(\mathbf q,\dq)+\mathbf g(\mathbf q)=\mathbf 0
 \end{equation} 
-where $M$ is the  $2\times 2$ inertia matrix, and depends only on the current configuration, $\mathbf c$ is a term representing the centrifugal and coriolis forces, and depends also on the velocities $\dq$. The last term $\mathbf g$ is the gravity term, and depends on the current configuration. We are not explaining in details how the model is derived, since this is an introductory section, and all these topics will be described and expanded in the following chapters.  
+where $M$ is the  $2\times 2$ inertia matrix, and depends only on the current configuration, $\mathbf c$ is a term representing the centrifugal and coriolis forces, and depends also on the velocities $\dq$. The last term $\mathbf g$ is the gravity term, and depends on the current configuration. We are not explaining in detail how the model is derived, since this is an introductory section, and all these topics will be described and expanded in the following chapters.  
 
 Since the robot is at rest, the $\mathbf c$ vector is null, so\begin{equation}
     \ddot{\mathbf q}=M^{-1}(\mathbf q)\mathbf g(\mathbf q)
 \end{equation}
-the inertia matrix in the initial configuration (that for now we get for granted) is\begin{equation}
+the inertia matrix in the initial configuration (that for now we take for granted) is\begin{equation}
     M(\mathbf q_0)=\begin{pmatrix}
         I_1+m_1d_{c_1}^2+I_2+m_2d_{c_2}^2+m_2l_1^2 &I_2+m_2d_{c_2}^2\\ 
         I_2+m_2d_{c_2}^2&I_2+m_2d_{c_2}^2
     \end{pmatrix}
 \end{equation}
 \begin{boxtheorem}{Steiner}{}
-    If $I$ is the moment of inertia around an axis of a rigid body, and $d$ is the distance between this axis and the center of mass, the inertia around the parallel axis passing through the center of mass will be $\bar I = I+md^2$, where $m$ is the mass of the body.
+    Let $I_{cm}$ be the moment of inertia of a rigid body around an axis passing through its center of mass. 
+If $I$ is the moment of inertia around a parallel axis located at a distance $d$ from the center of mass, 
+then:
+$$I = I_{cm} + md^2$$
+where $m$ is the total mass of the body.
 \end{boxtheorem}
 In the inertia matrix we see the terms $I_i+m_id_{c_i}^2$, that is exactly the moment of inertia around the parallel axis passing through the center of mass, that we denote $\bar I_i$.
 \begin{equation}
@@ -134,7 +138,7 @@ the first component $ m_1d_{c_1}g_0+m_2l_1g_0$ represents the total gravitationa
     \item $m_1 d_{c_1} g_0$: This is the torque generated by the weight of the first link.
     \item $m_2 l_1 g_0$: This is the torque generated by the weight of the second link acting at the end of the first link.
 \end{itemize}
-due to the vertical alignment of the initial configuration, the gravity does not exerts any torque on the second joint. By putting together the equations we get:\begin{equation}
+due to the vertical alignment of the initial configuration, the gravity does not exert any torque on the second joint. By putting together the equations we get:\begin{equation}
     \ddot{\mathbf q_0}=\frac{(m_1d_{c_1}+m_2l_1)g_0}{(\bar I_1+m_2l_1^2)\bar I_2}\begin{pmatrix}
         -\bar I_2\\ \bar I_2
     \end{pmatrix}=\begin{pmatrix}
@@ -158,15 +162,15 @@ so the end effector will accelerate downward without moving on the $x$ axis.
 \begin{center}
     \includegraphics[width=0.27\textwidth ]{images/2R_example2.eps}
 \end{center}
-Now, we consider a simpler example from a dynamic point of view, but we will show the process to derive the dynamic model. We consider a planar 2P robot, where the joints are orthogonal, in this simple case the Jacobian matrix is the identity. For this manipulator there will be no angular terms, since all the joints are prismatic, we still refers with torques to the linear forces $\tau_1,\tau_2$ applied on the prismatic joints.\begin{center}
+Now, we consider a simpler example from a dynamic point of view, but we will show the process to derive the dynamic model. We consider a planar 2P robot, where the joints are orthogonal, in this simple case the Jacobian matrix is the identity. For this manipulator there will be no angular terms, since all the joints are prismatic, we still refer with torques to the linear forces $\tau_1,\tau_2$ applied on the prismatic joints.\begin{center}
     \includegraphics[width=0.35\textwidth ]{images/2P_example.eps}
 \end{center}
-We consider two different methods to derive the dynamic model (both these methods we will further explained in details in the their relative sections).
+We consider two different methods to derive the dynamic model (both these methods we will further explained in detail in the their relative sections).
 \subsubsection{Newton-Euler}
-This methods perform a balance of forces acting on the system of rigid bodies. We start by the last link, backtracking towards the first. The forces acting on the second link are the torque $\tau_2$ (the commands) and the gravity, so the dynamic equation for the second link (according to the Newton laws) is:\begin{equation}
+This method is based on the balance of forces acting on the system of rigid bodies. We start by the last link, backtracking towards the first. The forces acting on the second link are the torque $\tau_2$ (the commands) and the gravity, so the dynamic equation for the second link (according to the Newton laws) is:\begin{equation}
     \tau_2-m_2g_0=m_2\ddot q_2
 \end{equation}
-on the first link, there is no force exerts from the gravity (since this link is constrained to move only along the $x$ axis), so is affected only by the command torque $\tau_1$ and the inertia of the second link (which opposes its motion):\begin{equation}
+on the first link, there is no force exerted from the gravity (since this link is constrained to move only along the $x$ axis), so is affected only by the command torque $\tau_1$ and the inertia of the second link (which opposes its motion):\begin{equation}
     \tau_1-m_2\ddot q_1=m_1\ddot q_1
 \end{equation}
 by putting the two equations together we obtain the following system\begin{equation}
@@ -203,7 +207,7 @@ depends on the current configuration $\mathbf q$ and the velocity $\dq$. In this
 there is a simple principle in Physics, the trajectories of the system (the evolution over time of $\mathbf q$ and $\dq$) are the one that \textit{minimizes the action over time}, that is the following scalar function\begin{equation}
     \mathcal S=\int_0^t \mathcal L(\mathbf q,\dq)dt
 \end{equation}
-this is a problem of Calculus of Variations (the minimization of a functional over a set of functions) and is proved to be solved by the trajectories that satisfies the \textbf{Euler-Lagrange Equations}:\begin{equation}
+this is a problem of Calculus of Variations (the minimization of a functional over a set of functions) and is proved to be solved by the trajectories that satisfy the \textbf{Euler-Lagrange Equations}:\begin{equation}
     \frac{d}{dt}\frac{\partial \mathcal L}{\partial \dot q_i}-\frac{\partial \mathcal L}{\partial q_i}=\tau_i, \ \ \ 1\le i\le n
 \end{equation}
 for our 2P robotic system, we have the two following equations\begin{equation}
@@ -232,7 +236,7 @@ and reaching the final condition  \begin{equation}
         x_d\\ 0
     \end{pmatrix}
 \end{equation}
-We can plan the motion by integrating over time $\ddot x = \frac{F}{m}=u$. We already seen the simple bang-bang profile, in that case, the displacement in position reached in $T$ seconds by applying a command input of amplitude $u$ is \begin{equation}
+We can plan the motion by integrating over time $\ddot x = \frac{F}{m}=u$. We have already seen the simple bang-bang profile, in that case, the displacement in position reached in $T$ seconds by applying a command input of amplitude $u$ is \begin{equation}
     x=\frac{T^2}{4}u
 \end{equation}
 if $u$ is limited by $F_{max}$ the minimum time to reach $x=x_d$ starting from $x=0$ is\begin{equation}
@@ -242,9 +246,9 @@ where $F_{max}=mu_{max}$.
 \begin{center}
     \includegraphics[width=\textwidth ]{images/bang_bang.eps}
 \end{center}
-This approach execute the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually lead to a configuration that is not exactly the desired one, in some cases, with a high error.
+This approach executes the desired motion in nominal condition in the minimum time, but it requires some information about the dynamical model (in this case, the value of $m$). Of course, in real situations, there are always some disturbance forces that we can't control or predict, so this approach will eventually lead to a configuration that is not exactly the desired one, in some cases, with a high error.
 
-The feedback approach consists in using the state variables in the commands, it doesn't necessary requires the dynamic model, but some sensors to measure the position, velocity, and other quantities. In this simple example, the general approach is the following\begin{equation}
+The feedback approach consists in using the state variables in the commands, it doesn't necessarily  require the dynamic model, but some sensors to measure the position, velocity, and other quantities. In this simple example, the general approach is the following\begin{equation}
     m\ddot x = u(x,\dot x)
 \end{equation}
 where $u$ is the control rule. We consider the following PD law:\begin{equation}
@@ -257,7 +261,7 @@ the system is still linear. We track the error and its derivatives\begin{equatio
         \ddot e = -\ddot x
     \end{pmatrix}
 \end{equation}
-We express the dynamics in term of the errors and we get the second order equation:\begin{equation}
+We express the dynamics in terms of the errors and we get the second order equation:\begin{equation}
     m\ddot e+k_Pe+k_D\dot e = 0
 \end{equation}
 this homogeneous equation can be solved analytically by knowing $m,k_P,k_D$ and the initial condition. The value of $e(t)$ converges to zero if $m,k_D$ and $k_P$ have the same sign, since $m$ is the mass (and is always positive), it is sufficient to choose positive values for $k_P,k_D$. This law works even if there are some disturbance, we can combine the feedforward action with the feedback loop by choosing a force command\begin{equation}
@@ -623,7 +627,7 @@ we consider a generalized inverse, in particular, the right inverse:\begin{align
     0&0
 \end{pmatrix}.
 \end{align*}
-We already seen in the Robotics 1 course that the pseudo inverse realizes the desired task velocity by choosing the joint velocities $\dq$ of minimum norm. In particular, given the problem $J\dq=\dot{\mathbf y}$, even if $\dot{\mathbf y}$ is not in the range space of $J$, the pseudo inverse finds the minimum norm solution among the $\dq$ that minimizes\begin{equation}
+We have already seen in the Robotics 1 course that the pseudo inverse realizes the desired task velocity by choosing the joint velocities $\dq$ of minimum norm. In particular, given the problem $J\dq=\dot{\mathbf y}$, even if $\dot{\mathbf y}$ is not in the range space of $J$, the pseudo inverse finds the minimum norm solution among the $\dq$ that minimizes\begin{equation}
     \|\dot{\mathbf y}-J\dq\|^2.
 \end{equation}
 If $J$ is singular and $JJ^T$ cannot be inverted, the formula $J^\#=J^T(JJ^T)^{-1}$ can't be used, and to find $J^\#$ we need numerical methods that relies on the \textit{singular value decomposition} of $J$.
@@ -1348,7 +1352,7 @@ To solve this problem we need to close the feedback loop on task execution, inst
     &\dy=\dy_d+K_P\mathbf e\\ 
     &\ddy=\ddy_d+K_D\dot{\mathbf e}+K_P\mathbf e
 \end{align}
-where $K,K_P$ and $K_D$ are positive definite matrices. We already seen in the Robotics 1 course that the inclusion of these terms are necessary to leads the error to zero.\bigskip
+where $K,K_P$ and $K_D$ are positive definite matrices. We have already seen in the Robotics 1 course that the inclusion of these terms are necessary to leads the error to zero.\bigskip
 
 \noindent 
 The next topic concerns mobile manipulators. These kinds of robots, usually have a configuration space that can be decoupled in two sets of variables:\begin{itemize}
@@ -1424,7 +1428,7 @@ from Equation \eqref{mobile_base_G}:
 \end{equation}
 the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
 \subsection{Hard Limits in the Joint Space}
-Until now, we have seen how the joint velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in details, a quadratic programming problem of the kind:\begin{align}
+Until now, we have seen how the joint velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in detail, a quadratic programming problem of the kind:\begin{align}
     &\arg\min_\dq \dq^T W\dq\\ 
     &\text{s.t. }J\dq=\dy
 \end{align}
@@ -4872,7 +4876,7 @@ This law does not produce a linear and decoupled behavior, but achieves global a
     M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)+B_v\dq_d
     =M(\q)\ddq_d+C(\q,\dq)\dq_d+\mathbf g(\q)+B_v\dq_d+K_P\mathbf e+K_D\dot{\mathbf e}
 \end{equation}
-we want to express the dynamics in term of the error. First of all we simplify the equation by cancelling the gravity\begin{equation}
+we want to express the dynamics in terms of the error. First of all we simplify the equation by cancelling the gravity\begin{equation}
     M(\q)\ddq+C(\q,\dq)\dq+B_v\dq
     =M(\q)\ddq_d+C(\q,\dq)\dq_d+B_v\dq_d+K_P\mathbf e+K_D\dot{\mathbf e}
 \end{equation}
@@ -5287,7 +5291,7 @@ this is simplified in\begin{equation}
 and thus:\begin{equation}
     \dot V=0\iff \mathbf e = \de = \mathbf 0. 
 \end{equation}
-By using the Barbalat lemma (we skip this part of the proof), the LaSalle theorem applies and the system is proven to be asymptotically stable around $(\q,\dq)=(\mathbf 0,\mathbf 0)$.\hfill$\blacksquare$\bigskip
+By using the Barbalat lemma (we skip this part of the proof), the LaSalle theorem applies and the system is proved to be asymptotically stable around $(\q,\dq)=(\mathbf 0,\mathbf 0)$.\hfill$\blacksquare$\bigskip
 
 \noindent The maximal invariant set of states guarantee zero trajectory error, and a constant value for $\hat\brho$, but is not guaranteed that $\hat \brho = \brho$ (i.e. $\tilde\brho$ might be non zero).\bigskip
 
@@ -5600,7 +5604,7 @@ which is the $n-l$-dimensional dynamic model. Similarly the multipliers value (g
 \end{boxdefinition}
 In this way is possible to simulate the time evolution of the constrained model, we recall that only $A$ and $D$ are given analytically (they have to be differentiated) while $E$ and $G$ are computed numerically.\bigskip
 
-\noindent\textbf{About the friction}: This way of modelling assumes that the constraints are \textit{purely geometric} and exerts \underline{zero friction} on the end effector, in fact, this friction is considered disturbances.\bigskip
+\noindent\textbf{About the friction}: This way of modelling assumes that the constraints are \textit{purely geometric} and exert \underline{zero friction} on the end effector, in fact, this friction is considered disturbances.\bigskip
 
 \noindent\textbf{Example}: We always use the 2R constrained on a circle example, we already defined the matrix $A$:\begin{equation}
     A=\begin{pmatrix}
@@ -5818,7 +5822,7 @@ The derivative is:\begin{align}
 which has the unique solution:\begin{equation}
     \y=(K_m+K_e)^{-1}(K_m\y_d+K_e\y_e)=\y_E
 \end{equation}
-$\y_E$ is a point between $\y_d$ and $\y_e$ and can be proven by LaSalle that is the minimum of $V_2$ and is an asymptotically stable equilibrium.\begin{equation}
+$\y_E$ is a point between $\y_d$ and $\y_e$ and can be proved by LaSalle that is the minimum of $V_2$ and is an asymptotically stable equilibrium.\begin{equation}
     \y_E\simeq\begin{cases}
         \y_e \text{ if }K_e\gg K_m\\ 
         \y_d \text{ if }K_m\gg K_e 
@@ -6029,5 +6033,200 @@ There are more frames to take into account in hybrid control:\begin{itemize}
 \begin{figure}[H]
     \centering 
      \includegraphics[width=0.5\textwidth ]{images/task_frame2.eps}
+\end{figure}
+\redText{TODO: pacco 16 slide 11}
+\chapter{Fault Detection}
+\section{Actuator Faults}
+Within the framework of fault diagnosis for (nonlinear) dynamic systems, the management of an anomaly is formulated through four fundamental, sequential steps:
+\begin{itemize}
+    \item \textbf{Fault Detection:} recognizes that a generic malfunction or improper behavior has occurred within a physical or functional component of the controlled system.
+    \item \textbf{Fault Isolation:} discriminates which specific fault $f$ has taken place out of a large class of potential ones, distinguishing it from other faults and mitigating the effects of external disturbances.
+    \item \textbf{Fault Identification:} determines the specific characteristics of the isolated fault $f$, such as its time profile and/or its class type.
+    \item \textbf{Fault Accommodation:} modifies the control law of the system in order to compensate for the effects of the detected and isolated (and possibly identified) fault, ensuring operational continuity.
+\end{itemize}
+We have to outline the implementation methodologies for Fault Detection and Isolation (FDI) and Fault Tolerant Control (FTC):
+\begin{itemize}
+    \item \textbf{FDI Solution:} Focuses on simultaneous detection and isolation by introducing an auxiliary dynamic system known as a \textit{Residual Generator}. 
+    \begin{itemize}
+        \item The output of this generator acts as a vector of residuals $\mathbf r$, designed such that each component $r_i$ depends strictly on its corresponding fault $f_i$ (and potentially approximates its time behavior), while remaining decoupled from any other faults or external disturbances.
+        \item Under nominal conditions ($f \equiv 0$), the residual vector converges asymptotically to zero due to system stability. These schemes are typically \textit{model-based}, leveraging a nominal, fault-free, and disturbance-free dynamic model of the system.
+    \end{itemize}
+    \item \textbf{Fault Tolerant Control (FTC):} Deals with maintaining system operations under faulty conditions and is divided into two main approaches:
+    \begin{itemize}
+        \item \textbf{Passive FTC:} Employs a robust control scheme designed to inherently handle uncertainties and specific faults without structural changes, typically effective for minor or limited fault impacts.
+        \item \textbf{Active FTC:} Involves a dynamic reconfiguration of the control law triggered by the FDI system, ensuring guaranteed performance metrics even when the system is operating under a fault.
+    \end{itemize}
+\end{itemize}
+To model the actuator faults, we consider the following revisitation of the dynamic model:\begin{equation}
+    M\ddq+\mathbf c+\mathbf g+B_v\dq=\btau-\btau_f 
+\end{equation}
+here, $\btau$ is the actuation torques, the nominal values requested to the motors, while $\btau+\btau_f$ is the actual torque exerted, where $\btau_f$ is the fault quantity, unknown. There are various kind of fault torques, for a given joint $i$:\begin{itemize}
+    \item total fault: $\tau_{f,i}=\tau_i$ 
+    \item partial fault: $\tau_{f,i}=\varepsilon\tau_i, \ \ \ 0<\varepsilon<1$
+    \item saturation: $\tau_{f,i}=\tau_i-\text{sign}(\tau_i)\tau_{i,max}$
+    \item bias: $\tau_{f,i}=b_i$ (for a constant $b_i$)
+    \item block: The torque $\tau_{f,i}$ blocks the motor (acting like a brake), an approximation is a value for  $\tau_{f,i}$ that provide the following dynamic behavior:\begin{equation}
+        \ddot q_i=-\lambda_i\dot q_i, \ \ \ \ \lambda_i\gg 1.
+    \end{equation}
+\end{itemize}
+\subsection{The Residual Method}
+We give a method to detect faults, without knowing $\btau_f$, but assuming to know the exact model of the manipulator. We use the conjugate momentum:\begin{equation}
+    \mathbf p=M\dq  
+\end{equation}
+let's take the derivative (for each component):\begin{equation}\label{derivative_momenta}
+    \dot p_i=M_i^T\ddq+\dot M_i^T\dq 
+\end{equation}
+$M_i^T$ is the $i$-th row of the inertia matrix, from the dynamic model:\begin{equation}\label{scalarInertia}
+    M_i^T\ddq=\tau_i-\tau_{f,i}-c_i-g_i - b_{vi}\dot q_i
+\end{equation}
+where $c_i$ and $g_i$ are the $i$-th component of the centrifugal/Coriolis and gravity vector. $b_{vi}\dot q_i$ is the $i$-th component of the friction term $B_v\dq$. By substituting \eqref{scalarInertia} in \eqref{derivative_momenta} we get:\begin{equation}\label{derivative_momenta2}
+     \dot p_i=\tau_i-\tau_{f,i}-c_i-g_i - b_{vi}\dot q_i+\dot M_i^T\dq.
+\end{equation}
+Now let's analyze $\dot M_i^T\dq$, we can rewrite it $\dq^T\dot M_i$, since $M_i$ depends on $\q$, we apply the chain rule:\begin{equation}
+    \dq^T M_i=\dq^T\frac{\partial M_i}{\partial \q}\dq
+    \underbrace{=}_{M^T=M}
+    \frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T\right)\dq.
+\end{equation}
+So by replacing in \eqref{derivative_momenta2} we get to\begin{equation}
+     \dot p_i=\tau_i-\tau_{f,i}-c_i-g_i - b_{vi}\dot q_i+
+     \frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T\right)\dq.
+\end{equation}
+We recall that the $c_i$ component can be obtained by the Christoffel symbols:\begin{equation}
+    c_i=\frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T-\frac{\partial M}{\partial q_i}\right)\dq
+\end{equation}
+so:\begin{align}
+    \dot p_i=&\tau_i-\tau_{f,i}-\blueText{c_i}-g_i - b_{vi}\dot q_i+
+     \frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T\right)\dq=\\[2ex]
+=&\tau_i-\tau_{f,i}-\blueText{\frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T-\frac{\partial M}{\partial q_i}\right)\dq}-g_i - b_{vi}\dot q_i+
+     \frac{1}{2}\dq^T
+    \left(\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T\right)\dq
+    \\[2ex]
+=&\tau_i-\tau_{f,i}-\frac{1}{2}\dq^T
+    \left(\sapText{\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T}-\frac{\partial M}{\partial q_i}\right)\dq-g_i - b_{vi}\dot q_i+
+     \frac{1}{2}\dq^T
+    \left(\sapText{\frac{\partial M_i}{\partial \q}+\left(\frac{\partial M_i}{\partial \q}\right)^T}\right)\dq\\[2ex]
+    =&
+    \tau_i-\tau_{f,i}+\frac{1}{2}\dq^T
+   \frac{\partial M}{\partial q_i}\dq-g_i - b_{vi}\dot q_i
+\end{align}
+we group some of the terms by denoting it $\alpha_i(\q,\dq)$:\begin{align}
+    &\dot p_i= \tau_i-\tau_{f,i}-\alpha_i(\q,\dq)\\[1.5ex]
+    &\alpha_i(\q,\dq)=-\frac{1}{2}\dq^T
+   \frac{\partial M}{\partial q_i}\dq+g_i + b_{vi}\dot q_i
+\end{align}
+in this way, $\dot p_i$ is a decoupled component relative to the single fault $\tau_{f,i}$. To identify the faults, we define the following quantity.
+\begin{boxdefinition}{Residuals}{}
+    The \textbf{vector of residuals} $\mathbf r$  is a dynamic quantity defined over time by the following differential equation:\begin{equation}
+        \mathbf r=K\left[
+            \int(\btau-\boldsymbol{\alpha}(\q,\dq)-\mathbf r)dt-\mathbf p
+        \right]
+    \end{equation} 
+    with $K$ being a diagonal positive definite matrix.
+\end{boxdefinition}
+This quantity can be computed without computing the joint acceleration nor inverting the inertia matrix. The defined vector $\mathbf r$ is a new system that have its own dynamic, is also called \textit{Momentum-Based Residual Observer}, it's a vector that acts like a ''filter'' for the faults $\btau_f$, if we take the derivative we have:\begin{equation}
+    \dot{\mathbf r}=K(\btau_f-\mathbf r)
+\end{equation}
+since $K$ is diagonal, for each $i$-th component:\begin{equation}
+    \dot r_i=K_i(\tau_{f,i}-r_i)
+\end{equation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.35\textwidth ]{images/observer.eps}
+\end{figure}
+\noindent in the Laplace domain:\begin{align}
+    &\dot r_is = K_i(\tau_{f,i}-r_i)\implies\\ 
+    &\frac{r_i}{\tau_{f,i}}=\frac{1}{1+\frac{1}{K_i}s} 
+\end{align}
+so $r_i$ observe the value of $\tau_{f,i}$, with a delay given by $\frac{1}{K_i}$. Of course we don't have access to $\btau_f$, so the observer is implemented trough the integral term.  The block diagram of the model with the residual generator is the following:\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/residualGenerator.drawio.pdf}
+\end{figure}
+From the block diagram we get:\begin{align}
+    &\dot{\hat{\mathbf p}}=\btau-\boldsymbol{\alpha}+K(\mathbf p-\hat{\mathbf p})\\
+    &\mathbf r=K(\hat{\mathbf p}-\mathbf p).
+\end{align}
+The observer $\mathbf r$ follows the disturbances $\btau_f$ with a linear dynamics (for constant $\btau_f$). Without giving the proof (trivial), we can see that\begin{align}
+    &\mathbf e_{obs}=\btau_f-\mathbf r \implies \\ 
+    &\dot{\mathbf e}_{obs}=-K\mathbf e_{obs}.
+\end{align}
+\noindent\textbf{Example}: Consider a planar 2R under gravity, the model is:\begin{equation}
+\begin{pmatrix} 
+a_1 + 2a_2c_2 & a_3 + a_2c_2 \\ 
+a_3 + a_2c_2 & a_3 
+\end{pmatrix}
+\begin{pmatrix} 
+\ddot{q}_1 \\ 
+\ddot{q}_2 
+\end{pmatrix} 
++ 
+\begin{pmatrix} 
+-a_2(2\dot{q}_1 + \dot{q}_2)\dot{q}_2s_2 \\ 
+a_2\dot{q}_1^2s_2 
+\end{pmatrix} 
++ 
+\begin{pmatrix} 
+a_4c_1 + a_5c_{12} \\ 
+a_5c_{12} 
+\end{pmatrix} 
+= 
+\begin{pmatrix} 
+\tau_1 - \tau_{f,1} \\ 
+\tau_2 - \tau_{f,2} 
+\end{pmatrix}
+\end{equation}
+the terms $\alpha_1,\alpha_2$ are:
+\begin{align}
+\alpha_1 &= g_1(q) = a_4c_1 + a_5c_{12} \\[1.5ex]
+\alpha_2 &= -\frac{1}{2}\dot{q}^T \frac{\partial M(q)}{\partial q_2}\dot{q} + g_2(q) \\
+&= a_2(\dot{q}_1 + \dot{q}_2)\dot{q}_1s_2 + a_5c_{12}
+\end{align}
+we impose a sinusoidal profile for the first joint torque $\tau_1$, and a square wave for the second joint torque $\tau_2$, the actual torques exerted will have a total fault in $t\in[15,20]$ for the first joint and $t\in [12,18]$ for the second:\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/faultsExample.png}
+\end{figure}
+the resulting joint configuration over time is the following:\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.35\textwidth ]{images/faultsExample2.png}
+\end{figure}
+as you can see, on the profile of $q_1,q_2$ there is no clear evidence of the faults (like strange peaks), the residuals $r_1,r_2$ instead, detected perfectly the missing parts:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.35\textwidth ]{images/faultsExample3.png}
+\end{figure}
+in this case, $K$ was a diagonal matrix with $K_1=K_2=50$. Usually, to overcome disturbances not given by the faults, the residual $\mathbf r$ are filtered trough a given threshold $\epsilon$\begin{equation}
+    r_{i,filtered}=\begin{cases}
+        r_i &\text{ if }|r_i|>\epsilon \\ 
+        0 &\text{ if }|r_i|\le \epsilon
+    \end{cases}.
+\end{equation}
+\redText{TODO: pacco 18 slide 23}
+\section{Collision Detection}
+In the case of a collision, the robot is subject to an external force $\mathbf F_c$ that is not modeled in the dynamic model, so we can write (without considering the friction):\begin{equation}
+    M\ddq+\mathbf c+\mathbf g=\btau+\btau_c
+\end{equation}
+where $\btau_c$ is the torque generated by the collision force $\mathbf F_c$:\begin{equation}
+    \btau_c=J^T\mathbf F_c
+\end{equation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/collisionDetection.png}
+\end{figure}
+The only difference between the fault detection in the model, is that the ''disturbance'' torque $\btau_c$ is added to $\btau$ and not subtracted. Since it's a disturbance, we can use the same residual generator to detect it, the only difference is that the residual will be $\dot r_i=K_i(\tau_{c,i}-r_i)$, so the residual will follow the collision torque $\btau_c$ with a delay given by $1/K_i$. The collision detection is important for safety reasons, since we want to stop the robot as soon as possible in case of a collision. The residual generator can be used to detect the collision and stop the robot before it causes damage to the environment or to the robot itself.
+\begin{align}
+    &\mathbf r=K\left(
+        \mathbf p-\int(\btau+\mathbf c-\mathbf g+\mathbf r)dt-\mathbf p(0)
+    \right)\implies\\ 
+    &\dot{\mathbf r}=K(\btau_c-\mathbf r)
+\end{align}
+hence\begin{equation}
+    \mathbf r\simeq\btau_c=J^T\mathbf F_c.
+\end{equation}\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.7\textwidth ]{images/collisionDetDiagram.drawio.pdf}
 \end{figure}
 \end{document}
