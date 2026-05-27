@@ -2077,7 +2077,7 @@ The gravity term is a vector (the gradient of the potential energy)\begin{equati
 =\nabla_\q U
 \end{equation}
 for the Christoffel symbol, we define a square matrix $C(\q,\dq)$ of order $n$, where the entry $(k,j)$ is defined through the Christoffel symbols:\begin{equation}
-    C[k,j]=c_{kj}(\q,\dq)=\sum_{i=1}^nc_{kij}(\q)\dq
+    C[k,j]=c_{kj}(\q,\dq)=\sum_{i=1}^nc_{kij}(\q)\dot q_i
 \end{equation}
 About the notation: The $c$ with two appendices is an entry of the matrix $C(\q,\dq)$, the $c$ with three appendices is a Christoffel symbol. The full dynamic model as a single vector equation is:\begin{equation}\label{dynModel}
     M(\q)\ddq+C(\q,\dq)\dq+\mathbf g(\q)=\mathbf u
@@ -3181,7 +3181,7 @@ We denote $U_g$ the gravitational potential energy that we used until now. To th
     U_{ei}=\frac{1}{2}K_i(q_i-\theta_i)^2
 \end{equation}
 where $K_i$ is a positive real coefficient. Notice how this is a simple model of the elasticity, despite that, it describes pretty well the dynamics of flexible joints. The coefficients $K_i$ are organized in a positive and diagonal matrix of \textbf{joint stiffness} $K$ and the  total elastic potential energy is\begin{equation}
-    U_e=\sum_{i=1}^{n}U_{ei}=\frac{1}{2}(\dq-\btheta)^TK(\dq-\btheta).
+    U_e=\sum_{i=1}^{n}U_{ei}=\frac{1}{2}(\q-\btheta)^TK(\q-\btheta).
 \end{equation}
 After putting together all these terms and defining the Lagrangian, we apply the Euler-Lagrange equations with respect to $\btheta$ and $\q$ in order to obtain the model of $2n$ second order differential equations:\begin{align}
     \label{first_n}M(\q)\ddq+\mathbf c(\q,\dq)+\mathbf g(\q)+K(\q-\btheta)=\mathbf 0&\\ 
@@ -5365,6 +5365,147 @@ the gravity term is left over, so we use a linear parametrization only for the g
     with $\gamma>0$ and $\beta>0$ is a constant coefficient to be chosen \textit{sufficiently large}. 
 \end{boxdefinition}
 \section{Visual Servoing}
+We want to give a brief description of how control a manipulator using visual information. There are two kind of visual servoing:\begin{itemize}
+    \item \textbf{Position based}: the information extracted from the images are used to estimate the pose of an object, combined with the knowledge of a desired 3D pose, we generate a
+    cartesian pose error signal that drives the robot to the goal.
+    \item \textbf{Image based}: the error is computed directly on the values of the features extracted
+    on the 2D image plane, without going through a 3D reconstruction, the robot should move so as to bring the current image features
+(what it ``sees'' with the camera) to their desired values.
+\end{itemize} 
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/PBVS_IMBS.png}
+\end{figure}
+\noindent The general PBVS control architecture is the following:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/PBVS.eps}
+\end{figure}
+this method is highly sensitive to camera calibration parameters. The general scheme for the IBVS is the following:\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.6\textwidth ]{images/IBVS.eps}
+\end{figure}
+This scheme is almost insensitive to intrinsic/extrinsic camera calibration parameters, but is hard to generate the desired wrench from the image error.
+\begin{boxdefinition}{Feature}{}
+    An \textbf{image feature} is any interesting characteristic or geometric structure extracted from the image/scene, can be a point, a line, an ellipse ecc... 
+    
+    A \textbf{feature parameter} is a numerical quantity associated to
+the selected feature in the image plane (for example, the coordinates of a point, or the angular coefficient of a line).
+\end{boxdefinition}
+We have to give the mathematical model of a camera, and how the objects on a scene are projected on the image plane.  Consider an image plane, orthogonal to the $\mathbf z$ axis in the space, this axis is called \textbf{optical axis}, and it passes trough the center of the image plane. Let's denote $(X,Y,Z)$ the coordinates of a point $\mathbf P$ in the space, and $(u,v)$ the coordinate of the point $\mathbf p$ projected on the image plane. The coordinates $u,v$ are computed trough a coefficient $\lambda$ called \textbf{focal length} (that is intrinsic of the camera):\begin{equation}
+    u=\lambda\frac{X}{Z}, \ \ \ v=\lambda\frac{Y}{Z}
+\end{equation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/image_plane.png}
+\end{figure}
+$\lambda$ is the distance between the origin in the space and the origin of the image plane, all the points in the space are projected on the plane $(x,y,\lambda)$, the position of the projected point $p$ is $(u,v,\lambda)$.
+
+Of course, if ${}^C\mathbf p=(x,y,\lambda)$ is expressed in the camera frame, to express it an our base frame we have to use the transformation between the base and the camera:\begin{equation}
+    {}^0\mathbf p={}^0T_C(\q){}^C\mathbf p
+\end{equation}
+${}^0T_C(\q)$ depends on $\q$ if is mounted on the manipulator. Of course we would like to know the position of ${}^0\mathbf P$, but from the image, we can't know directly what was the position of that point before being projected, since there are infinitely many points that, after the projection, assumes the value of ${}^C\mathbf p=(u,v,\lambda)$.\bigskip 
+
+Let's denote $\mathbf V,\boldsymbol{\Omega}$ the linear and angular velocity of the camera (mounted on the manipulator), these quantities are expressed in the camera frame $RF_C$.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.5\textwidth ]{images/cameraFrame.eps}
+\end{figure}
+Let $\mathbf f\in \R^k$ to be a set of features parameters, we would like to know the differential relation between these parameters and the camera twist:\begin{equation}
+    \dot{\mathbf f}=J\begin{pmatrix}
+        \mathbf V\\\boldsymbol{\Omega}
+    \end{pmatrix}.
+\end{equation}
+$J$ is the $k\times 6$ \textbf{interaction matrix} (from now on, we consider mainly point features). By knowing perfectly $J$, we could impose twist values in order to assess a desired features parameters vector $\mathbf f_d$.\bigskip
+
+First of all we consider the differential relation between the points in the space and their projection on the image plane:\begin{equation}
+    \dot{\mathbf p}=\begin{pmatrix}
+        \dot u\\ 
+        \dot v
+    \end{pmatrix}=\begin{pmatrix}
+        \displaystyle\frac{\lambda}{Z}&0&\displaystyle-\frac{u}{Z}\\[1.5ex]
+        \displaystyle0&\displaystyle\frac{\lambda}{Z}&\displaystyle-\frac{v}{Z}
+    \end{pmatrix}\begin{pmatrix}
+        \dot X\\ \dot Y\\ \dot Z 
+    \end{pmatrix}=J_1(u,v,\lambda)\dot{\mathbf P}.
+\end{equation}
+We are expressing all the quantities in the camera frame $RF_C$. The kinematic relation between $\dot{\mathbf P}$ and the twist of the camera is\begin{equation}
+    \begin{pmatrix}
+        \dot X\\ \dot Y\\ \dot Z 
+    \end{pmatrix}=-\mathbf V-\boldsymbol{\Omega}\times \begin{pmatrix}
+         X\\  Y\\  Z 
+    \end{pmatrix}
+\end{equation}
+is convenient to express this relation in matrix form:
+\begin{equation}
+    \begin{pmatrix}
+        \dot X\\ \dot Y\\ \dot Z 
+    \end{pmatrix}=\begin{pmatrix}
+        -1&0&0&0&-Z&Y\\ 
+        0&-1&0&Z&0&-X\\ 
+        0&0&-1&-Y&X&0
+    \end{pmatrix}\begin{pmatrix}
+         \mathbf V\\\boldsymbol{\Omega}
+    \end{pmatrix}=J_2(X,Y,Z)\begin{pmatrix}
+         \mathbf V\\\boldsymbol{\Omega}
+    \end{pmatrix}
+\end{equation}
+By combining this interaction we have\begin{align}
+    \dot{\mathbf p}&=J_1(u,v,\lambda)J_2(X,Y,Z)\begin{pmatrix}
+         \mathbf V\\\boldsymbol{\Omega}
+    \end{pmatrix}\\[1.5ex]
+    &=\underbrace{\begin{pmatrix}
+-\dfrac{\lambda}{Z} & 0 & \dfrac{u}{Z} & \dfrac{uv}{\lambda} & -\left(\lambda + \dfrac{u^2}{\lambda}\right) & v \\
+0 & -\dfrac{\lambda}{Z} & \dfrac{v}{Z} & \lambda + \dfrac{v^2}{\lambda} & -\dfrac{uv}{\lambda} & -u
+\end{pmatrix}}_{J_p}\begin{pmatrix}
+         \mathbf V\\\boldsymbol{\Omega}
+    \end{pmatrix}.
+\end{align}
+$J_p(u,v,Z)$ is the \textbf{interaction matrix} and relates the velocity of a point $\mathbf p$ to the velocity of the camera, it depends on the actual value of the point feature and on its depth $Z$, this matrix for $l$ points features is $2l\times 6$.
+\begin{boxobservation}{}{}
+    From a control implementation standpoint, while the pixel coordinates $(u, v)$ are directly measurable from the image plane and the camera focal length $\lambda$ is known via calibration, the depth parameter $Z$ is \textbf{not directly accessible} using a standard monocular camera setup.
+    To overcome this unobservability issue in practice, three main strategies are conventionally adopted:
+\begin{enumerate}
+    \item \textbf{Constant Desired Depth:} Approximating $Z \approx Z^*$, where $Z^*$ is the constant depth value at the target configuration, which ensures local asymptotic stability.
+    \item \textbf{Online Estimation:} Deploying real-time estimation schemes (e.g., Extended Kalman Filters or nonlinear observers) driven by the camera velocity and image feature motion.
+    \item \textbf{Model-Based Pose Estimation:} Exploiting a known 3D geometric model of the object (solving the PnP problem) to analytically compute $Z$ at each frame.
+\end{enumerate}
+\end{boxobservation}
+When the camera is mounted on the end effector, the motion $\mathbf t=(\mathbf V,\Bomega)$ to be imposed coincides with the desired end effector linear/angular velocity, realized by choosing the joint velocity computed trough the Jacobian of the direct kinematics:\begin{itemize}
+    \item To achieve a desired velocity for a features vector ${\dot{\mathbf f}}$ we use the interaction matrix
+    $$ 
+    \mathbf t=J_p^\#{\dot{\mathbf f}} 
+    $$
+    \item and then we impose the joint velocity:\begin{equation}
+        \dq=J^\#\mathbf t=J^\#J_p^\#{\dot{\mathbf f}}.
+    \end{equation}
+\end{itemize}
+So the relation between the features and the joints is\begin{equation}
+    \dot{\mathbf f}=J_p(\mathbf f,Z)J(\q)\dq=J_I(\mathbf f,Z,\q)\dq
+\end{equation}
+$J_I(\mathbf f,Z,\q)$ is called the \textbf{Image Jacobian}\footnote{
+    we wrote $Z$, but in that case, for many points, the image Jacobian depends on the depths of all the $l$ points $Z_1,Z_2\dots Z_l$. 
+} and plays the same
+role of a classical robot Jacobian. In this way the velocity command $\dq$ can be chosen directly using the feature vector $\mathbf f$ in the image plane (that is the task space). 
+
+When we have a desired time profile $\mathbf f_d(t)$ for the features, the general choice for $\dq$ is\begin{equation}
+    \dq=J_I^\#(\dot{\mathbf f}_d+K(\mathbf f_d-\mathbf f))+(I-J_I^\#J_I)\dq_N
+\end{equation}
+where $\dq_N$ is a preferred joint velocity (in case of redundancy), $(I-J_I^\#J_I)$ is the projector on the null space and $J_I^\#(\dot{\mathbf f}_d+K(\mathbf f_d-\mathbf f))$ achieve the minimum norm solution by considering the desired velocity and the feature error, with a positive definite gain matrix $K$. In this case, the feature error is exponentially stabilized to zero (assuming perfect low level control, up to singularities).
+
+Due to the dependency of the image Jacobian on the $l$ points depths $Z_1,Z_2\dots Z_l$, one can compute only an \textit{approximation} of $J_I$, denoted $\hat J_I$. In the closed loop, the error dynamics on the features becomes:\begin{equation}
+    \dot{\mathbf e}=-J_I\hat J_I^\#K\mathbf e
+\end{equation}
+of course, in the ideal case with a perfect approximation, we would have 
+\begin{equation}
+    \dot{\mathbf e}=-J_I\hat J_I^\#K\mathbf e=-K\mathbf e
+\end{equation}
+in real cases, $J_I\hat J_I^\#\ne I$, and is possible to prove local convergence of the error if $J_I\hat J_I^\#$ is positive definite:
+$$ J_I\hat J_I^\#\succ 0.$$
+
+
+\redText{TODO continua da slide 36}
+
 \chapter{Interaction With the Environment}
 The end effector of a manipulator may interact with the environment, exchanging forces or modifying the state of it. For some tasks,  a force perception better helps with respect to visual perception (imagine a peg in hole task), and then a 6D force/torque (wrench) sensor becomes necessary. Generally speaking, we have to introduce some \textbf{compliance} in our control, this compliance can be introduced in two ways:\begin{itemize}
     \item Active: The control law modify the behavior of the robot based on the force/torque sensor  measured information.
