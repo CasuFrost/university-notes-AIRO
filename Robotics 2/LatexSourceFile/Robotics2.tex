@@ -6,6 +6,7 @@
 \newcommand{\q}{{\mathbf q}}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+ \usepackage{multirow}
 \newcommand{\titolo}{Robotics 2 }
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -6147,8 +6148,8 @@ so $r_i$ observe the value of $\tau_{f,i}$, with a delay given by $\frac{1}{K_i}
      \includegraphics[width=0.7\textwidth ]{images/residualGenerator.drawio.pdf}
 \end{figure}
 From the block diagram we get:\begin{align}
-    &\dot{\hat{\mathbf p}}=\btau-\boldsymbol{\alpha}+K(\mathbf p-\hat{\mathbf p})\\
-    &\mathbf r=K(\hat{\mathbf p}-\mathbf p).
+    &\dot{\hat{\mathbf p}}=\btau-\boldsymbol{\alpha}+K(\mathbf p-\hat{\mathbf p})\label{observer1}\\
+    &\mathbf r=K(\hat{\mathbf p}-\mathbf p).\label{observer2}
 \end{align}
 The observer $\mathbf r$ follows the disturbances $\btau_f$ with a linear dynamics (for constant $\btau_f$). Without giving the proof (trivial), we can see that\begin{align}
     &\mathbf e_{obs}=\btau_f-\mathbf r \implies \\ 
@@ -6204,7 +6205,151 @@ in this case, $K$ was a diagonal matrix with $K_1=K_2=50$. Usually, to overcome 
         0 &\text{ if }|r_i|\le \epsilon
     \end{cases}.
 \end{equation}
-\redText{TODO: pacco 18 slide 23}
+The Fault Detection Identification (FDI) method based on generalized momentum can be easily extended to the
+presence of flexible transmissions (elastic joints) or actuator dynamics, furthermore, the scheme can be made adaptive (though possibly needing the use of
+acceleration) to handle parametric uncertainties in robot dynamic model. The same FDI-type approach has been applied also for compensation of
+\textbf{unmodeled friction} (treated as a ''permanent fault'' on the system).\bigskip
+
+\noindent The scheme can be used to isolate measuring errors, for example, if we can measure the wrench $\mathbf F$ with a sensor, we can write the following dynamic model:\begin{equation}
+    M\ddq+\mathbf c+\mathbf g=\btau+J^T\mathbf F
+\end{equation}
+where $\mathbf F$ is the force measured, that is the sum of the real force applied $\mathbf F_m$, and a measurement error $\mathbf f_m$ due to sensor malfunction:\begin{equation}
+    M\ddq+\mathbf c+\mathbf g=\btau+J^T(\mathbf F_m+\mathbf f_m)
+\end{equation}
+we want to isolate $J^T\mathbf f_m$ and create an observer for it.
+We consider again a 2R planar robot, the Jacobian expressed in the base frame  is:\begin{equation}
+    {}^0J=\begin{pmatrix}
+        -l_1s_1-l_2s_{12}&-l_2s_{12}\\
+        l_1c_1+l_2c_{12}&l_2c_{12}
+    \end{pmatrix}
+\end{equation}
+the rotation matrix from the base to the end effector is:\begin{equation}
+    {}^0R_2=\begin{pmatrix}
+        c_{12}&s_{12}\\
+        -s_{12}&c_{12}
+    \end{pmatrix}
+\end{equation}
+is convenient to express the Jacobian in the end effector frame:\begin{equation}
+    {}^2J={}^0R_2^T{}^0J=\begin{pmatrix}
+    l_1 s_2 & 0 \\ l_2 + l_1 c_2 & l_2 
+    \end{pmatrix}
+\end{equation}
+since we have to create an observer for ${}^2J^T\mathbf f_m$, to avoid problems in the singular cases ($s_2=0$) we use the adjoint of the Jacobian:\begin{equation}
+    {}^2J_{\text{adj}}=(\det{}^2J)\cdot ({}^2J)^{-1}.
+\end{equation}
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.35\textwidth ]{images/2R_sensorF.png}
+\end{figure}
+We build the observer as in equations \eqref{observer1} and \eqref{observer2}, but to tune the observer to the forces at the end-effector and avoid kinematic singularities, we define a modified momentum, which we call $\mathbf p^*$, projected via the adjoint:\begin{equation}
+    \mathbf p^*={}^2J_{\text{adj}}^TM\dq 
+\end{equation}
+for the sake of readability, we denote $A={}^2J_{\text{adj}}$:
+\begin{equation}
+    \mathbf p^*=A^TM\dq 
+\end{equation}
+the residuals are defined as follows:\begin{equation}
+    \mathbf r =A^TM\dq-\boldsymbol{\zeta}=\mathbf p^*-\boldsymbol{\zeta}
+\end{equation}
+where $\boldsymbol{\zeta}$ is a new dynamic quantity introduced to estimate $\mathbf p^*$ (like we defined $\hat{\mathbf p}$ previously). The dynamics of $\boldsymbol{\zeta}$ is given by:\begin{equation}\label{zeta_dynamics}
+    \dot{\boldsymbol{\zeta}}=\dot{\mathbf p}^*+K[A^TM\dq-\boldsymbol{\zeta}]
+\end{equation}
+we have to compute $\dot{\mathbf p}^*$:\begin{equation}\label{pstar1}
+    \dot{\mathbf p}^*=A^T\frac{d}{dt}(M\dq)+\frac{d}{dt}\left(A^T\right)M\dq
+\end{equation}
+let's derive step by step tht two sides:\begin{align}
+    \frac{d}{dt}(M\dq)&=M\ddq+\dot M\dq=\btau+J^T\mathbf F_m-\mathbf c-\mathbf g+\dot M\\ 
+    &=\btau+J^T\mathbf F_m-(\mathbf g-\mathbf c)
+\end{align}
+notice how we dropped the supscript ${}^2$ on the Jacobian (to enhance readability).
+Equation \eqref{pstar1} become:\begin{align}
+     \dot{\mathbf p}^*&=A^T\blueText{\frac{d}{dt}(M\dq)}+\frac{d}{dt}\left(A^T\right)M\dq\\
+     &=A^T\blueText{(\btau+J^T\mathbf F_m-(\mathbf g-\mathbf c))}+\frac{d}{dt}\left(A^T\right)M\dq\\
+     &=
+     A^T\btau+\sapText{\underbrace{A^TJ^T}_{J_{\text{adj}}^TJ^T=
+     \det J^T}}\mathbf F_m-A^T(\mathbf g-\mathbf c)+\frac{d}{dt}\left(A^T\right)M\dq\\
+     &= A^T\btau+\sapText{l_1l_2s_2}\mathbf F_m-A^T(\mathbf g-\mathbf c)+\frac{d}{dt}\left(A^T\right)M\dq.
+\end{align}
+We can expand $\mathbf g-\mathbf c$:\begin{equation}
+    \dot{\mathbf p}^*=A^T\btau+l_1l_2s_2\mathbf F_m-A^T
+    \begin{pmatrix}
+        a_4c_1+a_5c_{12}\\
+        a_5c_{12}+a_2s_2\dot q_1(\dot q_1+\dot q_2)
+    \end{pmatrix}
+    +\frac{d}{dt}\left(A^T\right)M\dq
+\end{equation}
+Now we have to derive the right side (Jacobian adjoint transpose):\begin{align}
+    \frac{d}{dt}\left(A^T\right)M\dq=\begin{pmatrix} 0 & l_1 s_2 \dot{q}_2 \\ 0 & l_1 c_2 \dot{q}_2 \end{pmatrix}M\dq
+\end{align}
+so:\begin{equation}
+     \dot{\mathbf p}^*=A^T\btau+l_1l_2s_2\mathbf F_m-A^T
+    \begin{pmatrix}
+        a_4c_1+a_5c_{12}\\
+        a_5c_{12}+a_2s_2\dot q_1(\dot q_1+\dot q_2)
+    \end{pmatrix}+\begin{pmatrix} 0 & l_1 s_2 \dot{q}_2 \\ 0 & l_1 c_2 \dot{q}_2 \end{pmatrix}M\dq
+\end{equation}
+The dynamics of $\boldsymbol{\zeta}$ in equation \eqref{zeta_dynamics} become:\begin{align}
+    \dot{\boldsymbol{\zeta}}=&A^T\btau+l_1l_2s_2\mathbf F_m-A^T
+    \begin{pmatrix}
+        a_4c_1+a_5c_{12}\\
+        a_5c_{12}+a_2s_2\dot q_1(\dot q_1+\dot q_2)
+    \end{pmatrix}\\ &+\begin{pmatrix} 0 & l_1 s_2 \dot{q}_2 \\ 0 & l_1 c_2 \dot{q}_2 \end{pmatrix}M\dq+
+    K[A^TM\dq-\boldsymbol{\zeta}].
+\end{align}
+The residuals and the residuals dynamics are\begin{align}
+    &\mathbf r=A^TM\dq-\boldsymbol{\zeta}\\
+    &\dot{\mathbf r}=-K\mathbf r+l_1l_2s_2\mathbf f_m
+\end{align}
+in this case, since we used the Jacobian adjoint, the dynamics of the residuals is not linear.
+\subsection{Faults Concurrency}
+The residual method, can detect a fault for each joint, so at most $n$, in case of faults both in actuators and in sensors, there are $2n$ possible faults that can occur at any time, so if they occur simultaneously they cannot be detected and isolated. Let's take for example the 2R planar robot, we denote:\begin{equation}
+    f_{\tau_1}, \ f_{\tau_2}
+\end{equation}
+the faults of the actuators and 
+\begin{equation}
+    f_{F_x}, \ f_{F_y}
+\end{equation}
+the faults of the sensors. We introduce the non-concurrency hypothesis: We assume that failures occur at different moments in time ($f_{\tau_1} \to f_{\tau_2} \to f_{F_x} \to f_{F_y}$). Under this hypothesis, using a hybrid logic, it becomes possible to isolate all 4 faults.\bigskip
+
+To achieve this, 4 independent residues are generated: $r_{1,1}, r_{1,2}$ (designed to be sensitive to motor failures) and $r_{2,1}, r_{2,2}$ (designed via the adjoint Jacobian seen above to be sensitive to the force sensor).
+\begin{table}[H]
+    \centering
+\begin{tabular}{c|c|c|c|c|}
+\cline{2-5}
+Fault/Residual                     & $r_{1,1}$ & $r_{1,2}$ & $r_{2,1}$ & $r_{2,2}$ \\ \hline
+\multicolumn{1}{|c|}{$f_{\tau_1}$} & 1         & 0         & 1         & 1         \\ \hline
+\multicolumn{1}{|c|}{$f_{\tau_2}$} & 0         & 1         & 1         & 1         \\ \hline
+\multicolumn{1}{|c|}{$f_{F_x}$}    & 1         & 1         & 1         & 0         \\ \hline
+\multicolumn{1}{|c|}{$f_{F_y}$}    & 1         & 1         & 0         & 1         \\ \hline
+\end{tabular}
+\end{table}
+The table shows the fault signature, where 1 indicates that the residual activates (deviates from zero) when that fault is present, and 0 indicates that the residual remains immune (insensitive):\begin{itemize}
+    \item If motor 1 ($f_{\tau_1}$) fails: the residuals $r_{1,1}$, $r_{2,1}$, $r_{2,2}$ react, while $r_{1,2}$ remains at 0.
+    \item If the sensor on $X$ ($f_{F_x}$) fails: $r_{1,1}$, $r_{1,2}$, $r_{2,1}$ react, while $r_{2,2}$ remains at 0.
+\end{itemize}
+The isolation of non-concurrent faults relies on the specific structural zero-patterns embedded within the residual signatures. 
+\begin{itemize}
+\item\textbf{Case 1}, when an actuator fault $f_{\tau_2}$ occurs at the second joint, the joint-space residual $r_{1,1}$ remains unaffected ($r_{1,1} = 0$) due to its structural decoupling from the second link's dynamics, whereas the remaining residuals ($r_{1,2}$, $r_{2,1}$, $r_{2,2}$) promptly deviate from zero. 
+\item \textbf{Case 2} examines a sensor fault along the $y$-axis of the end-effector ($f_{F_y}$). While this sensor anomaly propagates through the feedback loop and excites both joint-space observers ($r_{1,1} = 1, r_{1,2} = 1$), the task-space residual $r_{2,1}$ remains completely silent ($r_{2,1} = 0$). This specific immunity is guaranteed by the first row of the transposed adjoint Jacobian matrix, $J^T_{\text{adj}}$, which structurally maps the $y$-axis force component to zero. 
+Consequently, the unique presence of a single unexcited residual within the vector $\mathbf r = (r_{1,1}, r_{1,2}, r_{2,1}, r_{2,2})^T$ allows for the unambiguous isolation of the faulty component under the non-concurrency assumption.
+\end{itemize}
+With this table, to isolate a fault we have to consider the combinations ($r_{1,1}\ne 0$ does not directly imply that the fault is on $f_{\tau_1}$, we have to assert the values on the others residuals). We build an isolation hybrid matrix that examine the combinations:
+\begin{table}[H]\centering
+\begin{tabular}{cc|c|c|c|c|}
+\cline{3-6}
+                  & $r_{2,1},r_{2,2}$ & \multirow{2}{*}{11} & \multirow{2}{*}{10} & \multirow{2}{*}{01} & \multirow{2}{*}{00} \\
+$r_{1,1},r_{1,2}$ &                   &                     &                     &                     &                     \\ \hline
+\multicolumn{2}{|c|}{10}              & $f_{\tau_1}$        &                     &                     &                     \\ \hline
+\multicolumn{2}{|c|}{01}              & $f_{\tau_2}$        &                     &                     &                     \\ \hline
+\multicolumn{2}{|c|}{11}              &                     & $f_{F_x}$           & $f_{F_y}$           &                     \\ \hline
+\multicolumn{2}{|c|}{00}              &                     &                     &                     & no faults           \\ \hline
+\end{tabular}
+\end{table}
+\noindent The following logic circuit shows how to compute the single residuals for each fault:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.25\textwidth ]{images/residual_circuit.png}
+\end{figure}
 \section{Collision Detection}
 In the case of a collision, the robot is subject to an external force $\mathbf F_c$ that is not modeled in the dynamic model, so we can write (without considering the friction):\begin{equation}
     M\ddq+\mathbf c+\mathbf g=\btau+\btau_c
@@ -6227,6 +6372,6 @@ hence\begin{equation}
     \mathbf r\simeq\btau_c=J^T\mathbf F_c.
 \end{equation}\begin{figure}[H]
     \centering 
-     \includegraphics[width=0.7\textwidth ]{images/collisionDetDiagram.drawio.pdf}
+     \includegraphics[width=\textwidth ]{images/collisionDetDiagram.drawio.pdf}
 \end{figure}
 \end{document}
