@@ -5860,8 +5860,8 @@ chosen as linear and decoupled, but also nonlinear).
 The dynamic model of the manipulator when is in contact with the environment is\begin{equation}
     M\ddq+\mathbf c+\mathbf g=\btau+\sapText{\btau_{int}}
 \end{equation}
-$\btau_{int}$ is the torque produced on the joints given by the wrench $\mathbf w$ exerted on the end effector by the environment, is given by the transpose Jacobian:\begin{equation}
-    \btau_{int}=J^T\mathbf w.
+$\btau_{int}$ is the torque produced on the joints given by the wrench $\mathbf F_y $ exerted on the end effector by the environment, is given by the transpose Jacobian:\begin{equation}
+    \btau_{int}=J^T\mathbf F_y .
 \end{equation}
 When the robot is constrained, this interaction force is given by the Jacobian of the constraints:\begin{equation}
     \btau_{int}=A^T\boldsymbol{\lambda}.
@@ -5869,7 +5869,7 @@ When the robot is constrained, this interaction force is given by the Jacobian o
 The impedance control law is defined in the task space, we consider the task model:\begin{equation}
     M_y\ddy+\mathbf c_y+\mathbf g_y=J^T\btau+\mathbf F_y 
 \end{equation}
-we denoted $\mathbf F_y$ the set of generalized forces acting on the end effector, we assume that $m=n$ (no redundancy) and we are out of singularity. We recall that the dynamic terms in the task space are given by\begin{align}
+$\mathbf F_y$ (wrench) is the set of generalized forces acting on the end effector, we assume that $m=n$ (no redundancy) and we are out of singularity. We recall that the dynamic terms in the task space are given by\begin{align}
     &M_y=J^{-T}MJ^{-1}\\ 
     &\mathbf c_y=J^{-T}(\mathbf c-M\dot JJ^{-1}\dy)\\
     &\mathbf g_y=J^{-T}\mathbf g
