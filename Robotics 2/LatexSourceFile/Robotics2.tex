@@ -2534,7 +2534,7 @@ This small section aims to list some classic robot structure and their relative 
   \centering
   \begin{minipage}{0.4\textwidth}
     \centering
-    \includegraphics[width=0.6\textwidth]{images/3R.png}
+    \includegraphics[width=0.6\textwidth]{images/3R.eps}
   \end{minipage}
   \hfill
   \begin{minipage}{0.5\textwidth}
@@ -5662,10 +5662,6 @@ and\begin{equation}
         E(\q)& G(\q)
     \end{pmatrix}.
 \end{equation}
-of course\begin{align}
-    &A(\q)^{-1}=E(\q)\\
-    &D(\q)^{-1}=G(\q).
-\end{align}
 We define the vector of \textbf{reduced velocities} as follows:\begin{equation}
     \mathbf u=D(\q)\dq.
 \end{equation}
@@ -6050,7 +6046,7 @@ $\mathbf t_e$ is set by using  $\bnu$ and a \textbf{selection matrix} $S_t$:\beg
     \end{pmatrix}=S_t\bnu.
 \end{equation}
 the parametrization of the admissible reaction with the environment is given by a desired reaction vector $\blambda$ and a selection matrix $S_w$:\begin{equation}
-    \mathbf w_e=\begin{pmatrix}
+    \mathbf w_{env}=\begin{pmatrix}
         \mathbf f\\ \bmu  
     \end{pmatrix}=\begin{pmatrix}
         0&0&0&0\\
@@ -6105,7 +6101,7 @@ for a generic vector $\mathbf u$. We want to express the twist in the base frame
     \end{pmatrix}=S_t(\alpha)\bnu.
 \end{equation}
 Then we parametrize the feasible reactions:\begin{equation}
-    {}^0\mathbf w_e=\begin{pmatrix}
+    {}^0\mathbf w_{env}=\begin{pmatrix}
         {}^0\mathbf f\\{}^0\bmu 
     \end{pmatrix}=\begin{pmatrix}
         R_z^T(\alpha)&\\ 
@@ -6151,7 +6147,7 @@ We have to parametrize the twist:\begin{equation}
     \end{pmatrix}v_z=S_t\nu\implies \omega_z=\frac{2\pi}{p}v_z
 \end{equation}
 for the wrench:\begin{equation}
-    \mathbf w_e=\begin{pmatrix}
+    \mathbf w_{env}=\begin{pmatrix}
         \mathbf f\\ \bmu 
     \end{pmatrix}=\begin{pmatrix}
         1&0&0&0&0\\
@@ -6174,9 +6170,127 @@ There are more frames to take into account in hybrid control:\begin{itemize}
 \end{boxobservation}
 \begin{figure}[H]
     \centering 
-     \includegraphics[width=0.5\textwidth ]{images/task_frame2.eps}
+     \includegraphics[width=0.45\textwidth ]{images/task_frame3.eps}
 \end{figure}
-\redText{TODO: pacco 16 slide 11}
+Now let's see how to give a general parametrization of an hybrid task.  We have seen how the interaction is described by two selector matrices $S_t$ and $S_w$ (both can depend on $\q$):\begin{align}
+   & \mathbf t_e=S_t(\q)\bnu, \ \ \ \bnu\in \R^{6-k}\\[1.5ex]
+   & \mathbf w_{env}=S_w(\q)\blambda, \ \ \ \blambda\in\R^k
+\end{align}
+The reaction wrenches do not perform work on the end effector twist, this is also implied by the following relation:\begin{equation}
+    S_w^T(\q)S_t(\q)=\mathcal O \text{ (the zero matrix)}
+\end{equation}
+\subsection{Force/Velocity Control}
+The control objective, when the robot is in contact with the environment, is to impose a desired reduced velocity $\bnu$ and a desired interaction forces $\blambda$:\begin{equation}
+    \bnu\rightarrow\bnu_d(t), \ \ \ \blambda\rightarrow\blambda_d(t)
+\end{equation}
+this control requirement is assessed in two steps:\begin{enumerate}
+    \item \textbf{{\sapText{STEP 1)}}}: We use the model information to feedback linearize the model in the task space, in order to obtain a perfect linearization and decoupling:\begin{equation}
+        \begin{pmatrix}
+            \dot\bnu\\
+            \blambda
+        \end{pmatrix}=\begin{pmatrix}
+            \mathbf a_\nu\\ 
+            \mathbf a_\lambda
+        \end{pmatrix}.
+    \end{equation}
+    \item \textbf{{\sapText{STEP 2)}}}: Then we design a linear control law for $a_\nu,a_\lambda$ that imposes the desired dynamic behavior to the errors on $\bnu$ and $\blambda$.
+\end{enumerate}
+\noindent\textbf{{\sapText{STEP 1)}}}: Let's see how to do this by an appropriate choice of $\btau$. From now on we \textbf{assume} that $n=m$ (no redundancy) and $J(\q)$ is always non singular. First of all we differentiate the twist:\begin{align}
+    &\dot{\mathbf t}_e=J\ddq+\dot J\dq\implies\\ 
+    &\ddq=J^{-1}(\dot{\mathbf t}_e-\dot J\dq)\label{substitued_ddq}
+\end{align}
+we don't want to control $\mathbf t_e$ but the selected components trough $S_t\bnu$:\begin{equation}
+    J\ddq+\dot J\dq=S_t\dot\bnu+\dot S_t\bnu=\dot{\mathbf t}_e
+\end{equation}
+Now we substitute \eqref{substitued_ddq} in the dynamic model with $\ddq$:\begin{equation}
+    MJ^{-1}\dot{\mathbf t}_e-MJ^{-1}\dot J\dq+\mathbf c+\mathbf g=\btau-\btau_{env}
+\end{equation}
+then we use $\dot{\mathbf t}_e=S_t\dot\bnu+\dot S_t\bnu$:\begin{align}
+    &MJ^{-1}(S_t\dot\bnu+\dot S_t\bnu)-MJ^{-1}\dot J\dq+\mathbf c+\mathbf g=\btau-\btau_{env}\implies\\[1.5ex]
+    &MJ^{-1}S_t\dot\bnu+MJ^{-1}\dot S_t\bnu-MJ^{-1}\dot J\dq+\mathbf c+\mathbf g=\btau-\btau_{env}\implies\\[1.5ex]
+     &MJ^{-1}S_t\dot\bnu+MJ^{-1}(\dot S_t\bnu-\dot J\dq)+\mathbf c+\mathbf g=\btau-\btau_{env}\label{model_with_St}
+\end{align}
+we recall that $\btau_{env}$ is the torque exerted from the interaction with the environment: $\btau_{env}=J^T\mathbf w_{env}$ (while $\btau$ is the torque provided by the actuators). 
+
+Now we pre multiply \eqref{model_with_St} by $J^{-T}$:\begin{align}
+     &J^{-T}(MJ^{-1}S_t\dot\bnu+MJ^{-1}(\dot S_t\bnu-\dot J\dq)+\mathbf c+\mathbf g)=J^{-T}(\btau-\btau_{env})\implies\\[1.5ex]
+     &\underbrace{J^{-T}MJ^{-1}}_{M_y}S_t\dot\bnu+
+     \underbrace{J^{-T}MJ^{-1}(
+        \dot S_t\bnu-\dot J\dq
+     )+J^{-T}(\mathbf c+\mathbf g)}_{\mathbf n_y}=\mathbf w_e-\mathbf w_{env}
+\end{align}
+$M_y$ is the task space robot inertia and $\mathbf n_y$ the task space gravity vector + centrifugal/Coriolis terms. $\mathbf w_e$ is the control wrench that we can apply in the task space. Now we can use the contact wrench parametrization $\mathbf w_{env}=S_w\blambda$:\begin{equation}
+    M_yS_t\dot\bnu=\mathbf w_e-\mathbf n_y-S_w\blambda\label{bnuTaskModel}
+\end{equation}
+we pre multiply by $S_t^T$
+\begin{align}
+    &S_t^TM_yS_t\dot\bnu=S_t^T\mathbf w_e-S_t^T\mathbf n_y-\underbrace{S_t^TS_w}_{\mathcal O}\blambda\implies\\ 
+    &S_t^TM_yS_t\dot\bnu=S_t^T(\mathbf w_e-\mathbf n_y).
+\end{align}
+By the assumptions, $S_t^TM_yS_t$ is a non singular matrix. Now we consider the pseudo inverse (weighted by $M_y$) of $S_w$, that is given by\begin{equation}
+    (S_w)_{M_y}^\#=(S_w^TM_y^{-1}S_w)^{-1}S_w^TM_y^{-1}
+\end{equation}
+Now we pre multiply \eqref{bnuTaskModel} by $(S_w)_{M_y}^\#$:\begin{align}
+   &(S_w^TM_y^{-1}S_w)^{-1}S_w^T\underbrace{M_y^{-1} M_y}_{I}S_t\dot\bnu=(S_w)_{M_y}^\# (\mathbf w_e-\mathbf n_y)-\underbrace{(S_w)_{M_y}^\#S_w}_{I}\blambda\implies\\
+   &(S_w^TM_y^{-1}S_w)^{-1}\underbrace{S_w^TS_t}_{\mathcal O}\dot\bnu=
+   (S_w)_{M_y}^\# (\mathbf w_e-\mathbf n_y)-\blambda\implies\\
+   &\blambda=(S_w)_{M_y}^\# (\mathbf w_e-\mathbf n_y).
+\end{align}
+So far, we have obtained two important relations:\begin{equation}\begin{cases}
+    \blambda=(S_w)_{M_y}^\# (\mathbf w_e-\mathbf n_y)\\
+    S_t^TM_yS_t\dot\bnu=S_t^T(\mathbf w_e-\mathbf n_y)
+\end{cases}\end{equation}
+the choice of the following control wrench will linearize the model:\begin{equation}
+    \mathbf w_e=\mathbf n_y+M_yS_t\mathbf a_\nu+S_w\mathbf a_\lambda 
+\end{equation}
+yields finally to the linear and decoupled system:\begin{equation}
+    \begin{cases}
+       \dot\bnu=\mathbf a_\nu \\
+         \blambda=\mathbf a_\lambda 
+    \end{cases}
+\end{equation}
+of course the robot is controlled by torques on the joints so we express the control law in the joint space:\begin{equation}
+    \btau=MJ^{-1}(S_t\mathbf a_\nu+\dot S_t\bnu-\dot J\dq)+J^TS_w\mathbf a_\lambda+\mathbf c+\mathbf g.
+\end{equation}
+\noindent\textbf{{\sapText{STEP 2)}}}: Now that we have feedback linearized the system, we can choose a linear control law for $\mathbf a_\nu$ and $\mathbf a_\lambda$, we apply the usual linear control techniques for exponentially stabilize the error\begin{align}
+&\mathbf e_\lambda(t)=\blambda_d(t)-\blambda\\
+&\mathbf e_\nu(t)=\bnu_d(t)-\bnu\\
+\end{align} For the force control we may just set:\begin{equation}
+    \mathbf a_\lambda=\blambda_d(t)
+\end{equation}
+since \textbf{no dynamics
+is assumed in constrained task directions}: In the constrained directions the robot is physically blocked by the surface. In the ideal mathematical model of a rigid contact, there is no motion, there is no acceleration and there is no inertia to overcome in that specific direction. The response of the environment to the force applied by the robot is considered instantaneous and algebraic. We may just add an integral term to give robustness to disturbances:
+\begin{equation}
+    \mathbf a_\lambda=\blambda_d+K_{I\lambda}\int(\blambda_d-\blambda)dt
+\end{equation}
+with $K_{I\lambda}\succ 0$. For the desired reduced velocity we set a feedforward term + PI feedback loop:\begin{equation}
+    \mathbf a_\nu=\dot\bnu_d+K_{P\nu}(\bnu_d-\bnu)+K_{I\nu}\int(\bnu_d-\bnu)dt.
+\end{equation}
+Now let's assume that explicit end effector pose $k$ constraints are available:\begin{equation}
+    f(\mathbf y)=f(k(\q))=\begin{cases}
+       f_1(\mathbf y)=f_1(k(\q))=0\\ 
+       f_2(\mathbf y)=f_2(k(\q))=0\\\vdots\\
+       f_k(\mathbf y)=f_k(k(\q))=0
+    \end{cases}
+\end{equation}
+from these we can extract $6-k$ unconstrained/free position variables $\mathbf r$\begin{equation}
+    \mathbf r(\q)\in \R^{6-k}
+\end{equation}
+For example, if the position of a robot is constrained on a circle (that lies on the $xy$ plane)\begin{equation}
+    \|k(\q)\|=L \ \ \land \ \ k_z(\q)=0
+    \end{equation}
+the end effector pose is parametrized by a single scalar $r$:\begin{equation}
+    k(\q)=\begin{pmatrix}
+        L\cos r\\ L\sin r\\ 0 
+    \end{pmatrix}
+\end{equation}
+hence\begin{equation}
+    r=\text{atan2}(k_x(\q), k_y(\q))=r(\q).
+\end{equation}
+The control loop can be designed on $\mathbf r$\begin{equation}
+    \mathbf a_\nu=\ddot{\mathbf r}_d+K_{Dr}(\dot{\mathbf r}_d-\dot{\mathbf r})+K_{Pr}({\mathbf r}_d-{\mathbf r}).
+\end{equation}
+\redText{TODO: pacco 16 slide 17}
 \chapter{Fault Detection}
 \section{Actuator Faults}
 Within the framework of fault diagnosis for (nonlinear) dynamic systems, the management of an anomaly is formulated through four fundamental, sequential steps:
