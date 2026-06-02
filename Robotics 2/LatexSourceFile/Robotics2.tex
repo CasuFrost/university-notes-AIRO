@@ -5502,9 +5502,32 @@ of course, in the ideal case with a perfect approximation, we would have
 \end{equation}
 in real cases, $J_I\hat J_I^\#\ne I$, and is possible to prove local convergence of the error if $J_I\hat J_I^\#$ is positive definite:
 $$ J_I\hat J_I^\#\succ 0.$$
+To estimate online the current (possibly time-varying) value of the depth $Z$ for each considered point feature, a \textbf{dynamic observer} can be employed. By defining the current state 
+\begin{equation}
+    \mathbf x = \begin{pmatrix}
+        u\\ v\\ \displaystyle\frac{1}{Z}
+    \end{pmatrix}
+\end{equation}
+the estimated state
+$$\hat{\mathbf x} = \begin{pmatrix}
+        \hat u\\ \hat v \\ \displaystyle \frac{1}{\hat Z}
+\end{pmatrix}$$
+and the measured output $\mathbf y = \begin{pmatrix}
+        u& v
+    \end{pmatrix}^T$, a non-linear observer with camera velocity input $$\mathbf u_c = \begin{pmatrix}\mathbf V & \Bomega \end{pmatrix}^T$$
+     is constructed. The observer dynamics, expressed as 
+      $$\dot{\hat{\mathbf x}} = \alpha(\hat{\mathbf x}, \mathbf y)\mathbf u_c + \beta(\hat{\mathbf x}, \mathbf y, \mathbf u_c)$$
+      guarantees the asymptotic convergence of the estimation error to zero $$\displaystyle\lim_{t \to \infty} \|\mathbf x(t) - \hat{\mathbf x}(t)\| = 0.$$ 
+      For this convergence to hold, specific \textbf{persistent excitation conditions} (which correspond to observability conditions) must be satisfied: the linear velocity of the camera must be non-zero, and the linear velocity vector must not be aligned with the projection ray of the considered point feature.
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=0.8\textwidth ]{images/observer_2.pdf}
+\end{figure}
+\subsection{IBVS control with Task Sequencing}
+This method is based on the approach of regulating only one feature (or a subset) at a time, while keeping the others ``fixed'' by means of unobservable motions in the image plane. Given the image Jacobians of single point features, such as $\dot{\mathbf f}_1 = J_1\mathbf u$ and $\dot{\mathbf f}_2 = J_2\mathbf u$, the process is divided into phases. In the first phase, the feature $\mathbf f_1$ is regulated using the control law $$\mathbf u = J_1^\# k_1 \mathbf e_1 + (I - J_1^\# J_1)\mathbf u_0.$$
+Subsequently, the feature $\mathbf f_2$ is regulated by applying a command in the null-space of the first task: $$\mathbf u = (I - J_1^\# J_1) J_2^T k_2\mathbf e_2.$$
+The advantage of this method is twofold: first, during the first phase, there are additional degrees of redundancy compared to the complete case, which can be exploited, for instance, to improve robot alignment to the target; second, if the complete case is not redundant, task sequencing (TS) allows preventing singularities that would otherwise typically be encountered.
 
-
-\redText{TODO continua da slide 36}
 
 \chapter{Interaction With the Environment}
 The end effector of a manipulator may interact with the environment, exchanging forces or modifying the state of it. For some tasks,  a force perception better helps with respect to visual perception (imagine a peg in hole task), and then a 6D force/torque (wrench) sensor becomes necessary. Generally speaking, we have to introduce some \textbf{compliance} in our control, this compliance can be introduced in two ways:\begin{itemize}
@@ -6249,7 +6272,7 @@ yields finally to the linear and decoupled system:\begin{equation}
          \blambda=\mathbf a_\lambda 
     \end{cases}
 \end{equation}
-of course the robot is controlled by torques on the joints so we express the control law in the joint space:\begin{equation}
+of course the robot is controlled by torques on the joints so we express the control law in the joint space:\begin{equation}\label{hybrid_law}
     \btau=MJ^{-1}(S_t\mathbf a_\nu+\dot S_t\bnu-\dot J\dq)+J^TS_w\mathbf a_\lambda+\mathbf c+\mathbf g.
 \end{equation}
 \noindent\textbf{{\sapText{STEP 2)}}}: Now that we have feedback linearized the system, we can choose a linear control law for $\mathbf a_\nu$ and $\mathbf a_\lambda$, we apply the usual linear control techniques for exponentially stabilize the error\begin{align}
@@ -6290,7 +6313,14 @@ hence\begin{equation}
 The control loop can be designed on $\mathbf r$\begin{equation}
     \mathbf a_\nu=\ddot{\mathbf r}_d+K_{Dr}(\dot{\mathbf r}_d-\dot{\mathbf r})+K_{Pr}({\mathbf r}_d-{\mathbf r}).
 \end{equation}
-\redText{TODO: pacco 16 slide 17}
+In order to implement the control law in \eqref{hybrid_law}, $\bnu$ and $\mathbf r$ are obtained from the measures of $\q$ and $\dq$, $\blambda$ instead is obtained by the force/torque sensors:\begin{equation}
+    \mathbf w_{env}=S_w\blambda\implies \blambda=S_w^\#\mathbf w_{env}
+\end{equation}
+The block diagram of an hybrid control scheme is the following:
+\begin{figure}[H]
+    \centering 
+     \includegraphics[width=\textwidth ]{images/hybrid_scheme.png}
+\end{figure}
 \chapter{Fault Detection}
 \section{Actuator Faults}
 Within the framework of fault diagnosis for (nonlinear) dynamic systems, the management of an anomaly is formulated through four fundamental, sequential steps:
