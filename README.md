@@ -16,4 +16,6 @@ Below is a list of some of the courses and links to the corresponding notes.
 
 </div>
 
-**Note**: These notes may contain frequent typographical errors or occasional subject-specific logical errors. If you find any, please report them by opening an issue, submitting a pull request, or contacting me privately if you have my details.
+**Note 1**: If you use these notes, it is recommended to re-download them frequently, as numerous typing errors are corrected day by day.
+
+**Note 2**: These notes may contain frequent typographical errors or occasional subject-specific logical errors. If you find any, please report them by opening an issue, submitting a pull request, or contacting me privately if you have my details.
