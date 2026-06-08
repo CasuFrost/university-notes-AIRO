@@ -4782,8 +4782,8 @@ For each of these four cases, the analytical solution of the error over time is 
  \ddot{ e_i}+2\zeta\omega_n\dot{ e_i}+\omega_n^2 e_i= 0 
 \end{equation}
 with\begin{equation}
-    \omega_n=\sqrt{\frac{k_{Pi}}{2}}, \ \ \ \ 
-    \zeta=\frac{k_{Di}}{\sqrt{2k_{Pi}}}.
+    \omega_n=\sqrt{{k_{Pi}}}, \ \ \ \ 
+    \zeta=\frac{k_{Di}}{2\sqrt{k_{Pi}}}.
 \end{equation}
 \begin{itemize}
     \item \textbf{Underdamped} ($\zeta<1$):\begin{equation}
@@ -6153,7 +6153,7 @@ The last example regards the insertion of a screw.
      \includegraphics[width=0.5\textwidth ]{images/hybrid4.png}
 \end{figure}
 The parameter $p$ is intrinsic of the screw, is called \textit{pitch}, and is the vertical displacement of the screw for every full turn. This constraint the robot in a very unique way: The manipulator can't move on the $z$ axis without rotating on the same axis, and vice versa. The other natural constraints are trivial:\begin{align}
-    &v_z=v_y=0\\ 
+    &v_x=v_y=0\\ 
     &\omega_x=\omega_y=0
 \end{align}
 the artificial constraints are:\begin{align}
@@ -6677,7 +6677,7 @@ here, $\lambda_{\max}(A^TA)$ is the maximum eigenvalue of $A^TA$. For symmetric 
     \|A\|_2\le \|A\|_F=\sqrt{\sum_{i=1}^m\sum_{j=1}^n |A_{ij}|^2}
 \end{equation}
 just add the squares of all the elements of the matrix and put the result under the root.
-\subsection{Inverting a Matrix}
+\subsection*{Inverting a Matrix}
 
 The inverse of a square matrix $A$, denoted as $A^{-1}$, is a fundamental concept in linear algebra, often used to solve systems of linear equations of the form $A\mathbf{x} = \mathbf{b}$, where $\mathbf{x}$ and $\mathbf{b}$ are column vectors. An inverse exists if and only if the matrix has a non-zero determinant ($\det(A) \neq 0$).
 \bigskip
@@ -6707,7 +6707,7 @@ Each scalar entry in the cofactor matrix $C$ is calculated by finding the determ
 $$
 \det(A) = a(ei - fh) - b(di - fg) + c(dh - eg)
 $$
-\subsection{Cofactor Matrix}
+\subsection*{Cofactor Matrix}
 To determine the cofactor matrix $C$ of a $3 \times 3$ matrix $A$, we must calculate the scalar cofactor $c_{ij}$ for each element $a_{ij}$. While a matrix can be conceptualized as an assembly of column vectors, such as $A = [\mathbf{v}_1 \quad \mathbf{v}_2 \quad \mathbf{v}_3]$, the calculation of cofactors requires us to operate on its individual scalar components.
 
 The cofactor $c_{ij}$ is defined by the formula:
@@ -6724,7 +6724,7 @@ To find the cofactor $c_{11}$ corresponding to the first element $a_{11}$, we el
 Applying this determinant evaluation and sign alternation process to all nine scalar elements $a_{ij}$ will yield the complete cofactor matrix $C$.
 
 
-\subsection{Determinant of a 4x4 Matrix}
+\subsection*{Determinant of a 4x4 Matrix}
 For a $4 \times 4$ matrix $B$, the determinant is found by extending the cofactor expansion method. Let $B$ be defined by its scalar elements $b_{ij}$:
 $$
 B = \begin{pmatrix}
@@ -6739,4 +6739,30 @@ $$
 \det(B) = b_{11}\det(M_{11}) - b_{12}\det(M_{12}) + b_{13}\det(M_{13}) - b_{14}\det(M_{14})
 $$
 where each $M_{1j}$ is the $3 \times 3$ submatrix obtained by deleting the first row and the $j$-th column of $B$. Each of these resulting $3 \times 3$ determinants can then be computed using the method defined above.
+\subsection*{Derivative of a Quadratic Form}
+\begin{equation}
+    \frac{d}{dt}(\mathbf x^TA\mathbf x+\mathbf c^T{\mathbf x})=\mathbf x^T\dot A \mathbf x+2\mathbf x^TA\dot{\mathbf x}+\mathbf c^T\dot{\mathbf x}
+\end{equation}
+\subsection*{Angle between two vectors}
+Is computed as follows\begin{equation}
+    \cos(\theta) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}\implies \theta = \arccos\left(\frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}\right)
+\end{equation}
+\subsection*{Sum and Difference of Angles}
+\begin{align}
+\sin(x+y) &= \sin x\cos y + \cos x\sin y \\
+\cos(x+y) &= \cos x\cos y - \sin x\sin y \\
+\tan(x+y) &= \frac{\tan x + \tan y}{1 - \tan x\tan y} \\[6pt]
+\sin(x-y) &= \sin x\cos y - \cos x\sin y \\
+\cos(x-y) &= \cos x\cos y + \sin x\sin y \\
+\tan(x-y) &= \frac{\tan x - \tan y}{1 + \tan x\tan y}
+\end{align}
+\subsection*{Associated Angles}
+\begin{align*}
+\sin(\pi - x) &= \sin x, & \cos(\pi - x) &= -\cos x \\
+\sin(\pi + x) &= -\sin x,\quad &\cos(\pi + x) &= -\cos x \\
+\sin(2\pi - x) &= -\sin x,\quad &\cos(2\pi - x) &= \cos x \\
+\sin\left(\frac{\pi}{2}-x\right)&=\cos x,\quad &\cos\left(\frac{\pi}{2}-x\right) &= \sin x\\
+\sin\left(x + \frac{\pi}{2}\right) &= \cos(x),\quad &\cos\left(x + \frac{\pi}{2}\right) &= -\sin(x)\\
+\sin\left(x - \frac{\pi}{2}\right) &= -\cos(x),\quad &\cos\left(x - \frac{\pi}{2}\right) &= \sin(x)
+\end{align*}
 \end{document}
