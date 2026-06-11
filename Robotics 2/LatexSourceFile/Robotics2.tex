@@ -94,7 +94,7 @@ since $\dq_0=\mathbf 0$
 we know that, by finding the initial joint acceleration $\ddot{\mathbf q_0}$ we can predict the next configuration and where the end effector will move. The full dynamic model is a system of differential equations and is the following\begin{equation}
     M(\mathbf q)\ddot{\mathbf q}+\mathbf c(\mathbf q,\dq)+\mathbf g(\mathbf q)=\mathbf 0
 \end{equation} 
-where $M$ is the  $2\times 2$ inertia matrix, and depends only on the current configuration, $\mathbf c$ is a term representing the centrifugal and coriolis forces, and depends also on the velocities $\dq$. The last term $\mathbf g$ is the gravity term, and depends on the current configuration. We are not explaining in detail how the model is derived, since this is an introductory section, and all these topics will be described and expanded in the following chapters.  
+where $M$ is the  $2\times 2$ inertia matrix, and depends only on the current configuration, $\mathbf c$ is a term representing the centrifugal and Coriolis forces, and depends also on the velocities $\dq$. The last term $\mathbf g$ is the gravity term, and depends on the current configuration. We are not explaining in detail how the model is derived, since this is an introductory section, and all these topics will be described and expanded in the following chapters.  
 
 Since the robot is at rest, the $\mathbf c$ vector is null, so\begin{equation}
     \ddot{\mathbf q}=M^{-1}(\mathbf q)\mathbf g(\mathbf q)
@@ -528,7 +528,7 @@ There are three classes of methods to solve $J\dq=\dot{\mathbf y}$:\begin{itemiz
     \item Jacobian-based: Among the infinite solutions, the one that minimizes a suitable norm is chosen 
     \item null-space methods: a term is added to the previous solution so as not to affect execution
 of the task trajectory, i.e., belonging to the null-space $\mathcal N(J)$
-    \item task augmentation: redundancy is reduced/eliminated by adding $s\le n-m$ further auxiliary tasks to make the problem ''squared''.
+    \item task augmentation: redundancy is reduced/eliminated by adding $s\le n-m$ further auxiliary tasks to make the problem ``squared''.
 \end{itemize}
 \subsection{Jacobian Based Methods}
 We have to solve the redundant problem from a differential level\begin{equation}
@@ -553,7 +553,7 @@ where $\det J_a\ne0$, then, the right inverse is \begin{equation}
         J_a^{-1}\\ 0
     \end{pmatrix}
 \end{equation}
-this is equivalent to ''freezing'' some degrees of freedom. \bigskip 
+this is equivalent to ``freezing'' some degrees of freedom. \bigskip 
 
 Another example of a generalized inverse is the \textbf{pseudo inverse matrix}, that is the matrix $J^\#$ that satisfies the four following properties:\begin{align}
     &JJ^\#J=J\\ 
@@ -596,7 +596,7 @@ $$J=\begin{pmatrix}
     3&0\\ 0&0
 \end{pmatrix}
 $$
-isn't invertible and the pseudo inverse just replace the ''infinite-becoming'' term with 0:$$
+isn't invertible and the pseudo inverse just replace the ``infinite-becoming'' term with 0:$$
 J^\#=\begin{pmatrix}
         \frac{1}{3}&0\\0&0
     \end{pmatrix}.
@@ -821,7 +821,7 @@ of course, $\mu$ can be variable: Since when crossing a singularity the required
     \includegraphics[width=0.85\textwidth ]{images/DLS.pdf}
     \caption{DLS solution near a singularity for a $2\times 2$ Jacobian.}
 \end{figure}
-We have seen four different Jacobian based methods:\begin{itemize}
+    \noindent We have seen four different Jacobian based methods:\begin{itemize}
     \item pseudo inverse: $\dq=J^\#\dy$
     \item weighted pseudo inverse: $\dq=J_W^\#\dy$
     \item right side inverse: $\dq=\begin{pmatrix}
@@ -838,7 +838,7 @@ This method will exploit joint movements that lies in the null space of the Jaco
     \end{equation}
     where $\mathbf x_p$ is a particular solution, and $\mathbf x_h$ is a solution of the homogeneous system $A\mathbf x=\mathbf 0$.
 \end{boxtheorem}
-since we are trying to solve $\dy=J\dq$, we will consider a general solution of the following form:\begin{equation}
+\noindent since we are trying to solve $\dy=J\dq$, we will consider a general solution of the following form:\begin{equation}
     \dq = J^\#\dy + (I-J^\#J)\dq_N
 \end{equation}
 \begin{itemize}
@@ -859,7 +859,7 @@ Notice how $(I-J^\#J)$ is the \textbf{projection operator} on the null space of 
 This kind of solution can be generalized by considering any couple of generalized inverse $K_1,K_2$:\begin{equation}
     \dq=K_1\dy+(I-K_2J)\dq_N 
 \end{equation}
-but will not have all of the four properties just presented. In this way, $\dq_N$ can be chosen arbitrarily as a ''preferred'' direction, and the null space projection of this desired velocity will be accomplished. Before entering in the details of how to choose this $\dq_N$, we will give a general presentation (not only related to Robotics) of an optimization problem.
+but will not have all of the four properties just presented. In this way, $\dq_N$ can be chosen arbitrarily as a ``preferred'' direction, and the null space projection of this desired velocity will be accomplished. Before entering in the details of how to choose this $\dq_N$, we will give a general presentation (not only related to Robotics) of an optimization problem.
 \begin{boxdefinition}{Linear Quadratic Problem}{def:LQ}
     A \textbf{LQ problem} is the following optimization problem\begin{align}
         &\min_{\mathbf x\in \R^n}H(\mathbf x)=\frac{1}{2}(\mathbf x-\mathbf x_N)^TW(\mathbf x-\mathbf x_N)\\
@@ -878,7 +878,7 @@ In our Robotics context, the matrix $W$ is also positive definite\begin{equation
 This condition is sufficient to make the problem to have a minimum solution. A general LQ problem can be solved by adding $m$ additional variables $\boldsymbol{\lambda}$ called \textbf{Lagrangian multipliers} and by considering the following function called \textbf{Lagrangian}:\begin{equation}
     \mathcal L(\mathbf x,\boldsymbol{\lambda})=H(\mathbf x)+\boldsymbol{\lambda}^T(J\mathbf x-\mathbf b).
 \end{equation}
-These Lagrangian multipliers works as a way to ''violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient with respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
+These Lagrangian multipliers works as a way to ``violate'' the constraints to find a solution. To find a solution, we have to find the critical points of $\mathcal L$, by considering the gradient with respect to $\mathbf x$ and $\boldsymbol{\lambda}$ and putting it equals to zero.\begin{align}
     &\nabla_{\mathbf x}\mathcal L=\begin{pmatrix}
         \frac{\partial\mathcal L}{\partial x_1}&\dots & \frac{\partial\mathcal L}{\partial x_n}
     \end{pmatrix}^T=W(\mathbf x-\mathbf x_N)+J^T\boldsymbol{\lambda}=\mathbf 0\\ 
@@ -1312,7 +1312,7 @@ for some real step size $\alpha_k>0$.
 We can include the dynamic model of a manipulator, given by the following system of equations\begin{equation}\label{dynModel}
     M(\q)\ddq+\mathbf n(\q,\dq)=\btau
 \end{equation}
-where $M$ is the $n\times n$ symmetric inertia matrix, positive definite for all $\q$, $\mathbf n$ is a vector relative to centrifugal, coriolis and gravitational forces, and $\btau$ is the input torques vector. In a state $(\q,\dq)$, the matrix $M$ and the vector $\mathbf n$ evaluates and the Equation \eqref{dynModel} becomes bilinear in $\boldsymbol\tau$ and $\ddq$, $M$ is always invertible (more details in the next chapters) so there is a 1 to 1 mapping between $\btau$ and $\ddq$, in this way, we can easily choose $\btau$ to realize the desired $\ddq$.\bigskip
+where $M$ is the $n\times n$ symmetric inertia matrix, positive definite for all $\q$, $\mathbf n$ is a vector relative to centrifugal, Coriolis and gravitational forces, and $\btau$ is the input torques vector. In a state $(\q,\dq)$, the matrix $M$ and the vector $\mathbf n$ evaluates and the Equation \eqref{dynModel} becomes bilinear in $\boldsymbol\tau$ and $\ddq$, $M$ is always invertible (more details in the next chapters) so there is a one-to-one mapping between $\btau$ and $\ddq$, in this way, we can easily choose $\btau$ to realize the desired $\ddq$.\bigskip
 
 Since we are controlling directly the torque $\btau$, we can apply the usual methods that uses the gradient of an objective function as preferred solutions. One common choice is to minimize the torque norm:\begin{equation}\label{H_1_torque}
     H_1(\ddq)=\frac{1}{2}\|\btau\|^2=\frac{1}{2}\ddq^TM^2\ddq+\mathbf n^TM\ddq+\frac{1}{2}\mathbf n^T\mathbf n
@@ -1469,7 +1469,7 @@ when this happens, we say that the constraint becomes \textbf{active}. If the co
      \includegraphics[width=0.4\textwidth ]{images/ineq_constraints_4.eps}
 \end{figure}
 
-As we already mentioned, the robot has some ''limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint velocities, acceleration and torque. These constraints are ''boxes'' in the joint configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
+As we already mentioned, the robot has some ``limited'' capabilities given by the actuators, have limited joint ranges and/or limitation on the joint velocities, acceleration and torque. These constraints are ``boxes'' in the joint configuration and tangent space, that can never be violated, at most can became active and be saturated. The equality tasks $J\dq=\dy$ are usually the highest priority, but can be relaxed in case they require unfeasible performance from the actuators.\bigskip 
 
 The \textbf{Saturation in the Null Space (SNS)} is a method to deal with these limits in the context of online resolution for the joint velocity, it consists in saturating one overdriven joint command at a time, until a feasible and better
 performing solution is found. it requires some \textit{decisions}, in which joint we should saturate to not affect the task execution, for tasks that are (certainly) unfeasible, SNS embeds the selection of a task
@@ -1479,14 +1479,14 @@ I-(JW)^\#J
     \right)\dq_N
 \end{equation}
 where\begin{itemize}
-    \item $W$ is a diagonal matrix such that the entries are 0 or 1 and is needed to select which joint will saturate. If we want to saturate the joint $i$, then $W_{ii}=0$, else, if the joint is ''free'' $W_{ii}=1$.
+    \item $W$ is a diagonal matrix such that the entries are 0 or 1 and is needed to select which joint will saturate. If we want to saturate the joint $i$, then $W_{ii}=0$, else, if the joint is ``free'' $W_{ii}=1$.
     \item $s$ is the scaling factor of the required task velocity $\dy$.
     \item $\dq_N$ is the vector of the saturated (full speed) joint velocities.
 \end{itemize}
-This kind of solution starts from the pseudo inverse solution $J^\#\dy$ and add a ''correction'' to define a new solution that activate one constraints by remaining feasible, this correction is always in the null space of the Jacobian $\mathcal N(J)$ (up to a scaling factor, if present).
+This kind of solution starts from the pseudo inverse solution $J^\#\dy$ and add a ``correction'' to define a new solution that activate one constraints by remaining feasible, this correction is always in the null space of the Jacobian $\mathcal N(J)$ (up to a scaling factor, if present).
 \begin{figure}[H]    
 \centering 
-     \includegraphics[width=\textwidth ]{images/SNS.eps}
+     \includegraphics[width=\textwidth ]{images/SNS.png}
 \end{figure}
 \textbf{Example}: Let's consider a 4R planar robot with link length $l$ for all the links. The Jacobian matrix for the task of positioning in the end effector plane is\begin{equation}
     J(\q)=\begin{pmatrix}
@@ -1668,7 +1668,7 @@ The inequalities between vectors are element-wise.
 \centering 
      \includegraphics[width=0.8\textwidth ]{images/cartesianBoxConstraints.eps}
 \end{figure}
-We define a generalized vector that describes the ''configuration'' of the manipulator (in fact, $\q$ is already sufficient since it identifies the position of the control points, but in this context we need a vector that contains the configuration $\q$ and the position of the control points):\begin{equation}
+We define a generalized vector that describes the ``configuration'' of the manipulator (in fact, $\q$ is already sufficient since it identifies the position of the control points, but in this context we need a vector that contains the configuration $\q$ and the position of the control points):\begin{equation}
     \mathbf a = \begin{pmatrix}
         \q^T&\mathbf p_{cp,1}^T&\mathbf p_{cp,2}^T&\dots & \mathbf p_{cp,r}^T
     \end{pmatrix}^T.
@@ -2065,7 +2065,7 @@ The gravitational term on the $k$-th equation is\begin{equation}
 \end{equation}
 About the inertia matrix:\begin{itemize}
     \item $m_{kk}(\q)$ is the inertia at joint $k$ when joint $k$ accelerates, is always greater than 0.
-    \item $m_kj$ is the inertia ''seen'' at joint $k$ when joint $j$ accelerates, represents the inertia coupling between the two joints.
+    \item $m_kj$ is the inertia ``seen'' at joint $k$ when joint $j$ accelerates, represents the inertia coupling between the two joints.
 \end{itemize}
 About the Christoffel symbols:\begin{itemize}
     \item $c_{kii}$ is the coefficient of the centrifugal effect at joint $k$ when the joint $i$ is moving. 
@@ -2880,7 +2880,7 @@ In this section we analyze a particular closed kinematic chain manipulator, a ro
 The green joints are active and actuated, the grey one are passive, hence, despite the 5 total joints, the system have two degrees of freedom, and the end effector always lies on the $(x,y)$ plane. The planar view of the manipulator is the following:
 \begin{figure}[H]    
 \centering 
-     \includegraphics[width=0.7\textwidth ]{images/parallel_2.eps}
+     \includegraphics[width=0.7\textwidth ]{images/parallel_2.pdf}
      \caption{Parallel structure manipulator, planar view.}
 \end{figure}
 The coordinate of the system are respectively $q_1$ as the angle between the first link and the $x$ axis and $q_2$ as the angle between the second link and the $x$ axis. Notice how the angle between the fifth link and the $x$ axis is exactly $q_2-\pi$. The direct kinematics for the position of the end effector on the $(x,y)$ plane is \begin{equation}
@@ -2920,7 +2920,7 @@ The direct kinematics for the centers of mass is easy to compute (from now we us
         l_1s_1-l_{c4}s_2
     \end{pmatrix}
 \end{align}
-The fourth and fifth link are considered as a single rigid body and they always have the same angular velocity. The angular velocity of the first link is $\bomega_1=(0,0,\dot q_1)^T$. The third link is ''constrained'' and always rotate with the first one, so $\bomega_3=\bomega_1$. The same reasoning applies for the second and fourth link:\begin{equation}
+The fourth and fifth link are considered as a single rigid body and they always have the same angular velocity. The angular velocity of the first link is $\bomega_1=(0,0,\dot q_1)^T$. The third link is ``constrained'' and always rotate with the first one, so $\bomega_3=\bomega_1$. The same reasoning applies for the second and fourth link:\begin{equation}
     \bomega_2=\bomega_4=(0,0,\dot q_2)^T.
 \end{equation}
 The velocity of the centers of mass is obtained by differentiating $\mathbf p_{ci}$:
@@ -3019,7 +3019,7 @@ with the previous condition, the choice of the dynamics parameters has to satisf
 \newpage\section{Adding Dynamic Terms}
 We have seen how to derive the dynamic model of a manipulator, in this section we expand this model by making it more precise to describe the real systems. First of all, we give a more detailed description of the \textit{dissipative phenomena} due to friction included in $\mathbf u$. 
 
-We take in account the \textit{viscous friction}, the \textit{Coulomb friction} and the so called \textit{stiction} (stati friction). These, are local effects at the joint, and the friction on one joint doesn't affect the others.\begin{itemize}
+We take in account the \textit{viscous friction}, the \textit{Coulomb friction} and the so called \textit{stiction} (static friction). These, are local effects at the joint, and the friction on one joint doesn't affect the others.\begin{itemize}
     \item The viscous friction opposes to the motion of a joint with an intensity proportional to the velocity:\begin{align}
         &u_{vi}=-B_{vi}\dot q_i\\ &B_{vi}>0.
     \end{align}
@@ -3057,7 +3057,7 @@ we denote $\theta_{mi}$ the angular position of the rotor and $\theta_i$ the ang
 \end{align}
 Due to this mapping, the system can be fully described by the $n$ joints angular positions or the $n$ motor's angular positions, the number of generalized coordinates is still $n$.\bigskip
 
-Now we compute the kinetic energy of the motors, with the \textbf{simplifying assumption} that the rotational part of the kinetic energy concerns only the spinning of the rotor around its axis. In a robot, the $i$ motor is mounted on the $i-1$ link. When the robot moves, the motor moves in space (linear velocity) and rotates together with the link (angular velocity of the body). However, with this simplification, we say that the only thing that matters for the motor's kinetic energy $T_{mi}$ is its relative internal rotation, multiplied by the reduction ratio.\begin{equation}\label{kinetic_energy_rotor}
+Now we compute the kinetic energy of the motors, with the \textbf{simplifying assumption} that the rotational part of the kinetic energy concerns only the spinning of the rotor around its axis. In a robot, the $i$ motor is mounted on the $i-1$ link. When the robot moves, the motor moves in space (linear velocity) and rotates together with the link (angular velocity of the body). However, with this simplification, we say that the only thing that matters for the motor's kinetic energy $T_{mi}$ is its relative internal rotation, multiplied by the reduction ratio (the motor mass might be included in its link mass).\begin{equation}\label{kinetic_energy_rotor}
     T_{mi}=\frac{1}{2}I_{mi}\dot \theta_{mi}^2=\frac{1}{2}I_{mi}n_{ri}^2\dot q_i^2
 \end{equation}
 we denote $M_{mi}=I_{mi}n_{ri}^2$ the inertial coefficients of motor $i$:\begin{align}
@@ -3548,7 +3548,7 @@ We decide to decompose $\btau\in \R^n$ in two complementary spaces, since\begin{
 we use the projection operator on $J^TH$ defined as\begin{equation}
     I-J^TH
 \end{equation}
-let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use as our control input, and let $\btau_N\in \R^n$ be a ''preferred'' torque, the decomposition of $\btau$ that we use is the following:\begin{equation}
+let $\mathbf F\in \R^m$ to be the force in the cartesian space that we will use as our control input, and let $\btau_N\in \R^n$ be a ``preferred'' torque, the decomposition of $\btau$ that we use is the following:\begin{equation}
     \btau=J^T\mathbf F+(I-J^TH)\btau_N.
 \end{equation}
 by rewriting the control torque in this way in the dynamic model we get:\begin{equation}
@@ -3713,7 +3713,7 @@ where $Y_{\pi}$ is called \textbf{regressor matrix} and have $n$ rows and $p$ co
 outlining the following property:\begin{quote}
     the element $M_{ij}$ of $M(\q)$ depends at most on $(q_{k+1}\dots q_n)$ where $k=\min\{i,j\}$ and at most on the dynamic parameters of link $h$ up to $n$ where $h=\max\{i,j\}$.
 \end{quote}
-In the model $Y_\pi(\q,\dq,\ddq)\boldsymbol{\pi}$ we are using all the $p=n_pn$ dynamic parameters, but we already explained (and saw through past examples) that the model usually don't include all the parameters, the corresponding columns of this parameters are identically the zero column, so we can remove it from $Y_\pi$ and remove the ''no role'' parameters from $\boldsymbol{\pi}$. We denote $p_r<p$ the remaining parameters, and the remaining matrix $Y_{\pi}$ now have $n$ rows and $p_r$ columns. 
+In the model $Y_\pi(\q,\dq,\ddq)\boldsymbol{\pi}$ we are using all the $p=n_pn$ dynamic parameters, but we already explained (and saw through past examples) that the model usually don't include all the parameters, the corresponding columns of this parameters are identically the zero column, so we can remove it from $Y_\pi$ and remove the ``no role'' parameters from $\boldsymbol{\pi}$. We denote $p_r<p$ the remaining parameters, and the remaining matrix $Y_{\pi}$ now have $n$ rows and $p_r$ columns. 
 
 It usually happens that some of the columns in $Y_\pi$ are \textbf{linearly dependent} from others, let's denote $Y_{ind}$ the sub matrix of $Y_{\pi}$ containing only linearly independent $r<p_r$ columns, and $Y_{dep}$ the columns that are linear combinations of elements in $Y_{ind}$. We also reorder the vector $\boldsymbol{\pi}$ by moving on top the first $r$ parameters associated to $Y_{ind}$, and the remaining one below, associated to $Y_{dep}$;\begin{equation}
     Y_\pi\boldsymbol{\pi}=\begin{pmatrix}
@@ -3826,7 +3826,7 @@ To exploit the dynamic model of a manipulator in order to improve the control sy
 To know these values, one can perform a numeric estimation with CAD tools, by having a digital model of the manipulator, but some of the dynamic parameters, like the viscous friction that depend on the lubrication of the joints, can change over time, or the 10 standard parameters of the last link that change if we have attached a payload to it.
 
 Due to the linear behavior of the coefficients $\brho$ in the model, we can identify these parameters by experimentation:\begin{enumerate}
-    \item First of all, we choose a joint trajectory $\q_d(t)$ that ''excites'' the model, explore the workspace and involves all the dynamic coefficients, usually a periodic trajectory with different frequency components.
+    \item First of all, we choose a joint trajectory $\q_d(t)$ that ``excites'' the model, explore the workspace and involves all the dynamic coefficients, usually a periodic trajectory with different frequency components.
     \item We approximately execute this motion by a simple PD law that doesn't need the model\begin{equation}
         \btau=K_p(\q_d-\q)+K_d(\dq_d-\dq).
     \end{equation}
@@ -3848,7 +3848,7 @@ This procedure is repeated for all the $n_c$ measurements and we set up the syst
         \btau(t_1)\\ \vdots \\ \btau(t_{n_c})
     \end{pmatrix}}_{\overline\btau}
 \end{equation}
-the number of rows of this system is $n_c\cdot n$, a sufficiently ''exciting'' trajectory and a large number of samples will guarantee that the rank of this matrix is full, at this point we can find our estimation of $\brho$ by the pseudo inverse:\begin{equation}
+the number of rows of this system is $n_c\cdot n$, a sufficiently ``exciting'' trajectory and a large number of samples will guarantee that the rank of this matrix is full, at this point we can find our estimation of $\brho$ by the pseudo inverse:\begin{equation}
     \brho = \overline{Y}^\#\overline\btau=(\overline Y^T\overline Y)^{-1}\overline Y^T\overline\btau 
 \end{equation}
 Let's denote $Y_i$ the $i$-th row of the regressor matrix $Y$ and $\tau_i$ the $i$-th entry of the vector $\btau$:\begin{align}
@@ -4409,11 +4409,11 @@ is $\q=\q_d$ (the error is null) and $\dq=\mathbf 0$, for the LaSalle theorem, t
 \end{figure}
 There are some \textit{isolated} time instants where $\dot V=0$ but $\ddq\ne \mathbf 0$, this happens when there is an inversion of motion for all the joints at the same time.\bigskip
 
-When $K_D$ and $K_P$ are diagonal, the control law is fully decentralized and local to each joint. Furthermore, when these matrices are diagonal, the joints behave like a spring-damper system, $K_P$ correspond to the stiffness of ''virtual'' springs, and $K_P$ is the viscosity of the ''virtual'' dampers placed at each joint.\bigskip 
+When $K_D$ and $K_P$ are diagonal, the control law is fully decentralized and local to each joint. Furthermore, when these matrices are diagonal, the joints behave like a spring-damper system, $K_P$ correspond to the stiffness of ``virtual'' springs, and $K_P$ is the viscosity of the ``virtual'' dampers placed at each joint.\bigskip 
 
 
 
-The choice of this gains affect the transient and the settling time of the manipulator, it is hard to define an ''optimal'' value for the whole workspace, usually $K_P$ and $K_D$ are chosen in order to have desired eigenvalues to the linear approximation of the robot around the desired state $(\q_d,\mathbf 0)$.
+The choice of this gains affect the transient and the settling time of the manipulator, it is hard to define an ``optimal'' value for the whole workspace, usually $K_P$ and $K_D$ are chosen in order to have desired eigenvalues to the linear approximation of the robot around the desired state $(\q_d,\mathbf 0)$.
 
 When there is viscous friction at the joints: $-B_v\dq$, the derivative term on the PD is not necessary anymore since the friction acts like a derivative term, despite that, an inclusion of $-K_D\dq$ is often used since $K_D$ can be modulated at will.\bigskip 
 
@@ -4560,7 +4560,7 @@ For the experimental results, let $I=0.9333$ and $mg_0d=19.62$. The following pl
 When $k_p<\alpha$ (in the second experiment), the controller can't assess the desired condition, here $k_p>\alpha$ is not only a sufficient condition, but also necessary. Notice how the control effort in the first instants are large, in presence of high gains might become unfeasible for the actuators.
 \subsection{PID Control}
 We saw how the gravity cancellation/compensation requires an accurate model of the manipulator, if the gravity is seen as a disturbance, we can add an \textbf{integral} term that \textit{collects the story of the error}. We know that in linear systems, the integral action is required to eliminate a constant error at steady state, in robots, the PID controller may be used to recover such a position error due
-to an incomplete (or absent) gravity compensation/cancellation, in fact, the integral ''learns'' the compensation term $\mathbf g(q_d)$. The control law is\begin{equation}
+to an incomplete (or absent) gravity compensation/cancellation, in fact, the integral ``learns'' the compensation term $\mathbf g(q_d)$. The control law is\begin{equation}
     \btau=K_P\mathbf e+K_I\int_{t_0}^t\mathbf e(\sigma)d\sigma-K_D\dq
 \end{equation}
 this law is \textit{model free}, i.e. independent from any term of the dynamic model, if the desired closed loop equilibrium is asymptotically stable, the integral term is loaded with the gravity compensation value:\begin{equation}
@@ -4666,10 +4666,10 @@ so the method is learning the gravity compensation for each equilibrium reached.
 \end{boxtheorem}
 \noindent\textit{Proof}: Let $\mathbf e_i=\q_d-\q_i$ to be the error at steady state on the $i$-th iteration.  We know that $ \mathbf u_i=\mathbf g(\q_i)$ so\begin{equation}
     \|\mathbf u_i-\mathbf u_{i-1}\|=
-    \|\mathbf g(q_i)-\mathbf g(q_{i-1})\|
+    \|\mathbf g(\q_i)-\mathbf g(\q_{i-1})\|
 \end{equation}
 due to the bound on the norm of $\frac{\partial \mathbf g}{\partial \q}$:\begin{equation}
-    \|\mathbf g(q_i)-\mathbf g(q_{i-1})\|\le \alpha\|\q_i-\q_{i-1}\|
+    \|\mathbf g(\q_i)-\mathbf g(\q_{i-1})\|\le \alpha\|\q_i-\q_{i-1}\|
 \end{equation}
 we add and subtract $\q_d$ on the right side\begin{equation}
      \alpha\|\q_i-\q_{i-1}\|= \alpha\|\q_i-\q_d-\q_{i-1}+\q_d\|=
@@ -4934,7 +4934,7 @@ this is the simple PD controller + gravity cancellation.
 \subsection{Iterative Trajectory Learning Control}
 Until now, we have showed some control laws that achieves global asymptotic stability (in some cases exponential), with the assumption of having a perfect model of the manipulator. Of course, this is almost never the case in practical application, since there is always a degree of uncertainty over the dynamic parameters (also because the end effector may hold payloads of different weight).\bigskip 
 
-Despite that, it is still possible to reproduce a desired trajectory in case of \textit{ripetitive motion tasks}, through an iterative approach, that ''learns'' the dynamics of the model (for that specific task). The general law is a PD controller, with an additional varying feed forward term:\begin{equation}
+Despite that, it is still possible to reproduce a desired trajectory in case of \textit{ripetitive motion tasks}, through an iterative approach, that ``learns'' the dynamics of the model (for that specific task). The general law is a PD controller, with an additional varying feed forward term:\begin{equation}
     \btau=K_P(\q_d-\q)+K_D(\dq_d-\dq)+\mathbf v_k 
 \end{equation}
 where $\mathbf v_k$ is the feed forward term at the $k$-th iteration.\begin{itemize}
@@ -5186,7 +5186,7 @@ or a non linear control based on feedback linearization:\begin{equation}\label{a
 In both cases, $\hat M$,$\hat C $,$\hat{\mathbf g}$ and $\hat B_v$ are estimation of the dynamic terms in the model, given by the current coefficients estimation $\hat\brho$. The feedback linearization \eqref{adaptiveFBL} controller may lead to instability if the estimation of the dynamic coefficient is particularly bad. The third (and final) trajectory control law that we will use is a nonlinear controller (without cancellations) that achieves global asymptotic stabilization:\begin{equation}
     \btau=\hat M(\q)\ddq_d+\hat C(\q,\dq)\dq_d+\hat{\mathbf g}(\q)+\hat B_v\dq_d+K_P\mathbf e+K_D\de.
 \end{equation}
-Without extra assumption, there is a particular problem that can arise in this situation: It may be possible that joint velocities become ''clamped'' to those of the desired trajectory (zero velocity error), but a residual position error would be left. To overcome this problem, we modify the desired velocity in the controller by defining:\begin{equation}
+Without extra assumption, there is a particular problem that can arise in this situation: It may be possible that joint velocities become ``clamped'' to those of the desired trajectory (zero velocity error), but a residual position error would be left. To overcome this problem, we modify the desired velocity in the controller by defining:\begin{equation}
     \dq_r=\dq_d+\Lambda(\q_d-\q)
 \end{equation}
 with $\Lambda$ a positive definite matrix (typically $\Lambda=K_D^{-1}K_P$).
@@ -5280,7 +5280,7 @@ We can cancel $\dot M$ and $C$:\begin{align}
       \dot V =&-\bsigma^TK_P\mathbf e-\bsigma^TK_D\de-\bsigma^TB_v\bsigma+\mathbf e^T Q \de\implies \\[2ex]
        \dot V =&-\bsigma^T(K_P\mathbf e+K_D\de)-\bsigma^TB_v\bsigma+\mathbf e^T Q \de.
 \end{align}
-Now we replace $\sigma=\de+\Lambda\mathbf e$:\begin{equation}
+Now we replace $\bsigma=\de+\Lambda\mathbf e$:\begin{equation}
     \dot V=-\mathbf e^T(\Lambda^TB_v\Lambda+\Lambda^TK_P)\mathbf e -
     \mathbf e^T(2\Lambda^TB_v+\Lambda^TK_D+K_P-Q)\de-\de^T(B_v+K_D)\de
 \end{equation}
@@ -5694,7 +5694,7 @@ and\begin{equation}
 We define the vector of \textbf{reduced velocities} as follows:\begin{equation}
     \mathbf u=D(\q)\dq.
 \end{equation}
-About the notation: Previously the symbol $\mathbf u$ has been used to denote non-conservative forces in the dynamic model of a robot. In this context, $\mathbf u$ is in no way related to these forces, but is a ''virtual'' vector defined as the product of $D$ and $\dq$.
+About the notation: Previously the symbol $\mathbf u$ has been used to denote non-conservative forces in the dynamic model of a robot. In this context, $\mathbf u$ is in no way related to these forces, but is a ``virtual'' vector defined as the product of $D$ and $\dq$.
 
 The reduced acceleration is\begin{equation}
     \dot{\mathbf u }=D(\q)\ddq+\dot D(\q)\dq. 
@@ -5869,7 +5869,7 @@ The control force $F$ acts on $x_1$, but we want to control $F_c=k_sx_2$. We clo
     &m_1 \ddot{x}_1 = \blueText{k_f(F_d-k_sx_2)} - b_1 \dot{x}_1 - k_2(x_1 - x_2) - b_2(\dot{x}_1 - \dot{x}_2)\implies\\[1.5ex]
     &m_1 \ddot{x}_1 = k_f F_d - k_f k_s x_2 - b_1 \dot{x}_1 - k_2(x_1 - x_2) - b_2(\dot{x}_1 - \dot{x}_2)
 \end{align}
-without entering in the details, this system becomes unstable when the value of $k_f$ is large enough, due to the phase lag between $x_1$ and $x_2$, the system starts ''chasing'' an error that it does not see in real time. The result is chatter: the robot begins to vibrate violently against the surface.
+without entering in the details, this system becomes unstable when the value of $k_f$ is large enough, due to the phase lag between $x_1$ and $x_2$, the system starts ``chasing'' an error that it does not see in real time. The result is chatter: the robot begins to vibrate violently against the surface.
 \begin{figure}[H]
     \centering 
      \includegraphics[width=0.35\textwidth ]{images/rootLocus.png}
@@ -5920,9 +5920,9 @@ The impedance model is constructed as follows\begin{enumerate}
         .
     \end{equation}
 \end{boxdefinition}
-Typically, the desired trajectory $\y_d$ slightly penetrates inside the compliant environment inducing a contact force $\mathbf F_y$ (if not, the latter would be zero). In case of $\mathbf F_y=\mathbf 0$, the law is a PD controller with an apparent ''virtual'' inertia matrix $M_m$ for the feedback linearized robot.\begin{itemize}
+Typically, the desired trajectory $\y_d$ slightly penetrates inside the compliant environment inducing a contact force $\mathbf F_y$ (if not, the latter would be zero). In case of $\mathbf F_y=\mathbf 0$, the law is a PD controller with an apparent ``virtual'' inertia matrix $M_m$ for the feedback linearized robot.\begin{itemize}
     \item \textbf{In free motion}: The robot follows the programmed trajectory normally, moving smoothly.
-    \item \textbf{In contact}: Instead of pushing endlessly until it breaks something (or breaks itself), the robot ''gives in'' in a controlled way. The further it is pushed from its ideal trajectory, the more it resists, just like a spring being compressed.
+    \item \textbf{In contact}: Instead of pushing endlessly until it breaks something (or breaks itself), the robot ``gives in'' in a controlled way. The further it is pushed from its ideal trajectory, the more it resists, just like a spring being compressed.
 \end{itemize}
 \begin{boxdefinition}{Impedance Control Law (joint space, with force measurement)}{}
     The complete control law in the joint space is the following:\begin{align}
@@ -5940,7 +5940,7 @@ $(M_yM_m^{-1}-I)$ weights the measured contact forces $\mathbf F_y$. The last te
 in this way we eliminates the inertia matrix in the task space $M_y$ and we can work only with the model in the joint space. Even if the desired behavior is described in the cartesian space, the final control implementation is always at the robot joint level. The impedance model is particularly useful because:\begin{itemize}
     \item Adapt/match to the dynamic characteristics of the environment (in particular, of its estimated stiffness) in a complementary way.
     \item Avoid large impact forces due to uncertain geometric characteristics (position and/or orientation) of the environment.
-    \item Mimic the behavior of a human arm (fast and stiff in ''free'' motion, slow and compliant in ''guarded'' motion ).
+    \item Mimic the behavior of a human arm (fast and stiff in ``free'' motion, slow and compliant in ``guarded'' motion ).
 \end{itemize}
 The scalar $K_{m,i}$ should be small in the direction where there is a hard contact, in this way the robot becomes more compliant and exert less force on the hard environment (preventing damage). In the direction of free motion, $K_{m,i}$ should be large to provide good tracking.
 \begin{figure}[H]
@@ -6008,9 +6008,9 @@ notice how the constant cartesian stiffness $K_m$ at the joint level is variable
 \subsection{Admittance Control}
 When we don't have access to the low level controller (due to the closed architecture of an industrial robot), we can only provide velocity commands. For handling the interaction with the environment, one uses often
 \textbf{admittance control}: We sense the interaction force $\mathbf F_c$ and use it to generate a velocity command $\dq$:\begin{itemize}
-\item \textbf{Admittance}: Reads an external contact force ($\mathbf F_c$) via sensors $\rightarrow$ Calculates the speed ($\q$) or displacement ($\Delta \q$) that the robot must make to ''accommodate'' or react to that force.
+\item \textbf{Admittance}: Reads an external contact force ($\mathbf F_c$) via sensors $\rightarrow$ Calculates the speed ($\q$) or displacement ($\Delta \q$) that the robot must make to ``accommodate'' or react to that force.
 \end{itemize}
-We use a \textbf{compliance matrix} $C_q$ (semi-positive definite), its role is to decide how much and how the robot must be ''soft'' or ''yielding'' when faced with an external force. The higher the values  within these matrices, the more the robot will react by moving quickly to escape the force (very soft behavior). If they are zero, the robot will ignore the force and remain rigid. The control law is:\begin{equation}
+We use a \textbf{compliance matrix} $C_q$ (semi-positive definite), its role is to decide how much and how the robot must be ``soft'' or ``yielding'' when faced with an external force. The higher the values  within these matrices, the more the robot will react by moving quickly to escape the force (very soft behavior). If they are zero, the robot will ignore the force and remain rigid. The control law is:\begin{equation}
     \btau_c = J^T\mathbf F_c\implies \dq =C_q\btau_c\implies \dq = C_qJ^T\mathbf F_c
 \end{equation}
 Determines the compliance of the single joint with respect to the torques ($\tau_c$) generated by the external forces. Can be implemented also in the task space:\begin{equation}
@@ -6420,7 +6420,7 @@ in this way, $\dot p_i$ is a decoupled component relative to the single fault $\
     \end{equation} 
     with $K$ being a diagonal positive definite matrix.
 \end{boxdefinition}
-This quantity can be computed without computing the joint acceleration nor inverting the inertia matrix. The defined vector $\mathbf r$ is a new system that have its own dynamic, is also called \textit{Momentum-Based Residual Observer}, it's a vector that acts like a ''filter'' for the faults $\btau_f$, if we take the derivative we have:\begin{equation}
+This quantity can be computed without computing the joint acceleration nor inverting the inertia matrix. The defined vector $\mathbf r$ is a new system that have its own dynamic, is also called \textit{Momentum-Based Residual Observer}, it's a vector that acts like a ``filter'' for the faults $\btau_f$, if we take the derivative we have:\begin{equation}
     \dot{\mathbf r}=K(\btau_f-\mathbf r)
 \end{equation}
 since $K$ is diagonal, for each $i$-th component:\begin{equation}
@@ -6499,7 +6499,7 @@ in this case, $K$ was a diagonal matrix with $K_1=K_2=50$. Usually, to overcome 
 The Fault Detection Identification (FDI) method based on generalized momentum can be easily extended to the
 presence of flexible transmissions (elastic joints) or actuator dynamics, furthermore, the scheme can be made adaptive (though possibly needing the use of
 acceleration) to handle parametric uncertainties in robot dynamic model. The same FDI-type approach has been applied also for compensation of
-\textbf{unmodeled friction} (treated as a ''permanent fault'' on the system).\bigskip
+\textbf{unmodeled friction} (treated as a ``permanent fault'' on the system).\bigskip
 
 \noindent The scheme can be used to isolate measuring errors, for example, if we can measure the wrench $\mathbf F$ with a sensor, we can write the following dynamic model:\begin{equation}
     M\ddq+\mathbf c+\mathbf g=\btau+J^T\mathbf F
@@ -6652,7 +6652,7 @@ where $\btau_c$ is the torque generated by the collision force $\mathbf F_c$:\be
     \centering 
      \includegraphics[width=0.5\textwidth ]{images/collisionDetection.png}
 \end{figure}
-The only difference between the fault detection in the model, is that the ''disturbance'' torque $\btau_c$ is added to $\btau$ and not subtracted. Since it's a disturbance, we can use the same residual generator to detect it, the only difference is that the residual will be $\dot r_i=K_i(\tau_{c,i}-r_i)$, so the residual will follow the collision torque $\btau_c$ with a delay given by $1/K_i$. The collision detection is important for safety reasons, since we want to stop the robot as soon as possible in case of a collision. The residual generator can be used to detect the collision and stop the robot before it causes damage to the environment or to the robot itself.
+The only difference between the fault detection in the model, is that the ``disturbance'' torque $\btau_c$ is added to $\btau$ and not subtracted. Since it's a disturbance, we can use the same residual generator to detect it, the only difference is that the residual will be $\dot r_i=K_i(\tau_{c,i}-r_i)$, so the residual will follow the collision torque $\btau_c$ with a delay given by $1/K_i$. The collision detection is important for safety reasons, since we want to stop the robot as soon as possible in case of a collision. The residual generator can be used to detect the collision and stop the robot before it causes damage to the environment or to the robot itself.
 \begin{align}
     &\mathbf r=K\left(
         \mathbf p-\int(\btau+\mathbf c-\mathbf g+\mathbf r)dt-\mathbf p(0)
