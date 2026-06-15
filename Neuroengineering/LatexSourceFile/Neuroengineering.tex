@@ -1815,4 +1815,155 @@ An RC filter is the simplest type of an analog Butterworth filter. \bigskip
      \includegraphics[width=0.5\textwidth]{images/raw_filter3.png}
 \end{figure}
 \noindent The blue line is the spectrum of the raw signal, the orange one is the spectrum of the filtered one. At the beginning the two signal have the same spectrum, the frequency components of 20 Hz or less are not attenuated. After 30 Hz (cut off frequency) there is a visible difference in attenuation, and the higher the frequency, the higher is the attenuation. 
+\section{Brain-Computer Interfaces}
+Brain-Computer Interfaces (BCIs) represent a unique intersection of neuroscience, signal
+processing, and machine learning. This introductory section establishes the formal definition
+of a BCI and outlines the closed-loop system architecture required to bypass traditional
+neuromuscular pathways and translate human intention directly into digital action.
+\begin{boxdefinition}{Brain-Computer Interface}{}
+A Brain-Computer Interface
+(BCI) is defined as a system that measures Central Nervous System and  converts it into an artificial
+output. Crucially, this system completely bypasses the normal nerve and muscle pathways
+naturally used to interact with the world.
+\end{boxdefinition}
+This artificial output is designed to do more things:\begin{itemize}
+     \item \textbf{Replace}: Replace a functione that is completely lost by the patient, for example a paralyzed patient can use a BCI to control a wheelchair.
+     \item \textbf{Restore}: Used to restore a specific ability (e.g., restoring the ability to grasp an
+object).
+     \item \textbf{Enhance}: Used to boost cognitive or physiological function.
+     \item \textbf{Supplement}: Adding to a natural CNS output.
+     \item \textbf{Improve}: Used to recover or train a damaged function, which forms the basis of
+rehabilitative applications.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/BCI.png}
+\end{figure}
+The BCI operates as a strict, sequential closed loop pipeline:\begin{itemize}
+     \item \textbf{Intention}: The user performs a cognitive process (user training/learning) to generate a
+specific, modified brain signal.
+\item \textbf{Extraction}: Algorithms perform appropriate feature extraction on the raw signals to
+isolate the relevant signal features.
+\item \textbf{Translation}: These features undergo classification (translation of intent) to convert the
+signal into a digital format.
+\item \textbf{Command \& Feedback}: The translated signal generates a command in the external
+environment.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/BCI_loop.png}
+\end{figure}
+\end{itemize}
+Because bypassing nerves and muscles is an unnatural way to control the environment, an
+appropriate real-time feedback strategy is mandatory. This process is analogous to learning
+a new physiological skill, such as walking or playing tennis: the brain requires instant
+feedback to recognize errors and adjust accordingly. When the BCI executes the command,
+the result is fed back to the user, closing the loop. This feedback allows the brain to evaluate
+its performance, learn, and consciously modify its signals to achieve mastery over the
+interface.\bigskip
+
+Brain signals can be acquired through two primary approaches:\begin{itemize}
+     \item Implanted: Sensors are surgically positioned on or within the brain tissue, such as Electrocorticography (ECoG) grids placed on the cortex, or microelectrodes to measure Local Field Potentials (LFP) or Single/Multi-Unit Activity (SUA/MUA).
+     \item Non-implanted: Sensors are placed externally on the scalp. While modalities like
+     Functional Magnetic Resonance Imaging (fMRI) and Near-Infrared Spectroscopy (NIRS)
+     exist , Electroencephalography (EEG) remains the most widely studied and utilized
+     method for non-invasive BCIs.
+\end{itemize}
+In clinical practice, these systems are generally deployed under two primary paradigms: Assistive BCIs, which substitute a permanently lost function like
+communication or smart home (domotic) control , and Rehabilitative BCIs, which use
+feedback mechanisms to drive neuroplasticity and improve stroke recovery.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/invasive_nonInvasive.png}
+\end{figure}
+When severe neurological conditions cause near-total paralysis, traditional digital interfaces
+become obsolete. In this paradigm, BCIs are utilized as Assistive Technology (AT). The
+primary objective here is not to heal the biological damage, but to provide a permanent, alternative access channel. By substituting the lost neuromuscular output with brain-derived
+control signals, assistive BCIs restore a patient's autonomy, communication, and ability to
+interact with their environment.
+\subsection{The ''Accessibility Gap'' in Assistive Technology (AT)}
+
+In the framework of Assistive Technology (AT), disability is not viewed merely as a ''medical
+problem belonging to a person''. Instead, guided by the World Health Organization, it is
+defined as a complex phenomenon resulting from the mismatch between a person's
+condition and their environment. Assistive Technology serves as a bridge to overcome this
+mismatch. It encompasses any device, software, or system that allows individuals to perform
+tasks they would otherwise be unable to do. The ultimate goal of AT is the restoration of
+autonomy, dignity, societal participation, and communication.\bigskip
+
+Digital assistive devices and traditional access methods—such as joysticks, touch screens,
+computer mice, head trackers, and eye trackers—are highly powerful. However, they share a
+critical limitation: they always require a reliable physical or muscular movement to actuate a
+command, such as pressing a button or exploring a screen with a directed gaze.\bigskip
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/traditionalBCI.png}
+\end{figure}
+When a severe neurological condition—such as Amyotrophic Lateral Sclerosis (ALS),
+Locked-In Syndrome (LIS), or a severe stroke—impairs all motor abilities, traditional
+
+technology becomes entirely inaccessible. In these specific cases, BCIs act as a crucial
+alternative input channel. By bypassing the need for muscular actuation, BCIs allow the user
+to control standard AT environments directly through brain signals, providing a pathway to
+digital interaction when all other physical channels have failed.
+\redText{TODO continua da 3.01draft a BCI handout section 3 }
+\chapter{Electromyography}
+The electromyography is the electrical activity generated by the muscles. The following picture shows a recorded electromyography:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/electromyography.png}
+\end{figure}
+taken with electrodes placed on the skin. Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprends a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture). \bigskip
+
+There are several application for the electromyography (especially with needle electrodes): 
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/application_electromyography.png}
+\end{figure}
+\section{Muscle Fibers}
+Inside the muscle there are several fascicles, and inside a fascicles there are several muscle fibers.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/muscle_fiber.png}
+\end{figure}
+These are the same role that the neurons have for the EEG, they are the core component that generates electrical activity. A single muscle fiber can be in a resting condition, or can produce a response called \textbf{muscle fiber action potential}.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/muscle_AP.png}
+\end{figure}
+The equilibrium is around -90 mV, the action potential touches its peak at around 10 mV. An action potential moves along the muscles, the velocity of movement is called \textbf{Muscle Fibre Conduction Velocity (MFCV)}. The range of this velocity is from 2 to 6 $\frac{\text{m}}{\text{s}}$ and it depends on various factors:\begin{itemize}
+     \item ionic concentration,
+     \item temperature,
+     \item muscle fibre diameter and morphology, 
+     \item muscle fibre length,
+     \item fibre type,
+     \item muscle fatigue (happens because the chemical ions becomes unbalanced),
+     \item neuromuscolar pathology.
+\end{itemize}
+How does the muscle contracts? As for the neurons there is a ''synapse'', is not a synapse between two neurons but between two hetrogeneus cells, one from the nervous system and the other from the muscle system.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.55\textwidth]{images/muscle_synapse.png}
+\end{figure}
+These kind of synapses (they are not really synapses, but acts like them) are called \textbf{neuromuscolar junctions}. They connect one neuron to one fibre, neurons that connects to muscles are called \textit{motor neurons}, one neuron connect to several fibres. A \textbf{motor unit} is one motor neuron with all the fibres connected to it.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.35\textwidth]{images/motorNeuron.png}
+\end{figure}
+Let's focus on a single motor unit, let's say that we have two motor neurons $A$ and $B$, neuron $A$ is connected to fibre 1,4 and 5, neuron $B$ to 2 and 3.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.55\textwidth]{images/AP_fibres.png}
+\end{figure}
+Assume fibres 1, 4 and 5 start an action potential, the timing in the picture for the spikes on fibre 1 4 and 5 is the same since they are generated by the same motor neuron, as well the action potential on fibre 2 and 3 discharge togheter. When we look at the electromyogram on the surface, we will observe only the cumulative effect of the fibres that discharge togheter, an external electrode will see only the summation.\bigskip 
+
+If more motor neurons activates near in time, we will observe the summation of the potentials from more motor units, this signal is called \textbf{interferential EMG}.\begin{boxobservation}{}{}
+     With non invasive methods we can \textit{only} measure interferential EMGs (summation of many motor units action potentials).
+\end{boxobservation}
+How do our body modulates the contraction of a muscle? What do the action potential of the neurons look like when we want to exert a stronger or weaker force? We have hundreds of thousends of motor units, one way to modulate the force is to engage more or less units (\textbf{rectruitment}). The other way is to involve the same fibers multiple times a second (\textbf{rate coding}). The higher the rate of discharge, the stronger the force is and shorter the fibre gets. These two phenomena can be modulated separately.\begin{itemize}
+     \item \textbf{Rate coding}: The firing rate can range from a minimal of 5/10 impulse per second, to a maximal of 60 impulse per second.Early recruited units may decrease their discharge rate when new units are
+recruited (experiencing an increase and then a subsequent decline of their
+discharge rate increase)
+\end{itemize}
+
+\redText{TODO continua da lezione 2026-05-13 minuto 38:16}
 \end{document}
