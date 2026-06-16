@@ -1078,6 +1078,64 @@ modeled $\implies$ more data required.
      \end{itemize}
 \end{itemize}
 \section{Graph Theory Recap}
+\redText{TODO slide 9}
+\begin{boxdefinition}{Global Efficiency}{}
+     The \textbf{global efficiency} $E_g\in [0,1]$ of a graph $G$ is the average of the
+reciprocal of the distances between any pair of nodes. For directed graphs:\begin{equation}
+     E_g=\frac{1}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}
+\end{equation}
+for undirected graphs:\begin{equation}
+     E_g=\frac{2}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}.
+\end{equation}
+\end{boxdefinition}
+$E_g$ tends to zero the less connected the graph is, while tends to one when the graphs tends to be fully connected. Global Efficiency measures \textit{how efficiently} the information is
+exchanged in the network. For the following graph:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.2\textwidth]{images/graph_example.png}
+\end{figure}
+the efficiency is\begin{equation}
+     E_g=\frac{2}{20}\left(
+          1+1+\frac{1}{2}+1+1+1+1+\frac{1}{2}+\frac{1}{2}+\frac{1}{2}
+     \right)=0.8.
+\end{equation}
+Given a specific node $i$ of a graph, we consider the graph composed by all the nodes directly connected to $i$ (but not including $i$ itself), denoted $S_i$ and compute its global efficiency $E_g(S_i)$.
+
+The average of $E_g(S_i)$ across all the nodes is called \textbf{Local Efficiency} $E_l$ and measures the tendency of the network to form strongly connected
+subgroups. It is also a measure of the robustness of the network to the removal of $i$.\begin{equation}
+     E_l=\frac{1}{N}\sum_{i=1}^{N}E_g(S_i).
+\end{equation}
+\subsection{Graph Indices Used in Neuroscience}
+For some applications it may be interesting to measure how well a
+network can be divided into \textbf{communities}.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/community.png}
+\end{figure} 
+A subnetwork is a community if it shows an organized structure with
+respect to the entire network. Measures useful to determine if two or
+more subnetworks act as communities are \textit{Divisibility} and \textit{Modularity}.\bigskip 
+
+The \textbf{Divisibility} $D$ is a measure of the \textit{segregation} between two given communities, for directed graphs is computed as:\begin{equation}
+     D=\frac{2L}{\displaystyle 2L+\sum_{i=1}^{N}
+     \sum_{j\ne i}^{N}a_{ij}(1-\delta(C_i,C_j))}
+\end{equation}
+for undirected graphs:
+\begin{equation}
+     D=\frac{L}{\displaystyle L+\sum_{i=1}^{N}
+     \sum_{j\ne i}^{N}a_{ij}(1-\delta(C_i,C_j))}
+\end{equation}
+where \begin{itemize}
+     \item $L$ is the number of edges in the network 
+     \item $a_{ij}$ are the elements of the adjacency matrix
+     \item $C_i$ is the community to which node $i$ belongs
+     \item $\delta(C_i,C_j)=1$ if $C_i=C_j$, 0 otherwise.
+\end{itemize}
+Divisibility focuses on inter-community links.\bigskip
+
+The \textbf{Modularity} $Q$ measures the tendency of the subnetworks to form communities.
+
+
 
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
@@ -1964,6 +2022,53 @@ How do our body modulates the contraction of a muscle? What do the action potent
 recruited (experiencing an increase and then a subsequent decline of their
 discharge rate increase)
 \end{itemize}
+\begin{boxobservation}{}{}
+     More motor units and greater rate coding means that EMG amplitude increases.
+\end{boxobservation}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/uneffacted_muscles.png}
+\end{figure}
+\section{Biophysics of the Generation of EMG
+Signals}
+Non invasive measurment have to deal with signals that passes trough a channel before reaching the sensor, we have  many ways to module the volume condaction of the electrical signals.
 
-\redText{TODO continua da lezione 2026-05-13 minuto 38:16}
+Volume conduction properties explain how the size and the shape of the resulting
+potential depends on the location on the recording electrode, biological tissues act as spatial and temporal \textit{low-pass}
+filters on the potential distribution.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.35\textwidth]{images/volume_conduction.png}
+\end{figure}
+One issue is that the sensors are more sensitive to superficial sources than deep sources.
+Whichever volume conduction we have (the head for the EEG, the muscle and skin for the EMG) they always behave like a low frequency filter for the conduction of potential. \bigskip
+
+How do we model an action potential? The tripole model consider an action potential as a triple of negative-positive-negative charge that is moving.  
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/MFAP.png}
+\end{figure}
+This diagram illustrates the spatial distribution of extracellular potentials and volume conduction during the propagation of a muscle fiber action potential ($AP$) recorded at the skin surface. As the $AP$ travels along the muscle fiber membrane from right to left, it establishes distinct current sources and sinks across the myoplasm and interstitial fluid: a leading edge of passive depolarization ($10{-}14$\,mm), a central zone of active sodium influx and membrane depolarization (shaded gray region, $18{-}30$\,mm), and a trailing region of potassium-mediated repolarization ($32{-}36$\,mm). According to the specified sign convention where upward deflection denotes negativity, a surface electrode ($G_2$) captures a characteristic triphasic waveform at sequential temporal phases (1, 2, and 3) corresponding to the passage of these spatial voltage gradients beneath the recording site.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/time_dist.png}
+\end{figure}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/boh.png}
+\end{figure}
+This image illustrates the differentiation between near-field and far-field detection of Muscle Fiber Action Potentials (MFAPs) in monopolar recordings using a physical analogy and volume conduction geometry.\begin{itemize}\item \textbf{Panel A} presents a real-world traffic analogy: an observer close to the road resolves individual passing vehicles (near-field), whereas a distant observer perceives only a smoothed, collective flow (far-field). \item \textbf{Panel B} depicts the potential fields of the traveling electrical dipole; near-field electrodes capture high-amplitude, high-frequency localized potential changes, while far-field paths yield highly attenuated and spatially blurred waveforms.\item  \textbf{Panel C} formalizes this geometrically, showing that at a large recording distance ($P$), the vectors $r_1$ and $r_2$ to the positive and negative poles become nearly identical in magnitude and angle, causing the opposite electrical fields to largely cancel each other out and result in a low-amplitude, widespread signal.\end{itemize}
+\section{Electromyography Instrumentation}
+\textit{Adhesive electrodes} can be applied on the skin to register the EMG (can't be used for the EEG due to the hair) anc can be easily stuck on the skin, and doesn't need too much gel. There are also linear array electrods, able to record more spots in a longitudinal way, and 2D array electrodes, able to record a wider surface.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/EMG_electrodes.png}
+\end{figure}
+To measure directly the motor action potential from a single fibre we need to insert a needle inside the muscle. 
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/pros_cons.png}
+\end{figure}
+When you place an electrode, the potential that you record is an average potential field over the area where you place the electrode.
+\redText{TODO continua da lezione 2026-05-20 minuto 11.30}
 \end{document}
