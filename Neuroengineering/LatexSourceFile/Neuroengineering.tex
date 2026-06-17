@@ -1133,10 +1133,224 @@ where \begin{itemize}
 \end{itemize}
 Divisibility focuses on inter-community links.\bigskip
 
-The \textbf{Modularity} $Q$ measures the tendency of the subnetworks to form communities.
+The \textbf{Modularity} $Q$ measures the tendency of the subnetworks to form communities. For undirected graphs:\begin{equation}
+     Q=\frac{1}{2L}\sum_{i=1}^{N}
+     \sum_{j\ne i}^{N}\left(
+          a_{ij}-\frac{g_ig_j}{2L}  \right)\delta(C_i,C_j)
+\end{equation}
+for directed graphs:
+\begin{equation}
+     Q=\frac{1}{L}\sum_{i=1}^{N}
+     \sum_{j\ne i}^{N}\left(
+          a_{ij}-\frac{g_i^{IN}g_j^{OUT}}{2L}  \right)\delta(C_i,C_j)
+\end{equation}
+$g_i$ is the degree of a node  (can be of type $IN$ or $OUT$). Modularity focuses on intra-community links, gor each pair of nodes belonging to the same community, modularity $Q$ compares the
+existence (or not) of a link between them with the probability of having a connection between them in a random distribution of the links:\begin{equation}
+    \underbrace{ a_{ij}}_{\text{Existence of the
+intra-community link}}-\underbrace{\frac{g_ig_j}{2L}}_{\text{Probability of a random link
+between the nodes}}.
+\end{equation}
+If there are more intra-community links than in a random division, $Q>0$, otherwise $Q\le 0$.
+We recap the properties of a graph under two labels:\begin{itemize}
+     \item \textbf{Integration}:\begin{itemize}
+          \item high global efficiency
+          \item low local efficiency 
+          \item low divisibility 
+          \item low modularity.
+     \end{itemize}
+     \item \textbf{Segregation}:\begin{itemize}
+          \item low global efficiency
+          \item high local efficiency 
+          \item high divisibility 
+          \item high modularity.
+     \end{itemize}
+\end{itemize}
+In general there are two \textit{reference structures} that describe  two different type of network:
+\begin{center}
+     \includegraphics[width=0.45\textwidth]{images/regular_random.png} 
+\end{center} 
+\begin{itemize}
+     \item Regular networks: Each node is linked to a small number of
+other nodes.
+The degree is the same for all nodes.
+Efficient communications between small
+groups, unefficient communications at the
+entire network level.\begin{itemize}
+     \item low Global Efficiency
+     \item high Local Efficiency.
+\end{itemize}
+     \item Random networks: Each node is linked to the others
+randomly. There are no small groups
+with a strong internal communication.\begin{itemize}
+     \item high Global Efficiency
+     \item low Local Efficiency.
+\end{itemize}
+\end{itemize} 
+Real world networks are neither like the random nor like the regular graphs.
+\section{Multiple-Subject Systems}
+Human-to-human interactions are important in:\begin{itemize}
+     \item human cognition, development, well-being, society
+\end{itemize}
+and are extremely complex, due to unpredictable time trajectory, they require social settings and include dynamic stimulation involving a
+large set of complex sensory features (face expressions,
+gestures, postures, actions, intonation). These are usually based on alignment:\begin{itemize}
+     \item bodily synchrony 
+     \item turn taking during conversation 
+     \item similar orientation of attention 
+     \item empathy.
+\end{itemize}
+These interactions can be non verbal, dynamic and bilateral, they can have a leader-follower setting or can be symmetrical.\begin{itemize}
+     \item A complex system (group) cannot be
+     fully understood by analyzing its
+     single elements (single subjects): we
+     need to study their interaction.
+     \item The content and timing of natural
+social interaction are unpredictable
+and differ from experiment to
+experiment.
+     \item Interdependencies between the two
+sets of brain signals can reveal brain
+processes that support the interaction.
+\end{itemize}
+\begin{center}
+     \includegraphics[width=0.5\textwidth]{images/human_interaction.png} 
+\end{center} 
+We can use the tools of graph theory and apply them to the analysis of multi-subject systems, with the aim of quantifying brain interaction not only within the brain of a single individual, but between the brains of two or more subjects interacting with each other.
+\begin{center}
+     \includegraphics[width=0.6\textwidth]{images/multisubject.png} 
+\end{center} 
+the brain activity of two subjects can be modeled as a single large interconnected system: The nodes represent the channels or electrodes (e.g. EEG) positioned on the scalp of the two subjects, the arcs represent connectivity (e.g. synchronization or information flow). To extract biological and behavioral information from this hyper-graph, the properties seen previously (modularity, divisibility, efficiency) are considered.\bigskip
+\subsection{Cooperation and Competition}
+Observe the following picture:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/game_theory_system.png} 
+     \caption{Application in game theory.}
+     \label{coperation_defect}
+\end{figure} 
+This picture shows the practical application of the inter-subject graph concepts seen previously, applied to a game theory context (typically the repeated Prisoner's Dilemma), analyzing how brain connectivity patterns change depending on social behavior.
+The left part of Figure \ref{coperation_defect} shows the connectivity networks calculated between two players (Player A and Player B) based on four different EEG frequency bands (brain waves):\begin{itemize}
+    \item $\theta$ (Theta): Linked to complex cognitive processes and working memory.\item $\alpha$ (Alpha): Linked to attention and resting/alert states.\item $\beta$ (Beta): Linked to motor activity and active concentration.\item $\gamma$ (Gamma): Linked to multisensory integration and high-level cognitive processes.
+\end{itemize}\begin{itemize}
+     \item \textbf{Cooperation and Tit-for-Tat}: They show a dense network of lines (graph arcs) that intensely connect the brain of Player A with that of Player B. This indicates strong inter-subject synchronization and a continuous exchange of information; the two brains ''work together''.
+     \item \textbf{Defect}: When players compete or cheat on each other, the lines between the two brains decrease dramatically in all frequency bands. There is very little inter-subject connectivity: each acts independently and selfishly, disrupting the shared ''super-brain''.
+\end{itemize}
+On the right side of Figure \ref{coperation_defect}, the two graphs show how, using graph metrics calculated on the networks, it is possible to mathematically separate and classify the three behaviors.
+On the abscissas and ordinates we find the normalized values ($Z$-score) of the metrics seen in the previous picture:\begin{itemize}
+     \item $<Z(D)>$:Average divisibility. \item $<Z(E)>$: Average global efficiency. \item $<Z(Q)>$: Average modularity.
+\end{itemize}
+The red squares (DD - Mutual Defection) are positioned in a completely different area compared to the blue circles (CC - Cooperation) and the green diamonds (TT - Tit-for-Tat).
 
+The red dotted line represents a linear separation hyperplane (decision boundary). It shows that graph theory metrics applied to hyperscanning are so powerful that they allow us to clearly distinguish cooperative behavior from competitive behavior.
 
+\textbf{Conclusion}: By combining these frequency bands ($\theta, \alpha, \beta, \gamma$) and network metrics, a machine learning algorithm can guess with 91\% accuracy whether the pair is cooperating, competing, or implementing a tit-for-tat strategy, based solely on the combined electrical activity of their brains.
+\subsection{Empathy}
+Empathy is here divided and mapped into two distinct macro-phenomena:\begin{itemize}
+     \item Compassion: it is the emotional response we feel when we see another human being suffer or suffer an injustice. It is defined as ''negative'' because it is linked to sharing a state of discomfort or pain in others.
+     \item Vicarious Reward: it is the feeling of gratification we feel when we see the other person doing well or receiving a fair reward/treatment. It is defined as ''positive'' because it activates the brain's reward systems even if the benefit is not directed to us.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/empathy.png} 
+     \caption{Empathy effects on the EEG.}
+     \label{empathy}
+\end{figure} 
+The experiment in Figure \eqref{empathy} evaluates how inter-subject brain connections change by manipulating the level of fairness of the economic or social treatment suffered by one of the participants:\begin{itemize}
+     \item Fair: Correct and balanced treatment.
+ \item Unfair: Slightly unfair treatment.
+ \item Hyper-unfair (Extremely unfair): Blatantly and grossly unfair treatment.
+\end{itemize}
+As iniquity increases (going down the lines): You notice a dramatic increase in red connections in the Compassion column. In the hyper-unfair condition, the network of inter-subject connectivity linked to compassion becomes very dense. The brain of the observer becomes strongly attuned to the brain of the victim of injustice.
+On the contrary, for Vicarious Reward (blue lines): Connections tend to reduce when the situation becomes extremely unfair, as the shared gratification component disappears.\bigskip
 
+The indices of the brain graph are modulated by the level of empathy between the subjects (measured by the level of fairness of the treatment suffered by one of them and by the consequent altruistic help provided by the other).
+
+\begin{boxobservation}{}{}
+      The connectivity between the two brains is not static, but varies in a predictable and quantifiable way.
+\end{boxobservation}
+The more unfair the treatment suffered by a subject, the greater the cerebral empathy measured by the graphs.
+
+This emotional ''hyper-graph'' is directly proportional to subsequent behavior: a strong brain tuning linked to compassion predicts how inclined the second subject will be to offer altruistic help to defend or compensate his partner.
+\subsection{Joint Action}
+Joint action can be analyzed by studying how two people's brains coordinate at a neural level when they have to perform a motor or cognitive task together, compared to when they do it alone or against a computer.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/joint_action.png} 
+     \caption{Recording EEG during joint action (1).}
+     \label{jointaction}
+\end{figure} 
+In Figure \ref{jointaction} are reported three configurations:\begin{itemize}
+     \item Joint vs Solo: In red ($Joint > Solo$): Shows a huge density of inter-subject connections. When people act together, their brains show a hyper-coordinated level of synchronization that is biologically absent when they act alone. In blue ($Joint < Solo$): Shows very few connections, confirming that the solo condition breaks down the network synchrony between the two EEG heads.\item Joint vs PC: This is the most important contrast: it shows that the human brain recognizes the intentionality of the other human being. Even if the task performed with the PC is identical from a motor point of view, the inter-subject connectivity is significantly stronger and more extensive in the Joint case (morphology in red). Interacting with artificial intelligence or software does not evoke the same level of brain attunement.
+     \item PC vs Solo (Third row):Shows the difference between playing with a computer and playing alone. There is a slight increase in connectivity due to the presence of an external agent (the PC that responds to actions), but the effect is decidedly smaller than the contrast with real human interaction (Joint).
+\end{itemize}
+\begin{boxobservation}{}{}
+     Joint action between humans creates a unique and specialized neural coupling. Our brain does not simply process stimuli and produce motor responses, but ''locks'' to that of our social partner, establishing a shared and extensive neural network that is not activated when we interact with a machine.
+\end{boxobservation}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/joint_action2.png} 
+     \caption{Recording EEG during joint action (2).}
+     \label{jointaction2}
+\end{figure} 
+Figure \ref{jointaction2} shows the quantitative results of the Joint Action study, comparing two different graph analysis methods: Multiple-Subject analysis (Hyper-brain on the left) and Single-Subject analysis (Single-brain on the right).\begin{itemize}
+     \item Multiple-Subject Analysis: By treating the two brains as a single ''hyper-graph'', the Joint condition (cooperation between humans) clearly separates itself from the others. It shows much higher Global and Local Efficiency values, highlighting a unique and optimized information exchange that does not occur when playing alone or with a computer.
+     \item Single-Subject Analysis: If the brain of only one subject is analyzed at a time, the points of the three conditions (Joint, PC, Solo) are completely overlapped and indistinguishable.
+\end{itemize}
+The classic analysis on the single subject fails to detect social cooperation. Human neural coupling becomes visible and measurable only through the mathematical metrics of the Hyper-brain.\bigskip
+
+One experiment involved 4 subjects simultaneously recorded via EEG while they played cards:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/cardgame1.png} 
+\end{figure} 
+\noindent Two conditions were compared:\begin{itemize}
+     \item Baseline: The analysis of all possible pairs sitting at the table in the same session.
+\item Cooperation: The targeted analysis of pairs that belong to the same team. The task is asymmetrical and is divided between a ''first player'' (Leader) and a ''second player'' (Follower). The red arrows with the ''X'' in the photo indicate that the relevant connectivity is not between opponents, but between teammates.
+\end{itemize}
+The graphs show the directional connectivity between the brain areas (e.g. ACC - Anterior Cingulate Cortex, BA8, BA9, BA10, BA7) of the two teammates in two frequency bands: the Beta band (concentration/motor task) and the Gamma band (complex cognitive integration).
+\begin{itemize}
+\item Information flow (Directed arrows): There is a clear directionality of the arrows starting from the top (Leader's brain areas) and going downwards (Follower's brain areas).
+\item Biological meaning: In cooperating couples, the brain of the person leading the action (Leader) "modulates" and directly influences the brain activity of the person who must respond or follow the strategy (Follower).
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/cardgame2.png} 
+\end{figure} 
+In summary: Even in complex real-world 4-player contexts, graph theory applied to hyperscanning is able to map inter-personal information flows, revealing the implicit functional hierarchy (Leader-Follower) within a cooperating team.\bigskip 
+
+Another study was performed outside the classical laboratory to analyze brain synchronization in a realistic scenario:\begin{itemize}
+     \item The Subjects: 12 professional pilots, divided into 6 pairs each made up of a Captain and a First Officer.
+
+\item The Instrumentation: Each pilot is monitored simultaneously with 15 EEG and ECG electrodes during a 90-minute simulated flight session.
+
+\item The Objective: Manipulate the instrumentation and insert unexpected events during the flight to induce different levels and types of interaction and cooperation between the two pilots.
+\end{itemize}
+I grafi mettono a confronto l'attività cerebrale combinata della coppia in base alle fasi di volo e al livello di cooperazione richiesto\begin{itemize}
+     \item  High Cooperation : During the critical phases of take-off and landing, a dense network of connections (colored lines) is observed that connect the two brains. There is a clear directionality of information flows that move mainly from the First Officer to the Captain or vice versa, depending on the specific coordination and communication tasks necessary to maneuver the aircraft safely.
+     \item  No Cooperation: In the phases of rest or execution of individual decoupled tasks (Rest-BCI and BCI-rest), the inter-subject connections almost completely disappear. The two brains return to functioning as isolated entities.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/pilots.png} 
+\end{figure} 
+\subsection{Future Directions}
+\begin{itemize}
+     \item Study of the development of cognitive functions in
+children and their modifications in psychiatric and
+behavioral disorders (Autism Spectrum Disorders).
+\item New approaches to:\begin{itemize}
+\item Rehabilitation of cognitive functions in
+pathological conditions.
+\item Enhancement of social skills.\end{itemize}
+\item Definition of brain indices as outcome measures to
+quantify/describe the effect of a
+rehabilitative/enhancement intervention.
+\item Social robotics: robots with human-like skills
+(able to mimic but also to interact with humans
+in a natural way).
+\end{itemize}
+\chapter{Neuroscience Application }
+\redText{\#TODO pacco di slide  11 }
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
 In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
@@ -2064,11 +2278,54 @@ This image illustrates the differentiation between near-field and far-field dete
      \centering
      \includegraphics[width=0.6\textwidth]{images/EMG_electrodes.png}
 \end{figure}
-To measure directly the motor action potential from a single fibre we need to insert a needle inside the muscle. 
+To measure directly the motor action potential from a single fibre we need to insert a needle inside the muscle, in this case the operator thet performs the EMG must have a deeper knowledge of the human anatomy, since he should know exactly where to place the electrode. 
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.6\textwidth]{images/pros_cons.png}
 \end{figure}
 When you place an electrode, the potential that you record is an average potential field over the area where you place the electrode.
-\redText{TODO continua da lezione 2026-05-20 minuto 11.30}
+\begin{boxobservation}{}{}
+     The larger is the electrode, the lower will be the recorded amplitude, since we are doing an average and we ''miss'' the peaks due to the high frequency components.
+\end{boxobservation}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/avg_dist.eps}
+\end{figure}
+The relationship between distribution in time and space of the potential are the same, linked by the conduction velocity of the motor action potential.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/EMG_dist.png}
+\end{figure}
+This is the time distribution of a recorded EMG, this waveform is similar to the space distribution. The more the electrodes are large, the smoother the recorded waveform will be (due to the averaging).\bigskip
+
+The smoothing is a ''spatial filter'':
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/smoothing_filter.png}
+     \caption{Section of the transfer function.}
+     \label{space_dist}
+\end{figure}
+The $x$-axis of Figure \ref{space_dist} is expressed in cycles per meter, that is the spatial equivalent of the Heartz, in fact is the representation in the frequency domain of a spatial filter, so instead of Heartz: $\frac{1}{\text{sec}}$ we have $\frac{1}{\text{meter}}$, so the plot is the spectrum of a space distribution. The graph show us different curves relative to different sizes for an electrod, if the electrode is small (1 mm), the filter tends to attenuate less the high frequencies, the larger is the electrode, the stronger is the attenuating effect of the filter.
+
+We consider the cutoff frequency as the usual frequency at which the gain is -3dB. To convert from cycles per meters to Heartz, we need to fix a condutction velocity (as shown in the lower part of Figure \ref{space_dist}).
+\subsection{Electrodes Configuration}
+Where do we put the electrodes? For monopolar montage we usually place the reference and ground electrode on bones, and the active electrode on the muscle that we want to measure. For the EMG is more common to use bipolar montage, where we put the ground on a bone and the pair of electrodes on the muscle, usually on the belly (center) of the muscle.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/EMG_montage.png}
+\end{figure}
+Furthermore, the segment between the two electrodes must be parallel to the muscolar fibre. We have to choose properly the \textbf{Inter Electrode Distance (IED)}. We have seen how smaller or larger electrodes affect the recording, now we have to decided how far apart they must be placed: The answer to this question is the following:\begin{boxobservation}{}{}
+     The larger is the distance between two electrodes, the lower is the \textit{selectivity}, but the amplitude will be higher.
+\end{boxobservation}
+\textbf{Selectivity} and \textbf{Detection Volume} are quantities that refers to the same phenomena, observe the following picture:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/detection_volume.png}
+\end{figure}
+Is a schematic representation, the negative $y$ axis goes towards the tissue from where we are recording from. The electrical source is in the muscle, we measure the source from the electrode place on the skin. The electrode will record the closest source with maximum amplitude (assuming all the sources have the same strength).
+
+The larger we go from the source, the higher will be the noise with respect to the apparent amplitude. If we take the set of sources for which the apparent amplitude produce an acceptable signal-to-noise ratio, we have the \textit{Detection Volume}.\begin{boxdefinition}{Detection Volume}{}
+     The detection volume is the region of the muscle where the sources produce an activity that is detected by the sensors above the noise level.
+\end{boxdefinition}
+\redText{TODO continua da lezione 2026-05-20 minuto 39:50}
 \end{document}
