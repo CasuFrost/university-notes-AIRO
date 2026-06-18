@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260617101243" modified="D:20260617101243"/>
+<info created="D:20260617101243" modified="D:20260617164815"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -347,7 +347,7 @@ h
 232 672 l
 236 668 l
 </path>
-<text matrix="1 0 0 1 0 -52" transformations="translations" pos="288 676" stroke="0" type="label" width="83.503" height="4.849" depth="1.35" halign="center" valign="center" size="script">EMG space distribution</text>
+<text matrix="1 0 0 1 0 -52" transformations="translations" pos="288 676" stroke="0" type="label" width="88.013" height="4.849" depth="1.35" halign="center" valign="center" size="script">EMG spatial distribution</text>
 <path fill="0.502">
 268 676 m
 268 672 l
@@ -389,7 +389,7 @@ h
 232 672 l
 236 668 l
 </path>
-<text matrix="1 0 0 1 140 -52" transformations="translations" pos="288 676" stroke="0" type="label" width="83.503" height="4.849" depth="1.35" halign="center" valign="center" size="script">EMG space distribution</text>
+<text matrix="1 0 0 1 140 -52" transformations="translations" pos="288 676" stroke="0" type="label" width="88.013" height="4.849" depth="1.35" halign="center" valign="center" size="script">EMG spatial distribution</text>
 <path fill="0.502">
 420 676 m
 420 672 l

@@ -1078,7 +1078,72 @@ modeled $\implies$ more data required.
      \end{itemize}
 \end{itemize}
 \section{Graph Theory Recap}
-\redText{TODO slide 9}
+In the realm of network neuroscience, complex systems are abstracted and represented as graphs (or adjacency matrices). A graph comprises a set of vertices, commonly referred to as nodes, and edges that establish connections between these vertices. Within the specific context of neuroengineering, nodes typically represent distinct brain regions or individual electrodes, whereas edges denote a quantified measure of connectivity, such as functional correlation or directional causality.
+
+The application of graph theory to brain networks is imperative for several reasons:
+\begin{itemize}
+    \item It facilitates the comprehension of network structures and properties across local, global, and mesoscopic scales.
+    \item It enables the extraction of quantifiable, objective, and concise metrics. These metrics can subsequently be utilized for statistical comparisons across different experimental conditions, time points, or subject cohorts.
+    \item Graph-based indices serve as crucial biomarkers for specific pathological conditions, thereby assisting in diagnosis, prognosis, and the evaluation of clinical interventions.
+    \item They provide robust features for classification algorithms aimed at decoding brain activity.
+\end{itemize}
+Graphs can be categorized based on two primary properties: directionality and weight.\bigskip
+
+\noindent \textbf{Directionality}:
+\begin{itemize}
+    \item \textbf{Undirected Graphs:} Edges represent bidirectional or symmetric connections (e.g., social relationships or highway networks).
+    \item \textbf{Directed Graphs:} Edges possess a specific orientation, indicating a directional flow or causal relationship from one node to another.
+\end{itemize}
+
+\noindent \textbf{Weight}:
+\begin{itemize}
+    \item \textbf{Binary Graphs:} Connections are unweighted, simply indicating the presence ($1$) or absence ($0$) of an edge.
+    \item \textbf{Weighted Graphs:} Edges are assigned numerical values (e.g., ranging from $0.5$ to $1$) that denote the strength, capacity, or intensity of the connection.
+\end{itemize}
+
+
+A graph can be mathematically encoded as an adjacency matrix, denoted as $A$. For a network with $N$ nodes, $A$ is an $N \times N$ matrix where the element $a_{ij}$ dictates the connectivity between node $i$ and node $j$.
+\begin{itemize}
+    \item $a_{ij} = 0$ indicates the absence of a link between $i$ and $j$.
+    \item $a_{ij} \neq 0$ signifies the presence of a link.
+    \item In a \textit{binary graph}, $a_{ij} \in \{0, 1\}$.
+    \item In a \textit{weighted graph}, $a_{ij} = w$, where $w$ is the designated weight of the edge.
+\end{itemize}
+Crucially, the structural properties of the graph govern the symmetry of the adjacency matrix. An undirected graph invariably yields a symmetrical adjacency matrix ($a_{ij} = a_{ji}$), whereas a directed graph corresponds to an asymmetrical matrix.
+
+\section{Common Graph Indices}
+Graph theoretical analysis relies on a variety of topological measures, broadly classified into basic measures (density, degree, distance), global measures (global and local efficiency), and mesoscale measures (modularity, divisibility). The foundational basic measures are detailed below.
+
+
+Density ($k$) measures the proportion of actual edges in a binary graph relative to the maximum possible number of edges. It ranges from $0$ (a completely disconnected network) to $1$ (a fully connected, or complete, network).
+\begin{equation}
+    k = \frac{L}{L_{tot}}
+\end{equation}
+where $L$ is the number of existing edges and $L_{tot}$ is the maximum possible number of edges.
+For a graph with $N$ nodes:
+\begin{itemize}
+    \item Undirected graphs: $L_{tot} = \frac{N(N-1)}{2}$
+    \item Directed graphs: $L_{tot} = N(N-1)$
+\end{itemize}
+
+
+A node's degree quantifies its level of involvement or centrality within the network. A higher degree implies a greater interactive role.
+\begin{itemize}
+    \item \textbf{Undirected Graphs:} The degree $g_i$ of node $i$ is the total number of edges connected to it:
+    \begin{equation}
+        g_i = \sum_{\substack{j=1 \\ j \neq i}}^{N} a_{ij}
+    \end{equation}
+    where $g_i \in [0, N-1]$.
+    \item \textbf{Directed Graphs:} The degree is parsed into incoming and outgoing connections:
+    \begin{itemize}
+        \item \textit{In-degree} ($g_i^{IN}$): Number of edges directed towards node $i$.
+        \item \textit{Out-degree} ($g_i^{OUT}$): Number of edges originating from node $i$.
+        \item \textit{Total Degree} ($g_i$): $g_i = g_i^{IN} + g_i^{OUT}$, bounded by $g_i \in [0, 2(N-1)]$.
+    \end{itemize}
+\end{itemize}
+
+In graph theory, a path constitutes any valid sequence of edges linking two distinct nodes. The path length is strictly defined by the number of edges traversed, independent of any physical distance. 
+The \textbf{distance} $d(i, j)$ between node $i$ and node $j$ is defined as the \textit{shortest path} connecting them. Distance serves as a proxy for communicability; shorter distances signify more efficient interactions between node pairs. If no viable path exists between two nodes, the distance is mathematically defined as infinite ($\infty$).
 \begin{boxdefinition}{Global Efficiency}{}
      The \textbf{global efficiency} $E_g\in [0,1]$ of a graph $G$ is the average of the
 reciprocal of the distances between any pair of nodes. For directed graphs:\begin{equation}
@@ -1310,7 +1375,7 @@ One experiment involved 4 subjects simultaneously recorded via EEG while they pl
 The graphs show the directional connectivity between the brain areas (e.g. ACC - Anterior Cingulate Cortex, BA8, BA9, BA10, BA7) of the two teammates in two frequency bands: the Beta band (concentration/motor task) and the Gamma band (complex cognitive integration).
 \begin{itemize}
 \item Information flow (Directed arrows): There is a clear directionality of the arrows starting from the top (Leader's brain areas) and going downwards (Follower's brain areas).
-\item Biological meaning: In cooperating couples, the brain of the person leading the action (Leader) "modulates" and directly influences the brain activity of the person who must respond or follow the strategy (Follower).
+\item Biological meaning: In cooperating couples, the brain of the person leading the action (Leader) ''modulates'' and directly influences the brain activity of the person who must respond or follow the strategy (Follower).
 \end{itemize}
 \begin{figure}[H]
      \centering
@@ -1349,8 +1414,86 @@ rehabilitative/enhancement intervention.
 (able to mimic but also to interact with humans
 in a natural way).
 \end{itemize}
-\chapter{Neuroscience Application }
-\redText{\#TODO pacco di slide  11 }
+\chapter{Neuroscience Applications}
+\section{Introduction}
+Neuroengineering operates at the intersection of neuroscience, bioengineering, robotics, control engineering, and computer science. Its primary overarching aim is the design and development of innovative devices capable of replacing or restoring motor, cognitive, or sensory functions that have been compromised due to pathological conditions or traumatic events. A defining characteristic of neuroengineering solutions is the direct interfacing of these technological devices with the central or peripheral nervous system. This chapter explores the major applications of this multidisciplinary field, organized into four primary pillars: neurorehabilitation, neuroprosthetics and orthotics, and assistive technologies.
+
+\section{Neurorehabilitation and Motor Learning}
+Neurorehabilitation strategies are fundamentally anchored in the concept of \textit{neuroplasticity}---the brain's innate capacity to self-repair and reorganize by modifying synaptic connectivity patterns. These neuroplastic modifications are highly dependent on the stimuli the brain receives, the physical activities performed, and the overall sensory experience of the individual.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/applications_1.png} 
+\end{figure} 
+\subsection{Principles of Motor Learning}
+The acquisition and refinement of motor control occur predominantly through a trial-and-error process. Crucially, motor learning relies on the concept of \textit{prediction error}: the quantifiable difference between the outcome anticipated by the brain's internal forward models and the actually observed movement outcome. 
+Motor learning is triggered both in response to external environmental perturbations and to internal bodily modifications that generate these movement errors. Importantly, post-injury recovery processes heavily rely on the same mechanisms that govern normal motor learning.
+
+\subsection{The Role of Feedback}
+Feedback mechanisms are indispensable for continuous learning and neural reorganization. This feedback is typically categorized into two forms:
+\begin{itemize}
+    \item \textbf{Intrinsic Feedback:} Provided autonomously by the patient's own sensory systems (proprioceptive, visual, tactile), enabling the internal evaluation of performance for each executed movement.
+    \item \textbf{Extrinsic (Augmented) Feedback:} Provided by an external source or clinical device, supplying additional, often quantitative, information regarding the quality of the movement.
+\end{itemize}
+
+\section{Evaluation of Rehabilitation Outcomes}
+Accurate diagnosis and ongoing evaluation are critical components of the rehabilitation lifecycle.
+
+\subsection{Functional Evaluation}
+The clinical assessment of motor ability is traditionally quantified through standardized clinical scales, such as the Barthel Index, the Motricity Index, and the Fugl-Meyer Assessment. These instruments assign specific scores to distinct body regions and movement types, allowing clinicians to compare a patient's motor capability against normative data.
+
+\subsection{Neurophysiological Evaluation}
+Beyond functional scales, neuroengineering facilitates the direct evaluation of brain plasticity. For instance, post-stroke recovery can be monitored using electroencephalography (EEG) screening. Advanced network neuroscience techniques reveal that Brain-Computer Interface (BCI)-supported training can induce quantifiable increases in inter-hemispheric connectivity. Furthermore, specific graph-theoretical indices of brain networks have demonstrated strong correlations with improvements in functional clinical outcomes.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/application_2.png} 
+\end{figure} 
+\section{Innovative Therapeutic Interventions}
+Conventional rehabilitation is increasingly augmented by advanced technological interventions, which provide higher intensity, better engagement, and precise quantification.
+
+\subsection{Brain-Computer Interfaces (BCI)}
+BCI-based rehabilitation allows for the deliberate and controlled activation of specific brain cortical areas. One of the most significant advantages of this approach emerges when a patient can successfully activate the appropriate neural motor commands but cannot physically execute the movement due to paralysis or weakness. In such cases, the BCI detects the correct neural intent and triggers a motivating reward. If the impaired limb is coupled to a robotic orthosis, the device can physically complete the intended task, closing the sensorimotor loop and reinforcing synaptic plasticity.
+
+\subsection{Robotics and Virtual Reality}
+Robotic devices applied to the upper and lower limbs offer multifaceted advantages:
+\begin{itemize}
+    \item \textbf{Precise Measurement:} They accurately quantify movement kinematics (e.g., position, acceleration) and dynamics (force) throughout the recovery trajectory.
+    \item \textbf{Controlled Environments:} Robot-assisted therapy ensures absolute control over task timing, environmental stimuli, and the delivery of augmented feedback (biofeedback).
+    \item \textbf{Cost and Intensity:} They facilitate the delivery of highly intensive, repetitive therapeutic regimens at a potentially lower long-term cost compared to solely manual conventional therapies.
+\end{itemize}
+Concurrently, Virtual and Augmented Reality (VR/AR) environments immerse the patient in engaging, realistic scenarios, significantly increasing attentional focus and motivation during repetitive motor tasks.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/application_3.png} 
+\end{figure} 
+\subsection{Cognitive Rehabilitation}
+Neuroengineering is not restricted to motor domains. Cognitive rehabilitation utilizes physiological correlates (such as EEG sensorimotor rhythms, ECG, and Heart Rate Variability) to provide real-time neurofeedback. By presenting patients with visual or auditory representations of their brain states, home-based or remote-controlled systems can train sustained attention and rehabilitate memory functions following a stroke.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/application_4.png} 
+\end{figure} 
+\section{Neuroprosthetics and Orthotics}
+When endogenous recovery is insufficient, neuroprostheses aim to artificially restore lost capacities. These interventions are broadly categorized based on the direction of information flow.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/applications_5.png} 
+\end{figure} 
+\subsection{Input (Sensory) Prostheses}
+Input prostheses measure external physical signals and convert them into neural perceptions via targeted electrical stimulation.
+\begin{itemize}
+    \item \textbf{Auditory Neuroprostheses:} The cochlear implant is the most established sensory prosthesis (in use since 1957). It consists of external components (microphone, speech processor, transmitter) and internal implanted components (receiver and stimulator arrays). The internal electrodes directly stimulate the acoustic nerve, effectively restoring hearing function.
+    \item \textbf{Visual Neuroprostheses:} Aimed at restoring vision in conditions like macular degeneration. They involve capturing an image, encoding the visual stimulus, and transmitting this data to a microelectrode array implanted in the visual cortex or retina, thereby eliciting visual percepts.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/visual_recovery.png} 
+\end{figure} 
+\subsection{Output (Motor) Prostheses}
+Output prostheses decode brain signals to translate user intentions into physical actions. These include artificial limbs, exoskeletons, or Functional Electrical Stimulation (FES) orthoses. FES systems operate by delivering an electrical current directly into a paralyzed muscle to evoke controlled contractions (e.g., to restore hand grasp).
+Advanced setups rely on multichannel neural signal processing, where data from implanted microelectrode arrays is transmitted via telemetry, translated into 3D movement trajectories, and used to drive a robotic arm in real-time.
+
+\section{Assistive Technologies}
+Beyond direct medical rehabilitation and functional replacement, neuroengineering significantly contributes to assistive technologies designed to improve overall quality of life. For patients with severe motor impairments (e.g., locked-in syndrome), non-invasive BCI systems can be integrated into daily software, providing alternative channels for communication (e.g., BCI-driven spelling applications) and facilitating digital social interaction.
+
 \chapter{Measurement of Bioelectrical Signals}
 \section{The Electroencephalogram}
 In the 1920s and 1930s, the research about non invasive measurements of signals from the scalp began to progress significantly, in particular, a reports published by Hans Berger (Germany) was able to demonstrate a large and persistent 10 Hz rhythm that he named the ''alpha'' rhythm. Lord Adrian, a british neuroscientist, found that these alpha oscillation appeared only when the occipital cortex had a ''small workload'', in particular, when the eyes are shut and there is no visual information to process, suggesting that these oscillation they are the consequence of an state.\begin{center}
@@ -1585,10 +1728,286 @@ Maintaining the integrity of the data stream during the session:
     \item \textbf{Subject comfort:} Consistently remind subjects to relax muscles, minimize eye blinks, and avoid head or body movements to prevent artifacts.
     \item \textbf{Continuous monitoring:} Monitor brain signals online throughout the session to detect and address technical issues or artifacts immediately.
 \end{itemize}
-\subsection{Artifacts}
-\redText{TODO pack of slides 1.04}
-\subsection{EEG Analysis}
-\redText{TODO pack of slides 1.05}
+\noindent\textbf{\sapText{Author Disclaimer}}: Sections \ref{Artifacts} and \ref{EEGAnalysis}  were not written by me, but by Gioele Migno, taken from the notes at the following link:
+
+\noindent\url{https://github.com/universitymarr/Neuroengineering/blob/master/Notes/Notes_PART_B.pdf}.
+
+\noindent This discussion is valid \underline{exclusively} for these two sections.
+\section{Artifacts}\label{Artifacts}
+With the term \textbf{artifacts} we refer to external signals that produces electrical activities not related to
+the brain. This
+activities are recorded together the data and makes it difficult to read EEG data. For that reason in
+the first place we have to avoid the generation of artifacts and then remove them from our EEG
+recording.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=\textwidth]{images/artifacts.png}
+\end{figure}
+More formally we can define artifact in EEG as any potential difference due to an extracerebral
+source. We can distinguish the artifacts of technical and biological origin:\begin{itemize}
+     \item Biological: (Physiological) Eye blinks, eye movements (EOG), muscle activity including
+swallowing and teeth clenching (EMG), electrocardiogram (ECG).
+\item Technical: (Non-Physiological) Power supply, spurious electrical, noise from electrical engines,
+bad electrode contact, or its detachment, saturation of the ADC (analog to digital converter)
+\end{itemize}
+Body and head movements may induce not only muscle electrical activity, but also slow potential
+shifts due to the physical displacement of the ions double layer on the electrode surface.\begin{boxobservation}{}{}
+     Prevention of artifacts is always preferable to removing or compensating for them post hoc
+during data analysis.
+\end{boxobservation}
+\subsection{Physiological Artifacts}
+There are several types of physiological artifacts:\begin{itemize}
+     \item Eye-related artifacts
+\item Muscle artifacts
+\item Cardiac artifacts
+\item Sweating artifacts
+\end{itemize}
+Ocular artifacts arise because the eye is an electrical dipole, with the cornea positively charged with
+respect to retina at the back of the eyeball. During eye movements, the eyeball moves within the volume conductor and changes potential
+measured on the scalp. Using reference at infinity, we have a positive potential in the direction
+pointed by the cornea as shown in the following figure:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/eye_artifacts.png}
+\end{figure}
+Let's see some example of eye movements artifacts:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/eye_artifacts2.png}
+\end{figure}
+During \textbf{eye blinks}, the volume conductor changes because of movements of the eyelids that due to
+their moist inner surface provide a well-conducting pathway for current flow.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/eye_blinks.png}
+\end{figure}
+These ocular artifacts are of the order of 0.5 mV, monophasic, 200 - 400ms.\bigskip
+
+\noindent\textbf{Muscle Artifacts}: Muscle contractions are seen as artifacts in the 100 $\mu$V or 1 mV range, with a wide frequency
+spectrum from tens of Hz to a few kHz, thereby in the same frequency range as beta- and gammaband signals.
+The experimenter should always ask the subject to relax the muscles and carefully inspect the EEG
+traces to check for contamination. Despite the instructions, subjects may be unable to relax and
+release muscle tension.\bigskip 
+
+We distinguish two different types of \textbf{cardiac artifacts}, the first one is not a real issue, let's see both
+of them:\begin{itemize}
+     \item \textbf{Heart electrical potential}: Electric potentials generated in the heart can be easily recorded, and are known as the
+electrocardiogram (ECG). In the literature they can also be referred to by the German-derived
+acronym EKG.
+In EEG recordings using noncephalic reference electrodes prominent ECG artifacts occur, but less so
+when the EEG reference is placed on the subject's head since heart electrical potential is the same
+over the head. Therefore, these artifacts usually do not occur during a standard EEG recording.\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/cardiac1.png}
+\end{figure}
+     \item \textbf{Ballistocardiogram}: Another important cardiac-cycle-related artifact in EEG data results from the ballistocardiogram that
+reflects small electrode movements due to a nearby blood vessel in the scalp. This artifact is usually
+clearly visible during online monitoring, and it can be eliminated by moving the EEG electrode a small
+distance.\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/cardiac2.png}
+\end{figure}
+\end{itemize}
+\textbf{Sweating} can be a problem in EEG recordings as it is accompanied by electrodermal responses,
+high-amplitude slow ($<$ 0.5 Hz) potentials.
+\subsection{Non-Physiological Artifacts}There are several types of non-physiological artifacts: powerline artifacts, electrode-related artifacts and motion artifacts.\bigskip
+
+\noindent \textbf{Powerline artifacts}: Power-line noise arises from the capacitive coupling of alternating current supplied to electrical wall
+outlets, thIs line noise occurs either at 50 Hz (or 60 Hz) and at their harmonics, thus, in the time
+domain, the signal is not necessarily a sinewave. Powerline artifacts are accentuated in EEG
+electrode pairs that have an impedance mismatch (reduced CMRR). Unless there are no other
+alternatives, a digital notch filter set to the appropriate line frequency (and its harmonics, if
+necessary) can remove this noise.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/powerline.png}
+\end{figure}
+\noindent \textbf{Electrode-related artifacts}:
+A number of different artifacts can arise from improperly applied EEG electrodes:\begin{itemize}
+     \item 
+     Bad electrode: artifacts as very slow baseline drifts
+      \item  Electrode pop: is an intermittent phenomenon that appears as a sharp, sudden rise followed by a
+     gradual fall in the EEG signal of a single electrode. It can happen due to an accumulation of
+     capacity in an electrode
+\end{itemize}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.35\textwidth]{images/bad_electrodes.png}
+\end{figure}
+Regarding to electrode drift, sometimes it can happen that all your channels are good but there are 1
+or 2 channel that are behaving differently. It means that you see something like sweating, and you
+see that one electrode is going up and down like 1, or 2 and 3.
+In EEG recordings, artifacts can be created by the experimenter's movements around the subject,
+and this problem can be exaggerated in dry air environment creating a problem with static electricity.\bigskip
+
+\noindent \textbf{Motion Artifacts}: At the interface between metal (electrode) and ionic conductor (gel/skin) there is a displacement of
+ions that resembles a capacitor. Movement of the electrode (e.g. produced by movements of the
+subject's head) disturbs the geometry of the ''capacitor'', producing a relatively strong potential.
+\section{EEG Analysis}\label{EEGAnalysis}
+In this section we will see some very basic EEG data analysis techniques.\bigskip
+
+\textbf{Off-line data inspection}:
+The first step before any kind of analysis is to perform a (off-line) data inspection, namely review
+raw data before processing and analysis. Bad EEG segments or channels must be removed from the
+data, in this step is important to understand which artifacts mostly affect the results of the analysis,
+so that we do not waste data by rejecting too much of it. From a practical point of view, dealing with
+bad channels or epochs will depend on the analysis software we are using.\bigskip
+
+EEG data are typically collected in experiments using multiple trials per condition, as the signals of
+interest may be quite small, but one of the basic assumptions of analysis is that the signal remains
+the same during the whole experiment although it is masked by noise.
+With the term \textbf{evoked potential} (EP) we indicate the stimulus-driven activity. In contrast, the terms
+event-related potential (ERP) is used more generally to describe changes in EEG signals triggered by
+either external stimuli or related to internal mental or task-related events.
+\begin{boxobservation}{}{}
+     A stimulus can be also produced by the subject, for example when he moves a finger. So in
+general we can distinguish two different classes of stimulus:\begin{itemize}
+     \item External Stimulus: External stimulus independent by the subject.
+  \item Internal Stimulus: Interval stimulus caused by the subject.
+\end{itemize}
+\end{boxobservation}
+\noindent We will see two different kind of EEG analysis:\begin{itemize}
+     \item Analysis EP EEG: (EP = Evoked Potential) Analysis of an EEG recording during external
+stimulation.
+ \item  Analysis Spontaneous EEG: Analysis of an EEG recording without external stimulation.
+\end{itemize}
+\subsection{Analysis of EP EEG}
+About the first type of EEG analysis, we see only (synchronized) averaging that we have already
+briefly introduced in previous sections. The continuous EEG record must first be ''cut up'' into epochs (or segments)—consisting of a prestimulus or a pre-event period, followed by a period of time suitably long enough to be able to
+highlight the particular activity of interest.\bigskip
+
+\textbf{Averaging}: Signal averaging is based on the assumption that the recorded time-varying signal $x(t)$ comprises a
+distinct signal embedded in noise. Averaging $N$ responses would improve the signal-to-noise ratio by
+$\sqrt{N}$, namely noise amplitude decreases as $\frac{1}{\sqrt{N}}$ where $N$ is the number of trials.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.8\textwidth]{images/noise_reduction.png}
+\end{figure}
+\textbf{ERP components}:The peak amplitudes (with respect to pre-stimulus baseline) and latency (with respect to stimulus
+onset, or relative to a motor event) are commonly measured.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/ERP.png}
+\end{figure}
+In the vast EEG and MEG literature, the nomenclature of evoked responses is diverse and confusing.
+An old naming convention numbered successive deflections separately for scalp-positive (P) and
+scalp-negative (N) EPs—where the polarities refer to the ''active electrode''—resulting in notations
+such as P1, N1, P2, N2, P3. To make matters worse, letters are sometimes added to these labels,
+such as P3a and P3b.
+A less ambiguous way is to combine the polarity (N or P) of the response peak or trough with the
+nominal peak latency in milliseconds, for example, P60, N100, and P200.\begin{boxobservation}{Nominal Latency}{}
+     Note that in most cases it is clear enough to use in the response name the approximate (or
+nominal) latency (and not the measured individual latency). For example, the mean peak
+latency of the N100 deflection may vary between, say, 90 or 110 ms without causing any
+confusion in the nomenclature.
+\end{boxobservation}
+\noindent Let's see some \textbf{standard time quantities}:\begin{itemize}
+     \item Stimulus Onset Asynchrony (SOA): Refers to the time between two successive stimulus onsets.
+     \item Interstimulus interval (ISI): Refers to the time between the offset of one stimulus and the onset
+of another.
+     \item Intertrial interval (ITI): Refers to the time between the beginning of subsequent trials (during
+which multiple stimuli may be presented).
+\end{itemize}
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/time_quantities.png}
+\end{figure}
+\begin{boxobservation}{Long Stimulus Duration}
+     SOA and ISI/ITI can be quite different from each other if the stimulus duration is long,
+indeed we have:\begin{equation}
+     \text{ISI}=(\text{SOA$-$stimulus duration}).
+\end{equation}
+\end{boxobservation}
+\noindent\textbf{Effect of stimulus timing}:The shape and amplitude of the ERP may strongly depend on the timing of stimuli. In general, the
+longer the latency of the response, the more sensitive the response is to stimulus repetition rate,
+namely brain tends to respond less stronger to the same stimulus repeated several times in a short
+interval. Therefore, since we want to reduce the overall time of the EEG recording we have a tradeoff
+between number of stimuli (noise decreases in $N$) and SOA (total time = $N\cdot$SOA).
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/stimulusTiming.png}
+\end{figure}
+\subsection{Analysis of Spontaneous EEG}
+The second type of EEG analysis that we see is analysis of spontaneous EEG where we are
+interested to study EEG response after a internal stimulus namely a stimulus produced by the
+subject (e.g. finger movement or mental task).\bigskip
+
+
+The first huge different between external and internal stimulation is that in the last one, response
+time of subject can vary, namely time between stimulus delivery and EEG signal response is not
+always the same (non-phase response). This time quantity is called jitter.
+Spontaneous or ongoing brain activity is always present irrespective of whether or not a subject
+performs a task, and it can influence how evoked and induced responses evolve and how they are
+related to perception and cognition.\bigskip
+
+
+We have seen in previous EEG analysis, where the evoked activity is time-locked (phase-locked) to
+the stimulus, that EEG stimulus response can be uncovered by stimulus-locked averaging
+(synchronized averaging). However, this technique cannot be applied easily in this case due to jitter.\bigskip
+
+
+Let's compare phase-locked response and non-phase locked EEG responses assuming their shapes
+are the same at each trial.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/evoked_induced.png}
+\end{figure}
+As we can see from the previous figure (EEG non realistic), averaging non-phase-locked responses
+provided a resulting zero response that will be lost for sure behind ongoing EEG activity. To perform
+averaging properly we should align the response of each trial, this method is not so easy in practice
+and can be considered as an advanced technique.
+A more simple technique to averaging non-phase-locked responses is to use compute the average
+envelop, doing that the final average will not be zero since each envelop is always positive:
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/evoked_induced2.png}
+\end{figure}
+Let's now see how this technique is applied in real scenarios where we call a negative envelop \textbf{event
+related desynchronization (ERD)} and a positive envelop \textbf{event related synchronization (ERS)}.\bigskip
+
+\noindent\textbf{Event related desynchronization/synchronization (ERD/ERS)}:  Let's define more clearly these two quantities:
+
+\begin{itemize}
+    \item \textbf{Event Related Desynchronization (ERD):} \textit{Negative} variation of the EEG power rhythms at one time relative to a \textit{baseline} period at another time.
+    \item \textbf{Event Related Synchronization (ERS):} \textit{Positive} variation of the EEG power rhythms at one time relative to a \textit{baseline} period at another time.
+\end{itemize}
+
+The steps to follow to obtain these quantities from $N$ raw EEG trials are the following:
+
+\begin{enumerate}
+    \item \textbf{Bandpass filtering} of all event-related trials.
+    \item \textbf{Squaring} of the amplitude samples to obtain power samples.
+    \item \textbf{Averaging of power samples} across all trials.
+    \item \textbf{Averaging over time samples} to smooth the data and reduce the variability.
+\end{enumerate}
+\noindent At the end the result is expressed as percentage variation of the signal respect to the baseline.
+
+In the following figure one example for each type of envelop is shown: one example of dominant ERD in the alpha band on the left side and one example with dominant ERS in the beta band on the right side.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/ERD_ERS.png}
+\end{figure}
+In the case of ERD we are interested into mu rhythmic, indeed the stimulus correspond to a finger
+movement by the subject.
+\begin{boxobservation}{Large Time Window}{}
+     As we can see from the previous figure, it is necessary to start EEG signal recording several
+seconds before the stimulus, this is necessary to detect the baseline signal. Baseline is
+''faraway'' because the subject's brain prepares in advance to move the finger, indeed this is
+a voluntary movement.
+\end{boxobservation}
+\section{Time Frequency EEG Analysis}
+\textbf{Time-frequency analyses} go one step further by computing and visualizing the spectral or amplitude content of the signal as a function of time simultaneously for all frequencies of interest. Fourier transforms, Hilbert transforms, and wavelet-based approaches can be used to calculate MEG/EEG signal power (amplitude). Using this procedure, features in MEG/EEG data can be visualized in both time and frequency.
+
+The following figures show examples of time-frequency plots, in particular they show the frequency of EEG signals during a visual task with two conditions: a face gazing away (Eyes away) and at the subject (Eyes direct) as a function of time. Vertical color scale indicates power in dB. The two conditions show very similar profiles of activity: a prolonged increase in theta and alpha activity and a prolonged decrease in beta activity after the stimulus (vertical broken line). Passband 0.1-200 Hz. Data are from a nine-electrode cluster centered on the left sensorimotor scalp.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/tf_EEG.png}
+\end{figure}
+One important concept is \textbf{resolution tradeoff}: Improving time resolution worsens spectral resolution (and vice versa).
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=\textwidth]{images/res_tradeoff.png}
+\end{figure}
 \chapter{Signal Processing}\label{sig_proc}
 This section is a small recap of some basic signal processing concepts.
 The bio-signal processing procedure follows a precise pipeline:\begin{enumerate}
@@ -2087,97 +2506,455 @@ An RC filter is the simplest type of an analog Butterworth filter. \bigskip
      \includegraphics[width=0.5\textwidth]{images/raw_filter3.png}
 \end{figure}
 \noindent The blue line is the spectrum of the raw signal, the orange one is the spectrum of the filtered one. At the beginning the two signal have the same spectrum, the frequency components of 20 Hz or less are not attenuated. After 30 Hz (cut off frequency) there is a visible difference in attenuation, and the higher the frequency, the higher is the attenuation. 
-\section{Brain-Computer Interfaces}
-Brain-Computer Interfaces (BCIs) represent a unique intersection of neuroscience, signal
-processing, and machine learning. This introductory section establishes the formal definition
-of a BCI and outlines the closed-loop system architecture required to bypass traditional
-neuromuscular pathways and translate human intention directly into digital action.
-\begin{boxdefinition}{Brain-Computer Interface}{}
-A Brain-Computer Interface
-(BCI) is defined as a system that measures Central Nervous System and  converts it into an artificial
-output. Crucially, this system completely bypasses the normal nerve and muscle pathways
-naturally used to interact with the world.
+\chapter{Brain-Computer Interfaces}
+\section{What is a Brain--Computer Interface?}
+
+\subsection{Formal Definition}
+
+A Brain--Computer Interface (BCI) is a system that measures signals originating in the
+Central Nervous System (CNS) and converts them into an artificial output. The defining
+characteristic of a BCI — the feature that distinguishes it from all other human--machine
+interfaces — is that it \emph{completely bypasses} the normal nerve and muscle pathways
+that humans naturally use to interact with their environment.
+
+\begin{boxdefinition}{BCI}{}
+A \textbf{Brain--Computer Interface (BCI)} is a system that measures CNS activity and
+converts it into an artificial output that replaces, restores, enhances, supplements, or
+improves natural CNS output, without relying on normal neuromuscular pathways.
 \end{boxdefinition}
-This artificial output is designed to do more things:\begin{itemize}
-     \item \textbf{Replace}: Replace a functione that is completely lost by the patient, for example a paralyzed patient can use a BCI to control a wheelchair.
-     \item \textbf{Restore}: Used to restore a specific ability (e.g., restoring the ability to grasp an
-object).
-     \item \textbf{Enhance}: Used to boost cognitive or physiological function.
-     \item \textbf{Supplement}: Adding to a natural CNS output.
-     \item \textbf{Improve}: Used to recover or train a damaged function, which forms the basis of
-rehabilitative applications.
+
+\subsection{The Five Goals of a BCI}
+
+According to the taxonomy established by Wolpaw \& Wolpaw (2012), the artificial output of a
+BCI is designed to achieve one of five goals, each corresponding to a distinct clinical or
+engineering objective:
+
+\begin{enumerate}
+  \item \textbf{Replace.} A permanently lost function is substituted entirely. A classical
+  example is a paralysed patient using a BCI to drive a motorised wheelchair or
+  communicate via a speller interface.
+
+  \item \textbf{Restore.} A specific lost ability is given back to the user. For instance, a
+  BCI may restore the capacity to grasp an object by controlling a robotic prosthesis or
+  a functional electrical stimulation (FES) device.
+
+  \item \textbf{Enhance.} An existing cognitive or physiological function is augmented
+  beyond its natural baseline. A monitoring system that detects driver drowsiness from
+  EEG and triggers an alert exemplifies this category.
+
+  \item \textbf{Supplement.} The BCI adds a new channel of communication or control
+  that complements, rather than replaces, the user's natural neuromuscular output.
+
+  \item \textbf{Improve.} The BCI is used to train or rehabilitate a damaged function,
+  with the aim of promoting genuine biological recovery.
+\end{enumerate}
+
+\subsection{The BCI as a Closed-Loop System}
+
+The translation of neural intent into external action requires the BCI to operate as a
+\textbf{closed-loop pipeline}. Critically, this loop is not merely a technical convenience; it
+is a \emph{physiological necessity}. Because controlling a device through brain signals is
+an entirely unnatural skill, the user's brain requires continuous real-time feedback to
+evaluate its own performance, detect errors, and progressively refine the generated signals.
+This process is directly analogous to learning any new motor skill — such as playing tennis
+or riding a bicycle — where the absence of feedback would render learning impossible.
+
+The pipeline consists of four sequential stages:
+
+\begin{enumerate}
+  \item \textbf{Intention (User Training).} The user performs a specific cognitive task —
+  such as imagining a movement or attending to a stimulus — in order to generate a
+  predictable, detectable modification in their brain signals.
+
+  \item \textbf{Extraction.} Signal-processing algorithms operate on the raw acquired
+  signal to isolate and quantify the relevant features (e.g., the amplitude of a specific
+  frequency component, or the magnitude of an event-related potential).
+
+  \item \textbf{Translation (Classification).} The extracted features are fed into a
+  classification or regression algorithm that maps them onto a discrete or continuous
+  control command.
+
+  \item \textbf{Command and Feedback.} The decoded command is executed in the
+  external environment. The resulting outcome is presented back to the user as sensory
+  feedback, closing the loop and enabling the brain to adapt iteratively.
+\end{enumerate}
+
+\begin{boxobservation}{}{}
+Real-time feedback is not optional in a BCI system — it is a fundamental component of
+the architecture. Without it, the closed-loop mechanism collapses and effective user
+learning cannot occur.
+\end{boxobservation}
+
+\subsection{Signal Acquisition Methods}
+
+Brain signals can be acquired through two broad categories of methods, which differ
+substantially in their invasiveness, spatial resolution, temporal resolution, and practical
+applicability:
+
+\begin{itemize}
+  \item \textbf{Implanted (invasive) methods.} Sensors are surgically positioned on or
+  within the brain tissue. Examples include Electrocorticography (ECoG) grids placed
+  directly on the cortical surface, and microelectrode arrays that record Local Field
+  Potentials (LFP) or single-/multi-unit spiking activity (SUA/MUA). These methods
+  offer excellent spatial resolution and signal quality but carry the inherent risks
+  associated with neurosurgical procedures.
+
+  \item \textbf{Non-implanted (non-invasive) methods.} Sensors are placed externally on
+  the scalp. Several modalities exist, including Functional Magnetic Resonance Imaging
+  (fMRI) and Near-Infrared Spectroscopy (NIRS). However, \textbf{Electroencephalography
+  (EEG)} remains by far the most widely used and extensively studied technique for
+  non-invasive BCIs, primarily due to its high temporal resolution, relatively low cost,
+  and portability.
 \end{itemize}
-\begin{figure}[H]
-     \centering
-     \includegraphics[width=0.5\textwidth]{images/BCI.png}
-\end{figure}
-The BCI operates as a strict, sequential closed loop pipeline:\begin{itemize}
-     \item \textbf{Intention}: The user performs a cognitive process (user training/learning) to generate a
-specific, modified brain signal.
-\item \textbf{Extraction}: Algorithms perform appropriate feature extraction on the raw signals to
-isolate the relevant signal features.
-\item \textbf{Translation}: These features undergo classification (translation of intent) to convert the
-signal into a digital format.
-\item \textbf{Command \& Feedback}: The translated signal generates a command in the external
-environment.
-\begin{figure}[H]
-     \centering
-     \includegraphics[width=0.7\textwidth]{images/BCI_loop.png}
-\end{figure}
+
+\subsection{Two Primary Clinical Paradigms}
+
+In clinical practice, non-invasive BCI systems are deployed under two overarching
+paradigms, which form the structural backbone of these notes:
+
+\begin{itemize}
+  \item \textbf{Assistive BCIs} substitute a permanently lost function — most commonly
+  communication or environmental (domotic) control — by routing decoded brain signals
+  into commercial assistive technology software.
+
+  \item \textbf{Rehabilitative BCIs} harness the brain's own plasticity to drive the
+  biological recovery of a damaged function, rather than merely bypassing it.
 \end{itemize}
-Because bypassing nerves and muscles is an unnatural way to control the environment, an
-appropriate real-time feedback strategy is mandatory. This process is analogous to learning
-a new physiological skill, such as walking or playing tennis: the brain requires instant
-feedback to recognize errors and adjust accordingly. When the BCI executes the command,
-the result is fed back to the user, closing the loop. This feedback allows the brain to evaluate
-its performance, learn, and consciously modify its signals to achieve mastery over the
-interface.\bigskip
 
-Brain signals can be acquired through two primary approaches:\begin{itemize}
-     \item Implanted: Sensors are surgically positioned on or within the brain tissue, such as Electrocorticography (ECoG) grids placed on the cortex, or microelectrodes to measure Local Field Potentials (LFP) or Single/Multi-Unit Activity (SUA/MUA).
-     \item Non-implanted: Sensors are placed externally on the scalp. While modalities like
-     Functional Magnetic Resonance Imaging (fMRI) and Near-Infrared Spectroscopy (NIRS)
-     exist , Electroencephalography (EEG) remains the most widely studied and utilized
-     method for non-invasive BCIs.
+\section{The Accessibility Gap in Assistive Technology}
+
+\subsection{Rethinking Disability}
+
+In the context of Assistive Technology (AT), disability is not conceived as an intrinsic medical
+deficiency of the individual. Rather, guided by the World Health Organization's framework,
+disability is understood as a \textbf{mismatch between a person's condition and their
+environment}. Assistive Technology functions as the bridge that closes this gap, encompassing
+any device, software, or system that enables individuals to perform tasks they would
+otherwise be unable to do. The primary goals of AT are the restoration of autonomy, dignity,
+meaningful social participation, and effective communication.
+
+\subsection{The Fundamental Limitation of Conventional AT}
+
+Conventional digital AT solutions — including joysticks, touch screens, computer mice, head
+trackers, and eye-tracking devices — are highly capable interfaces. However, they all share
+one fundamental constraint: they require the user to produce a \emph{reliable, voluntary
+muscular or physical movement} to generate a command. Even an eye-tracking device, which
+might appear to require no effort, demands intact oculomotor control.
+
+When a severe neurological condition — such as Amyotrophic Lateral Sclerosis (ALS),
+Locked-In Syndrome (LIS), or a severe stroke — compromises all residual motor function,
+every one of these solutions becomes inaccessible simultaneously. This is the
+\textbf{accessibility gap} that BCIs are uniquely positioned to address.
+
+By bypassing the neuromuscular system entirely and using brain-derived signals as the
+control channel, BCIs provide access to digital environments even when no reliable physical
+movement remains.
+
+% ============================================================
+\section{The P300 Event-Related Potential}
+
+\subsection{Event-Related Potentials and the P300}
+
+Non-invasive BCIs based on EEG frequently exploit \textbf{Event-Related Potentials (ERPs)}:
+transient voltage deflections in the EEG that are time-locked to the presentation of a specific
+stimulus. Because ERPs are typically smaller in amplitude than the ongoing background EEG,
+they are extracted by \textbf{signal averaging}: the EEG epochs following repeated stimulus
+presentations are aligned and averaged across trials, causing random background noise to
+cancel out while the consistent, stimulus-locked response is preserved.
+
+The most prominent ERP exploited in assistive BCIs is the \textbf{P300 wave}:
+
+\begin{boxdefinition}{The P300 Wave}{}
+The P300 is a large, positive voltage deflection in the EEG occurring approximately
+\textbf{300~ms} after the presentation of a target stimulus. It is most pronounced over
+the \textbf{centro-parietal} scalp regions and is physiologically associated with higher
+cognitive processes including memory updating, attentional allocation, and executive
+function.
+\end{boxdefinition}
+
+\subsection{The Oddball Paradigm}
+
+The P300 is reliably elicited using the \textbf{oddball paradigm}, a classic psychophysical
+protocol. A stream of stimuli is presented to the user, consisting of:
+
+\begin{itemize}
+  \item \textbf{Frequent, non-target stimuli}: common events that the user is instructed
+  to ignore;
+  \item \textbf{Rare, target stimuli}: infrequent, task-relevant events that the user is
+  instructed to attend to.
 \end{itemize}
-In clinical practice, these systems are generally deployed under two primary paradigms: Assistive BCIs, which substitute a permanently lost function like
-communication or smart home (domotic) control , and Rehabilitative BCIs, which use
-feedback mechanisms to drive neuroplasticity and improve stroke recovery.
-\begin{figure}[H]
-     \centering
-     \includegraphics[width=0.5\textwidth]{images/invasive_nonInvasive.png}
-\end{figure}
-When severe neurological conditions cause near-total paralysis, traditional digital interfaces
-become obsolete. In this paradigm, BCIs are utilized as Assistive Technology (AT). The
-primary objective here is not to heal the biological damage, but to provide a permanent, alternative access channel. By substituting the lost neuromuscular output with brain-derived
-control signals, assistive BCIs restore a patient's autonomy, communication, and ability to
-interact with their environment.
-\subsection{The ''Accessibility Gap'' in Assistive Technology (AT)}
 
-In the framework of Assistive Technology (AT), disability is not viewed merely as a ''medical
-problem belonging to a person''. Instead, guided by the World Health Organization, it is
-defined as a complex phenomenon resulting from the mismatch between a person's
-condition and their environment. Assistive Technology serves as a bridge to overcome this
-mismatch. It encompasses any device, software, or system that allows individuals to perform
-tasks they would otherwise be unable to do. The ultimate goal of AT is the restoration of
-autonomy, dignity, societal participation, and communication.\bigskip
+Because the P300 is a neural response to \emph{rare, meaningful events}, it is generated
+exclusively when the user's attended target stimulus is presented. Non-target stimuli do
+not elicit this response. This selectivity is the key property that makes the P300 useful as
+a BCI control signal.
 
-Digital assistive devices and traditional access methods—such as joysticks, touch screens,
-computer mice, head trackers, and eye trackers—are highly powerful. However, they share a
-critical limitation: they always require a reliable physical or muscular movement to actuate a
-command, such as pressing a button or exploring a screen with a directed gaze.\bigskip
-\begin{figure}[H]
-     \centering
-     \includegraphics[width=0.5\textwidth]{images/traditionalBCI.png}
-\end{figure}
-When a severe neurological condition—such as Amyotrophic Lateral Sclerosis (ALS),
-Locked-In Syndrome (LIS), or a severe stroke—impairs all motor abilities, traditional
+\subsection{The P300 Speller Matrix}
 
-technology becomes entirely inaccessible. In these specific cases, BCIs act as a crucial
-alternative input channel. By bypassing the need for muscular actuation, BCIs allow the user
-to control standard AT environments directly through brain signals, providing a pathway to
-digital interaction when all other physical channels have failed.
-\redText{TODO continua da 3.01draft a BCI handout section 3 }
+The classical implementation of the P300 oddball paradigm in the context of assistive
+communication is the \textbf{P300 Speller}, originally developed by Farwell \& Donchin (1988).
+The interface presents the user with a matrix of characters — typically a 6$\times$6 grid of
+letters, numbers, and symbols. The rows and columns of the matrix flash in a randomised
+sequence.
+
+The operating principle is as follows:
+\begin{enumerate}
+  \item The user fixates their attention on the desired character (the \emph{target}).
+  \item As rows and columns flash randomly, the P300 response is elicited \emph{only}
+  when the row or column containing the target character is illuminated.
+  \item Flashes of all other rows and columns do not elicit the P300.
+  \item After accumulating a sufficient number of flashes (to improve the signal-to-noise
+  ratio through averaging), the system identifies which row and which column elicited the
+  P300 response. Their intersection corresponds to the intended character.
+\end{enumerate}
+\section{BCI as a Modular AT Channel}
+
+\subsection{Integration Over Reinvention}
+
+Historically, BCI research tended to produce \emph{standalone}, monolithic systems: the
+BCI software managed not only the signal processing and classification, but also the entire
+application layer (e.g., a dedicated spelling program). This approach was pragmatically
+limiting, as it required researchers to perpetually reinvent sophisticated software
+functionality — word processors, communication aids, web browsers — that already existed
+in highly refined commercial forms.
+
+The contemporary paradigm in neuroengineering prioritises \textbf{integration over
+reinvention}. The modern BCI is designed to act exclusively as an \textbf{alternative access
+channel}, sitting at the exact same hierarchical level as a conventional input device (mouse,
+joystick, head tracker, etc.). The classification output is a generic, hardware-agnostic
+``selection'' event that any compatible AT platform can interpret.
+
+\subsection{Technology Readiness and the Clinical Pipeline}
+
+This architectural shift carries important implications for clinical translation. The transition
+from isolated laboratory prototypes (Technology Readiness Level, TRL~4) to modular,
+commercially deployable systems (TRL~7--8) is a critical milestone. Systems such as
+BCI2000 handle the stimulation and classification stages and pass a discrete
+\emph{Selection} trigger to platforms like GRID3, which drive the end-user application.
+This modularity makes the system far easier to validate, maintain, and deploy in real
+clinical and domestic settings.
+
+\begin{boxobservation}{}{}
+The modular AT approach is not merely a software engineering convenience. It is a
+prerequisite for clinical viability: only by leveraging mature commercial AT platforms can a
+BCI achieve the functional breadth and reliability required for everyday use by people with
+severe motor impairments.
+\end{boxobservation}
+
+
+\section{Physiological Foundations of Rehabilitative BCIs}
+
+Rehabilitative BCIs serve a fundamentally different purpose from their assistive
+counterparts. Rather than \emph{substituting} a permanently lost function by routing around
+the damaged neuromuscular system, a rehabilitative BCI aims to \emph{restore} the
+impaired biological function itself. In the context of stroke recovery, the BCI acts as a
+temporary neuro-technological driver: by engaging the damaged motor networks in a
+precisely structured way, the system actively guides Central Nervous System (CNS)
+plasticity, with the goal of facilitating the progressive recovery of voluntary movement.
+
+\subsection{Neuroplasticity and Its Role in Recovery}
+
+The CNS is not a static organ. It possesses a remarkable intrinsic capacity to reorganise
+its neural connections in response to experience, learning, and injury — a property
+collectively referred to as \textbf{neural plasticity}. Following a stroke, surviving perilesional
+tissue and contralateral homologous areas can, under appropriate conditions, assume some
+of the functions formerly carried out by the damaged region.
+
+Rehabilitative BCIs capitalise on this plasticity by creating a highly structured training
+environment that drives the brain to explore and consolidate new neural strategies for
+motor control.
+
+\subsection{Motor Imagery as the Physiological Interface}
+
+A central challenge in rehabilitation is that severely paretic or plegic patients cannot
+produce overt movements. How, then, can the motor network be engaged? The solution lies
+in \textbf{Motor Imagery (MI)}: the deliberate mental rehearsal of a movement without any
+associated muscular activation.
+
+Neuroimaging studies have demonstrated that the cortical networks recruited during MI
+overlap substantially with those activated during actual movement execution, including the
+\textbf{primary motor cortex (M1)}, the \textbf{supplementary motor area (SMA)}, and the
+\textbf{premotor cortex}. This functional equivalence makes MI a valid
+and detectable proxy for motor intent, even when the descending neuromuscular pathways
+are severed or damaged.
+
+\begin{boxobservation}{}{}
+Kinesthetic motor imagery — in which the patient mentally rehearses the internal
+sensation and muscular effort of movement from a first-person perspective — is
+substantially more effective at recruiting the motor network than visual motor imagery (in
+which the patient imagines \emph{watching} themselves move from a third-person
+viewpoint). The latter engages primarily visual processing areas and generates insufficient
+SMR modulation for effective BCI control.
+\end{boxobservation}
+
+\subsection{Sensorimotor Rhythms and Event-Related Desynchronisation}
+
+Non-invasive rehabilitative BCIs detect motor intent by monitoring continuous EEG
+oscillations known as \textbf{Sensorimotor Rhythms (SMR)}. These oscillations are
+recorded over the sensorimotor cortex and are concentrated primarily in the \textbf{mu
+band} (8--12~Hz) and the \textbf{beta band} (14--30~Hz).
+
+The functional behaviour of the SMR is directly analogous to the well-known \emph{alpha
+block} phenomenon in the visual cortex:
+\begin{itemize}
+  \item During \textbf{motor rest}, the sensorimotor neuronal populations are
+  synchronised, producing a high-amplitude, regular oscillation in the mu and beta bands.
+  \item During \textbf{movement or motor imagery}, the neuronal populations rapidly
+  desynchronise to process the complex motor command, causing a pronounced
+  \emph{decrease} in the amplitude and spectral power of the SMR.
+\end{itemize}
+
+This power decrease is formally termed \textbf{Event-Related Desynchronisation (ERD)}.
+In an asynchronous rehabilitative BCI, the system continuously monitors the SMR power
+spectrum in real time; a quantified drop in power below a resting baseline is classified as
+evidence of active motor intention.
+
+\begin{boxobservation}{}{}
+The term \emph{ERD} has a precise technical definition: it refers to a non-stationary
+spectral change that must be estimated by averaging across multiple trials time-locked to
+a discrete triggering event. However, in the BCI literature — and in informal communication
+among researchers — the term is frequently used as a generic synonym for \emph{any}
+drop in SMR power, including during continuous, asynchronous state classification (i.e.,
+in the absence of a discrete event). As neuroengineers, you should be aware of this
+semantic overextension and interpret the term according to its context.
+\end{boxobservation}
+
+% ============================================================
+
+\section{System Architecture: Driving Neuroplasticity}
+
+\subsection{Closing the Broken Sensorimotor Loop}
+
+In stroke patients with severe motor impairment, the descending neural pathways —
+particularly the corticospinal tract — are disrupted, effectively severing the connection
+between the motor cortex and the peripheral muscles. This disconnection creates a vicious
+cycle: the inability to move deprives the motor cortex of the sensory feedback that
+movement would normally generate, thereby inhibiting the plasticity required for recovery.
+
+Rehabilitative BCIs intervene precisely at this point. Rather than controlling a screen
+cursor, the regression score derived from real-time SMR modulation is used to command a
+\textbf{physical assistive device} coupled to the patient's paretic limb — either a
+robotic exoskeleton or a \textbf{Functional Electrical Stimulation (FES)} device. When
+the patient performs kinesthetic motor imagery and the BCI detects the corresponding
+cortical signal, it triggers the device to execute the imagined movement.
+
+\subsection{Endogenous vs. Exogenous Drivers}
+
+Neuroplasticity-enhancing interventions can be classified according to what drives neural
+reorganisation:
+
+\begin{itemize}
+  \item \textbf{Exogenous drivers} rely on \emph{external} interventions to promote
+  connectivity changes. Examples include passive robotic mobilisation, Transcranial
+  Magnetic Stimulation (TMS), and Transcranial Direct Current Stimulation (tDCS).
+
+  \item \textbf{Endogenous drivers} require the patient's \emph{active, internal} neural
+  participation. Motor Imagery-based BCIs are the prototypical endogenous driver: the
+  therapeutic input is triggered by, and contingent upon, the patient's own decoded
+  motor intent.
+\end{itemize}
+
+The clinical significance of BCI-FES or BCI-robot systems lies precisely in this
+combination: an \emph{endogenous} decoder commands what is physically an
+\emph{exogenous} device, creating a maximally contingent sensorimotor loop.
+
+\subsection{Contingent Sensory Feedback and Hebbian Plasticity}
+
+The ultimate therapeutic mechanism is not the movement of the device itself, but the
+\textbf{sensory feedback} that the movement generates. When the exoskeleton opens the
+patient's paralysed hand, proprioceptive signals from muscles and joints, together with
+cutaneous tactile information, are relayed to the \textbf{primary somatosensory cortex
+(S1)}. Simultaneously, visual feedback from watching the hand open is processed by the
+visual cortex.
+
+Crucially, the BCI ensures that this rich sensory input arrives at the exact moment the
+motor cortex is engaged in imagining the movement. This precise temporal coincidence
+between motor output (cortical intent) and somatosensory input (peripheral feedback)
+instantiates the classical \textbf{Hebbian learning} principle — ``neurons that fire together,
+wire together'' — reinforcing the surviving neural pathways and guiding the CNS to
+reorganise around the lesion.
+
+% ============================================================
+\section{Advanced Architectures: Hybrid BCIs and Corticomuscular Coherence \textnormal{\small(Optional)}}
+
+As rehabilitative BCIs mature, researchers are exploring more sophisticated hybrid
+architectures that monitor neural activity at multiple levels of the motor system
+simultaneously.
+
+\subsection{The Concept of Corticomuscular Coherence}
+
+\textbf{Corticomuscular Coherence (CMC)} quantifies the degree of functional
+synchronisation between cortical motor commands (measured via EEG) and the resulting
+peripheral muscle activation (measured via EMG). A traditional rehabilitative BCI monitors
+only the brain signal; a CMC-based hybrid BCI monitors \emph{both} levels and decodes the
+integrity of the full corticospinal communication pathway.
+
+\subsection{Preventing Maladaptive Plasticity}
+
+The critical clinical motivation for CMC-BCI systems is the prevention of
+\textbf{maladaptive compensatory strategies}. During stroke recovery, patients often
+develop compensatory movement habits — for example, recruiting proximal shoulder
+muscles to partially substitute for lost distal hand function, or involuntarily activating the
+contralateral healthy limb in a mirror movement. While such strategies may appear
+superficially functional, they can actually inhibit the recovery of the correct motor
+pathways if reinforced during training.
+
+A CMC-BCI is calibrated to:
+\begin{itemize}
+  \item \textbf{Encourage} the correct cortical-peripheral coupling: coherent activation
+  between the motor cortex and the target muscle group (e.g., finger extensors).
+  \item \textbf{Discourage} maladaptive patterns: proximal compensatory recruitment or
+  mirror movements in the healthy limb.
+\end{itemize}
+
+Only when the system detects the correct, targeted physiological attempt does it trigger
+the FES device. This strict gating mechanism aims to enforce an error-free rehabilitation
+loop, providing the brain with precisely the sensory feedback that reinforces the desired
+motor pathway.
+
+% ============================================================
+\section{Clinical Efficacy and Neural Network Reconfiguration}
+
+\subsection{Randomised Controlled Trial Evidence}
+
+The clinical efficacy of the rehabilitative BCI architecture has been evaluated in a
+\textbf{randomised controlled trial (RCT)} conducted at Fondazione Santa Lucia (Rome).
+Stroke patients were assigned either to a BCI-supported motor imagery training group or
+to a control group performing identical motor imagery exercises without BCI-derived
+feedback.
+
+Clinical outcomes were assessed using standardised tools: the \textbf{Fugl-Meyer
+Assessment (FMA)}, the \textbf{Medical Research Council (MRC) scale}, and the NIH
+Stroke Scale (NIHSS). At the conclusion of the one-month training protocol, the BCI group
+demonstrated significantly greater functional improvement. Most notably, the probability of
+achieving the \textbf{Minimal Clinically Important Difference (MCID)} — the threshold
+beyond which the patient perceives a meaningful functional improvement — was
+\textbf{2.5 times higher} in the BCI group than in the control group.
+
+\subsection{Evidence of Targeted Neuroplasticity}
+
+Beyond the overt clinical gains, EEG analysis revealed measurable reorganisation of
+motor brain networks in the BCI group:
+
+\begin{enumerate}
+  \item \textbf{Ipsilesional motor re-engagement.} Topographical maps showed
+  significantly greater involvement of the \emph{ipsilesional} (affected-side)
+  sensorimotor areas during motor imagery post-training in the BCI group. Furthermore,
+  this increase in affected-hemisphere spectral power positively correlated with each
+  patient's individual FMA improvement.
+
+  \item \textbf{Motor-specific interhemispheric connectivity.} Analysis of
+  \emph{interhemispheric} functional connectivity revealed that the BCI group exhibited
+  significantly enhanced coupling between the two hemispheres specifically in the
+  \textbf{beta$_1$ and beta$_2$} bands — frequency bands directly associated with motor
+  function. In contrast, the control group showed increased connectivity only in the
+  theta and alpha bands, which reflect general attentional and cognitive engagement rather
+  than motor-specific processing.
+\end{enumerate}
+
+These findings provide concrete neurophysiological evidence that the contingent
+sensorimotor loop implemented by the BCI actively drives \emph{targeted} motor
+neuroplasticity, rather than merely improving general engagement or attention.
 \chapter{Electromyography}
 The electromyography is the electrical activity generated by the muscles. The following picture shows a recorded electromyography:
 \begin{figure}[H]
@@ -2202,12 +2979,12 @@ These are the same role that the neurons have for the EEG, they are the core com
      \centering
      \includegraphics[width=0.8\textwidth]{images/muscle_AP.png}
 \end{figure}
-The equilibrium is around -90 mV, the action potential touches its peak at around 10 mV. An action potential moves along the muscles, the velocity of movement is called \textbf{Muscle Fibre Conduction Velocity (MFCV)}. The range of this velocity is from 2 to 6 $\frac{\text{m}}{\text{s}}$ and it depends on various factors:\begin{itemize}
+The equilibrium is around -90 mV, the action potential touches its peak at around 10 mV. An action potential moves along the muscles, the velocity of movement is called \textbf{Muscle Fiber Conduction Velocity (MFCV)}. The range of this velocity is from 2 to 6 $\frac{\text{m}}{\text{s}}$ and it depends on various factors:\begin{itemize}
      \item ionic concentration,
      \item temperature,
-     \item muscle fibre diameter and morphology, 
-     \item muscle fibre length,
-     \item fibre type,
+     \item muscle fiber diameter and morphology, 
+     \item muscle fiber length,
+     \item fiber type,
      \item muscle fatigue (happens because the chemical ions becomes unbalanced),
      \item neuromuscolar pathology.
 \end{itemize}
@@ -2216,22 +2993,22 @@ How does the muscle contracts? As for the neurons there is a ''synapse'', is not
      \centering
      \includegraphics[width=0.55\textwidth]{images/muscle_synapse.png}
 \end{figure}
-These kind of synapses (they are not really synapses, but acts like them) are called \textbf{neuromuscolar junctions}. They connect one neuron to one fibre, neurons that connects to muscles are called \textit{motor neurons}, one neuron connect to several fibres. A \textbf{motor unit} is one motor neuron with all the fibres connected to it.
+These kind of synapses (they are not really synapses, but acts like them) are called \textbf{neuromuscolar junctions}. They connect one neuron to one fiber, neurons that connects to muscles are called \textit{motor neurons}, one neuron connect to several fibers. A \textbf{motor unit} is one motor neuron with all the fibers connected to it.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.35\textwidth]{images/motorNeuron.png}
 \end{figure}
-Let's focus on a single motor unit, let's say that we have two motor neurons $A$ and $B$, neuron $A$ is connected to fibre 1,4 and 5, neuron $B$ to 2 and 3.
+Let's focus on a single motor unit, let's say that we have two motor neurons $A$ and $B$, neuron $A$ is connected to fiber 1,4 and 5, neuron $B$ to 2 and 3.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.55\textwidth]{images/AP_fibres.png}
 \end{figure}
-Assume fibres 1, 4 and 5 start an action potential, the timing in the picture for the spikes on fibre 1 4 and 5 is the same since they are generated by the same motor neuron, as well the action potential on fibre 2 and 3 discharge togheter. When we look at the electromyogram on the surface, we will observe only the cumulative effect of the fibres that discharge togheter, an external electrode will see only the summation.\bigskip 
+Assume fibers 1, 4 and 5 start an action potential, the timing in the picture for the spikes on fiber 1 4 and 5 is the same since they are generated by the same motor neuron, as well the action potential on fiber 2 and 3 discharge togheter. When we look at the electromyogram on the surface, we will observe only the cumulative effect of the fibers that discharge togheter, an external electrode will see only the summation.\bigskip 
 
 If more motor neurons activates near in time, we will observe the summation of the potentials from more motor units, this signal is called \textbf{interferential EMG}.\begin{boxobservation}{}{}
      With non invasive methods we can \textit{only} measure interferential EMGs (summation of many motor units action potentials).
 \end{boxobservation}
-How do our body modulates the contraction of a muscle? What do the action potential of the neurons look like when we want to exert a stronger or weaker force? We have hundreds of thousends of motor units, one way to modulate the force is to engage more or less units (\textbf{rectruitment}). The other way is to involve the same fibers multiple times a second (\textbf{rate coding}). The higher the rate of discharge, the stronger the force is and shorter the fibre gets. These two phenomena can be modulated separately.\begin{itemize}
+How do our body modulates the contraction of a muscle? What do the action potential of the neurons look like when we want to exert a stronger or weaker force? We have hundreds of thousends of motor units, one way to modulate the force is to engage more or less units (\textbf{rectruitment}). The other way is to involve the same fibers multiple times a second (\textbf{rate coding}). The higher the rate of discharge, the stronger the force is and shorter the fiber gets. These two phenomena can be modulated separately.\begin{itemize}
      \item \textbf{Rate coding}: The firing rate can range from a minimal of 5/10 impulse per second, to a maximal of 60 impulse per second.Early recruited units may decrease their discharge rate when new units are
 recruited (experiencing an increase and then a subsequent decline of their
 discharge rate increase)
@@ -2278,7 +3055,7 @@ This image illustrates the differentiation between near-field and far-field dete
      \centering
      \includegraphics[width=0.6\textwidth]{images/EMG_electrodes.png}
 \end{figure}
-To measure directly the motor action potential from a single fibre we need to insert a needle inside the muscle, in this case the operator thet performs the EMG must have a deeper knowledge of the human anatomy, since he should know exactly where to place the electrode. 
+To measure directly the motor action potential from a single fiber we need to insert a needle inside the muscle, in this case the operator thet performs the EMG must have a deeper knowledge of the human anatomy, since he should know exactly where to place the electrode. 
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.6\textwidth]{images/pros_cons.png}
@@ -2308,13 +3085,13 @@ The smoothing is a ''spatial filter'':
 The $x$-axis of Figure \ref{space_dist} is expressed in cycles per meter, that is the spatial equivalent of the Heartz, in fact is the representation in the frequency domain of a spatial filter, so instead of Heartz: $\frac{1}{\text{sec}}$ we have $\frac{1}{\text{meter}}$, so the plot is the spectrum of a space distribution. The graph show us different curves relative to different sizes for an electrod, if the electrode is small (1 mm), the filter tends to attenuate less the high frequencies, the larger is the electrode, the stronger is the attenuating effect of the filter.
 
 We consider the cutoff frequency as the usual frequency at which the gain is -3dB. To convert from cycles per meters to Heartz, we need to fix a condutction velocity (as shown in the lower part of Figure \ref{space_dist}).
-\subsection{Electrodes Configuration}
+\section{Electrodes Configuration}
 Where do we put the electrodes? For monopolar montage we usually place the reference and ground electrode on bones, and the active electrode on the muscle that we want to measure. For the EMG is more common to use bipolar montage, where we put the ground on a bone and the pair of electrodes on the muscle, usually on the belly (center) of the muscle.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.5\textwidth]{images/EMG_montage.png}
 \end{figure}
-Furthermore, the segment between the two electrodes must be parallel to the muscolar fibre. We have to choose properly the \textbf{Inter Electrode Distance (IED)}. We have seen how smaller or larger electrodes affect the recording, now we have to decided how far apart they must be placed: The answer to this question is the following:\begin{boxobservation}{}{}
+Furthermore, the segment between the two electrodes must be parallel to the muscolar fiber. We have to choose properly the \textbf{Inter Electrode Distance (IED)}. We have seen how smaller or larger electrodes affect the recording, now we have to decided how far apart they must be placed: The answer to this question is the following:\begin{boxobservation}{}{}
      The larger is the distance between two electrodes, the lower is the \textit{selectivity}, but the amplitude will be higher.
 \end{boxobservation}
 \textbf{Selectivity} and \textbf{Detection Volume} are quantities that refers to the same phenomena, observe the following picture:
@@ -2327,5 +3104,231 @@ Is a schematic representation, the negative $y$ axis goes towards the tissue fro
 The larger we go from the source, the higher will be the noise with respect to the apparent amplitude. If we take the set of sources for which the apparent amplitude produce an acceptable signal-to-noise ratio, we have the \textit{Detection Volume}.\begin{boxdefinition}{Detection Volume}{}
      The detection volume is the region of the muscle where the sources produce an activity that is detected by the sensors above the noise level.
 \end{boxdefinition}
-\redText{TODO continua da lezione 2026-05-20 minuto 39:50}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/sinewave_in_distr_EMG.png}
+     \caption{Two sinusoidal components of the EMG distribution in space.}
+     \label{sinewave_in_distr_EMG}
+\end{figure}
+Consider the 1D spatial distribution of potential on a muscle fiber, this distribution can be expressed (by its Fourier transform) as a superposition of sinewaves. Consider two sinewave components, one of wavelength $d$, and the other of wavelength $2d$:
+Let $d$ to be (also) the distance between two electrodes in a pair (the points $G1$ and $G2$ in Figure \ref{sinewave_in_distr_EMG}). We are consider these two electrodes for a bipolar recording. Consider the sinewave whose wavelength is exactly $d$, the potential measured by the amplifier that takes the difference between the potential on $G1$ and $G2$ will be mathematically zero, because $G1$ and $G2$ will be on the same ''part'' of the sinewave.
+\begin{boxobservation}{}{}
+     Some wave components of the spatial potential distribution will be completely ignored.
+\end{boxobservation}
+Instead, consider the sinusoidal component of wavelength $2d$. In Figure \ref{sinewave_in_distr_EMG} $G1$ is on the trough and $G2$ on the peak, in this case the difference is the maximum possible.
+If the wavelength is $\frac{2}{3}d$, with a trough on $G1$ we would have again a peak on $G2$:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/sinewave_in_distr_EMG2.eps}
+\end{figure}
+Also in this case the difference of potential is the maximum possible. This phenomena in space, is observed also in time: Since the source is moving in the muscle fiber, spatial filtering effects become temporal filtering effects and some frequency components are attenuated more than others. The relationship betweeen the distance and the measured potential shows a filtering effect callded \textbf{comb filter}:\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/log_freq_DB.png}
+\end{figure}
+\noindent Observe the following picture:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/moving_dipole.png}
+     \caption{Moving Dipole.}
+     \label{moving_dipole}
+\end{figure}
+A dipole is moving (from left to right) and is represented in two positions (at different times). Consider $\Delta d_1$ as the distance between $G1$ and $G2$. If we measure from $G1$ only, we will record first the negative peak, and then the positive peak (since the negative charge is in front the positive charge in the direction of motion).
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/G1_rec.png}
+\end{figure}
+The negative peak happens when the negative charge is exactly below the electrode $G1$, and the positive peak when the positive charge is there. If we know that $G1$ recorded this potential, we can guess what $G2$ will record,  is exactly the same of $G1$ but delayed until the dipole is under $G2$ (the delay $\Delta t_1$ is given by the distance  $\Delta d_1$  and the condaction velocity).
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/G2_rec.png}
+\end{figure}
+If we have a bipolar recording we have to take $G1-G2$, we get a ''mexican-hat''-shaped waveform:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.4\textwidth]{images/diff_rec.png}
+\end{figure}
+Let's change the electrodes distace to $\Delta d_2$:
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/moving_dipole2.png}
+\end{figure}
+The new delay is denoted $\Delta t_2$, there will be more delay, the gray line in the recording of $G2$ and $G1-G2$ represents this new case where the distance is $\Delta d_2$.  The difference start at the same time but ends later.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.3\textwidth]{images/G2_rec2.png}
+     \includegraphics[width=0.3\textwidth]{images/diff_rec2.png}
+\end{figure}
+\begin{boxobservation}{}{}
+     As the
+interelectrode distance increases, the time that it takes for the muscle fiber action potential to travel
+from $G1$ to $G2$ increases. The resulting differential recording $G1-G2$ is a
+muscle fiber action potential that is longer in duration and greater in amplitude.
+\end{boxobservation}
+\noindent In order to resume these results:\begin{itemize}
+     \item The electrode size introduces
+a low-pass filtering effect
+that attenuates the high frequency components of
+both the spatial and
+temporal power spectrum of
+the spatial EMG.
+     \item The (center-to-center) inter electrode distance
+introduces a band-pass filtering effect that combines
+with the low-pass effect due
+to the electrode size to give
+the overall filtering effect
+depicted in the figure.
+\end{itemize}\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/EMG_filtering.png}
+\end{figure}
+In this image we can see how the main energy components are in the band $[0,100]$ Hz, we can observe how a inter electrode distance (IED) of 20mm place a zero crossing value exactly in the middle of this band, so we should avoid large IED. For IED=10mm, we have 0 gain at 0 and 100 Hz, and the maximum gain at 50 Hz (the middle of the band), we are actually introducing a band-pass filter. With IED=5mm the gain is zero at 0 Hz and higher near 100 Hz, in this case the filter introduced is an high-pass.
+\begin{boxobservation}{}{}
+     Larger electrode size behaves as stronger low pass filter. The inter electrode distance acts as a comb filter.
+\end{boxobservation}
+\subsection{Cross-Talk}
+Crosstalk refers to the signal that is detected over a certain muscle, but is generated
+by another, mostly nearby muscle. It is:\begin{itemize}
+     \item Present exclusively in surface recordings when the distance of the detection points
+from the sources is of the same order of magnitude for the sources in different
+muscles.
+     \item Due to the volume conduction properties in combination with the source properties,
+and it is one of the most important sources of error in interpreting surface EMG
+signals.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=\textwidth]{images/crosstalk.png}
+\end{figure}
+In real cases there are always some cross-talk.
+\subsection{Parameters Influencing the EMG}
+EMG signal features depend on anatomical, physical, and detection system parameters. The most important of these factors are:\begin{itemize}
+     \item The \textbf{thickness} of the subcutaneous tissue layer (relevant only for surface recordings), if the layer of fat and skin is thicker, the signal amplitude decreases and the signal bandwidth is reduced (spatial and temporal low-pass filter).
+     \item The \textbf{depth} of the sources, a deeper source will produce a lower amplitude.
+     \item The \textbf{tilt} of the bipolar detection system with respect to the muscle fiber orientation (mainly for surface recordings).
+     \item The \textbf{length} of the fibers, shorter fibers have relatively large end-of-fiber potentials. 
+     \item The location between \textbf{innervation zone and tendon} (for bipolar derivations).
+     \item The \textbf{spatial filter} (electrode montage) used for signal detection, including the electrode size and inter electrode distance.
+     \item The \textbf{crosstalk} among nearby muscles (for surface recordings)
+\end{itemize}
+\subsection{Biosignal Amplifier}
+Biosignal amplifiers are essential for recording electromyographic activity, where maximal isometric contractions can yield surface electromyography (sEMG) amplitudes up to $5\,\text{mV}$ and intramuscular EMG amplitudes up to $10\,\text{mV}$ due to reduced tissue attenuation. Critical amplifier specifications include differential gain—which suppresses common-mode noise like power line interference while amplifying the biological signal—input impedance, common-mode rejection ratio (CMRR), and the frequency response relative to the target signals. For hardware conditioning, sEMG activity is typically band-pass filtered between $10\,\text{Hz}$ and $500\,\text{Hz}$; a high-pass cutoff frequency eliminates low-frequency motion artifacts from cables and electrodes, while a low-pass cutoff frequency minimizes high-frequency environmental noise. Finally, selecting a proper sampling rate is imperative to avoid aliasing and preserve signal integrity.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/biosignalAmplifier.png}
+\end{figure}
+\begin{boxobservation}{}{}
+     The EEG is usually below 30-70 Hz, the EMG is usually 250 Hz. The single fiber EMG can get up to 1 kHz.
+     The spontaneus EEG has an amplitude of a few tens of \underline{micro}Volts, while the EMG it is in units of \underline{milli}Volts (at least 100 times higher). The \textbf{band and the amplitude} of the EMG is \textbf{quite different} with respect to the EEG.
+\end{boxobservation}
+\section{EMG Signal Processing}
+Processing the signal means to apply algorithms to extract parameters or features to
+be used for some purpose such as signal classification or quantification of changes.
+We consider single-channel techniques, we consider the potential aquired by one channel, we don't apply procedures that requires multiple channel recordings. Single channel method have advantages and disadvantages:\begin{itemize}
+     \item \textbf{Advantages}: applicability to a number of
+     experimental conditions and
+     recording systems, used in basic and applied studies
+     concerning sports, ergonomics and
+     prevention of neuromuscular
+     disorders.
+     \item \textbf{Disadvantages}: no information about Motor Units.
+\end{itemize}
+The following picture is an overview of what have to be done in order to obtain a clean waveform of an EMG (starting from raw data).
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/EMG_sig_proc.png}
+\end{figure}
+The first step is to ''clean'' the data from the noise and artifacts, can be assessed trough:\begin{itemize}
+     \item proper skin preparation and
+electrode setup,
+   \item  analog filtering in the amplifier,
+   \item  digital filtering in post-processing.
+\end{itemize}
+The next step is \textbf{whitening}: make samples statistically
+uncorrelated. The correlation between neighbouring
+EMG samples is a consequence of the
+limited signal bandwidth which reflects
+the actual biological generation of EMG
+and the low-pass filtering effects of the
+tissues. Successive samples of EMG signal are
+correlated: the signal correlation
+temporally weights the information.\bigskip 
+
+Then there is the \textbf{detection/demodulation} step that consists in taking the absolute value of the signal (can be considered also the squared absolute value). At that step we have a positive signal, now we want to \textbf{smooth} it, i.e. reduce random fluctuations in
+the EMG amplitude estimate. We can perform a time averaging with a sliding time window (usually 100-250 ms), or we can apply a linear low pass filter with a cut off frequency between 1 and 6 Hz.
+
+Lower cut off frequencies are appropriate when the
+muscle activities under study are constant effort (or
+slowly force-varying), and higher cut off frequencies
+are appropriate for studies including rapid changes
+in muscle effort. \bigskip 
+
+At the end, if the signal was squared during the detection/demodulation phase, we have to take its square root to reconstruct a signal of the correct/original scale.\bigskip
+
+Note that the amplitude of EMG is affected by confounding factors such as the
+subcutaneous layer thickness, the inclination of the fibers with respect to the detection
+system, the interelectrode distance selected and so on. Normalization can greatly facilitate
+comparisons between muscles,
+between recording sessions, or
+between subjects.
+The most frequently employed
+normalization procedures is the use
+of a \textbf{maximum voluntary contraction
+(MVC)}.
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/MVC.png}
+\end{figure}
+the \textbf{double threshold algorithm}, a method used in the processing of electromyographic (EMG) signals to precisely determine the \textbf{onset} of muscle activation.
+
+To decree the start of activation, the signal (in particular the envelope of the EMG signal) must simultaneously satisfy two conditions:\begin{itemize} 
+\item Amplitude threshold ($A_c$): The amplitude of the signal envelope must exceed a certain statistical threshold value, denoted as $A_c$. This threshold is usually calculated as a multiple of the RMS (Root Mean Square) value of the signal recorded at rest (when the muscle is relaxed).
+\item Temporal threshold ($t_c$): The signal must not only exceed $A_c$, but must remain stably above this threshold for a continuous time interval that is greater than a predefined minimum duration, indicated as $t_c$.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/EMGonest.png}
+\end{figure}
+The \textbf{power spectral density} functions from
+different muscle groups all share the same
+basic shape, generally related to the shape of
+the underlying motor unit action potentials. The main difference between muscle groups
+is the bandwidth of the signal, which is related
+to the physiology of the muscle.
+These properties include:\begin{itemize} 
+\item the percent MVC over which motor units are
+recruited
+\item maximum firing rates
+\item muscle fiber lengths.
+\end{itemize}
+During voluntary contractions the spectral content of the EMG signal progressively
+moves towards lower frequencies. This phenomenon can be described as a
+compression or frequency scaling of the spectrum; that is, the shape of the spectrum
+does not change but only the scale factor of the frequency axis changes.
+The median (MDF) and mean (MNF) frequencies are traditional measures of the
+frequency content of the signal that require signal stationarity for their use. Let $P(f)$ to be the power spectrum of the EMG:\begin{align}
+     &\text{MNF}=\frac{\displaystyle\int_0^{\nicefrac{f_s}{2}}fP(f)df}{\displaystyle\int_0^{\nicefrac{f_s}{2}}P(f)df}\\[1.5ex]
+     &\text{MDF}=\frac{1}{2}\displaystyle\int_0^{\nicefrac{f_s}{2}}P(f)df.
+\end{align}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/PS_mean.png}
+\end{figure}
+The MDF and the MNF are single scalar values that tells how the spectral power is compressed towards the low frequencies or the high frequencies.\bigskip 
+
+
+During a contraction maintained over time, the spectral content of the EMG signal tends to progressively shift towards lower frequencies. The general shape of the spectrum does not change radically, but undergoes ''compression'' or scaling along the frequency axis.
+
+The compression of the frequency spectrum is the direct result of a change in the time domain: the modification of the shape of the MUAP (Motor Unit Action Potential). Due to the mathematical properties of signal analysis, if a wave broadens (becomes slower) in the time domain, its frequency spectrum compresses towards lower values.
+
+What changes the shape of the MUAP? The two main physiological factors responsible for this temporal broadening:
+\begin{itemize}
+\item Conduction Velocity (CV): A decrease in the conduction velocity of the muscle fibers ''stretches'' the MUAP over time. The duration of the action potential ($\tau$) is inversely proportional to the conduction velocity, governed by the relation $\tau \propto 1/\text{CV}$. Because fatigue slows the propagation of potential along the fiber, the signal takes longer to pass under the sensing electrodes, resulting in a wider wave in the time graph.
+\item  pH Change: During contraction, metabolic byproducts accumulate which lower the pH of muscle tissue (making it more acidic). Figure \ref{compression} compare an action potential at normal pH (7.4) with one in an acidic environment (6.6). Acidity alters the dynamics of cell membrane ion channels, slowing the generation of the potential and causing a visible broadening and slight delay of the wave.
+\end{itemize}
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=\textwidth]{images/compression.png}
+     \caption{Biochemical effect of fatigue.}
+     \label{compression}
+\end{figure}
 \end{document}
