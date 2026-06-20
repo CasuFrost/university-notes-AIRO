@@ -48,9 +48,9 @@ This document summarizes and presents the topics for the \titolo course for the 
 \chapter{The Neural Cell}
 \section{Electrical Properties of the Neuron}
 \begin{boxdefinition}{Neuron}{}
-     A neuron, also known as a nerve cell, is the fundamental building block of the brain and nervous system. It is a specialized cell designed to transmit information to other nerve cells, muscle, or gland cells through electrical and chemical signals.
+     A neuron, also known as  nerve cell, is the fundamental building block of the brain and nervous system. It is a specialized cell designed to transmit information to other nerve cells, muscle, or gland cells through electrical and chemical signals.
 \end{boxdefinition}
-A neuron has three main functions:\begin{itemize}
+\noindent A neuron has three main functions:\begin{itemize}
      \item To \textbf{collect} the information from multiple sources, like other neural cells or receptors.
      \item To \textbf{integrate} in time and space the incoming information to provide a binary decision.
      \item To \textbf{generate} and \textbf{propagate} a bit of information up to a target cell.
@@ -61,7 +61,7 @@ A neuron has three main functions:\begin{itemize}
 \end{figure}
 The neuron is covered by the \textbf{neuronal membrane}, a phospholipid bilayer\footnote{A phospholipid bilayer is a two-layered arrangement of phosphate and lipid molecules that form a cell membrane. It serves as a continuous barrier around cells and organelles, separating the internal contents from the outside environment.}  which acts as a fatty barrier between the inside of the cell (cytoplasm) and the outside environment. This membrane is \textit{selectively permeable}: charged ions cannot pass through the bilayer, this allows the neuron to maintain different concentrations of chemicals on either side.
 
-Since the membrane forms a barrier between the inside and the outside of the cell, the membrane uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ''tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates an \textit{electrical difference} (voltage).\bigskip 
+Since the membrane forms a barrier between the inside and the outside of the cell, the membrane uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ''tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates a \textit{difference of electrical potential} (voltage).\bigskip 
 
 \noindent The main ion families that act in the neural cell are:\begin{itemize}
      \item Na$^+$: Sodium 
@@ -100,7 +100,7 @@ Each single ion will have an electrical gradient and a chemical gradient, equili
           \Delta\mu=RT\ln\frac{[X]_A}{[X]_B}+zF(E_A-E_B).
      \end{equation}
 \end{boxdefinition}
-$\Delta\mu$ is a scalar value that represents the difference in energy between the inside and the outside.\begin{itemize}
+\noindent $\Delta\mu$ is a scalar value that represents the difference in energy between the inside and the outside.\begin{itemize}
      \item $R$ is the universal gas constant.
      \item $T$ is the temperature in Kelvin. 
      \item $[X]_A$ is the ion concentration of the $A$ side of the membrane.
@@ -122,7 +122,7 @@ Remember that, despite the gradients, an ions is not always free to cross the me
 membrane, they will flow with net currents that move the membrane
 potential to that value.\begin{enumerate}
      \item The cell is at $-70 $mV, but the Sodium (Na$^+$) would like to be at $+60 $mV ($E_j$). As long as the channels are closed, Sodium is blocked.
-     \item Opening of the sodium channels: Since the current potential ($-70$) is not the equilibrium potential ($+60$), there is a huge push. Sodium ions begin to enter the cell en masse.
+     \item Opening of the sodium channels: Since the current potential ($-70$) is not the equilibrium potential ($+60$), there is a huge push. Sodium ions begin to enter the cell.
      \item This flow of positive charges (current) changes the membrane voltage, ''dragging'' it from $-70$ towards $+60$.
 \end{enumerate}
 \begin{boxdefinition}{Ion Pumps}{}
@@ -206,7 +206,7 @@ The presynaptic signals sent to a neuron are binary, these action potentials are
      \centering
      \includegraphics[width=0.7\textwidth]{images/summation_synapses2.png}
 \end{figure}
-So, the information processed by the neurons is composed by the sum of these excitatory and inhibitory post synaptic signals, the spatial and temporal summation produce the membrane polarization/depolarization, and this result is propagated along the membrane up the axon hillock (the physical point where all the EPSPs and IPSPs collected by the dendrites and soma converge. Here the algebraic sum of the signals takes place). According to the result of this summation, the cell may or not may fire an \textit{action potential}.
+So, the information processed by the neurons is composed by the sum of these excitatory and inhibitory post synaptic signals, the spatial and temporal summation produce the membrane polarization/depolarization, and this result is propagated along the membrane up the axon hillock (the physical point where all the EPSPs and IPSPs are collected by the dendrites and soma converge), where the algebraic sum of the signals takes place. According to the result of this summation, the cell may or not may fire an \textit{action potential}.
 \begin{boxdefinition}{Action Potential}{}
      The action potential (or spike) is a rapid, temporary, self-reflexive reversal of a neuron's resting membrane potential.
 \end{boxdefinition}
@@ -272,7 +272,7 @@ The brain processes incoming information to guide decisions by integrating senso
 Scientific study of the brain dates back centuries, with evidence of Ancient Egyptian trepanation. Historically, cerebral architecture was mapped primarily through \textbf{lesions} analysis, identifying functional specialization by observing the specific impairments caused by brain damage. \bigskip
 
 
-Modern neuroscience employs a variety of approaches to study neural activity:
+\noindent Modern neuroscience employs a variety of approaches to study neural activity:
 \begin{itemize}
     \item \textbf{Invasive Procedures:} Historically, animal studies allowed for invasive techniques that are ethically and practically unfeasible for human subjects. These studies provided the groundwork for understanding cellular-level interactions.
     \item \textbf{Neuroimaging Techniques:} In recent decades, non-invasive methods have revolutionized the field. A prominent example is the \textbf{EEG (Electroencephalography)}, which measures fluctuations in the electrical fields perturbed by neuronal activity.
@@ -408,7 +408,7 @@ Intracellular recordings utilize hollow glass electrodes filled with an electrol
 \end{figure}
 Intracellular recordings are technically more complex than extracellular methods and are typically conducted in in vitro experiments. They are primarily performed on the soma or dendrites to record graduate and action potentials, as capturing signals along the axon is notably difficult due to it's extreme thinness and the high risk of structural damage. Despite these technical challenges and the difficulty of maintaining precise measurements, this technique has been instrumental in advancing our fundamental understanding of cellular neurophysiology.\bigskip 
 
-\textbf{Extracellular} recording involves positioning electrodes in the extracellular fluid near the cell membrane to monitor neural activity. While this method cannot detect subtle sub-threshold voltage changes or waveform details, it is highly effective at identifying the exact timing of action potentials. It is particularly valuable for in vivo studies, as it allows for reliable event detection without disrupting the cell's natural environment.
+\noindent \textbf{Extracellular} recording involves positioning electrodes in the extracellular fluid near the cell membrane to monitor neural activity. While this method cannot detect subtle sub-threshold voltage changes or waveform details, it is highly effective at identifying the exact timing of action potentials. It is particularly valuable for in vivo studies, as it allows for reliable event detection without disrupting the cell's natural environment.
 
 The intracellular recordings captures the subthreshold and the action potentials, the extracellular records a signal temporally correlated with the action potential.
 \begin{figure}[H] 
