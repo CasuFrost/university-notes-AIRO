@@ -1563,6 +1563,14 @@ chloride. Some properties that an electrode should have is\begin{itemize}
 potentials
     \item low polarization potentials, drift, and noise.
 \end{itemize}
+Different materials for the electrodes results in different properties:\begin{itemize}
+    \item \textbf{Silver/Silver Chloride (Ag/AgCl):} Non-polarizable material that exhibits excellent signal stability and faithfully reproduces the voltage waveforms without distortion.
+    \item \textbf{Platinum:} Polarizable material showing significant signal decay (capacitive behavior) and undershoot at the transient edges of the pulse.
+    \item \textbf{Silver (Pure):} Exhibits noticeable transient spikes and distortion at the pulse transitions, performing worse than its chlorinated counterpart.
+    \item \textbf{Copper:} Highly unstable with a severe baseline drift over time, making it unsuitable for long-term stable recordings.
+    \item \textbf{Gold:} Strongly polarizable material that acts like a high-pass filter, significantly attenuating the low-frequency square pulse and leaving only sharp transient spikes at the edges.
+    \item \textbf{Stainless Steel:} Subject to high background noise and polarizable artifacts, resulting in a distorted signal with low signal-to-noise ratio.
+\end{itemize}
 \begin{center}
      \includegraphics[width=0.4\textwidth]{images/electrode.png}
 \end{center} 
@@ -2312,7 +2320,7 @@ This does not add any information to the spectrum, it is used just to make the s
 \subsection{Windowing}
 When we want to estimate  the properties of a stochastic signal, we need (in principle) to know the signal for an infinite amount of time. Let's see what happens (even to a deterministic signal) when this is not possible.\bigskip 
 
-Let $x(t)$ to be a signal defined on all the real line $\R$, we don't have access to all the signal, but only to a short recording $x'(t)$:
+Let $x(t)$ to be a signal defined on the real line $\R$, we don't have access to all the signal, but only to a short recording $x'(t)$:
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.6\textwidth]{images/recording.png}
@@ -2401,9 +2409,9 @@ We can also identify another window that overlaps the original two, and compute 
 \begin{boxdefinition}{Spectral Averaging - Welch's Method}{}
 \begin{enumerate}
      \item Take a short segment of the signal of length \texttt{nsamples}. 
-     \item Apply a windowing function $win(t)$.
+     \item Apply a windowing function $w(t)$.
      \item Compute the windowed periodogram $$
-     |DFT(win(t)\cdot x(t))|^2
+     |DFT(w(t)\cdot x(t))|^2
      $$
      and store the resulting PSD.
      \item Shifts \texttt{nsamples} to the right, (or a fraction of this amount, if overlapping segments are desired). 
@@ -2436,7 +2444,7 @@ spectrum over time can be displayed using a spectrogram.
 Every vertical bar of this diagram is a spectrum, the spectrum is color coded, for each time window a spectrum is computed.
 
 \section{Digital Filters}
-A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Most of the time, signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal/noise ratio}.
+A filter is needed to remove or attenuate some components of the signal that we are acquiring: Usually we divide a signal in two components, the useful information, and the noise/disturbance. Most of the time, signal and noise have almost separate components in the spectrum. Filters are a way to \textit{improve the signal to noise ratio}.
 
 In real filters, the signal passes almost unaltered, and the noise is almost removed (never completely blocked). There are four families of filters, and they differs in how they modify the spectrum of a signal:
 \begin{figure}[H] 
@@ -2554,13 +2562,13 @@ engineering objective:
 
 The translation of neural intent into external action requires the BCI to operate as a
 \textbf{closed-loop pipeline}. Critically, this loop is not merely a technical convenience; it
-is a \emph{physiological necessity}. Because controlling a device through brain signals is
+is a \emph{physiological necessity}, because controlling a device through brain signals is
 an entirely unnatural skill, the user's brain requires continuous real-time feedback to
 evaluate its own performance, detect errors, and progressively refine the generated signals.
 This process is directly analogous to learning any new motor skill — such as playing tennis
 or riding a bicycle — where the absence of feedback would render learning impossible.
 
-The pipeline consists of four sequential stages:
+\noindent The pipeline consists of four sequential stages:
 
 \begin{enumerate}
   \item \textbf{Intention (User Training).} The user performs a specific cognitive task —
@@ -2608,9 +2616,7 @@ applicability:
   and portability.
 \end{itemize}
 
-\subsection{Two Primary Clinical Paradigms}
-
-In clinical practice, non-invasive BCI systems are deployed under two overarching
+\textbf{Two Primary Clinical Paradigms}: In clinical practice, non-invasive BCI systems are deployed under two overarching
 paradigms, which form the structural backbone of these notes:
 
 \begin{itemize}
@@ -2697,7 +2703,6 @@ communication is the \textbf{P300 Speller}, originally developed by Farwell \& D
 The interface presents the user with a matrix of characters — typically a 6$\times$6 grid of
 letters, numbers, and symbols. The rows and columns of the matrix flash in a randomised
 sequence.
-
 The operating principle is as follows:
 \begin{enumerate}
   \item The user fixates their attention on the desired character (the \emph{target}).
@@ -2816,7 +2821,7 @@ spectral change that must be estimated by averaging across multiple trials time-
 a discrete triggering event. However, in the BCI literature — and in informal communication
 among researchers — the term is frequently used as a generic synonym for \emph{any}
 drop in SMR power, including during continuous, asynchronous state classification (i.e.,
-in the absence of a discrete event). As neuroengineers, you should be aware of this
+in the absence of a discrete event).  Neuroengineers should be aware of this
 semantic overextension and interpret the term according to its context.
 \end{boxobservation}
 
@@ -2962,7 +2967,7 @@ The electromyography is the electrical activity generated by the muscles. The fo
      \centering
      \includegraphics[width=0.6\textwidth]{images/electromyography.png}
 \end{figure}
-taken with electrodes placed on the skin. Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprends a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture). \bigskip
+taken with electrodes placed on the skin. Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprends a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture above). \bigskip
 
 There are several application for the electromyography (especially with needle electrodes): 
 \begin{figure}[H]
@@ -3010,7 +3015,7 @@ If more motor neurons activates near in time, we will observe the summation of t
      With non invasive methods we can \textit{only} measure interferential EMGs (summation of many motor units action potentials).
 \end{boxobservation}
 How do our body modulates the contraction of a muscle? What do the action potential of the neurons look like when we want to exert a stronger or weaker force? We have hundreds of thousends of motor units, one way to modulate the force is to engage more or less units (\textbf{rectruitment}). The other way is to involve the same fibers multiple times a second (\textbf{rate coding}). The higher the rate of discharge, the stronger the force is and shorter the fiber gets. These two phenomena can be modulated separately.\begin{itemize}
-     \item \textbf{Rate coding}: The firing rate can range from a minimal of 5/10 impulse per second, to a maximal of 60 impulse per second.Early recruited units may decrease their discharge rate when new units are
+     \item \textbf{Rate coding}: The firing rate can range from a minimal of 5/10 impulse per second, to a maximal of 60 impulse per second. Early recruited units may decrease their discharge rate when new units are
 recruited (experiencing an increase and then a subsequent decline of their
 discharge rate increase)
 \end{itemize}
@@ -3023,7 +3028,7 @@ discharge rate increase)
 \end{figure}
 \section{Biophysics of the Generation of EMG
 Signals}
-Non invasive measurment have to deal with signals that passes trough a channel before reaching the sensor, we have  many ways to module the volume condaction of the electrical signals.
+Non invasive measurment have to deal with signals that passes trough a channel before reaching the sensor, we have  many ways to module the volume conduction of the electrical signals.
 
 Volume conduction properties explain how the size and the shape of the resulting
 potential depends on the location on the recording electrode, biological tissues act as spatial and temporal \textit{low-pass}
@@ -3051,12 +3056,12 @@ This diagram illustrates the spatial distribution of extracellular potentials an
 \end{figure}
 This image illustrates the differentiation between near-field and far-field detection of Muscle Fiber Action Potentials (MFAPs) in monopolar recordings using a physical analogy and volume conduction geometry.\begin{itemize}\item \textbf{Panel A} presents a real-world traffic analogy: an observer close to the road resolves individual passing vehicles (near-field), whereas a distant observer perceives only a smoothed, collective flow (far-field). \item \textbf{Panel B} depicts the potential fields of the traveling electrical dipole; near-field electrodes capture high-amplitude, high-frequency localized potential changes, while far-field paths yield highly attenuated and spatially blurred waveforms.\item  \textbf{Panel C} formalizes this geometrically, showing that at a large recording distance ($P$), the vectors $r_1$ and $r_2$ to the positive and negative poles become nearly identical in magnitude and angle, causing the opposite electrical fields to largely cancel each other out and result in a low-amplitude, widespread signal.\end{itemize}
 \section{Electromyography Instrumentation}
-\textit{Adhesive electrodes} can be applied on the skin to register the EMG (can't be used for the EEG due to the hair) anc can be easily stuck on the skin, and doesn't need too much gel. There are also linear array electrods, able to record more spots in a longitudinal way, and 2D array electrodes, able to record a wider surface.
+\textit{Adhesive electrodes} can be applied on the skin to register the EMG (can't be used for the EEG due to the hair) and can be easily stuck on the skin, and doesn't need too much gel. There are also linear array electrods, able to record more spots in a longitudinal way, and 2D array electrodes, able to record a wider surface.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.6\textwidth]{images/EMG_electrodes.png}
 \end{figure}
-To measure directly the motor action potential from a single fiber we need to insert a needle inside the muscle, in this case the operator thet performs the EMG must have a deeper knowledge of the human anatomy, since he should know exactly where to place the electrode. 
+To measure directly the motor action potential from a single fiber we need to insert a needle inside the muscle, in this case the operator that performs the EMG must have a deeper knowledge of the human anatomy, since he should know exactly where to place the electrode. 
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.6\textwidth]{images/pros_cons.png}
@@ -3076,14 +3081,14 @@ The relationship between distribution in time and space of the potential are the
 \end{figure}
 This is the time distribution of a recorded EMG, this waveform is similar to the space distribution. The more the electrodes are large, the smoother the recorded waveform will be (due to the averaging).\bigskip
 
-The smoothing is a ``spatial filter'':
+\noindent The smoothing is a ``spatial filter'':
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.4\textwidth]{images/smoothing_filter.png}
      \caption{Section of the transfer function.}
      \label{space_dist}
 \end{figure}
-The $x$-axis of Figure \ref{space_dist} is expressed in cycles per meter, that is the spatial equivalent of the Heartz, in fact is the representation in the frequency domain of a spatial filter, so instead of Heartz: $\frac{1}{\text{sec}}$ we have $\frac{1}{\text{meter}}$, so the plot is the spectrum of a space distribution. The graph show us different curves relative to different sizes for an electrod, if the electrode is small (1 mm), the filter tends to attenuate less the high frequencies, the larger is the electrode, the stronger is the attenuating effect of the filter.
+The $x$-axis of Figure \ref{space_dist} is expressed in cycles per meter, that is the spatial equivalent of the Heartz, in fact is the representation in the frequency domain of a spatial filter, so instead of Heartz: $\frac{1}{\text{sec}}$ we have $\frac{1}{\text{meter}}$, so the plot is the spectrum of a space distribution. The graph show us different curves relative to different sizes for an electrode, if the electrode is small (1 mm), the filter tends to attenuate less the high frequencies, the larger is the electrode, the stronger is the attenuating effect of the filter.
 
 We consider the cutoff frequency as the usual frequency at which the gain is -3dB. To convert from cycles per meters to Heartz, we need to fix a condutction velocity (as shown in the lower part of Figure \ref{space_dist}).
 \section{Electrodes Configuration}
@@ -3138,7 +3143,7 @@ A dipole is moving (from left to right) and is represented in two positions (at 
      \centering
      \includegraphics[width=0.3\textwidth]{images/G1_rec.png}
 \end{figure}
-The negative peak happens when the negative charge is exactly below the electrode $G1$, and the positive peak when the positive charge is there. If we know that $G1$ recorded this potential, we can guess what $G2$ will record,  is exactly the same of $G1$ but delayed until the dipole is under $G2$ (the delay $\Delta t_1$ is given by the distance  $\Delta d_1$  and the condaction velocity).
+The negative peak happens when the negative charge is exactly below the electrode $G1$, and the positive peak when the positive charge is there. If we know that $G1$ recorded this potential, we can guess what $G2$ will record,  is exactly the same of $G1$ but delayed until the dipole is under $G2$ (the delay $\Delta t_1$ is given by the distance  $\Delta d_1$  and the conduction velocity).
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.3\textwidth]{images/G2_rec.png}
@@ -3238,7 +3243,7 @@ The following picture is an overview of what have to be done in order to obtain 
      \centering
      \includegraphics[width=0.7\textwidth]{images/EMG_sig_proc.png}
 \end{figure}
-The first step is to ``clean'' the data from the noise and artifacts, can be assessed trough:\begin{itemize}
+\noindent The first step is to ``clean'' the data from the noise and artifacts, can be assessed trough:\begin{itemize}
      \item proper skin preparation and
 electrode setup,
    \item  analog filtering in the amplifier,
