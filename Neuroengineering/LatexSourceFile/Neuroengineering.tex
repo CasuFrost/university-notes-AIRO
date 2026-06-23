@@ -61,7 +61,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \end{figure}
 The neuron is covered by the \textbf{neuronal membrane}, a phospholipid bilayer\footnote{A phospholipid bilayer is a two-layered arrangement of phosphate and lipid molecules that form a cell membrane. It serves as a continuous barrier around cells and organelles, separating the internal contents from the outside environment.}  which acts as a fatty barrier between the inside of the cell (cytoplasm) and the outside environment. This membrane is \textit{selectively permeable}: charged ions cannot pass through the bilayer, this allows the neuron to maintain different concentrations of chemicals on either side.
 
-Since the membrane forms a barrier between the inside and the outside of the cell, the membrane uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ``tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates a \textit{difference of electrical potential} (voltage).\bigskip 
+Since the membrane forms a barrier between the inside and the outside of the cell, it uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ``tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates a \textit{difference of electrical potential} (voltage).\bigskip 
 
 \noindent The main ion families that act in the neural cell are:\begin{itemize}
      \item Na$^+$: Sodium 
@@ -645,7 +645,7 @@ our knowledge of the responses actually recorded.
           \centering
           \includegraphics[width=0.5\textwidth]{images/stochGen.png}
 \end{figure}
-If the probability of generating an action potential is independent of the presence or timing of other spikes the firing rate $r$ is all we need to compute the probabilities for all possible action potential sequences.
+If the probability of generating an action potential is independent from the presence or timing of other spikes the firing rate $r$ is all we need to compute the probabilities for all possible action potential sequences.
 Our statistical model is called \textbf{Poisson Process}:\begin{itemize}
      \item In biological reality, neurons have a ``refractory period'' (after a spike, the neuron needs an instant to ``recharge''). The Poisson model ignores this biological detail for simplicity. It's an approximation, but it's incredibly useful because it allows us to use very simple mathematical tools to calculate the probability of entire sequences of spikes.
 \end{itemize}
@@ -970,7 +970,7 @@ that measures ``how much'' $y$ cause $x$. To measure how $x$ cause $y$ we have:\
           \frac{V_{y|y}}{V_{y|y,x}}
      \right).
 \end{equation}
-If the past of $y$ does not improve the prediction of $x$, then $V_{x|x,y}\simeq V_{x|x}\implies G_{y\rightarrow x}\simeq 0$. Any improvement in prediction of $x$ by the inclusion of $y$ makes $V_{x|x,y}$ decrease, and consequently $G_{y\rightarrow x}$ increase. Any addition of information should never decrease the model accuracy: $V_{x|x,y}$  should not be greater than $V_{x|x}$ (if it does, there's probably something wrong with the modelling):\begin{equation}
+If the past of $y$ does not improve the prediction of $x$, then $V_{x|x,y}\simeq V_{x|x}\implies G_{y\rightarrow x}\simeq 0$. Any improvement in prediction of $x$ by the inclusion of $y$ makes $V_{x|x,y}$ decrease, and consequently $G_{y\rightarrow x}$ increase. Any addition of information should never decrease the model accuracy: $V_{x|x,y}$  should not be greater than $V_{x|x}$ (if it does, there's probably something wrong with the model):\begin{equation}
      G_{y\rightarrow x}\in [0,+\infty].
 \end{equation}
 \textbf{Advantages}:\begin{itemize}
@@ -1114,13 +1114,14 @@ Crucially, the structural properties of the graph govern the symmetry of the adj
 \section{Common Graph Indices}
 Graph theoretical analysis relies on a variety of topological measures, broadly classified into basic measures (density, degree, distance), global measures (global and local efficiency), and mesoscale measures (modularity, divisibility). The foundational basic measures are detailed below.
 
-
+\begin{boxdefinition}{Density}{}
 Density ($k$) measures the proportion of actual edges in a binary graph relative to the maximum possible number of edges. It ranges from $0$ (a completely disconnected network) to $1$ (a fully connected, or complete, network).
 \begin{equation}
     k = \frac{L}{L_{tot}}
 \end{equation}
 where $L$ is the number of existing edges and $L_{tot}$ is the maximum possible number of edges.
-For a graph with $N$ nodes:
+\end{boxdefinition}
+\noindent For a graph with $N$ nodes:
 \begin{itemize}
     \item Undirected graphs: $L_{tot} = \frac{N(N-1)}{2}$
     \item Directed graphs: $L_{tot} = N(N-1)$
@@ -1146,7 +1147,10 @@ In graph theory, a path constitutes any valid sequence of edges linking two dist
 The \textbf{distance} $d(i, j)$ between node $i$ and node $j$ is defined as the \textit{shortest path} connecting them. Distance serves as a proxy for communicability; shorter distances signify more efficient interactions between node pairs. If no viable path exists between two nodes, the distance is mathematically defined as infinite ($\infty$).
 \begin{boxdefinition}{Global Efficiency}{}
      The \textbf{global efficiency} $E_g\in [0,1]$ of a graph $G$ is the average of the
-reciprocal of the distances between any pair of nodes. For directed graphs:\begin{equation}
+reciprocal of the distances\footnote{
+     if the distance $d$ is infinite (the nodes are not connected), we define the
+reciprocal .$\nicefrac{1}{d}$ as zero.
+} between any pair of nodes. For directed graphs:\begin{equation}
      E_g=\frac{1}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}
 \end{equation}
 for undirected graphs:\begin{equation}
@@ -1207,7 +1211,7 @@ for directed graphs:
 \begin{equation}
      Q=\frac{1}{L}\sum_{i=1}^{N}
      \sum_{j\ne i}^{N}\left(
-          a_{ij}-\frac{g_i^{IN}g_j^{OUT}}{2L}  \right)\delta(C_i,C_j)
+          a_{ij}-\frac{g_i^{IN}g_j^{OUT}}{L}  \right)\delta(C_i,C_j)
 \end{equation}
 $g_i$ is the degree of a node  (can be of type $IN$ or $OUT$). Modularity focuses on intra-community links, for each pair of nodes belonging to the same community, modularity $Q$ compares the
 existence (or not) of a link between them with the probability of having a connection between them in a random distribution of the links:\begin{equation}
@@ -1792,7 +1796,7 @@ their moist inner surface provide a well-conducting pathway for current flow.
 \noindent These ocular artifacts are of the order of 0.5 mV, monophasic, 200 - 400ms.\bigskip
 
 \noindent\textbf{Muscle Artifacts}: Muscle contractions are seen as artifacts in the 100 $\mu$V or 1 mV range, with a wide frequency
-spectrum from tens of Hz to a few kHz, thereby in the same frequency range as beta- and gammaband signals.
+spectrum from tens of Hz to a few kHz, thereby in the same frequency range as beta and gamma band signals.
 The experimenter should always ask the subject to relax the muscles and carefully inspect the EEG
 traces to check for contamination. Despite the instructions, subjects may be unable to relax and
 release muscle tension.\bigskip 
@@ -2003,7 +2007,7 @@ seconds before the stimulus, this is necessary to detect the baseline signal. Ba
 ''faraway'' because the subject's brain prepares in advance to move the finger, indeed this is
 a voluntary movement.
 \end{boxobservation}
-\section{Time Frequency EEG Analysis}
+\subsection{Time Frequency EEG Analysis}
 \textbf{Time-frequency analyses} go one step further by computing and visualizing the spectral or amplitude content of the signal as a function of time simultaneously for all frequencies of interest. Fourier transforms, Hilbert transforms, and wavelet-based approaches can be used to calculate MEG/EEG signal power (amplitude). Using this procedure, features in MEG/EEG data can be visualized in both time and frequency.
 
 The following figures show examples of time-frequency plots, in particular they show the frequency of EEG signals during a visual task with two conditions: a face gazing away (Eyes away) and at the subject (Eyes direct) as a function of time. Vertical color scale indicates power in dB. The two conditions show very similar profiles of activity: a prolonged increase in theta and alpha activity and a prolonged decrease in beta activity after the stimulus (vertical broken line). Passband 0.1-200 Hz. Data are from a nine-electrode cluster centered on the left sensorimotor scalp.
