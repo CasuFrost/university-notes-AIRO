@@ -2129,7 +2129,18 @@ $Im(X)$ is the image set of the variable $X$.
 We denote $\mu_X$ the real mean:\begin{equation}
      \lim_{N\rightarrow \infty}\bar X=\mu_X
 \end{equation}
-this estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates. The \textbf{variance} $\sigma_X^2$ instead, is a measure of how much the data points in a set differs from the mean, calculated as the average of the squared deviations. Can be estimated through the observation of $N$ samples $\{x_i\}$, resulting in the \textbf{sampled variance}:\begin{equation}
+this estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates.\bigskip 
+
+Now let's see some measure of \textit{dispersion}, that are the opposite of central tendency. The \textbf{Average Rectified Value} (ARV) is the following value:\begin{equation}
+     ARV_X=\frac{1}{N}\sum_{i=0}^{N-1}|x_i|.
+\end{equation}
+The \textbf{Root Mean Square} is the foloowing:\begin{equation}
+     RMS_X=\sqrt{\frac{1}{N}\sum_{i=0}^{N-1} x_i^2}
+\end{equation}
+and the \textbf{Average Deviation} is\begin{equation}
+     AD_X=\frac{1}{N}\sum_{i=0}^{N-1}|x_i-\bar X|.
+\end{equation}
+\noindent The \textbf{Variance} $\sigma_X^2$ instead, is a measure of how much the data points in a set differs from the mean, calculated as the average of the squared deviations. Can be estimated through the observation of $N$ samples $\{x_i\}$, resulting in the \textbf{sampled variance}:\begin{equation}
      s_X^2=\frac{1}{N}\sum_{i=0}^{N-1}(x_i-\bar X)^2
 \end{equation}
 and\begin{equation}
@@ -3156,7 +3167,7 @@ If we have a bipolar recording we have to take $G1-G2$, we get a ``mexican-hat''
      \centering
      \includegraphics[width=0.4\textwidth]{images/diff_rec.png}
 \end{figure}
-Let's change the electrodes distace to $\Delta d_2$:
+\noindent Let's change the electrodes distace to $\Delta d_2$:
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.5\textwidth]{images/moving_dipole2.png}
@@ -3181,7 +3192,7 @@ both the spatial and
 temporal power spectrum of
 the spatial EMG.
      \item The (center-to-center) inter electrode distance
-introduces a band-pass filtering effect that combines
+introduces a band-pass ``comb'' filtering effect that combines
 with the low-pass effect due
 to the electrode size to give
 the overall filtering effect
