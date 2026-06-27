@@ -61,7 +61,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 \end{figure}
 The neuron is covered by the \textbf{neuronal membrane}, a phospholipid bilayer\footnote{A phospholipid bilayer is a two-layered arrangement of phosphate and lipid molecules that form a cell membrane. It serves as a continuous barrier around cells and organelles, separating the internal contents from the outside environment.}  which acts as a fatty barrier between the inside of the cell (cytoplasm) and the outside environment. This membrane is \textit{selectively permeable}: charged ions cannot pass through the bilayer, this allows the neuron to maintain different concentrations of chemicals on either side.
 
-Since the membrane forms a barrier between the inside and the outside of the cell, it uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ``tunnels'' that allow specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates a \textit{difference of electrical potential} (voltage).\bigskip 
+Since the membrane forms a barrier between the inside and the outside of the cell, it uses specialized proteins to bridge the gap: The \textbf{Ion Channels} are ``tunnels'' that allows specific ions to flow in or out the membrane. By controlling the flow of positive and negative ions, the membrane creates a \textit{difference of electrical potential} (voltage).\bigskip 
 
 \noindent The main ion families that act in the neural cell are:\begin{itemize}
      \item Na$^+$: Sodium 
@@ -141,7 +141,7 @@ This is why at ``rest'', the potential is not zero. These ion pumps are constant
      \includegraphics[width=0.5\textwidth]{images/ionPumps.png}
      \caption{The sodium-potassium pumps.}
 \end{figure}
-We already explained that any single family of ions has a electrochemical equilibrium potential (the potential needed to counter back the diffusional forces). 
+We already explained that any single family of ions has an electrochemical equilibrium potential (the potential needed to counter back the diffusional forces). 
 \begin{boxdefinition}{Membrane Potential}{}
      The \textbf{membrane potential} is the \textit{difference in electrical potential} between the interior of a neuron and the surrounding extracellular fluid, given by the different ion concentration on the two ends of the membrane. At rest, this potential is around $-70$mV, so it's \textit{polarized}.
 \end{boxdefinition}
@@ -151,7 +151,7 @@ The membrane potential is the weighted average of the equilibrium potentials of 
      \includegraphics[width=\textwidth]{images/membranePotential2.png}
      \caption{Membrane potential.}
 \end{figure}
-When a current of positively charged ions flows into the cell, or a current of negatively charged ions flows out, the membrane potential arise becoming less negative or even positive, this phenomenon is called \textbf{depolarization}. Similarly, if a current of positively charged ions flows out, or a current of negatively charged ions flows into the cell, there is a \textbf{repolarization}, or an \textbf{hyperpolarization} if the potential goes below the rest $-70$mV.
+When a current of positively charged ions flows into the cell, or a current of negatively charged ions flows out, the membrane potential arise becoming less negative or even positive, this phenomenon is called \textbf{depolarization}. Similarly, if a current of positively charged ions flows out, or a current of negatively charged ions flows into the cell, there is a \textbf{repolarization}, or a \textbf{hyperpolarization} if the potential goes below the rest $-70$mV.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.8\textwidth]{images/polarization.eps}
@@ -188,7 +188,7 @@ The two membranes of different neurons that have to communicate aren't in contac
 
 After a synapse, some ions pass from a neural cell to another, causing these two to change their potential.\begin{itemize}
      \item \textbf{Excitatory synapses}: When some ions pass to the postsynaptic cell by depolarizing the potential.
-     \item \textbf{Inhibitory synapses}: The opposite case, when the communication cause an hyperpolarization of the postsynaptic neuron potential.
+     \item \textbf{Inhibitory synapses}: The opposite case, when the communication cause a hyperpolarization of the postsynaptic neuron potential.
 \end{itemize}
 \begin{figure}[H] 
      \centering
@@ -207,7 +207,7 @@ The presynaptic signals sent to a neuron are binary, these action potentials are
      \centering
      \includegraphics[width=0.7\textwidth]{images/summation_synapses2.png}
 \end{figure}
-So, the information processed by the neurons is composed by the sum of these excitatory and inhibitory post synaptic signals, the spatial and temporal summation produce the membrane polarization/depolarization, and this result is propagated along the membrane up the axon hillock (the physical point where all the EPSPs and IPSPs are collected by the dendrites and soma converge), where the algebraic sum of the signals takes place. According to the result of this summation, the cell may or not may fire an \textit{action potential}.
+Thus, the information processed by a neuron is determined by the integration of these excitatory and inhibitory postsynaptic signals. Spatial and temporal summation alter the membrane potential (causing polarization or depolarization), and this electrical change propagates across the membrane to the axon hillock. At this junction—where the soma converges into the axon—the algebraic summation of all EPSPs and IPSPs takes place. Depending on the net result of this summation, the cell may or may not fire an \textit{action potential}.
 \begin{boxdefinition}{Action Potential}{}
      The action potential (or spike) is a rapid, temporary, self-reinforcing reversal of a neuron's resting membrane potential.
 \end{boxdefinition}
@@ -217,7 +217,7 @@ If the sum of EPSPs at the axon hillock exceeds the threshold (about $-55\text{ 
 It's an \textit{all-or-none} process, if the stimulus does not reach the given threshold, nothing happens, else, the spike have always the same shape, duration and intensity, it's a \textbf{binary decision}.\begin{itemize}
      \item \textbf{The Sodium Channel}:\begin{enumerate}
           \item At the resting potential $-70\text{ mV}$, the gate is closed, the ions Na$^+$ can't pass. 
-          \item When the membrane depolarize and reach the threshold (about $-55\text{ mV}$), the sodium gates open, and the ions pass quickly in the gates following the electrochemical gradient, producing a raise in the action potential. 
+          \item When the membrane depolarize and reach the threshold (about $-55\text{ mV}$), the sodium gates open, and the ions pass quickly in the gates following the electrochemical gradient, producing a raise in the action potential (\textbf{excitatory PSP}). 
           \item At the peak of this spike, an \textit{inactivation port} activates, closing the gates from the inside, the channel is closed and can't be re-opened immediately. This is called \textbf{absolute refractory period}: No
 new action potential can be
 produced (under any
@@ -236,13 +236,13 @@ circumstances).
 \end{figure}
 All the spikes have the same shape, the same duration (2 milliseconds) and the same amplitude (100 mV), are fast and intense. Once the action potential is generated in the axon hillock, it needs to be propagated along the axon towards other cells. There are two main mechanisms.\bigskip 
 
-In \textbf{Continuous Conduction}, the action potential is continuously generated at each membrane section , the fast membrane depolarization induces an intra and extra cellular ionic currents, that propagate the perturbation to close membrane regions. If it finds Na$^+$ channels ready to open, the depolarizing perturbation produces
+In \textbf{Continuous Conduction}, the action potential is continuously generated at each membrane section, the fast membrane depolarization induces an intra and extra cellular ionic currents, that propagate the perturbation to close membrane regions. If it finds Na$^+$ channels ready to open, the depolarizing perturbation produces
 again an action potential (active generation).
 \bigskip
 
 If the close membrane region has just produced an action potential, the Na$^+$ channels will be in their absolute refractory period, if so, a new action potential will be impossible to produce. The propagation speed is around 1 meter per second.
 
-The absolute refractory causes the \textbf{unidirectionality} of the action potential propagation:  As the action potential propagates forward towards the ``closed'' (ready to fire) channels, the membrane segment just passed through is in the refractory period. Even if the electric charges (local currents) try to diffuse backwards, they find inactivated Na$^+$ channels that do not respond. 
+The absolute refractory period causes the \textbf{uni-directionality} of the action potential propagation:  As the action potential propagates forward towards the ``closed'' (ready to fire) channels, the membrane segment just passed through is in the refractory period. Even if the electric charges (local currents) try to diffuse backwards, they find inactivated Na$^+$ channels that do not respond. 
 
 \begin{figure}[H]
      \centering
@@ -288,7 +288,7 @@ In neuroengineering, no single spatial or temporal scale suffices for a complete
 
 Spatially, investigation reaches the micrometer ($\mu m$) level, essential for analyzing the soma or the nanometer-scale ($nm$) neuronal membrane. While global brain analysis rarely requires such granularity, it is vital for understanding cellular neurobiology. Moreover, the brain is dynamic, evolving through species-wide and individual neuroplasticity. This lifelong characteristic enables learning, memory, spontaneous recovery, and neurorehabilitation. \bigskip
 
-Modern research employs both invasive (mostly animal-based) and non-invasive methods, such as Electroencephalography (EEG), to study electrical field perturbations from neuronal firing. Beyond observation, researchers can actively modulate brain activity using external electrical fields to simulate ``reversible lesions.'' This allows for the real-time study of how specific circuits contribute to behavior without causing permanent impairment.
+Modern research employs both invasive (mostly animal-based) and non-invasive methods, such as Electroencephalography (EEG), to study electrical field perturbations from neuronal firing. Beyond observation, researchers can actively modulate brain activity using external electrical fields to simulate ``reversible lesions''. This allows for the real-time study of how specific circuits contribute to behavior without causing permanent impairment.
 
 \section{Brain Organization}
 The brain's anatomical composition is divided into \textbf{grey matter} (cell bodies and dendrites) and \textbf{white matter} (myelinated axons), characterized by a high lipid content. These tissues are visualized \textit{in vivo} using MRI, while \textbf{Diffusion Tensor Imaging (DTI)} specifically enables white matter tractography to map neural fiber trajectories.
@@ -401,6 +401,10 @@ Plasticity also involves architectural changes through \textbf{axonal sprouting}
 \chapter{Signals, Encoding and Decoding}
 \section{Electrical Correlates of the Brain Activity}
 Neuroengineering techniques for monitoring brain activity are governed by a trade-off between spatial resolution and invasiveness, spanning from direct Intracellular Potentials (IP) to non-invasive Electroencephalography (EEG). Intermediate approaches include Extracellular Potentials (EP), Local Field Potentials (LFP), Stereo-electroencephalography (S-EEG), and Electrocorticography (ECoG). Notably, while IP provides a direct measurement, the other listed methods capture only physiological correlates—phenomena influenced by, rather than equivalent to, actual brain activity.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.7\textwidth]{images/invasiveness.png}
+\end{figure}
 \subsection{Single-Cell Recordings}
 Intracellular recordings utilize hollow glass electrodes filled with an electrolyte, paired with a reference electrode placed in the extracellular medium. There are two primary techniques: sharp electrodes, which penetrate the membrane, and patch electrodes, which establish a seal on the membrane surface to contact the cell's interior. Although these methods are technically challenging to execute, they provide the most accurate measurement of actual membrane potential, offering exceptionally high temporal resolution.
 \begin{figure}[H] 
@@ -482,7 +486,7 @@ Because the cortex's pyramidal neurons are aligned parallel to each other, when 
 \multicolumn{1}{|l|}{I} & up   & down \\ \hline
 \end{tabular}
 \end{table}
-Despite they exists four different configurations, we can observe only two results (up or down direction). If a scalp electrode detects an ``up'' oriented dipole, it cannot know for sure whether it is caused by an excitatory TC input OR an inhibitory CC input.\begin{quote}
+Although there are four different configurations, we can observe only two results (up or down direction). If a scalp electrode detects an ``up'' oriented dipole, we cannot know for sure whether it is caused by an excitatory TC input OR an inhibitory CC input.\begin{quote}
      \textbf{Conclusion}: The same signal measured externally can be produced by profoundly different cellular mechanisms.
 \end{quote} 
 
@@ -593,7 +597,7 @@ we assume that $s$ is stationary along each trial.\bigskip
           -\frac{1}{2}\left(\frac{s-s_{max}}{\sigma_f}\right)^2
      \right).
 \end{equation}
-\begin{figure}
+\begin{figure}[H]
           \centering
           \includegraphics[width=0.55\textwidth]{images/tuningCurve.png}
           \caption{Example (1) of tuning curve.}
@@ -602,13 +606,13 @@ we assume that $s$ is stationary along each trial.\bigskip
 This curve have been estimated by experimentation on an animal subject (monkey) on the primary visual cortex, $s_{max}$ is the angle evoking the maximum response, and $\sigma_f$ is the amplitude of the tuning curve.\bigskip
 
 \noindent\textbf{Example 2}: This example regards the neuron in the primary motor cortex of a monkey trained to reach in different directions. The firing rate of the cell is correlated with the direction of arm movement $s$ (in degrees). 
-\begin{figure}
+\begin{figure}[H]
           \centering
           \includegraphics[width=0.8\textwidth]{images/tuningCurve2.png}
           \caption{Example (2) of tuning curve.}
           \label{TunCurve2}
 \end{figure}
-The curve shown in figure \ref{TunCurve2} is defined as follows:\begin{equation}
+The curve shown in Figure \ref{TunCurve2} is defined as follows:\begin{equation}
      f(s)=r_0+(r_{max}-r_0)\cos(s-s_{max})
 \end{equation}
 where $s_{max}$ is the angle evoking the maximum response, and $r_0$ is an offset to avoid negative firing rate.\bigskip
@@ -616,12 +620,12 @@ where $s_{max}$ is the angle evoking the maximum response, and $r_0$ is an offse
 \noindent\textbf{Example 3}: This experiment is done on the primary visual cortex of a cat, reacting to \textit{retinal disparity} (a
 difference in the retinal
 location of an image
-between the two eyes). The curve in figure \ref{TunCurve3} represent the tuning curve, where $s$ is the binocular retinal disparity in degrees, $\Delta s$ controls how quickly the firing rate increases as a function of $s$ and $s^*$ is the disparity inducing a response equal to $\frac{1}{2}$ of the maximum rate $r_{max}$.\begin{equation}
+between the two eyes). The curve in Figure \ref{TunCurve3} represent the tuning curve, where $s$ is the binocular retinal disparity in degrees, $\Delta s$ controls how quickly the firing rate increases as a function of $s$ and $s^*$ is the disparity inducing a response equal to $\frac{1}{2}$ of the maximum rate $r_{max}$.\begin{equation}
      f(s)=\frac{r_{max}}{1+\exp\left(
           \frac{s^*-s}{\Delta s}
      \right)}.
 \end{equation}
-\begin{figure}
+\begin{figure}[H]
           \centering
           \includegraphics[width=0.5\textwidth]{images/tuningCurve3.png}
           \caption{Example (3) of tuning curve.}
@@ -696,7 +700,7 @@ We observe in the behavioral data that the percentage of correct answer by a sub
 With 90\% of dots that moves randomly, the subject is still able to correct identify more than 80\% of the trial: our brain recognize movement even in presence of noise. \bigskip 
 
 The \textbf{goal of our neural decoder} is to guess if the dots were moving upward or downward \textbf{by observing the neural response} from the behavioral data.
-Observe the histogram in figure \ref{his_dot}, that have been constructed from behavioral data after 60 trials for each combination of the two factors (direction and coherence).
+Observe the histogram in Figure \ref{his_dot}, that have been constructed from behavioral data after 60 trials for each combination of the two factors (direction and coherence).
 \begin{figure}
           \centering
           \includegraphics[width=0.6\textwidth]{images/histoDots.png}
@@ -726,12 +730,12 @@ When the coherence is low and there is overlap, the decoder will make more mista
           \caption{When the coherence is 12.8\%, the given threshold $z$ correctly separates the two classes of stimuli. Instead, when the coherence is 0.8\%, the threshold misclassify the majority of trials with $(+)$ direction.}
 \end{figure}
 \begin{itemize}
-     \item true positive: The trial involved \textit{upward direction} and the threshold $z$ classified \textit{correctly} the trial.
-     \item false positive: The trial involved \textit{downward direction} and the threshold $z$ classified \textit{wrongly} the trial.
-     \item false negative: The trial involved \textit{upward direction} and the threshold $z$ classified \textit{wrongly} the trial.
-     \item true positive: The trial involved \textit{downward direction} and the threshold $z$ classified \textit{correctly} the trial.
+     \item true positive: The trial involved an \textit{upward direction} and the threshold $z$ classified \textit{correctly} the trial.
+     \item false positive: The trial involved a \textit{downward direction} and the threshold $z$ classified \textit{wrongly} the trial.
+     \item false negative: The trial involved an \textit{upward direction} and the threshold $z$ classified \textit{wrongly} the trial.
+     \item true negative: The trial involved a \textit{downward direction} and the threshold $z$ classified \textit{correctly} the trial.
 \end{itemize}
-We denote $\beta(z)=\Prob(r\ge z|+)$ the probability of classifying a trial correctly, when the trial involved upward direction (the probability of guessing true positives), while $\alpha(z)=\Prob(r\ge z|-)$ is the probability of classifying a trial wrongly, when the trial involved downward direction (the probability of guessing true negatives). 
+We denote $\beta(z)=\Prob(r\ge z|+)$ the probability of classifying a trial correctly, when the trial involved an upward direction (the probability of guessing true positives), while $\alpha(z)=\Prob(r\ge z|-)$ is the probability of classifying a trial wrongly, when the trial involved a downward direction (the probability of guessing false positives). 
 
 Ideally we would like $\beta(z)=1$ and $\alpha(z)=0$, we have to tune $z$ in order to reach this result.
 \begin{table}[H]
@@ -761,7 +765,7 @@ When the coherence is near to 0\%, the curve is near the line $\alpha=\beta$, in
           \centering
           \includegraphics[width=0.25\textwidth]{images/ROC3.eps}
 \end{figure}
-The performances of a classifier are evaluated by the area under the ROC curve (AUC), and represents the percentage of correct classifications. Of course the best possible value for the AUC is 1, and the worst possible value is the area under the curve $\alpha=\beta$ that is $\frac{1}{2}$: That is also the result of trying to guess randomly.
+The performances of a classifier are evaluated by the area under the ROC curve (AUC), and represents the percentage of correct classifications. Of course the best possible value for the AUC is 1, and the worst possible value is the area under the curve $\alpha=\beta$ that is $0.5$: This is also the result of trying to guess randomly.
 \bigskip
 
 This classifier is not sophisticated, but performs similar to the behavioral data fetched from human experiments. The neural decoding task is involved, we need to study how the brain works in a probabilistic fashion, we need to understand how the neurons works and build distributions, in order to develop a strategy to decode the information. An accurate decoder would require complex computation, a conflicting requirement with respect to the bit rate (how fast we can decode the data), so in real applications there is a trade of between these two requirements.
@@ -797,7 +801,7 @@ The modeling of the brain have four main domains of applications: Understand the
 
 The \textbf{anatomical connectivity} is the physical layer (like the axons) that physically connects the brain areas, or single neurons between them. This structure is stable in the short time, and does not change. Can change only at a longer time scale (plasticity), as already described in Section \ref{Plasticity}. There are two ways to study this layer:\begin{itemize}
      \item Invasive (Tracing): Chemical tracers are used that are injected into neurons and ``go up'' or ``down'' along the axons to map the connections. It is very precise, but obviously it can only be done in pre-clinical studies (on animal models).
-     \item Non Invasive (Diffusion Weighted Imaging): A result of this technique is shown in figure \ref{DTI}. It exploits the way water molecules move within axons. Since water tends to diffuse along the direction of the nerve fibers, the computer can reconstruct the path of the fiber bundles. It is the technique that allows us to ``see'' the wiring of the human brain in vivo.
+     \item Non Invasive (Diffusion Weighted Imaging): A result of this technique is shown in Figure \ref{DTI}. It exploits the way water molecules move within axons. Since water tends to diffuse along the direction of the nerve fibers, the computer can reconstruct the path of the fiber bundles. It is the technique that allows us to ``see'' the wiring of the human brain in vivo.
 \end{itemize}
 \begin{figure}[H]
           \centering
@@ -814,14 +818,14 @@ While with anatomical connectivity we try to understand how the brain is built, 
 \end{itemize}
 
 The highest level is the \textbf{causal connectivity}. Effective connectivity describes the direct and directional influence that one brain area has on another. We are no longer satisfied with saying ``$A$ and $B$ are active together''; we want to prove that ``$A$'s activity is causing a change in $B$'s activity''.
-Causal connectivity is guided by models, we need a model that describes how the area $A$ interacts with the area $B$, and then test this model with respect to the real data. In this approach we need an hypothesis \textbf{at priori} of how the system might work: We try different models from a wide model space, and check which model performs better (sticks better to the real data).
+Causal connectivity is guided by models, we need a model that describes how the area $A$ interacts with the area $B$, and then test this model with respect to the real data. In this approach we need a hypothesis \textbf{at priori} of how the system might work: We try different models from a wide model space, and check which model performs better (sticks better to the real data).
 \begin{figure}[H]
           \centering
           \includegraphics[width=0.5\textwidth]{images/causality_graph.png}
           \caption{Causality graph.}
           \label{causality_graph}
 \end{figure}
-\noindent A simple model of causality is shown in figure \ref{causality_graph}. The nodes A1, A2 and A3 represents units of the system (populations of neurons or specific brain areas). If there is an edge from A2 to A1, it means: \textit{the activity of the population A2 causes a change in the activity of A1}. It's not a simple correlation; it is a dynamic impact hypothesis.
+\noindent A simple model of causality is shown in Figure \ref{causality_graph}. The nodes A1, A2 and A3 represents units of the system (populations of neurons or specific brain areas). If there is an edge from A2 to A1, it means: \textit{the activity of the population A2 causes a change in the activity of A1}. It's not a simple correlation; it is a dynamic impact hypothesis.
 
 The numbers on the edges represents weights or coupling parameters, they represent the ``strength'' of the influence. The two different graphs represents two different models (hypothesis). A comparison with the data will determine which of the two models better describes the brain. 
 \subsection{Correlation and Coherence}
@@ -841,7 +845,7 @@ In this section we provide mathematical procedure to describe the correlation an
           \centering
           \includegraphics[width=0.4\textwidth]{images/eegTrace.eps}
 \end{figure}
-We need two definitions.
+\noindent We need two definitions.
 \begin{boxdefinition}{Auto Correlation Function}{}
      Given a time series $x[n]$, the auto correlation function is the time series:\begin{eqnarray}
           r_{xx}[k]=\sum_{n=-\infty}^{+\infty}x^*[n]x[n+k].
@@ -909,10 +913,10 @@ The ordinary coherence does not contain any information about the direction of t
 
 \subsection{Causality}
 
-The determination of causal relationships in neural networks is mainly articulated through two distinct approaches. The first, defined \textit{Physical Influence} (or interventional approach), is based on direct experimental manipulation (e.g. via electrical stimulation or ultrasound) of a node in the network; this physical intervention isolates the influence of the manipulated node, allowing it's distal effects to be measured, representing the \textit{gold standard} for defining causality, although it is limited by constraints of experimental practicality. The second approach, based on \textit{Temporal Precedence}, is observational in nature and postulates that the cause must temporally precede the effect; in this context, causality is inferred via computational analyzes that evaluate the predictive ability of temporally distinct neural events, allowing directional influences to be derived from raw data without the need for invasive physical manipulations.\bigskip
+The determination of causal relationships in neural networks is mainly articulated through two distinct approaches. The first, defined \textit{Physical Influence} (or interventional approach), is based on direct experimental manipulation (e.g. via electrical stimulation or ultrasound) of a node in the network; this physical intervention isolates the influence of the manipulated node, allowing it's distal effects to be measured, representing the \textit{gold standard} for defining causality, although it is limited by constraints of experimental practicality. The second approach, based on \textit{Temporal Precedence}, is observational in nature and postulates that the cause must temporally precede the effect; in this context, causality is inferred via computational analysis that evaluate the predictive ability of temporally distinct neural events, allowing directional influences to be derived from raw data without the need for invasive physical manipulations.\bigskip
 
 
-The first definition of causality in a statistical framework was given by Norbert Wiener in 1956.\begin{boxdefinition}{Causality}{}
+\noindent The first definition of causality in a statistical framework was given by Norbert Wiener in 1956.\begin{boxdefinition}{Causality}{}
 Given two simultaneously measured signals, if one can 
 predict the first signal better by incorporating the past 
 information from the second signal than using only 
@@ -938,9 +942,9 @@ If we have to use only the past values of $x$ from 0 to $n-1$, the value of $x[n
      \\
      &=a[1]x[n-1]+a[2]x[n-2]+\dots +a[p]x[n-p]+e[n]
 \end{align}
-where $a[1]\dots, a[p]$ are real coefficients, and $$e[n]=x[n]-\hat x[n]$$ is the error between the prediction and the real value. $p$ is the \textbf{order} of the model (how many previous step we use to predict the future). We assume that the error $e[n]$ is a zero mean uncorrelated white noise.
+where $a[1]\dots, a[p]$ are real coefficients, and $$e[n]=x[n]-\hat x[n]$$ is the error between the prediction and the real value. $p$ is the \textbf{order} of the model (how many previous step we use to predict the future). We assume that the error $e[n]$ is a zero mean uncorrelated white noise (so we have to minimize it by choosing it's variance).
 
-To define a good model we have to determine the coefficients $a[k]$ that minimizes the squared error $e[n]$, this can be done by solving an optimization problem over experimental data.\bigskip 
+To define a good model we have to determine the coefficients $a[k]$ that minimizes the squared error $e[n]$, this can be done by solving an optimization problem over experimental data, the variables of this optimization problem are the coefficients and the variance of the error.\bigskip 
 
 Now, the Granger-causality is modeled through a \textbf{Bivariate Autoregressive Model}, let $x$ to be the signal that we want to predict, we also have another signal $y$. We want to use $x[0]\dots, x[n-1]$ and $y[0]\dots, y[n-1]$ to predict $x[n]$, the bivariate autoregressive model (of order $p$) for the prediction $\hat x[n]$ is defined as follows:\begin{equation}\label{biv_autore}
      \hat x[n]=\sum_{k=1}^p a_{xy}[k]x[n-k] 
@@ -987,7 +991,7 @@ activities for the problem.
 \end{itemize}
 \section{Pairwise and Multivariate Approaches}
 Let's consider a set of signals that we have sampled from a process:\begin{equation}
-     x_1[n], \ x_2[n] \ \dots \ x_i[n] \ \dots \ x_N[n]
+     x_1[n], \ x_2[n] \ \dots \ x_i[n] \ \dots \ x_N[n] \quad n=1,2,3\dots
 \end{equation}
 We might analyze all these signals pairwise and assess causality between each couple. The problem is that any pairwise model analyzing the relation between two signals cannot recognize the statistical link between them is due
 to the common effect of a third signal,
@@ -1149,7 +1153,7 @@ The \textbf{distance} $d(i, j)$ between node $i$ and node $j$ is defined as the 
      The \textbf{global efficiency} $E_g\in [0,1]$ of a graph $G$ is the average of the
 reciprocal of the distances\footnote{
      if the distance $d$ is infinite (the nodes are not connected), we define the
-reciprocal .$\nicefrac{1}{d}$ as zero.
+reciprocal $\nicefrac{1}{d}$ as zero.
 } between any pair of nodes. For directed graphs:\begin{equation}
      E_g=\frac{1}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}
 \end{equation}
@@ -1537,7 +1541,7 @@ We can observe how the electrodes placed on the motor cortex reacts, these oscil
      \includegraphics[width=0.4\textwidth]{images/cal_bars.eps}
 \end{center} 
 
-We categorize the observed signals in base of their frequency, by considering 5 different bands.
+\noindent We categorize the observed signals in base of their frequency, by considering 5 different bands.
 \begin{itemize}
     \item Delta: less than 3.5 Hz 
     \item Theta: from 4 to 7.5 Hz
@@ -1626,7 +1630,7 @@ A desirable feature for an amplifier is an \textit{high input impedance}. Before
      \caption{A simple measurement model.}
      \label{impedance}
 \end{figure}
-This is a model of  real generator that is an ideal generator in series with an output impedance.\begin{equation}
+\noindent This is a model of  real generator that is an ideal generator in series with an output impedance.\begin{equation}
      V_{meas}=V_{gen}\frac{Z_2}{Z_1+Z_2}
 \end{equation} 
 The impedance is (in simplistic words) a \textbf{frequency dependant resistance}. The measurement system in Figure \ref{impedance} is a real multimeter, composed by an ideal multimeter (that measures the voltage without disturbing the circuit) plus an impedance in parallel. This is the simplest model of a real measurement system. 
@@ -1646,7 +1650,7 @@ Our output source is the membrane that generates the ionic current, the contact 
 \end{figure}
 The real problem in the impedance is the skin, the surface part of the skin is composed mostly by dead cells, that have an high impedance, for that purpose we use a gel to stabilize the contact surface  and infiltrates the dry skin to moist it, by reducing the impedance.
 
-The international guidelines suggest to keep electrode impedance below 5 k$\Omega$, the modern amplifiers with high input impedance allows to relax this requirement, a typical value for the input impedance is around hundreds of M$\Omega$.
+The international guidelines suggest to keep electrode impedance below 5 k$\Omega$, the modern amplifiers with high input impedance allows to relax this requirement, a typical value for the input impedance is around hundreds of M$\Omega$ ($\simeq 10^8 \Omega$).
 \subsection{Standard Electrode Displacement}
 The first standard from the 90's required 19 electrodes.
 \begin{figure}[H] 
@@ -1703,7 +1707,7 @@ In the left diagram, we are acquiring data from different electrodes by using th
 
 In case of \textbf{Bipolar Montage}, there is not a single reference potential, for each channel to record we use a different reference. Usually, there is a ``line'' of electrodes, and for each channel we use as active electrode, the one that was a reference electrode in the previous channel. In the image, the bipolar montage is placed in a longitudinal way.
 
-As we can observe in the example of figure \ref{bipolar_monopolar}, the potential is distributed in such way to have a peak on the vertex. The monopolar montage in this case mount the reference electrode near the ear where the potential is minimum, and waveform recorded by the channels faithfully represent the potential distribution.
+As we can observe in the example of Figure \ref{bipolar_monopolar}, the potential is distributed in such way to have a peak on the vertex. The monopolar montage in this case mount the reference electrode near the ear where the potential is minimum, and waveform recorded by the channels faithfully represent the potential distribution.
 
 In the bipolar montage the displacement and the connections effects the recording in a different way, for example, the first two electrodes on the top records a negative potential since the reference electrode $F_3$ is closer to the peak, so the difference $F_{p1}-F_3$ is a negative value. The bipolar montage highlight phase reversals, making easier to detect peaks in the potential, so in the clinical practice, the bipolar montage is often used more than the monopolar montage.
 \begin{figure}[H] 
@@ -1984,7 +1988,7 @@ related desynchronization (ERD)} and a positive envelop \textbf{event related sy
     \item \textbf{Event Related Synchronization (ERS):} \textit{Positive} variation of the EEG power rhythms at one time relative to a \textit{baseline} period at another time.
 \end{itemize}
 
-The steps to follow to obtain these quantities from $N$ raw EEG trials are the following:
+\noindent The steps to follow to obtain these quantities from $N$ raw EEG trials are the following:
 
 \begin{enumerate}
     \item \textbf{Bandpass filtering} of all event-related trials.
@@ -2122,7 +2126,7 @@ The word ``random'' can refers to different levels of complexity in the context 
 
 A random process in our context, assign a probability to every possible EEG signals over time that we might observe, when we measure the EEG we have a \textbf{realization} of the random process.\bigskip 
 
-In the context of statistic, the true mean of a given random variable $X$ can be approximated by considering $N$ observation $\{x_i\}:\subset Im(X)$\begin{equation}
+In the context of statistic, the true mean of a given random variable $X$ can be approximated by considering $N$ observation $\{x_i\}\subset Im(X)$\begin{equation}
      \bar X=\frac{1}{N}\sum_{i=0}^{N-1}x_i
 \end{equation}
 $Im(X)$ is the image set of the variable $X$.
@@ -2149,7 +2153,7 @@ and\begin{equation}
 The \textbf{standard deviation} is the square root of the variance:\begin{equation}
      s_X=\sqrt{\frac{1}{N}\sum_{i=0}^{N-1}(x_i-\bar X)^2}.
 \end{equation}
-The currents produced by the population of neurons are not deterministic, hence it is a stochastic process, on which each EEG measurement over time is a realization. To get the sample mean of an EEG under static conditions (the patient remain still) we can register $N$ trials, and then average all the trials to get an idea of the mean value for the EEG, as shown in figure \ref{AVG_EEG}.
+The currents produced by the population of neurons are not deterministic, hence it is a stochastic process, on which each EEG measurement over time is a realization. To get the sample mean of an EEG under static conditions (the patient remain still) we can register $N$ trials, and then average all the trials to get an idea of the mean value for the EEG, as shown in Figure \ref{AVG_EEG}.
 \bigskip
 
 An important tool used in stochastic signal theory is the \textit{Gaussian White Noise}, the amplitude of that signal at any given time follows a normal distribution with zero mean. This means small fluctuations are common, while extreme spikes are rare.
@@ -2223,9 +2227,12 @@ Each discrete time sampled signal is a periodic signal made up by the sum of a f
      \includegraphics[width=\textwidth]{images/DFT.eps}
 \end{figure}
 The DFT is exactly the relationship between the time domain samples $x[n]$ of the signal and the amplitude and phase relative to a specific frequency $m$:\begin{equation}\label{DFT}
-     X[m]=\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\nicefrac{1}{N})
-\end{equation}
-the product over the summation $\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\frac{1}{N})$ is a  \textbf{similarity measure} between the signal $x[n]$ and the specific harmonic $\exp(-j2\pi mn\frac{1}{N})$ of frequency $m$.\begin{quote}
+     X[m]=\sum_{n=0}^{N-1}x[n]\exp\left(-j2\pi m\frac{n}{N}\right).
+\end{equation}\begin{boxproposition}{DFT}{}
+     The DFT of a signal represents the amplitude $A_i$ and initial phases $\phi_i$ of sinewave components of 
+the signal at frequencies $f$ ranging from 0 Hz (\textbf{included}) to the sampling frequency (\textbf{excluded}).
+\end{boxproposition}
+The product over the summation $\sum_{n=0}^{N-1}x[n]\exp(-j2\pi mn\frac{1}{N})$ is a  \textbf{similarity measure} between the signal $x[n]$ and the specific harmonic $\exp(-j2\pi m\frac{n}{N})$ of frequency $m\frac{n}{N}$.\begin{quote}
      \textit{the contribution of the sinewave in the signal is given by the dot product between these two.}
 \end{quote}
 In fact, in the vector space of continuous function periodic in $[0,T]$, the dot product between two functions $f$ and $g$ is given by\begin{equation}
@@ -2422,28 +2429,28 @@ We can also identify another window that overlaps the original two, and compute 
 \noindent In the general case, this procedure is called \textbf{Welch's method} and consists in the following steps.
 \begin{boxdefinition}{Spectral Averaging - Welch's Method}{}
 \begin{enumerate}
-     \item Take a short segment of the signal of length \texttt{nsamples}. 
+     \item Take a short segment of the signal of length \texttt{n\_per\_seg}. 
      \item Apply a windowing function $w(t)$.
      \item Compute the windowed periodogram $$
      |DFT(w(t)\cdot x(t))|^2
      $$
      and store the resulting PSD.
-     \item Shifts \texttt{nsamples} to the right, (or a fraction of this amount, if overlapping segments are desired). 
-     \item Repeat the steps 1 to 4 until the end of the signal is reached, having in total \texttt{num\_samples}. 
+     \item Shifts \texttt{n\_per\_seg} to the right, (or a fraction of this amount, if overlapping segments are desired). 
+     \item Repeat the steps 1 to 4 until the end of the signal is reached, having in total \texttt{total\_samples}. 
      \item Average all the PSDs.
 \end{enumerate}
 \end{boxdefinition}
 \noindent The reduction in spectral resolution is determined by the length of the segment\begin{equation}
-     \Delta f\propto \frac{1}{\texttt{nsamples}}
+     \Delta f\propto \frac{1}{\texttt{n\_per\_seg}}
 \end{equation}
-and the variability of the PSD is reduced by a factor $\sqrt{\texttt{num\_samples}}$.
+and the variability of the PSD is reduced by a factor $\sqrt{\texttt{total\_samples}}$.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.45\textwidth]{images/avgPer.png}
      \caption{Averaged periodogram.}
      \label{avgPer}
 \end{figure}
-In figure \ref{avgPer} we can see the differences between the spectrum computed with the periodogram (left) and the spectrum after the Welch's method (right). \bigskip
+In Figure \ref{avgPer} we can see the differences between the spectrum computed with the periodogram (left) and the spectrum after the Welch's method (right). \bigskip
 
 
 \noindent When the signal is \textbf{not stationary}, PSD should not be used to describe the signal's spectrum. If short
@@ -2497,7 +2504,7 @@ FIR filters are systems where the output is calculated based solely on the curre
 is a weighted sum of the $N$ inputs $x[i],x[i-1]\dots x[i-N]$. The definition of the coefficients $b_k$ defines the behavior of the filter. These filters are not much used in practice. On the other hand, an IIR filter have the output computed by combining samples of the input and previous samples of the output:\begin{equation}
      y[i]=\sum_{k=0}^{M}b_kx[i-k]-\sum_{k=1}^{N}a_ky[i-k].
 \end{equation}
-The order $\max(N,M)$ of a filter indicates how many recent samples are used to compute the output. 
+The \textbf{order} $\max(N,M)$ of a filter indicates how many recent samples are used to compute the output. 
 So, to recap the differences:\begin{itemize}
      \item FIR: we have only the convolutive component of the computation of the output. 
      \item IIR: we have both the convolutive component and a recursive component.
@@ -2513,6 +2520,24 @@ on the other hand, design methods for IIR filters are:\begin{itemize}
 \end{itemize}
 An RC filter is the simplest type of an analog Butterworth filter. \bigskip
 
+\noindent Where do the names Finite Impulse Response and Infinite Impulse Response come from? These names refers to the filter output when the signal in input is a unit impulse (a signal zero everywhere except on zero, that is 1):\begin{equation}
+     x(n)=\begin{cases}
+          1 \text{ if }n=0\\ 
+          0 \text{ instead}
+     \end{cases}.
+\end{equation}
+What is the response of a FIR filter to the unit impulse?\begin{align}
+     &y[0]=\sum_{k=0}^{N}b_kx[-k]=b_0x[0]=b_0\\ 
+     &y[1]=\sum_{k=0}^{N}b_kx[1-k]=b_1x[0]=b_1\\ 
+     &y[2]=\sum_{k=0}^{N}b_kx[2-k]=b_2x[0]=b_2\\ 
+     &\vdots \\ 
+     &y[N]=\sum_{k=0}^{N}b_kx[N-k]=b_Nx[0]=b_N 
+\end{align}
+for $i>N$, the result will be zero since there are no more coefficients $b_k$ for $k>N$, so the impulse response of the filter is \textit{finite}, in the sense that at some point it goes to zero and remain zero. Differently, in IIR filters, since there is also the recursive part, it can be shown that the response is an \textit{exponential} that approaches zero without reaching it, so it's an ''infinite'' response.
+\begin{figure}[H] 
+     \centering
+     \includegraphics[width=0.6\textwidth]{images/FIR_IIR.eps}
+\end{figure}
 \noindent\textbf{Example}: The following image shows the difference between a raw signal (blue) and the filtered signal (orange):
 \begin{figure}[H] 
      \centering
@@ -2994,7 +3019,7 @@ Inside the muscle there are several fascicles, and inside a fascicles there are 
      \centering
      \includegraphics[width=0.4\textwidth]{images/muscle_fiber.png}
 \end{figure}
-These are the same role that the neurons have for the EEG, they are the core component that generates electrical activity. A single muscle fiber can be in a resting condition, or can produce a response called \textbf{muscle fiber action potential}.
+These have the same role that the neurons have for the EEG, they are the core component that generates electrical activity. A single muscle fiber can be in a resting condition, or can produce a response called \textbf{muscle fiber action potential}.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.8\textwidth]{images/muscle_AP.png}
