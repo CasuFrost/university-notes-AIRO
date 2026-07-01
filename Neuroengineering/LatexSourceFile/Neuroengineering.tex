@@ -218,7 +218,7 @@ If the sum of EPSPs at the axon hillock exceeds the threshold (about $-55\text{ 
 It's an \textit{all-or-none} process, if the stimulus does not reach the given threshold, nothing happens, else, the spike have always the same shape, duration and intensity, it's a \textbf{binary decision}.\begin{itemize}
      \item \textbf{The Sodium Channel}:\begin{enumerate}
           \item At the resting potential $-70\text{ mV}$, the gate is closed, the ions Na$^+$ can't pass. 
-          \item When the membrane depolarize and reach the threshold (about $-55\text{ mV}$), the sodium gates open, and the ions pass quickly in the gates following the electrochemical gradient, producing a raise in the action potential (\textbf{excitatory PSP}). 
+          \item When the membrane depolarize and reach the threshold (about $-55\text{ mV}$), the sodium gates open, and the ions pass quickly in the gates following the electrochemical gradient, producing a raise in the  potential (\textbf{excitatory PSP}). 
           \item At the peak of this spike, an \textit{inactivation port} activates, closing the gates from the inside, the channel is closed and can't be re-opened immediately. This is called \textbf{absolute refractory period}: No
 new action potential can be
 produced (under any
@@ -235,7 +235,7 @@ circumstances).
      \centering
      \includegraphics[width=0.6\textwidth]{images/spike.eps}
 \end{figure}
-All the spikes have the same shape, the same duration (2 milliseconds) and the same amplitude (100 mV), are fast and intense. Once the action potential is generated in the axon hillock, it needs to be propagated along the axon towards other cells. There are two main mechanisms.\bigskip 
+All the action potential spikes have the same shape, the same duration (2 milliseconds) and the same amplitude (100 mV), are fast and intense. Once the action potential is generated in the axon hillock, it needs to be propagated along the axon towards other cells. There are two main mechanisms.\bigskip 
 
 In \textbf{Continuous Conduction}, the action potential is continuously generated at each membrane section, the fast membrane depolarization induces an intra and extra cellular ionic currents, that propagate the perturbation to close membrane regions. If it finds Na$^+$ channels ready to open, the depolarizing perturbation produces
 again an action potential (active generation).
@@ -329,7 +329,7 @@ Neural communication is facilitated by three primary connection types, which can
     To navigate brain topography, standardized anatomical axes are utilized for precise regional identification. Primary longitudinal descriptors include \textbf{Anterior/Posterior} (front/behind), \textbf{Superior/Inferior} (above/below), and \textbf{Rostral/Caudal} (nose/tail). Spatial orientation relative to the midline is defined by \textbf{Medial/Lateral} axes, while lateralized functions are termed \textbf{Ipsilateral} (same side) or \textbf{Contralateral} (opposite side). Finally, the \textbf{Dorsal/Ventral} axis distinguishes between the ``back'' and ``belly'' aspects, accounting for the neuroaxis curvature relative to the spinal cord.
   \end{minipage}
 \end{figure}
-At a macro-anatomical level, the brain is divided into four lobes named after their protecting cranial bones. While structurally symmetrical, functional asymmetries exist, such as language processing in the \textbf{frontal lobe}, which governs executive functions like reasoning and motor planning. \bigskip
+At a macro-anatomical level, the brain is divided into four lobes named after their protecting cranial bones. While structurally symmetrical, functional asymmetries exists, such as language processing in the \textbf{frontal lobe}, which governs executive functions like reasoning and motor planning. \bigskip
 
 The other lobes specialize in distinct domains: the \textbf{parietal lobe} integrates somatosensory data and spatial orientation; the \textbf{occipital lobe} interprets visual stimuli; and the \textbf{temporal lobe} processes auditory information and receptive language. The latter also houses the \textbf{hippocampus}, vital for memory, emotion, and spatial mapping. This lobar division serves as a functional map of a highly interconnected system. \bigskip
 \begin{figure}[H] 
@@ -349,6 +349,10 @@ Similarly, \textbf{somatotopic mapping} organizes the motor (pre-central gyrus, 
      \includegraphics[width=0.6\textwidth]{images/homunculus.jpg}
      \caption{The Penfield Homunculus.}
 \end{figure}
+\begin{itemize}
+     \item \textbf{Retinotopic Organization}: This is how the occipital lobe (the visual cortex) is organized. It means that the spatial arrangement of visual information on the retina is mapped onto the visual cortex. Essentially, neighboring points on the retina project to neighboring points in the visual cortex.
+     \item \textbf{Somatotopic Organization}: This refers to the mapping of the body's surface onto the brain. This is characteristic of the motor cortex (which controls movement) and the somatosensory cortex (which processes touch, pain, and temperature). In these areas, specific regions of the brain correspond to specific parts of the body.
+\end{itemize}
 \begin{figure}[H]
   \centering
   \begin{minipage}{0.4\textwidth}
@@ -1226,7 +1230,7 @@ existence (or not) of a link between them with the probability of having a conne
 intra-community link}}-\underbrace{\frac{g_ig_j}{2L}}_{\text{Probability of a random link
 between the nodes}}.
 \end{equation}
-If there are more intra-community links than in a random division, $Q>0$, otherwise $Q\le 0$, it is an index contained in the range $[-0.5,1]$. In order to compute the modularity, we have to consider all the edges between two nodes in the same community, and add to the sum $1-\frac{g_ig_j}{2L}$.\bigskip
+If there are more intra-community links than in a random division, $Q>0$, otherwise $Q\le 0$, it is an index contained in the range $[-0.5,1]$. \bigskip
 
 
 \noindent We recap the properties of a graph under two labels:
@@ -1244,7 +1248,7 @@ If there are more intra-community links than in a random division, $Q>0$, otherw
           \item high modularity.
      \end{itemize}
 \end{itemize}
-In general there are two \textit{reference structures} that describe  two different type of network:
+In general there are two \textit{reference structures} that describe  two different types of network:
 \begin{center}
      \includegraphics[width=0.45\textwidth]{images/regular_random.png} 
 \end{center} 
@@ -1269,7 +1273,7 @@ Real world networks are neither like the random nor like the regular graphs, the
      \item \textbf{High local density}: As in regular networks, nodes tend to form groups (clusters) that are strongly interconnected with each other.
      \item \textbf{Global shortcuts}: As in random networks, there are some long-range links (called shortcuts) that connect distant groups of the network.
 \end{itemize}
-The result is a highly optimized architecture where you can reach any node in the network in just a few steps, while maintaining strong local cohesion.In terms of divisibility and modularity, small-world networks maintain the characteristics of regular networks, contrasting clearly with random ones. In fact, they present high divisibility and high modularity. 
+The result is a highly optimized architecture where you can reach any node in the network in just a few steps, while maintaining strong local cohesion. In terms of divisibility and modularity, small-world networks maintain the characteristics of regular networks, contrasting clearly with random ones. In fact, they present high divisibility and high modularity. 
 
 The difference from the regular networks of this model is that the presence of a few random long-distance connections allows the modules to exchange information efficiently at a global level, without destroying the local modular structure.\begin{boxobservation}{}{}
      In terms of Local Efficiency, a Small World Network is closer to a Regular than to a Random.
@@ -1529,7 +1533,7 @@ The \textbf{electroencephalogram} (EEG) is the measurement of the electrical act
 The brain can be seen as a complex, non-linear and time variant dynamical system, the registered waves on the scalp are the reaction to a given ``input''. The registered oscillation are different between different execution of the same input, so usually more registration of the same input are taken to construct the average EEG signal, time locked to various sensory stimuli, thereby significantly
 increasing the signal-to-noise ratio.\bigskip
 
-We talk about \textbf{Event Related Potential} when a change in the electrical potential is registered immediately after a given input to the brain (for example, a flash light turning on in front of the eyes), there are also spontaneous rhythm that doesn't needs a time defined event. The already mention averaging procedure is essential to distinguish between the spontaneous rhythm, the ERP, and the electrical noise (also called signal's ``artifacts'').\bigskip
+We talk about \textbf{Event Related Potential} when a change in the electrical potential is registered immediately after a given input to the brain (for example, a flash light turning on in front of the eyes), there are also spontaneous rhythms that doesn't needs a time defined event. The already mention averaging procedure is essential to distinguish between the spontaneous rhythm, the ERP, and the electrical noise (also called signal's ``artifacts'').\bigskip
 
 As we already mentioned, the EEG is measured through  an electrode, this is basically a very sensible voltmeter, that captures the changes in the electrical potential on the surface where it's placed, usually, a large number of electrodes are placed on the head (up to 256), to measure the signal over time for each electrode.
 \begin{center}
@@ -1543,7 +1547,7 @@ The following image shows the displacement of three groups of electrodes (2 for 
 The red electrodes are placed in an area near the cheeks, the blue electrodes are placed on the top of the head, on the motor cortex, and the green one are placed on the occipital cortex. Let's consider the following signals:\begin{center}
      \includegraphics[width=0.35\textwidth]{images/alpha_waves.png}
 \end{center} 
-we can observe how the electrodes placed on the occipital cortex synchronize at some points, and start oscillating around 10 Hz (with a  ``waxing and waning'' behaviour in the order of magnitude of 1 second), these are the so called \textbf{alpha rhythm}, mainly registered on the occipital cortex, the other electrodes doesn't seem to register any reaction. The following signals are registered when the muscle of the subject are completely still:
+we can observe how the electrodes placed on the occipital cortex synchronize at some points, and start oscillating around 10 Hz (with a  ``waxing and waning'' behaviour in the order of magnitude of 1 second), this is the so called \textbf{alpha rhythm}, mainly registered on the occipital cortex, the other electrodes doesn't seem to register any reaction. The following signals are registered when the muscles of the subject are completely still:
 \begin{center}
      \includegraphics[width=0.35\textwidth]{images/mu_waves.png}
 \end{center} 
@@ -1579,7 +1583,7 @@ Clearly, the alpha rhythm is in the alpha band (around 8 to 13 Hz), also the mu 
 \end{figure} 
 \subsection{EEG Instrumentation}
 The EEG measurements are very tiny (microvolt), the electrodes are sensors that measure these voltages, and are usually made of silver with a surface layer of silver
-chloride. Some properties that an electrode should have is\begin{itemize}
+chloride. Some properties that an electrode should have are:\begin{itemize}
     \item nonreactivity to biological tissues
     \item accurate reproduction of extremely slowly changing
 potentials
@@ -1634,7 +1638,7 @@ $V_+-V_-$ is the quantity that we want to measure and amplify, and the amplitude
      \includegraphics[width=0.7\textwidth]{images/CMRR.eps}
      \caption{The value $\frac{V_++V_-}{2}$ is the common potential shared between the two electrodes.}
 \end{figure}
-Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain. Despite this difference, the output of amplifier have still some artifacts to deal with.\begin{boxobservation}{}{}
+Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain ($CMMR\simeq 300$dB). Despite this difference, the output of amplifier have still some artifacts to deal with.\begin{boxobservation}{}{}
      If $G_d$,$G_c$ and $CMMR$ are expressed in dB, the following relation hold:\begin{equation}
           CMMR = G_d-G_c.
      \end{equation}
@@ -2122,7 +2126,7 @@ For a time-continuous signal $x(t)$, we denote $X(j\omega)$ it's spectrum given 
 \begin{center}
     \includegraphics[width=0.7\textwidth]{images/segLimitatoBanda.eps}
 \end{center}
-When this is sampled, the magnitude of the sampled frequency response $|X^*(j\omega)|$ will be scaled by a factor $\frac{1}{T_C}$. Furthermore, sampling a continuous signal over time is equivalent, in the frequency domain, to multiplying the original spectrum of the signal by a train of pulses. This multiplication has the effect of periodically replicating the original spectrum, thus creating \textit{complementary components}.
+When this is sampled, the magnitude of the sampled frequency response $|X^*(j\omega)|$ will be scaled by a factor $\frac{1}{T_C}$. Furthermore, sampling a continuous signal over time  has the effect in the frequency domain of periodically replicating the original spectrum, thus creating \textit{complementary components}.
 \begin{center}
     \includegraphics[width=0.7\textwidth]{images/segLimitatoBanda2.eps}
 \end{center}
@@ -2181,7 +2185,7 @@ We denote $\mu_X$ as the real mean:\begin{equation}
 \end{equation}
 This estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates.\bigskip 
 
-Now let's see some measure of \textit{dispersion}, which are the opposite of central tendency. The \textbf{Average Rectified Value} (ARV) is the following value:\begin{equation}
+Now let's see some measure of \textit{dispersion}, which are the opposite of central tendency. The \textbf{Average Rectified Value} (ARV) is defined as follows:\begin{equation}
      ARV_X=\frac{1}{N}\sum_{i=0}^{N-1}|x_i|.
 \end{equation}
 The \textbf{Root Mean Square} is the foloowing:\begin{equation}
@@ -2886,8 +2890,7 @@ SMR modulation for effective BCI control.
 
 Non-invasive rehabilitative BCIs detect motor intent by monitoring continuous EEG
 oscillations known as \textbf{Sensorimotor Rhythms (SMR)}. These oscillations are
-recorded over the sensorimotor cortex and are concentrated primarily in the \textbf{mu
-band} (8--12~Hz) and the \textbf{beta band} (14--30~Hz).
+recorded over the sensorimotor cortex and are concentrated primarily in the \textbf{alpha band} (8--12 Hz) and the \textbf{beta band} (14--30 Hz).
 
 The functional behaviour of the SMR is directly analogous to the well-known \emph{alpha
 block} phenomenon in the visual cortex:
@@ -3056,7 +3059,7 @@ The electromyography is the electrical activity generated by the muscles. The fo
      \centering
      \includegraphics[width=0.6\textwidth]{images/electromyography.png}
 \end{figure}
-Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rhythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprises a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture above). \bigskip
+Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rhythm, most of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprises a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture above). \bigskip
 
 \noindent There are several application for the electromyography (especially with needle electrodes): 
 \begin{figure}[H]
@@ -3180,12 +3183,16 @@ This is the time distribution of a recorded EMG, this waveform is similar to the
 The $x$-axis of Figure \ref{space_dist} is expressed in cycles per meter, that is the spatial equivalent of the Hertz, in fact is the representation in the frequency domain of a spatial filter, so instead of Hertz: $\frac{1}{\text{sec}}$ we have $\frac{1}{\text{meter}}$, so the plot is the spectrum of a space distribution. The graph show us different curves relative to different sizes for an electrode, if the electrode is small (1 mm), the filter tends to attenuate less the high frequencies, the larger is the electrode, the stronger is the attenuating effect of the filter.
 
 We consider the cutoff frequency as the usual frequency at which the gain is -3dB. To convert from cycles per meters to Hertz, we need to fix a conduction velocity (as shown in the lower part of Figure \ref{space_dist}).
+
 \section{Electrodes Configuration}
 Where do we put the electrodes? For monopolar montage we usually place the reference and ground electrode on bones, and the active electrode on the muscle that we want to measure. For the EMG is more common to use bipolar montage, where we put the ground on a bone and the pair of electrodes on the muscle, usually on the belly (center) of the muscle.
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.5\textwidth]{images/EMG_montage.png}
 \end{figure}
+\begin{boxobservation}{}{}
+     In a bipolar recording, electrodes should be placed between the innervation zone and the distal tendon, oriented parallel to the muscle fibers.
+\end{boxobservation}
 Furthermore, the segment between the two electrodes must be parallel to the muscolar fiber. We have to choose properly the \textbf{Inter Electrode Distance (IED)}. We have seen how smaller or larger electrodes affect the recording, now we have to decided how far apart they must be placed: The answer to this question is the following:\begin{boxobservation}{}{}
      The larger is the distance between two electrodes, the lower is the \textit{selectivity}, but the amplitude will be higher.
 \end{boxobservation}
@@ -3294,6 +3301,9 @@ signals.
      \centering
      \includegraphics[width=\textwidth]{images/crosstalk.png}
 \end{figure}
+\begin{boxobservation}{IED and Crosstalk}{}
+     Increasing the inter-electrode distance reduces spatial selectivity, inviting crosstalk from adjacent muscles.
+\end{boxobservation}
 In real cases there are always some cross-talk.
 \subsection{Parameters Influencing the EMG}
 EMG signal features depend on anatomical, physical, and detection system parameters. The most important of these factors are:\begin{itemize}
