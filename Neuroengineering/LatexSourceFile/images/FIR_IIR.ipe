@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260626165316" modified="D:20260626165455"/>
+<info created="D:20260626165316" modified="D:20260629175532"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -318,11 +318,6 @@ h
 176 656 l
 448 656 l
 </path>
-<path matrix="1 0 0 1 0 -84" stroke="black" arrow="normal/normal" rarrow="normal/normal">
-176 720 m
-176 656 l
-448 656 l
-</path>
 <text matrix="1 0 0 1 68 -40" transformations="translations" pos="240 688" stroke="black" type="label" width="159.624" height="6.926" depth="1.93" halign="center" valign="center">FIR filter response to a unit impulse</text>
 <text matrix="1 0 0 1 68 -124" transformations="translations" pos="240 688" stroke="black" type="label" width="156.995" height="6.926" depth="1.93" halign="center" valign="center">IIR filter response to a unit impulse</text>
 <use name="mark/disk(sx)" pos="176 704" size="normal" stroke="0 0.502 0.753"/>
@@ -342,7 +337,6 @@ h
 <use name="mark/disk(sx)" pos="400 656" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="416 656" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="432 656" size="normal" stroke="0 0.502 0.753"/>
-<use name="mark/disk(sx)" pos="175.703 627.69" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="191.879 608.593" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="207.83 599.607" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="223.556 593.317" size="normal" stroke="0 0.502 0.753"/>
@@ -354,10 +348,46 @@ h
 <use name="mark/disk(sx)" pos="320.089 576.552" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="335.971 575.22" size="normal" stroke="0 0.502 0.753"/>
 <use name="mark/disk(sx)" pos="351.954 574.298" size="normal" stroke="0 0.502 0.753"/>
-<use name="mark/disk(sx)" pos="368.041 573.478" size="normal" stroke="0 0.502 0.753"/>
-<use matrix="1 0 0 1 0 0.585447" name="mark/disk(sx)" pos="399.803 572.761" size="normal" stroke="0 0.502 0.753"/>
-<use matrix="1 0 0 1 0 0.585447" name="mark/disk(sx)" pos="416.299 572.761" size="normal" stroke="0 0.502 0.753"/>
-<use matrix="1 0 0 1 0 0.585447" name="mark/disk(sx)" pos="431.976 572.658" size="normal" stroke="0 0.502 0.753"/>
-<use name="mark/disk(sx)" pos="383.958 573.562" size="normal" stroke="0 0.502 0.753"/>
+<path stroke="0 0.502 0.753">
+176 704 m
+192 696 l
+208 692 l
+224 684 l
+240 676 l
+256 668 l
+272 660 l
+288 656 l
+</path>
+<path stroke="0 0.502 0.753">
+175.703 627.69 m
+191.986 608.41 l
+207.881 599.489 l
+223.646 593.123 l
+239.707 588.794 l
+255.483 585.044 l
+271.687 582.237 l
+287.818 580.332 l
+303.99 577.889 l
+320.096 576.352 l
+335.919 575.135 l
+352.066 574.08 l
+367.808 573.35 l
+384.118 573.431 l
+399.892 573.244 l
+416.257 572.744 l
+432.059 572.682 l
+448.173 572.807 l
+</path>
+<path matrix="1 0 0 1 -0.00024926 -83.9996" stroke="black" arrow="normal/normal" rarrow="normal/normal">
+176 720 m
+176 656 l
+448 656 l
+</path>
+<use matrix="1 0 0 1 -0.00024926 0.00041391" name="mark/disk(sx)" pos="175.703 627.69" size="normal" stroke="0 0.502 0.753"/>
+<use matrix="1 0 0 1 -0.00017061 -0.00030732" name="mark/disk(sx)" pos="368.041 573.478" size="normal" stroke="0 0.502 0.753"/>
+<use matrix="1 0 0 1 -0.00017061 0.58514" name="mark/disk(sx)" pos="399.803 572.761" size="normal" stroke="0 0.502 0.753"/>
+<use matrix="1 0 0 1 -0.00017061 0.104368" name="mark/disk(sx)" pos="416.299 572.761" size="normal" stroke="0 0.502 0.753"/>
+<use matrix="1 0 0 1 -0.00017061 0.104368" name="mark/disk(sx)" pos="431.976 572.658" size="normal" stroke="0 0.502 0.753"/>
+<use matrix="1 0 0 1 -0.00017061 -0.00030732" name="mark/disk(sx)" pos="383.958 573.562" size="normal" stroke="0 0.502 0.753"/>
 </page>
 </ipe>

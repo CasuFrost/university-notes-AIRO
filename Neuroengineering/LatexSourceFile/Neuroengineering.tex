@@ -450,7 +450,9 @@ The \textbf{pyramidal neurons} are named for their pyramid-shaped soma and posse
           \centering
           \includegraphics[width=0.6\textwidth]{images/pyramidalNeurons.eps}
 \end{figure}
-The neural electrical activity functions like a ``current dipole'', which is essential for understanding how brain signals are captured by EEG. When synapses are active, they cause local changes in electrical charge, creating both intracellular and extracellular ``return'' currents. These currents generate a dipole potential field that is strong enough to be detected at a distance, such as on the scalp. However, because a single neuron produces a very weak signal, the EEG readings we observe are the result of the combined, synchronized activity of many neurons rather than a single one.
+The neural electrical activity functions like a ``current dipole'', which is essential for understanding how brain signals are captured by EEG. When synapses are active, they cause local changes in electrical charge, creating both intracellular and extracellular ``return'' currents. These currents generate a dipole potential field that is strong enough to be detected at a distance, such as on the scalp. However, because a single neuron produces a very weak signal, the EEG readings we observe are the result of the combined, synchronized activity of many neurons rather than a single one.\begin{boxobservation}{}{}
+     The dendritic tree acts as a current dipole.
+\end{boxobservation}
 \begin{figure}[H] 
           \centering
           \includegraphics[width=0.4\textwidth]{images/dipole.png}
@@ -1159,7 +1161,7 @@ reciprocal $\nicefrac{1}{d}$ as zero.
      E_g=\frac{1}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}
 \end{equation}
 for undirected graphs:\begin{equation}
-     E_g=\frac{2}{N(N-1)}\sum_{i=1}^{N}\sum_{j\ne i}^{N}\frac{1}{d_{ij}}.
+     E_g=\frac{2}{N(N-1)}\sum_{i=1}^{N}\sum_{j> i}^{N}\frac{1}{d_{ij}}.
 \end{equation}
 \end{boxdefinition}
 $E_g$ tends to zero the less connected the graph is, while tends to one when the graphs tends to be fully connected. Global Efficiency measures \textit{how efficiently} the information is
@@ -1216,7 +1218,7 @@ for directed graphs:
 \begin{equation}
      Q=\frac{1}{L}\sum_{i=1}^{N}
      \sum_{j\ne i}^{N}\left(
-          a_{ij}-\frac{g_i^{IN}g_j^{OUT}}{L}  \right)\delta(C_i,C_j)
+          a_{ij}-\frac{g_i^{OUT}g_j^{IN}}{L}  \right)\delta(C_i,C_j)
 \end{equation}
 $g_i$ is the degree of a node  (can be of type $IN$ or $OUT$). Modularity focuses on intra-community links, for each pair of nodes belonging to the same community, modularity $Q$ compares the
 existence (or not) of a link between them with the probability of having a connection between them in a random distribution of the links:\begin{equation}
@@ -1269,7 +1271,10 @@ Real world networks are neither like the random nor like the regular graphs, the
 \end{itemize}
 The result is a highly optimized architecture where you can reach any node in the network in just a few steps, while maintaining strong local cohesion.In terms of divisibility and modularity, small-world networks maintain the characteristics of regular networks, contrasting clearly with random ones. In fact, they present high divisibility and high modularity. 
 
-The difference from the regular networks of this model is that the presence of a few random long-distance connections allows the modules to exchange information efficiently at a global level, without destroying the local modular structure.
+The difference from the regular networks of this model is that the presence of a few random long-distance connections allows the modules to exchange information efficiently at a global level, without destroying the local modular structure.\begin{boxobservation}{}{}
+     In terms of Local Efficiency, a Small World Network is closer to a Regular than to a Random.
+Network.
+\end{boxobservation}
 \section{Multiple-Subject Systems}
 Human-to-human interactions are important in:\begin{itemize}
      \item human cognition, development, well-being, society
@@ -1614,7 +1619,7 @@ We need an amplifier that\begin{itemize}
      \item performs an high amplification on the desired signal, without amplifying the noise
      \item have an high input impedance.
 \end{itemize}
-A real amplifiers can be modeled as follows\begin{equation}
+A real amplifier can be modeled as follows\begin{equation}
      V_{out}=G_d(V_+-V_-)+G_c\left(\frac{V_++V_-}{2}\right)
 \end{equation}
 $V_+-V_-$ is the quantity that we want to measure and amplify, and the amplitude of this signal is given by the \textit{differential gain} $G_d$. The \textit{common mode gain} $G_c$ amplifies the common signal that is identical on the two electrodes, and is always gain. In an ideal amplifier, $G_c=0$.
@@ -1629,8 +1634,12 @@ $V_+-V_-$ is the quantity that we want to measure and amplify, and the amplitude
      \includegraphics[width=0.7\textwidth]{images/CMRR.eps}
      \caption{The value $\frac{V_++V_-}{2}$ is the common potential shared between the two electrodes.}
 \end{figure}
-Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain. Despite this difference, the output of amplifier have still some artifacts to deal with.\bigskip
-
+Of course, a good amplifiers should have an high $CMRR$. Due to the huge difference in amplitudes between the signals from the neurons and the signals from the external sources, the differential gain is usually in the order of $10^{15}$ times greater than the common mode gain. Despite this difference, the output of amplifier have still some artifacts to deal with.\begin{boxobservation}{}{}
+     If $G_d$,$G_c$ and $CMMR$ are expressed in dB, the following relation hold:\begin{equation}
+          CMMR = G_d-G_c.
+     \end{equation}
+\end{boxobservation}
+To reconvert $x$ from dB to the normal scale we consider $10^{\frac{x}{20}}$.
 A desirable feature for an amplifier is an \textit{high input impedance}. Before explaining what the impedance is, we need some electronics concepts, the following circuit is the simplest model of a source and a measurement system.
 \begin{figure}[H] 
      \centering
@@ -1646,7 +1655,7 @@ The impedance is (in simplistic words) a \textbf{frequency dependant resistance}
 We want the input impedance $Z_2$ to be high, in order to have the most accurate measurement possible:\begin{equation}
      \lim_{Z_2\rightarrow+\infty}V_{gen}\frac{Z_2}{Z_1+Z_2}=V_{gen}.
 \end{equation}
-For the same argument, we want a low output impedance for the source:\begin{equation}
+For the same argument, we want a low output (contact) impedance for the source:\begin{equation}
       \lim_{Z_1\rightarrow 0}V_{gen}\frac{Z_2}{Z_1+Z_2}=\frac{Z_2}{Z_2}V_{gen}=V_{gen}.
 \end{equation}
 Our output source is the membrane that generates the ionic current, the contact impedance $Z_1$ is given by the pathway that goes from the source (the neurons) to the measurement system (the electrode). Most of the structure in this pathway are low impedance (mostly wet tissues).
@@ -1671,7 +1680,10 @@ The first standard from the 90's required 19 electrodes.
 The 10-20 system prescribes where to put the electrodes and what the labels of the electrodes are. For research purposes, 19 electrodes are not enough. Another system is the 10-10 system that uses at most 73 electrodes. The inion and the nasion are points that can be localized on the skull.\begin{center}
      \includegraphics[width=0.5\textwidth]{images/inion_nasion.png}
 \end{center}
-This points are ``reliable'' and can be located in every skull, allowing to build the standard displacement. The labels on the electrodes (N, AF, F, FT, T, \dots) are named by the lobes of the brain.
+These points are ``reliable'' and can be located in every skull, allowing to build the standard displacement. The labels on the electrodes (N, AF, F, FT, T, \dots) are named by the lobes of the brain.
+\begin{boxobservation}{}{}
+The central region is above the central sulcus which divides the frontal and parietal lobes. The mesial region is above the interhemispheric scissure, and it is designated by a trailing ``z'' in EEG labels.
+\end{boxobservation}
 \begin{center}
      \includegraphics[width=0.6\textwidth]{images/lobes}
 \end{center}
@@ -1685,12 +1697,12 @@ There are no ``good'' position for the reference electrode, but the displacement
 
 \begin{figure}[H] 
      \centering
-     \includegraphics[width=0.7\textwidth]{images/ref_electrodes.png}
+     \includegraphics[width=0.5\textwidth]{images/ref_electrodes.png}
 \end{figure}
 
 \begin{figure}[H] 
      \centering
-     \includegraphics[width=0.7\textwidth]{images/ref_potentials.png}
+     \includegraphics[width=0.6\textwidth]{images/ref_potentials.png}
      \caption{Distributions of potential depending on the reference position. }
 \end{figure}
 
@@ -1699,9 +1711,10 @@ Changing the reference is equivalent to imposing a value of zero on a specific c
 While one might attempt to create a paired reference by physically short-circuiting two earlobe electrodes, this is ill-advised. Because potentials are asymmetric across the ears, short-circuiting them forces these two points to an identical potential, which physically redistorts the electric field across the head. 
 
 Instead, this should be handled in software: by recording both electrodes separately, calculating their average, and subtracting it from the remaining channels, we create a mathematically stable \textbf{virtual reference}.
-
-
-Observe the Figure  \ref{bipolar_monopolar}.
+\begin{boxproposition}{}{}
+     We can consider the average of all the channels, and then subtract it from them to create a common average reference potential. This can be done only in a monopolar montage.
+\end{boxproposition}
+\noindent Observe the Figure  \ref{bipolar_monopolar}.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=\textwidth]{images/bipolar_monopolar.png}
@@ -1759,15 +1772,14 @@ Maintaining the integrity of the data stream during the session:
 \noindent\url{https://github.com/universitymarr/Neuroengineering/blob/master/Notes/Notes_PART_B.pdf}.
 \section{Artifacts}\label{Artifacts}
 With the term \textbf{artifacts} we refer to external signals that produces electrical activities not related to
-the brain. This
-activities are recorded together the data and makes it difficult to read EEG data. For that reason in
+the brain. These activities are recorded together the data and makes it difficult to read EEG data. For that reason in
 the first place we have to avoid the generation of artifacts and then remove them from our EEG
 recording.
 \begin{figure}[H] 
      \centering
      \includegraphics[width=\textwidth]{images/artifacts.png}
 \end{figure}
-More formally we can define artifact in EEG as any potential difference due to an extracerebral
+More formally we can define an artifact in the EEG as any potential difference due to an extracerebral
 source. We can distinguish the artifacts of technical and biological origin:\begin{itemize}
      \item Biological: (Physiological) Eye blinks, eye movements (EOG), muscle activity including
 swallowing and teeth clenching (EMG), electrocardiogram (ECG).
@@ -1911,8 +1923,12 @@ stimulation.
 \subsection{Analysis of EP EEG}
 About the first type of EEG analysis, we see only (synchronized) averaging that we have already
 briefly introduced in previous sections. The continuous EEG record must first be ``cut up'' into epochs (or segments)—consisting of a prestimulus or a pre-event period, followed by a period of time suitably long enough to be able to
-highlight the particular activity of interest.\bigskip
-
+highlight the particular activity of interest.
+\begin{boxobservation}{}{}
+     When recording evoked potentials, the spontaneous EEG is to be 
+considered a noise that completely masks the evoked potentials 
+on the recorded waveform. 
+\end{boxobservation}
 \textbf{Averaging}: Signal averaging is based on the assumption that the recorded time-varying signal $x(t)$ comprises a
 distinct signal embedded in noise. Averaging $N$ responses would improve the signal-to-noise ratio by
 $\sqrt{N}$, namely noise amplitude decreases as $\frac{1}{\sqrt{N}}$ where $N$ is the number of trials.
@@ -1949,7 +1965,7 @@ which multiple stimuli may be presented).
      \centering
      \includegraphics[width=0.7\textwidth]{images/time_quantities.png}
 \end{figure}
-\begin{boxobservation}{Long Stimulus Duration}
+\begin{boxobservation}{Long Stimulus Duration}{}{}
      SOA and ISI/ITI can be quite different from each other if the stimulus duration is long,
 indeed we have:\begin{equation}
      \text{ISI}=(\text{SOA$-$stimulus duration}).
@@ -2058,7 +2074,7 @@ The bio-signal processing procedure follows a precise pipeline:\begin{enumerate}
      \includegraphics[width=0.7\textwidth]{images/sig_processing.png}
 \end{figure}
 \section{Sampling and Quantization}
-The signal processed by the bio signal aplifier is a continous signal in the time domain and in the amplitude domain, we need to digitalize the signal by discretizing the time (sampling) and amplitude axis (quantization).
+The signal processed by the bio signal amplifier is a continous signal in the time domain and in the amplitude domain, we need to digitalize the signal by discretizing the time (sampling) and amplitude axis (quantization).
 \begin{figure}[H] 
      \centering
      \includegraphics[width=0.6\textwidth]{images/discretization.png}
@@ -2143,7 +2159,7 @@ Real signals have components at sufficiently high frequencies that a sufficientl
 In an analog-to-digital conversion (ADC) system, when the sampling frequency is $\omega_c$, we call $\omega_n=\frac{\omega_c}{2}$ the \textbf{Nyquist Frequency}: If the signal have spectral components above the Nyquist frequency, the settings of the ADC systems are ill designed, the sampling frequency is too low.\bigskip 
 
 
-What happens if the the Nyquist frequency is not high enough? The frequency components of the sampled signal that are higher than $\omega_n$ do not vanish, but they ``fold'' within the basic spectrum. These high frequencies take on a false identity (precisely called \textbf{alias}) and appear as lower frequencies than they actually are, following the formula:\begin{equation}
+What happens if the  Nyquist frequency is not high enough? The frequency components of the sampled signal that are higher than $\omega_n$ do not vanish, but they ``fold'' within the basic spectrum. These high frequencies take on a false identity (precisely called \textbf{alias}) and appear as lower frequencies than they actually are, following the formula:\begin{equation}
      \omega_{\text{alias}}=|\omega_{in}-N\cdot \omega_c|
 \end{equation}
 where $\omega_c$ is the sampling frequency, $\omega_{in}$ the frequency of the sampled signal, and $N$ is the multiple of the sampling frequency ($f_c$) closest to the original signal frequency ($f_{in}$):\begin{equation}
@@ -2156,16 +2172,16 @@ The word ``random'' can refers to different levels of complexity in the context 
 
 A random process in our context, assign a probability to every possible EEG signals over time that we might observe, when we measure the EEG we have a \textbf{realization} of the random process.\bigskip 
 
-In the context of statistic, the true mean of a given random variable $X$ can be approximated by considering $N$ observation $\{x_i\}\subset Im(X)$\begin{equation}
+In the context of statistics, the true mean of a given random variable $X$ can be approximated by considering $N$ observations $\{x_i\}\subset Im(X)$\begin{equation}
      \bar X=\frac{1}{N}\sum_{i=0}^{N-1}x_i
 \end{equation}
 $Im(X)$ is the image set of the variable $X$.
-We denote $\mu_X$ the real mean:\begin{equation}
-     \lim_{N\rightarrow \infty}\bar X=\mu_X
+We denote $\mu_X$ as the real mean:\begin{equation}
+     \lim_{N\rightarrow \infty}\bar X=\mu_X.
 \end{equation}
-this estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates.\bigskip 
+This estimation is called \textbf{sampled mean}. The real mean is a deterministic value (not stochastic) but it is unknown. The mean is a measure of \textit{central tendency}, so, where around each value the observation aggregates.\bigskip 
 
-Now let's see some measure of \textit{dispersion}, that are the opposite of central tendency. The \textbf{Average Rectified Value} (ARV) is the following value:\begin{equation}
+Now let's see some measure of \textit{dispersion}, which are the opposite of central tendency. The \textbf{Average Rectified Value} (ARV) is the following value:\begin{equation}
      ARV_X=\frac{1}{N}\sum_{i=0}^{N-1}|x_i|.
 \end{equation}
 The \textbf{Root Mean Square} is the foloowing:\begin{equation}
@@ -2175,14 +2191,17 @@ and the \textbf{Average Deviation} is\begin{equation}
      AD_X=\frac{1}{N}\sum_{i=0}^{N-1}|x_i-\bar X|.
 \end{equation}
 \noindent The \textbf{Variance} $\sigma_X^2$ instead, is a measure of how much the data points in a set differs from the mean, calculated as the average of the squared deviations. Can be estimated through the observation of $N$ samples $\{x_i\}$, resulting in the \textbf{sampled variance}:\begin{equation}
-     s_X^2=\frac{1}{N}\sum_{i=0}^{N-1}(x_i-\bar X)^2
+     s_X^2=\frac{1}{N-1}\sum_{i=0}^{N-1}(x_i-\bar X)^2
 \end{equation}
 and\begin{equation}
       \lim_{N\rightarrow \infty} s_X^2=\sigma_X^2.
 \end{equation} 
 The \textbf{standard deviation} is the square root of the variance:\begin{equation}
-     s_X=\sqrt{\frac{1}{N}\sum_{i=0}^{N-1}(x_i-\bar X)^2}.
+     s_X=\sqrt{\frac{1}{N-1}\sum_{i=0}^{N-1}(x_i-\bar X)^2}.
 \end{equation}
+\begin{boxobservation}{About the Denominator}{}
+     The denominator is $N-1$ (Bessel's correction) because the true population mean $\mu_X$ is unknown and replaced by the sample mean $\bar{X}$. This uses up one degree of freedom, and dividing by $N-1$ instead of $N$ removes the negative bias, making the sample variance an unbiased estimator of the true variance.
+\end{boxobservation}
 The currents produced by the population of neurons are not deterministic, hence it is a stochastic process, on which each EEG measurement over time is a realization. To get the sample mean of an EEG under static conditions (the patient remain still) we can register $N$ trials, and then average all the trials to get an idea of the mean value for the EEG, as shown in Figure \ref{AVG_EEG}.
 \bigskip
 
@@ -2504,7 +2523,7 @@ In real filters, the signal passes almost unaltered, and the noise is almost rem
      \includegraphics[width=0.55\textwidth]{images/filters.png}
 \end{figure}
 The passband refers to those frequencies that are passed, while the stopband contains those frequencies
-that are blocked. The band-reject filter is also called \textbf{notch-filter}. The transition band is between. A fast \textbf{roll-off }means that the transition band is very
+that are blocked, the transition band is between. The band-reject filter is also called \textbf{notch-filter}.  A fast \textbf{roll-off }means that the transition band is very
 narrow.
 
 The division between the passband and transition band is called the \textbf{cutoff frequency}. In analog filter design,
@@ -3032,12 +3051,12 @@ These findings provide concrete neurophysiological evidence that the contingent
 sensorimotor loop implemented by the BCI actively drives \emph{targeted} motor
 neuroplasticity, rather than merely improving general engagement or attention.
 \chapter{Electromyography}
-The electromyography is the electrical activity generated by the muscles. The following picture shows a recorded electromyography:
+The electromyography is the electrical activity generated by the muscles. The following picture shows an electromyography recorded with electrodes placed on the skin:
 \begin{figure}[H]
      \centering
      \includegraphics[width=0.6\textwidth]{images/electromyography.png}
 \end{figure}
-taken with electrodes placed on the skin. Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rhythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprises a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture above). \bigskip
+Compared to the EEG is faster (presents higher frequency components), the spectrum has frequency components up to (around) 450 Hz. In the EEG, like for the alpha rhythm, must of the power is concentrated in the alpha band, no higher than 70 Hz. In the bottom profile of the figure we can see a time zoom of the signal, that comprises a few milliseconds, we observe wavelets of signals, alternating with silence, we can distinguish families of wavelets (labeld with numbers in the picture above). \bigskip
 
 \noindent There are several application for the electromyography (especially with needle electrodes): 
 \begin{figure}[H]
@@ -3081,7 +3100,7 @@ Let's focus on a single motor unit, let's say that we have two motor neurons $A$
 \end{figure}
 Assume fibers 1, 4 and 5 start an action potential, the timing in the picture for the spikes on fiber 1 4 and 5 is the same since they are generated by the same motor neuron, as well the action potential on fiber 2 and 3 discharge together. When we look at the electromyogram on the surface, we will observe only the cumulative effect of the fibers that discharge together, an external electrode will see only the summation.\bigskip 
 
-If more motor neurons activates near in time, we will observe the summation of the potentials from more motor units, this signal is called \textbf{interferential EMG}.\begin{boxobservation}{}{}
+If more motor neurons activates near in time, we will observe their summation of potentials, this signal is called \textbf{interferential EMG}.\begin{boxobservation}{}{}
      With non invasive methods we can \textit{only} measure interferential EMGs (summation of many motor units action potentials).
 \end{boxobservation}
 How do our body modulates the contraction of a muscle? What do the action potential of the neurons look like when we want to exert a stronger or weaker force? We have hundreds of thousands of motor units, one way to modulate the force is to engage more or less units (\textbf{recruitment}). The other way is to involve the same fibers multiple times a second (\textbf{rate coding}). The higher the rate of discharge, the stronger the force is and shorter the fiber gets. These two phenomena can be modulated separately.\begin{itemize}
@@ -3197,7 +3216,7 @@ If the wavelength is $\frac{2}{3}d$, with a trough on $G1$ we would have again a
      \centering
      \includegraphics[width=0.6\textwidth]{images/sinewave_in_distr_EMG2.eps}
 \end{figure}
-Also in this case the difference of potential is the maximum possible. This phenomena in space, is observed also in time: Since the source is moving in the muscle fiber, spatial filtering effects become temporal filtering effects and some frequency components are attenuated more than others. The relationship betweeen the distance and the measured potential shows a filtering effect callded \textbf{comb filter}:\begin{figure}[H]
+Also in this case the difference of potential is the maximum possible. This phenomena in space, is observed also in time: Since the source is moving in the muscle fiber, spatial filtering effects become temporal filtering effects and some frequency components are attenuated more than others. The relationship betweeen the distance and the measured potential shows a filtering effect called \textbf{comb filter}:\begin{figure}[H]
      \centering
      \includegraphics[width=0.4\textwidth]{images/log_freq_DB.png}
 \end{figure}
@@ -3258,9 +3277,9 @@ depicted in the figure.
      \includegraphics[width=0.7\textwidth]{images/EMG_filtering.png}
 \end{figure}
 In this image we can see how the main energy components are in the band $[0,100]$ Hz, we can observe how a inter electrode distance (IED) of 20mm place a zero crossing value exactly in the middle of this band, so we should avoid large IED. For IED=10mm, we have 0 gain at 0 and 100 Hz, and the maximum gain at 50 Hz (the middle of the band), we are actually introducing a band-pass filter. With IED=5mm the gain is zero at 0 Hz and higher near 100 Hz, in this case the filter introduced is an high-pass.
-\begin{boxobservation}{}{}
+\begin{boxproposition}{Effects of the Electrode's Size and Distance}{}
      Larger electrode size behaves as stronger low pass filter. The inter electrode distance acts as a comb filter.
-\end{boxobservation}
+\end{boxproposition}
 \subsection{Cross-Talk}
 Crosstalk refers to the signal that is detected over a certain muscle, but is generated
 by another, mostly nearby muscle. It is:\begin{itemize}
