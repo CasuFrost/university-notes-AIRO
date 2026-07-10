@@ -327,7 +327,7 @@ $\btheta$ is the set of joint angles measured by the encoders. The calibration p
 the open kinematic chain structure of most robots
     \item the goal of the calibration procedure is to recover as much as possible this end effector position error by adjusting the DH parameters.
 \end{itemize}
-The calibration procedure needs a sampling operations, where the robot is set in different configurations, when an external device measure the real end effector pose, in such way we can compare this ground truth with the pose predicted by the direct kinematics.
+The calibration procedure needs a sampling operations, where the robot is set in different configurations, and an external device measure the real end effector pose, in such way we can compare this ground truth with the pose predicted by the direct kinematics.
 
 Let $\mathbf y_e$ to be the real end effector pose measured by the external system, and $\mathbf y_{e,nom}$ the one given by the direct kinematics, we consider the error\begin{equation}
     \Delta \mathbf y=\mathbf y_e-\mathbf y_{e,nom}
@@ -387,7 +387,7 @@ and the vector \begin{equation}
 the system of equation to solve in order to find the errors in the DH parameters is \begin{equation}\label{CalSys}
     \overline \Phi \Delta\boldsymbol\varphi= \overline{\Delta \mathbf y}_e 
 \end{equation}
-$\overline\Phi$ is called \textbf{regressor matrix}. The system in \eqref{CalSys} is an overdetermined system of equations, and can be solved by considering the pseudo inverse of $\overline\Phi$\begin{align}
+$\overline\Phi$ is called \textbf{regressor matrix}. The system in \eqref{CalSys} is an overdetermined system of linear equations, and can be solved by considering the pseudo inverse of $\overline\Phi$:\begin{align}
     &\Delta\boldsymbol{\varphi}=\overline\Phi^{\#}\overline{\Delta \mathbf y}_e \\
     & \overline\Phi^{\#}=(\Phi^T\Phi)^{-1}\Phi^T
 \end{align}
@@ -791,7 +791,7 @@ There is another way to solve the problem $J\dq=\dy$ by finding a solution that 
     \end{equation}
     $J^\#_W$ satisfies the relations of the pseudo inverse, except for $(J^\#J)^T=J^\#J$.
 \end{boxdefinition}
-This kind of solution is used to give more emphasis to some joints, for example, if $W$ is diagonal\begin{equation}
+\noindent This kind of solution is used to give more emphasis to some joints, for example, if $W$ is diagonal\begin{equation}
     W=\begin{pmatrix}
         W_1&\dots & 0\\ 
         \vdots &\ddots&\vdots \\ 
@@ -807,7 +807,7 @@ There is a last Jacobian based method, called \textbf{Damped Least Squares (DLS)
     \end{matrix}
 \end{equation}
 this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ that creates a compromise between large joint velocity and task accuracy: In practice, we allow a solution that achieves a task velocity that is not identical to the desired one, but with a lower norm. The optimization problem becomes unconstrained:\begin{equation}
-    \displaystyle\min_{\dq} \frac{\mu}{2}\|\dq\|^2+\frac{1}{2}\|\dy-J\dq\|^2
+    \displaystyle\min_{\dq}\quad \frac{\mu}{2}\|\dq\|^2+\frac{1}{2}\|\dy-J\dq\|^2
 \end{equation}
 this induces a robust behavior when crossing singularities and applies equally to square and non-square matrices. Since it is a quadratic form, it admits an analytical solution:\begin{equation}
     \dq=J_{DLS}\dy=J^T(JJ^T+\mu I_m)^{-1}\dy
@@ -862,7 +862,7 @@ This kind of solution can be generalized by considering any couple of generalize
 but will not have all of the four properties just presented. In this way, $\dq_N$ can be chosen arbitrarily as a ``preferred'' direction, and the null space projection of this desired velocity will be accomplished. Before entering in the details of how to choose this $\dq_N$, we will give a general presentation (not only related to Robotics) of an optimization problem.
 \begin{boxdefinition}{Linear Quadratic Problem}{def:LQ}
     A \textbf{LQ problem} is the following optimization problem\begin{align}
-        &\min_{\mathbf x\in \R^n}H(\mathbf x)=\frac{1}{2}(\mathbf x-\mathbf x_N)^TW(\mathbf x-\mathbf x_N)\\
+        &\min_{\mathbf x\in \R^n}\quad H(\mathbf x)=\frac{1}{2}(\mathbf x-\mathbf x_N)^TW(\mathbf x-\mathbf x_N)\\
         &\text{subject to } \ J\mathbf x=\mathbf b 
     \end{align}
     where\begin{itemize}
@@ -999,7 +999,7 @@ The clearance function is defined as follows:\begin{equation}
     \end{matrix}}\|\mathbf p(\mathbf q)-\mathbf p'\|^h
 \end{equation}
 where $h$ is usually 1 or 2. Of course, this function is not practically computable if we consider the real shapes of the objects, that are composed by an infinite and continuous number of points displaced in a non formally describable way. To exploit this, usually the robot structure and the obstacles are modeled with simple shapes like cubes,parallelepipeds or spheres, which surround the true shapes of the objects, so as to be conservative in terms of coverage (if such shapes do not collide, then the true objects do not collide either). \begin{boxproposition}{Decidability of the Distance between Two Polytopes}{}
-    For any couple of convex shapes (polytopes) in the three dimensional space, it is possible to find the minimum distance between them.
+    For any couple of polytopes in the three dimensional space, it is possible to find the minimum distance between them.
 \end{boxproposition}
 Given these results, if we model the robotic structure and the obstacles as convex shapes, we can always compute $H_{cle}(\mathbf q)$ in any configuration.
 \begin{figure}[H]
@@ -1045,7 +1045,7 @@ There is another method than relies on a different constrained optimization prob
     \end{equation}
     is non singular.
 \end{boxproposition}
-from the \textit{implicit function theorem (Dini)}, given the direct kinematics\begin{equation}
+\noindent From the \textit{implicit function theorem (Dini)}, given the direct kinematics\begin{equation}
     k(\mathbf q_a,\mathbf q_b)=\mathbf y
 \end{equation}
 we can rewrite $\mathbf q_a$ as a function of $\mathbf y$ and $\mathbf q_b$\begin{equation}
@@ -1128,7 +1128,7 @@ $J_1$ is the Jacobian of the direct kinematics, $J_2$ the Jacobian of the additi
     \dq = K_A\dy_A.
 \end{equation}
 
-Let's consider the following example with a 4R robot following a trajectory on a plane.
+\noindent Let's consider the following example with a 4R robot following a trajectory on a plane.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/example_augmentedTask.eps}
@@ -1136,7 +1136,7 @@ Let's consider the following example with a 4R robot following a trajectory on a
 We use a set of variable $\mathbf q$ where $q_i$ is the angle respect to the horizontal axis. If we want to keep the last link vertical, we can add the additional constraint\begin{equation}
     k_2(\mathbf q)=q_4=\nicefrac{\pi}{2} \ \ \ \ (s=1)
 \end{equation}
-in the augmented problem,the degree of redundancy decreases and becomes 1.
+in the augmented problem, the degree of redundancy decreases and becomes 1.
 The advantage of augmenting the task is that we get a \textit{better shaping} of the inverse kinematic solution.
 
 There are some problems, it might occur an \textbf{algorithmic singularity}: The rank of the augmented Jacobian is not full, despite the ranks of $J_1$ and $J_2$ are full:\begin{equation}
@@ -1216,7 +1216,6 @@ up to the $k$-th task. In the same way is defined the augmented Jacobian matrix:
     \end{pmatrix}
 \end{equation}
 that have $n$ (dof) columns and $m=\sum m_i$ rows.
-
 The projector on the null space of $J_i$ is defined as usual\begin{equation}
     P_i=I-J_i^\#J_i
 \end{equation}
@@ -1285,12 +1284,12 @@ In a given configuration $\mathbf q$, we know that the differential problem beco
    J\ddq = \ddy -\dot J\dq.
 \end{equation}
 A solution for $\ddq$ can be found with the null space method:\begin{equation}
-    \ddq=J^\#\ddy+(I-J^\#J)\ddq_N
+    \ddq=J^\#(\ddy-\dot J\dq)+(I-J^\#J)\ddq_N
 \end{equation}
 where $\ddq_N$ is a preferred acceleration, usually defined as\begin{equation}
     \ddq_N=\alpha\nabla_{\mathbf q}G-K_D\dq 
 \end{equation}
-where $\alpha$ is a real number that weights the gradient of $G$, that is a performance metrics as in the projected gradient method. $-K_D\dq$ is a \textbf{damping term} to stabilize the joint motion in the null space, $K_D$ is a positive definite matrix.\bigskip 
+where $\alpha$ is a real number that weights the gradient of $G$, that is a performance metrics as in the projected gradient method. $-K_D\dq$ is a \textbf{damping term} to stabilize the joint motion in the null space, $K_D$ is a positive definite matrix (usually diagonal).\bigskip 
 
 The problem to find $\ddq_N$ in order to minimize $G(\mathbf q, \dq)$, is hard, in general $G$ is not even separable\footnote{$G(\mathbf q, \dq)$ can't be rewritten as $h(\mathbf q)+g(\dq)$ for some scalar functions $h,g$.}. This is a nonlinear optimal control problem, is hard to solve, so can be re-defined in discrete time assuming that joint accelerations are piecewise constant in time. At discrete time we have \begin{equation}
     \ddq(t)=\ddq_k, \ \ t\in[t_k,t_k+\Delta t]
@@ -1429,13 +1428,13 @@ from Equation \eqref{mobile_base_G}:
 \end{equation}
 the matrix $J_{NMM}$ is called \textbf{Nonholonomic Mobile Manipulator Jacobian}. All the results seen to resolve the redundancy problem can be applied by considering $J_{NMM}$ instead of the classic Jacobian $J$ and the available velocity commands $\mathbf u$ instead of $\dq$.
 \subsection{Hard Limits in the Joint Space}
-Until now, we have seen how the joint velocities solution $\dq$ that we seek during the redundancy resolution, are a solution to an optimization problem, in detail, a quadratic programming problem of the kind:\begin{align}
-    &\arg\min_\dq \dq^T W\dq\\ 
+Until now, we have seen how the joint velocity solution $\dq$ that we seek during the redundancy resolution, is a solution to an optimization problem, in detail, a quadratic problem of the kind:\begin{align}
+    &\arg\min_\dq\quad \dq^T W\dq\\ 
     &\text{s.t. }J\dq=\dy
 \end{align}
 where $W$ is usually positive definite. The set of solutions is defined by the $m$ \textit{equality} constraints $J\dq=\dy$, but in its general formulation, a quadratic program have the solutions defined in a convex set given by both equality and inequality constraints:
 \begin{align}
-    &\dq^*=\arg\min_\dq^T \dq W\dq\\ 
+    &\dq^*=\arg\min_\dq\quad \dq^T W\dq\\ 
     &\text{s.t. }\begin{matrix}
         J\dq=\dy\\ 
         C\dq\le \mathbf d
@@ -2065,7 +2064,7 @@ The gravitational term on the $k$-th equation is\begin{equation}
 \end{equation}
 About the inertia matrix:\begin{itemize}
     \item $m_{kk}(\q)$ is the inertia at joint $k$ when joint $k$ accelerates, is always greater than 0.
-    \item $m_kj$ is the inertia ``seen'' at joint $k$ when joint $j$ accelerates, represents the inertia coupling between the two joints.
+    \item $m_{kj}$ is the inertia ``seen'' at joint $k$ when joint $j$ accelerates, represents the inertia coupling between the two joints.
 \end{itemize}
 About the Christoffel symbols:\begin{itemize}
     \item $c_{kii}$ is the coefficient of the centrifugal effect at joint $k$ when the joint $i$ is moving. 
@@ -2198,10 +2197,10 @@ so\begin{equation}
 Notice how the variable $q_1$ does not appear, in fact, $M$ is only in function of $q_2$, de facto this is a \textbf{general property}. \begin{boxlemma}{}{}
 The inertia matrix $M(\q)$ never depend on $q_1$: The inertia matrix represents the mass distribution seen from the base reference system. By rotating the first joint ($q_1$), you rotate the entire robot around its main axis. Since the geometry of the subsequent arms with respect to the first axis does not change, the kinetic energy of the system remains the same regardless of the value of $q_1$.
 \end{boxlemma}
-Another general property is the following.\begin{boxlemma}{}{}
+\noindent  Another general property is the following.\begin{boxlemma}{}{}
     For the inertia matrix $M(\q)$, the bottom-right term $m_{nn}$ is \textbf{always constant}. The element $m_{nn}$ reflects the inertia of the last link (the final element or effector) with respect to its axis of rotation. Since after the last joint there are no other joints that can move masses and change the geometric configuration of the terminal, the mass distribution with respect to the $n$ axis remains fixed.
 \end{boxlemma}
-Now, given $M$, we can compute the centrifugal and Coriolis terms. The vector \begin{equation}
+\noindent Now, given $M$, we can compute the centrifugal and Coriolis terms. The vector \begin{equation}
     \mathbf c(\q,\dq)=\begin{pmatrix}
         c_1(\q,\dq)\\ 
         c_2(\q,\dq)
@@ -2294,9 +2293,9 @@ We want to answer to the following question\begin{quotation}
     Starting at rest $\q=\dq=\mathbf 0$, if we apply a torque on the first joint $u_1>0$ and zero torque on the second joint, the latter will it move?
 \end{quotation}
 To answer, we isolate $\ddq$:\begin{align}
-    &\ddq=M^{-1}[\mathbf u-\mathbf c]
+    &\ddq=M^{-1}(\mathbf u-\mathbf c)
 \end{align}
-if $\q=\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
+if $\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
     &\ddq=M^{-1}\mathbf u=\\ 
     &\frac{1}{\det M}\begin{pmatrix}
        m_2d_{c2}^2+I_{c2,zz} & m_2d_{c2}\sin q_2\\ 
@@ -2311,7 +2310,7 @@ if $\q=\dq=\mathbf 0$ then $\mathbf c=\mathbf 0$:\begin{align}
 \end{align}
 it will accelerate at $\frac{u_1}{\det M}( m_2d_{c2}\sin q_2)$ $\frac{\text{deg}}{\text{s}^2}$, it will remain stationary if and only if $q_2=0$ or $q_2=\pi$.\bigskip
 
-Now that we have the model we want to solve the inverse dynamics. The first desired trajectory is\begin{equation}
+\noindent Now that we have the model we want to solve the inverse dynamics. The first desired trajectory is\begin{equation}
     \begin{cases}
         q_{1d}(t)=k \text{ constant}\\ 
         q_{2d}(t)=\alpha t\text{ with }\alpha >0
@@ -2422,7 +2421,7 @@ but this is exactly $-s_{kj}$, so\begin{equation}
 A weaker property than skew symmetry is:\begin{equation}
     \mathbf x^T(\dot M-2C)\mathbf x=\mathbf 0, \ \ \forall \mathbf x\in \R^n
 \end{equation}
-and holds for any factorization $N\mathbf c$
+and holds for any factorization $N$
 \begin{equation}\label{conditionEnergyCons}
     \mathbf x^T(\dot M-2N)\mathbf x=\mathbf 0, \ \ \forall \mathbf x\in \R^n.
 \end{equation}
@@ -3830,7 +3829,7 @@ Due to the linear behavior of the coefficients $\brho$ in the model, we can iden
     \item We approximately execute this motion by a simple PD law that doesn't need the model\begin{equation}
         \btau=K_p(\q_d-\q)+K_d(\dq_d-\dq).
     \end{equation}
-    \item While performing this motion, we measure the value of the encoders $\q$ (and if possible, also the velocities $\dq$) every discrete time step, by obtaining $n_c$ measurements$$\q(t_1)\dots \q(t_k)\dots \q(t_{n_c}).$$
+    \item While performing this motion, we measure the values of the encoders $\q$ (and if possible, also the velocities $\dq$) every discrete time step, by obtaining $n_c$ measurements$$\q(t_1)\dots \q(t_k)\dots \q(t_{n_c}).$$
     \item We estimate the value of $\ddq$ and $\dq$ (if not available) by using these measurements: For example, to measure $\dq(t_k)$, we fit a polynomial function $g$ in $\q(t_{k-1}),\q(t_{k}),\q(t_{k+1})$ and we take the analytical derivative $\frac{dg}{dt}$ in $t_k$.
     \begin{figure}[H]    
     \centering 
@@ -3933,7 +3932,7 @@ We used the word \textbf{moments} to intend the specific torques generated by fo
         \includegraphics[width=0.3\textwidth ]{images/moments.eps}
     \end{figure}
 In this image, the moment $\bmu$ is the result of the cross product between the force and the position vector describing the point of application of the force:\begin{align}
-    &\bmu=\mathbf r_{PO}\times \mathbf f = \mathbf f \times \mathbf r_{OP}\\ 
+    &\bmu=\mathbf r_{PO}\times \mathbf f = -(\mathbf f \times \mathbf r_{OP})\\ 
     &\mu = |\mathbf f|\cdot |\mathbf r_{OP}|.
 \end{align}
 The Newton-Euler method, from now on denoted just NE, consider the linear and the angular forces. The Newton dynamic equation affirms that the sum of the forces on a rigid body is the variation of the linear momentum:\begin{equation}
@@ -4030,7 +4029,7 @@ that are the interaction force and moment on the end effector exerted by the env
         + {}^i I_i{}^i\dot{\bomega}_i+{}^i\bomega_i\times {}^iI_i{}^i\bomega_i
      \end{align}
 \end{boxlemma}
-\noindent At the end, the generalized forces associated to $\q,\dq,\ddq$ are $\btau_q$ where\begin{equation}
+\noindent At the end, the generalized force associated to $\q,\dq,\ddq$ is $\btau_q$ where\begin{equation}
     \tau_{qi}=\begin{cases}
         {}^i\mathbf f_i^T{}^i\mathbf z_{i-1}\text{ if joint is prismatic}\\
         {}^i\bmu_i^T{}^i\mathbf z_{i-1}\text{ if joint is revolute}
@@ -4050,7 +4049,7 @@ The provided torques $\btau_q$ are the one needed to execute the desired traject
     computes the resulting torques that are acting on the generalized coordinates, in this way, by calling the procedure using the current state $(\q,\dq)$ and the desired joint acceleration $\ddq_d$, the procedure provides the torques needed to accomplish that acceleration (solves the inverse dynamics).
 \end{boxobservation}
 
-In case of dissipative terms (viscous and Coulomb friction), we have\begin{equation}
+\noindent In case of dissipative terms (viscous and Coulomb friction), we have\begin{equation}
     \tau_{qi}=
     \tau_i-B_{vi}\dot q_i-B_{ci}
     \text{sign}(\dot q_i)
@@ -4196,7 +4195,7 @@ If the current state at time $t_0$ is at distance $\delta_{\varepsilon}$ (that d
 This is a stronger condition, if the system is close enough to the equilibrium, it will evolve by converging to that equilibrium state. In some cases, asymptotic stability might be \textbf{global}: $\forall \delta > 0$. This condition, denoted GAS is possible if and only if there are only one equilibrium point.
 \begin{figure}[H]    
 \centering 
-     \includegraphics[width=0.8\textwidth ]{images/equilibrium.eps}
+     \includegraphics[width=0.8\textwidth ]{images/equilibrium.pdf}
 \end{figure}
 \begin{boxdefinition}{Exponential Stability of $\mathbf x_e$}{}
      The equilibrium state $\mathbf x_e$ is exponentially stable if and only if\begin{equation}
@@ -4210,7 +4209,7 @@ The larger is $\lambda$, the faster $e^{-\lambda (t-t_0)}$ goes to zero, when $c
 \centering 
      \includegraphics[width=0.6\textwidth ]{images/taxonomySystems.png}
 \end{figure}
-Let's consider the following linear system\begin{equation}
+\noindent Let's consider the following linear system\begin{equation}
     \begin{cases}
         \dot x_1=1-x_1^3\\
         \dot x_2=x_1-x_2^2
@@ -4390,7 +4389,7 @@ After simplify that term, the remaining $\dot V$ is:
 since $K_P$ is symmetric, $\dq^TK_P\mathbf e=\mathbf e^TK_P\dq$, so:\begin{equation}
     \dot V=-\dq^TK_D\dq \le 0 
 \end{equation}
-since $K_D$ is positive definite, $\dot V$ is never positive, and is zero if and only if $\dq=\mathbf 0$, hence the system is stable.
+$K_D$ is positive definite, hence $\dot V$ is never positive, and is zero if and only if $\dq=\mathbf 0$, hence the system is stable.
 The closed loop dynamic when $\dq=\mathbf 0$ is\begin{equation}
     M\ddq=K_P\mathbf e\implies \ddq=M^{-1}K_P\mathbf e
 \end{equation}
@@ -4456,6 +4455,7 @@ We want to prove that the law \eqref{gravity_compensation} assess GAS, to do tha
 this matrix can be computed by deriving the gravity term $\mathbf g$ respect to $\q$, we recall that the induced norm of a matrix in this context, is the square root of the maximum eigenvalue:\begin{equation}
     \|A\|=\sqrt{\lambda_{\text{max}}(A^TA)}.
 \end{equation}
+In Equation \eqref{eq:Frobenius} we show a fast method to compute an upper bound for the norm of a matrix.
 The condition in equation \eqref{alpha_bound} implies that:\begin{equation}\label{alpha_bound2}
     \|\mathbf g(\q)-\mathbf g(\q_d)\|\le\alpha\|\q-\q_d\|.
 \end{equation} 
@@ -4729,7 +4729,7 @@ $\widehat{NE}$ means that the algorithm is computed using the estimated dynamic 
     \end{equation}
     In nominal condition ($\hat M=M, \ \hat{\mathbf n}=\mathbf n $) this controller achieve global asymptotic stability.
     \item The \textbf{feedback linearization (FBL)} is the best performing controller (in nominal conditions). It uses the dynamic model to cancel the non linear terms:\begin{equation}
-        \btau=\hat M(\q)(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq))+\hat{\mathbf n}(\q,\dq)
+        \btau=\hat M(\q)\big(\ddq_d+K_P(\q_d-\q)+K_D(\dq_d-\dq)\big)+\hat{\mathbf n}(\q,\dq)
     \end{equation}
     can also be completed with an integral action:
     \begin{equation}
@@ -6674,7 +6674,7 @@ here, $\lambda_{\max}(A^TA)$ is the maximum eigenvalue of $A^TA$. For symmetric 
     \|M\|_2=\lambda_{\max}(M).
 \end{equation}
 \textbf{If we need a bound on the norm, not the exact norm}: We can consider the Frobenius norm:\begin{equation}
-    \|A\|_2\le \|A\|_F=\sqrt{\sum_{i=1}^m\sum_{j=1}^n |A_{ij}|^2}
+    \|A\|_2\le \|A\|_F=\sqrt{\sum_{i=1}^m\sum_{j=1}^n |A_{ij}|^2}\label{eq:Frobenius}
 \end{equation}
 just add the squares of all the elements of the matrix and put the result under the root.
 \subsection*{Inverting a Matrix}
