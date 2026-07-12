@@ -4757,7 +4757,7 @@ The system is \textit{linearized}, and becomes a simple double integrator, in th
 \centering 
      \includegraphics[width=0.7\textwidth ]{images/FBL3.drawio.pdf}
 \end{figure}
-Of course, it requires $K_P,K_D$ to be diagonal and positive definite. The evolution of the error is\begin{equation}
+\noindent Of course, it requires $K_P,K_D$ to be diagonal and positive definite. The evolution of the error is\begin{equation}
     \ddot{\mathbf e}+K_D\dot{\mathbf e}+K_P\mathbf e=\mathbf 0 
 \end{equation}
 since the dynamic is decoupled:
@@ -4998,7 +4998,7 @@ with this law the closed loop equation at iteration $k$ is\begin{equation}
 \end{equation}
 the goal of the regressor $\boldsymbol{\varepsilon}_k$ is to learn the perturbation $\boldsymbol{\delta}$ in order to linearize the system.\bigskip
 
-We use a \textbf{Gaussian Process (GP) Regressor}, let\begin{equation}
+\noindent We use a \textbf{Gaussian Process (GP) Regressor}, let\begin{equation}
     \mathbf x_k=(\q_k,\dq_k,\mathbf u_k)
 \end{equation}
 to be the current state of the manipulator plus the control command. The observed output $\mathbf y_k$ represents the perturbation $\boldsymbol{\delta}$ that we wants to nullify:\begin{equation}
@@ -5055,7 +5055,7 @@ and $Y$ is the set of all the previous observation for the output:\begin{equatio
 \subsection{Regulation}
 The control input can be evaluated with the error in the task space, denoted $\mathbf e_y=\y_d-\y$, where $\y_d$ is the desired task trajectory. The goal of a control law in the task space for \textbf{regulation} is to achieve asymptotic stability of the end effector pose (or other task vector), having $\y=\y_d$, and $\dq=\mathbf 0$, we don't require directly $\dy=\mathbf 0$ since, in case of redundancy, this might be achieved with a non zero joint velocity (self motion).\bigskip 
 
-The first law that we consider is the following:\begin{equation}\label{regulation_cartesian}
+\noindent The first law that we consider is the following:\begin{equation}\label{regulation_cartesian}
     \btau=J^T(\q)K_P(\y_d-\y)-K_D\dq+\mathbf g(\q).
 \end{equation}
 This is a mixed law that consider the position error in the task space, but the velocity error in the joint space (as we already said, to avoid self motion). Is a simple PD law + gravity cancellation. 
@@ -5168,7 +5168,7 @@ Three common choices for $W$ are:\begin{align}
     &W=I\\ &W=M^{-1}\\ &W=M^{-2}.
 \end{align}
 \section{Adaptive Control}
-When the model of the manipulator is not available, and we don't want to use machine learning solutions, we can define a non linear control law that has at its own states, the values of the dynamic coefficients, this kind of technique is called \textit{Adaptive Control}. This control law aim to bring the trajectory error to zero, without converging necessarily to the true values of the dynamic coefficients.
+When the model of the manipulator is not available, and we don't want to use machine learning solutions, we can define a non linear control law that has at its own state, the values of the dynamic coefficients, this kind of technique is called \textit{Adaptive Control}. This control law aim to bring the trajectory error to zero, without converging necessarily to the true values of the dynamic coefficients.
 
 We assume that the kinematic parameters are given (Denavit-Hartenberg parameters). This law achieves global asymptotic stability for the error:\begin{align}
    & \mathbf e = \q_d-\q\rightarrow \mathbf 0\\
@@ -5194,10 +5194,10 @@ with $\Lambda$ a positive definite matrix (typically $\Lambda=K_D^{-1}K_P$).
     \centering 
      \includegraphics[width=0.6\textwidth ]{images/enhancedVel.png}
 \end{figure}
-The new velocity error is\begin{equation}
+\noindent The new velocity error is\begin{equation}
     \boldsymbol{\sigma}=\dq_r-\dq>\dq_d-\dq=\de.
 \end{equation}
-now we have to design also and update law for $\dot{\hat \brho}$.
+now we have to design also an update law for $\dot{\hat \brho}$.
 \begin{boxdefinition}{Adaptive Control Law}{}
     The adaptive control law that updates both the state of the robot $(\q,\dq)$ and the dynamic coefficients estimation $\hat{\brho}$ is defined as follows:\begin{align}
         \btau&=\hat M(\q)\ddq_r+\hat C(\q,\dq)\dq_r+\hat{\mathbf g}(\q)+\hat B_v\dq_r+K_P\mathbf e+K_D\de\\ 
@@ -5565,7 +5565,7 @@ Consider a mass that moves in the plane $(x,y)$, subject to two orthogonal contr
     \centering 
      \includegraphics[width=0.45\textwidth ]{images/wall.png}
 \end{figure}
-The dynamics is given by\begin{align}
+\noindent The dynamics is given by\begin{align}
     &m\ddot x=f_x+f_e\\ 
     &m\ddot y=f_y.
 \end{align}
@@ -5753,12 +5753,19 @@ we can eliminate the multipliers from \eqref{model_const} by left multiplying by
 \end{equation}
 At this point we can use the inverse relations for $\mathbf u$ and $\dot{\mathbf u}$ to substitute in the model in order to derive the dynamic equations in the reduced velocities:
     \begin{equation}\label{dotu}
-   ( G^TMG)\dot{\mathbf u}=G^T(\btau-\mathbf c-\mathbf g+M(E\dot A+G\dot D)G\mathbf u)
+   ( G^TMG)\dot{\mathbf u}=G^T(\btau-\mathbf c-\mathbf g+M\underbrace{(E\dot A+G\dot D)G}_{-\dot G}\mathbf u)
 \end{equation}
 which is the $n-l$-dimensional dynamic model. Similarly the multipliers value (general forces exerted on the end effector while trying to violate the constraints) can be computed with $\mathbf u,\dot{\mathbf u}$ as follows:\begin{equation}\label{lamdba_val}
-    \boldsymbol{\lambda}=E^T(MG\dot{\mathbf u}-M(E\dot A+G\dot D)G\mathbf u+\mathbf c+\mathbf g-\btau).
+    \boldsymbol{\lambda}=E^T(MG\dot{\mathbf u}-M\underbrace{(E\dot A+G\dot D)G}_{-\dot G}\mathbf u+\mathbf c+\mathbf g-\btau).
 \end{equation}
-
+\begin{boxobservation}{Derivative of $G$}{}
+    In the Equations \ref{lamdba_val} and \ref{dotu} we have written \begin{equation}
+        (E\dot A+G\dot D)G
+    \end{equation}
+    this form is necessary if and only if the matrix $G$ is \textbf{not available analytically}. If we have an analytical form of $G$ instead, we can directly use its derivative as follows:\begin{equation}
+        (E\dot A+G\dot D)G=-\dot G.
+    \end{equation}
+\end{boxobservation}
 \begin{boxdefinition}{Reduced Model Dynamics}{}\begin{enumerate}
     \item we have the constrained model $M\ddq+\mathbf c+\mathbf g=\btau+A^T\boldsymbol{\lambda}$ 
     \item we choose an appropriate $D(\q)$ and compute $E,G$ (numerically at each time step)

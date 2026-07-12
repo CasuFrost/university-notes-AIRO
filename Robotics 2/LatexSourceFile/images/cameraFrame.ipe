@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260527172134" modified="D:20260527173402"/>
+<info created="D:20260527172134" modified="D:20260711101639"/>
 <preamble>\usepackage{amssymb}
 \usepackage{amsmath}</preamble>
 <ipestyle name="basic">
@@ -343,9 +343,8 @@ h
 212 548 l
 </path>
 <text matrix="0.608335 0.793681 -0.793681 0.608335 556.557 152.144" transformations="translations" pos="248 520" stroke="0 0.502 0.753" type="label" width="9.151" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf z_c</text>
-<text matrix="0.608335 0.793681 -0.793681 0.608335 500.742 142.795" transformations="translations" pos="248 520" stroke="0" type="label" width="10.105" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf x_c</text>
+<text matrix="0.608335 0.793681 -0.793681 0.608335 500.742 142.795" transformations="translations" pos="248 520" stroke="0 0.502 0.753" type="label" width="10.105" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf x_c</text>
 <text matrix="0.608335 0.793681 -0.793681 0.608335 496.671 157.266" transformations="translations" pos="248 520" stroke="0 0.502 0.753" type="label" width="20.749" height="6.812" depth="1.49" valign="baseline" style="math">RF_C</text>
-<use matrix="0.608335 0.793681 -0.793681 0.608335 556.557 152.144" name="mark/disk(sx)" pos="240 548" size="normal" stroke="0 0.502 0.753"/>
 <path matrix="0.608335 0.793681 -0.793681 0.608335 556.557 152.144" stroke="0.502 0 1" fill="white" arrow="normal/normal">
 240 548 m
 288 524 l
@@ -365,10 +364,6 @@ h
 </path>
 <text matrix="0.608335 0.793681 -0.793681 0.608335 581.605 189.036" transformations="translations" pos="248 520" stroke="0.502 0 1" type="label" width="8.821" height="6.835" depth="0" valign="baseline" style="math">\mathbf V</text>
 <text matrix="0.608335 0.793681 -0.793681 0.608335 519.193 198.634" transformations="translations" pos="248 520" stroke="0.502 0 1" type="label" width="8.274" height="6.835" depth="0" valign="baseline" style="math">\boldsymbol{\Omega}</text>
-<path matrix="0.999992 0.00396066 -0.00396066 0.999992 -11.6433 27.8046" stroke="0.502 0 0" arrow="normal/normal">
-160 640 m
-140 624 l
-</path>
 <text matrix="0.910223 -0.414119 0.414119 0.910223 -324.649 320.024" transformations="translations" pos="248 520" stroke="0.502 0 0" type="label" width="18.517" height="6.812" depth="1.49" valign="baseline" style="math">RF_0</text>
 <path matrix="1 0 0 0.5 60 356" stroke="0" fill="white">
 8 0 0 8 148 720 e
@@ -403,5 +398,10 @@ h
 252 688 m
 236 700 l
 </path>
+<path matrix="0.999992 0.00396066 -0.00396066 0.999992 -11.6433 27.8046" stroke="0.502 0 0" arrow="normal/normal">
+160 640 m
+140 624 l
+</path>
+<use matrix="0.608335 0.793681 -0.793681 0.608335 556.557 152.144" name="mark/disk(sx)" pos="240 548" size="normal" stroke="0 0.502 0.753"/>
 </page>
 </ipe>
