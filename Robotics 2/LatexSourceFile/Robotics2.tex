@@ -6431,7 +6431,7 @@ This quantity can be computed without computing the joint acceleration nor inver
     \dot{\mathbf r}=K(\btau_f-\mathbf r)
 \end{equation}
 since $K$ is diagonal, for each $i$-th component:\begin{equation}
-    \dot r_i=K_i(\tau_{f,i}-r_i)
+    \dot r_i=K_i(\tau_{f,i}-r_i)\implies r_i(t) = \tau_{f,i} + (r_i(0) - \tau_{f,i}) e^{-K_i t}
 \end{equation}
 \begin{figure}[H]
     \centering 
