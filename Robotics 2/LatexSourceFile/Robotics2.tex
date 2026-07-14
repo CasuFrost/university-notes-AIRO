@@ -806,9 +806,10 @@ There is a last Jacobian based method, called \textbf{Damped Least Squares (DLS)
         \text{such that }\|\dy-J\dq\|^2=0
     \end{matrix}
 \end{equation}
-this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ that creates a compromise between large joint velocity and task accuracy: In practice, we allow a solution that achieves a task velocity that is not identical to the desired one, but with a lower norm. The optimization problem becomes unconstrained:\begin{equation}
-    \displaystyle\min_{\dq}\quad \frac{\mu}{2}\|\dq\|^2+\frac{1}{2}\|\dy-J\dq\|^2
-\end{equation}
+this problem can be \textit{relaxed}: We might add a weighting term $\mu\ge 0$ that creates a compromise between large joint velocity and task accuracy: In practice, we allow a solution that achieves a task velocity that is not identical to the desired one, but with a lower norm. The optimization problem becomes unconstrained:\begin{align}
+    &\displaystyle\min_{\dq}\quad \frac{\mu}{2}\|\dq\|^2+\frac{1}{2}\|\dy-J\dq\|^2
+    =\\ &\displaystyle\min_{\dq}\quad \frac{1}{2} (\dot{\mathbf{q}} - ((J^T J + \mu I)^{-1} J^T \dot{\mathbf{y}}))^T ( J^T J + \mu I) (\dot{\mathbf{q}} - ( (J^T J + \mu I)^{-1} J^T \dot{\mathbf{y}}))
+\end{align}
 this induces a robust behavior when crossing singularities and applies equally to square and non-square matrices. Since it is a quadratic form, it admits an analytical solution:\begin{equation}
     \dq=J_{DLS}\dy=J^T(JJ^T+\mu I_m)^{-1}\dy
 \end{equation}
@@ -872,7 +873,7 @@ but will not have all of the four properties just presented. In this way, $\dq_N
         \item $\mathbf x_N\in \R^n$.
     \end{itemize}
 \end{boxdefinition}
-In our Robotics context, the matrix $W$ is also positive definite\begin{equation}
+\noindent In our Robotics context, the matrix $W$ is also positive definite\begin{equation}
     \mathbf x^T W \mathbf x >0, \ \ \forall \mathbf x.
 \end{equation}
 This condition is sufficient to make the problem to have a minimum solution. A general LQ problem can be solved by adding $m$ additional variables $\boldsymbol{\lambda}$ called \textbf{Lagrangian multipliers} and by considering the following function called \textbf{Lagrangian}:\begin{equation}
@@ -926,7 +927,7 @@ that is exactly the sum of a particular solution ($J^\#_W\dy$) and the projectio
 \bigskip 
 
 \noindent At this point, we have to define a way to choose (at each time step) the preferred direction $\dq_N$.\begin{quote}
-    \sapText{Idea}: We can choose $\dq_N$ as the gradient of some performance metrics in function of the configuration.
+    \textbf{\sapText{Idea}}: We can choose $\dq_N$ as the gradient of some performance metrics in function of the configuration.
 \end{quote}
 We define a scalar function $G(\mathbf q)$ that measures how desirable a configuration is, the gradient of this function will push the configuration towards the maximization of that function. So we define:\begin{equation}
     \dq_N=\nabla G
@@ -1545,7 +1546,7 @@ instead, if we saturate only the \textit{most violating} velocity with the SNS m
 \centering 
      \includegraphics[width=0.5\textwidth ]{images/SNS2.eps}
 \end{figure}
-As we can see by the figure, the solution provided by the \greenText{SNS procedure } is way closer to the \sapText{desired solution } respect the \blueText{scaled one}.\bigskip
+As we can see by the figure, the solution provided by the \greenText{SNS procedure } is way closer to the \sapText{desired solution } with respect to the \blueText{scaled one}.\bigskip
 
 Since we control the robot by velocity commands by imposing $\dq$, we can't directly impose a limits for the joint ranges $\q$ and the accelerations $\ddq$. Consider a full set of limits in the most general way:
 \begin{equation}
@@ -6431,7 +6432,7 @@ This quantity can be computed without computing the joint acceleration nor inver
     \dot{\mathbf r}=K(\btau_f-\mathbf r)
 \end{equation}
 since $K$ is diagonal, for each $i$-th component:\begin{equation}
-    \dot r_i=K_i(\tau_{f,i}-r_i)\implies r_i(t) = \tau_{f,i} + (r_i(0) - \tau_{f,i}) e^{-K_i t}
+    \dot r_i=K_i(\tau_{f,i}-r_i) \implies r_i(t) = \tau_{f,i} + (r_i(0) - \tau_{f,i}) e^{-K_i t}
 \end{equation}
 \begin{figure}[H]
     \centering 
