@@ -844,7 +844,7 @@ This method will exploit joint movements that lies in the null space of the Jaco
 \end{equation}
 \begin{itemize}
     \item $J^\#\dy$ is a particular solution (we know that is the solution with minimum norm)
-    \item $(I-J^\#J)\dq_N$ is a solution to the system $J\dy=\mathbf 0$.
+    \item $(I-J^\#J)\dq_N$ is a solution to the system $J\dq=\mathbf 0$.
 \end{itemize}
 Notice how $(I-J^\#J)$ is the \textbf{projection operator} on the null space of $J$. $\dq_N$ is an arbitrary joint velocity vector, that will be projected on the null space, in such way, this term will not influence the resulting task vector $\dy$.
 \begin{figure}[H]
@@ -4973,7 +4973,7 @@ The \textbf{update law} of the feedforward term is designed as\begin{equation}
 where $\alpha$ and $\beta$ are suitable filters.
 \\\redText{TODO finire pacco di slide 10 pagina 21}
 \section{Online Learning}
-Some controllers performs perfectly when the model is known. In unknown condition, we want a control law that acquires the missing information, and use feedback to process the error trough machine learning techniques: We construct a regressor that with the collected data estimates the missing information about the dynamics of the manipulator. This method, called \textbf{online learning}, assess fast convergence if we start with a reasonably good estimation of the model.
+Some controllers performs perfectly when the model is known. In unknown condition, we want a control law that acquires the missing information, and use feedback to process the error through machine learning techniques: We construct a regressor that with the collected data estimates the missing information about the dynamics of the manipulator. This method, called \textbf{online learning}, assess fast convergence if we start with a reasonably good estimation of the model.
 
 The dynamic model of the manipulator is\begin{equation}
     M(\q)\ddq+\mathbf n(\q,\dq)=\btau 
@@ -5147,7 +5147,7 @@ with the dynamics terms expressed in the cartesian space.\bigskip
     \item If $\y_d$ is constant, there are no particular simplification, the computation of the desired torque is heavier with respect to a regulation law, but the linearization provide exponential stability, the control law becomes:\begin{equation}
         \btau=MJ^{-1}(K_P\mathbf e_y-K_DJ\dq)+\mathbf c+\mathbf g-MJ^{-1}\dot J\dq.
     \end{equation}
-    \item The cartesian pose $\y$ can be measured by an external sensor (e.g., cameras) or computed trough the direct kinematics by measuring the current configuration $\q$.
+    \item The cartesian pose $\y$ can be measured by an external sensor (e.g., cameras) or computed through the direct kinematics by measuring the current configuration $\q$.
 \end{itemize}
 \textbf{Redundant Case}: If $m<n$, we can't compute $MJ^{-1}=(JM^{-1})^{-1}$, instead we use the weighted pseudo inverse for a given matrix $W$:\begin{equation}
     (JM^{-1})^\#_W=W^{-1}M^{-1}J^T(JM^{-1}W^{-1}M^{-1}J^T)^{-1}
@@ -5399,7 +5399,7 @@ This scheme is almost insensitive to intrinsic/extrinsic camera calibration para
     A \textbf{feature parameter} is a numerical quantity associated to
 the selected feature in the image plane (for example, the coordinates of a point, or the angular coefficient of a line).
 \end{boxdefinition}
-We have to give the mathematical model of a camera, and how the objects on a scene are projected on the image plane.  Consider an image plane, orthogonal to the $\mathbf z$ axis in the space, this axis is called \textbf{optical axis}, and it passes trough the center of the image plane. Let's denote $(X,Y,Z)$ the coordinates of a point $\mathbf P$ in the space, and $(u,v)$ the coordinate of the point $\mathbf p$ projected on the image plane. The coordinates $u,v$ are computed trough a coefficient $\lambda$ called \textbf{focal length} (that is intrinsic of the camera):\begin{equation}
+We have to give the mathematical model of a camera, and how the objects on a scene are projected on the image plane.  Consider an image plane, orthogonal to the $\mathbf z$ axis in the space, this axis is called \textbf{optical axis}, and it passes through the center of the image plane. Let's denote $(X,Y,Z)$ the coordinates of a point $\mathbf P$ in the space, and $(u,v)$ the coordinate of the point $\mathbf p$ projected on the image plane. The coordinates $u,v$ are computed through a coefficient $\lambda$ called \textbf{focal length} (that is intrinsic of the camera):\begin{equation}
     u=\lambda\frac{X}{Z}, \ \ \ v=\lambda\frac{Y}{Z}
 \end{equation}
 \begin{figure}[H]
@@ -5478,7 +5478,7 @@ $J_p(u,v,Z)$ is the \textbf{interaction matrix} and relates the velocity of a po
     \item \textbf{Model-Based Pose Estimation:} Exploiting a known 3D geometric model of the object (solving the PnP problem) to analytically compute $Z$ at each frame.
 \end{enumerate}
 \end{boxobservation}
-When the camera is mounted on the end effector, the motion $\mathbf t=(\mathbf V,\Bomega)$ to be imposed coincides with the desired end effector linear/angular velocity, realized by choosing the joint velocity computed trough the Jacobian of the direct kinematics:\begin{itemize}
+When the camera is mounted on the end effector, the motion $\mathbf t=(\mathbf V,\Bomega)$ to be imposed coincides with the desired end effector linear/angular velocity, realized by choosing the joint velocity computed through the Jacobian of the direct kinematics:\begin{itemize}
     \item To achieve a desired velocity for a features vector ${\dot{\mathbf f}}$ we use the interaction matrix
     $$ 
     \mathbf t=J_p^\#{\dot{\mathbf f}} 
@@ -5822,7 +5822,7 @@ Now let's talk about \textbf{controlling} a robot subject to constraints, this i
 In the closed loop system $\mathbf a$ has to be chosen in order to impose a desired reduced acceleration $\dot{\mathbf u}$ and $\mathbf f$ to impose a desired interaction force with the environment, $\mathbf a$ can include a feed forward term plus a PD,PI or PID controller, for example:\begin{equation}
     \mathbf a = \dot{\mathbf u}_d+K_P(\mathbf u_d-\mathbf u)+K_I\int(\mathbf u_d-\mathbf u)
 \end{equation}
-where $\mathbf u_d$ is the desired reduced velocity (can also be computed by a general desired velocity $\dq_d$ that will be projected on the constraints trough $D(\q)$).
+where $\mathbf u_d$ is the desired reduced velocity (can also be computed by a general desired velocity $\dq_d$ that will be projected on the constraints through $D(\q)$).
 \subsection{Compliance and Force Control}
 There are three possible cases of compliance in environment interaction:\begin{itemize}
     \item The robot end effector is compliant (a force sensor always introduce some compliance) and the environment is rigid, we denote $K_s$ the robot stiffness. 
@@ -5831,12 +5831,12 @@ There are three possible cases of compliance in environment interaction:\begin{i
         K=\frac{K_sK_e}{K_s+K_e}.
     \end{equation}
 \end{itemize}
-A robot end effector in contact with the environment can be approximated with a mass connected with a spring trough the environment, subject to viscous friction and friction given by the force/torque sensor:
+A robot end effector in contact with the environment can be approximated with a mass connected with a spring through the environment, subject to viscous friction and friction given by the force/torque sensor:
 \begin{figure}[H]
     \centering 
      \includegraphics[width=0.7\textwidth ]{images/force_control1.eps}
 \end{figure}
-The sensor introduce the compliance $k_s$ with the environment and a proper friction $b_s$. For simplicity we consider the system one dimensional, $F$ is the horizontal force on the mass that we can apply trough the robot actuators. The equation describing the dynamics is\begin{equation}
+The sensor introduce the compliance $k_s$ with the environment and a proper friction $b_s$. For simplicity we consider the system one dimensional, $F$ is the horizontal force on the mass that we can apply through the robot actuators. The equation describing the dynamics is\begin{equation}
     m_r\ddot x_r=F-k_sx_r-(b_r+b_s)\dot x_r
 \end{equation}
 the transfert function between the input force $F$ and the output position $x_r$ is:\begin{align}
@@ -6039,7 +6039,7 @@ suitable end effector task frame $RF_t$. The execution of the task is performed 
 
 \noindent It is hard to define the general framework of hybrid control, so we will show some examples.\bigskip
 
-\newpage\noindent \textbf{Example 1}
+\noindent \textbf{Example 1}
 \begin{figure}[H]
     \centering 
      \includegraphics[width=0.5\textwidth ]{images/hybrid2.eps}
@@ -6096,7 +6096,7 @@ the parametrization of the admissible reaction with the environment is given by 
         f_y\\f_z\\\mu_x\\\mu_z 
     \end{pmatrix}=S_w\blambda.
 \end{equation}\begin{itemize}
-    \item We can control $\bnu$ and $\blambda$\item these quantities are passed trough $S_t$ and $S_w$\item they providing the filtered motion and wrench commands to be passed to the low level control loop.
+    \item We can control $\bnu$ and $\blambda$\item these quantities are passed through $S_t$ and $S_w$\item they providing the filtered motion and wrench commands to be passed to the low level control loop.
 \end{itemize}\noindent \textbf{Example 2}\\
 A manipulator is holding a crank, that have to turn.
 \begin{figure}[H]
@@ -6236,7 +6236,7 @@ this control requirement is assessed in two steps:\begin{enumerate}
     &\dot{\mathbf t}_e=J\ddq+\dot J\dq\implies\\ 
     &\ddq=J^{-1}(\dot{\mathbf t}_e-\dot J\dq)\label{substitued_ddq}
 \end{align}
-we don't want to control $\mathbf t_e$ but the selected components trough $S_t\bnu$:\begin{equation}
+we don't want to control $\mathbf t_e$ but the selected components through $S_t\bnu$:\begin{equation}
     J\ddq+\dot J\dq=S_t\dot\bnu+\dot S_t\bnu=\dot{\mathbf t}_e
 \end{equation}
 Now we substitute \eqref{substitued_ddq} in the dynamic model with $\ddq$:\begin{equation}
@@ -6442,7 +6442,7 @@ since $K$ is diagonal, for each $i$-th component:\begin{equation}
     &\dot r_is = K_i(\tau_{f,i}-r_i)\implies\\ 
     &\frac{r_i}{\tau_{f,i}}=\frac{1}{1+\frac{1}{K_i}s} 
 \end{align}
-so $r_i$ observe the value of $\tau_{f,i}$, with a delay given by $\frac{1}{K_i}$. Of course we don't have access to $\btau_f$, so the observer is implemented trough the integral term.  The block diagram of the model with the residual generator is the following:\begin{figure}[H]
+so $r_i$ observe the value of $\tau_{f,i}$, with a delay given by $\frac{1}{K_i}$. Of course we don't have access to $\btau_f$, so the observer is implemented through the integral term.  The block diagram of the model with the residual generator is the following:\begin{figure}[H]
     \centering 
      \includegraphics[width=0.7\textwidth ]{images/residualGenerator.drawio.pdf}
 \end{figure}
@@ -6498,7 +6498,7 @@ as you can see, on the profile of $q_1,q_2$ there is no clear evidence of the fa
     \centering 
      \includegraphics[width=0.35\textwidth ]{images/faultsExample3.png}
 \end{figure}
-in this case, $K$ was a diagonal matrix with $K_1=K_2=50$. Usually, to overcome disturbances not given by the faults, the residual $\mathbf r$ are filtered trough a given threshold $\epsilon$\begin{equation}
+in this case, $K$ was a diagonal matrix with $K_1=K_2=50$. Usually, to overcome disturbances not given by the faults, the residual $\mathbf r$ are filtered through a given threshold $\epsilon$\begin{equation}
     r_{i,filtered}=\begin{cases}
         r_i &\text{ if }|r_i|>\epsilon \\ 
         0 &\text{ if }|r_i|\le \epsilon
