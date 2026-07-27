@@ -1,0 +1,399 @@
+\usepackage[utf8]{inputenc}
+\usepackage{psvectorian}
+\usepackage{pgfplots}
+\usepackage[Rejne]{fncychap}
+\usepackage[export]{adjustbox}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo} % Replaced lmodern with Palatino font to match the image's serif style
+\usepackage{blindtext}
+\usepackage{pdfpages}
+\usepackage[shortlabels]{enumitem}
+\usepackage{moresize}
+\usepackage{stmaryrd}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\usepackage{nicefrac, xfrac}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{tikz-cd}
+\usepackage{mathrsfs} 
+\usepackage{titletoc}
+\usepackage{fancyhdr}
+\usepackage{psvectorian,lipsum}
+\usepackage{fourier-orns}
+\usepackage{lipsum}
+\usepackage{wrapfig}
+\usepackage{multicol}
+\usepackage{titlesec}
+\usepackage[paper=a4paper,left=25mm,right=25mm,bottom=25mm,top=25mm]{geometry}
+\usepackage[most]{tcolorbox}
+\usepackage{amsfonts}
+
+\definecolor{light-gray}{gray}{0.95}
+\definecolor{cop}{HTML}{f7ecd7}
+\definecolor{copAut}{HTML}{ababab}
+\definecolor{copAut2}{HTML}{c3c3e6}
+\definecolor{purcop}{HTML}{d0d3db}
+\definecolor{sapienza}{HTML}{660f1d}
+\definecolor{lightSapienza}{HTML}{e3d3d5}
+\definecolor{darkgreen}{HTML}{008000}
+\definecolor{cartaRiciclata}{HTML}{fcfcf7}
+\newcommand{\quadBrack}[1]{ \llbracket #1 \rrbracket }
+\newcommand{\redText}[1]{\color{red}#1\color{black}}
+\newcommand{\sapText}[1]{\color{sapienza}#1\color{black}}
+\newcommand{\blueText}[1]{\color{blue}#1\color{black}}
+\newcommand{\greenText}[1]{\color{darkgreen}#1\color{black}}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+\newcommand{\codee}[1]{\colorbox{white}{\texttt{#1}}}
+\newcommand{\K}{{\mathbb K}}
+\newcommand{\notimplies}{%
+  \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
+\newcommand{\flowerLine}{ \begin{center}\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa} 
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\decofourleft\hphantom{ }\decoone\hphantom{ }\decofourright\hphantom{}\hphantom{aa}
+\end{center}}
+\definecolor{g}{RGB}{60, 50, 50}
+\newcommand{\textg}[1]{\color{g}{\textbf{#1}}\color{black}}
+\newcommand{\teo}[1]{{\large\color{sapienza}\textbf{Teorema #1 :\hphantom{a}}}}
+\newcommand{\defi}[1]{{\large\color{sapienza}\textbf{Definizione #1 :\hphantom{a}}}}
+\newcommand{\claim}[1]{{\color{sapienza}\textbf{Claim #1 :\hphantom{a}}}}
+\newcommand{\lemma}[1]{{\color{sapienza}\textbf{Lemma #1 :\hphantom{a}}}}
+\newcommand{\dimo}[1]{{\color{sapienza}\textbf{Dimostrazione #1 :\hphantom{a}}}}
+\newcommand{\prop}[1]{{\color{sapienza}\textbf{Proposizione #1 :\hphantom{a}}}}
+\newcommand\greybox[1]{%
+  \vskip\baselineskip%
+  \par\noindent\colorbox{light-gray}{%
+    \begin{minipage}{\textwidth}#1\end{minipage}%
+  }%
+  \vskip\baselineskip%
+}
+\newcommand\sapbox[1]{%
+  \vskip\baselineskip%
+  \par\noindent\colorbox{lightSapienza}{%
+    \begin{minipage}{\textwidth}#1\end{minipage}%
+  }%
+  \vskip\baselineskip%
+}
+\newcommand{\ridFunc}{{f:\Sigma^*\rightarrow \Sigma^*}}
+\newcommand{\rid}{{\le_m^P}}
+\newcommand{\Z}{{\mathbb Z}}
+\newcommand{\blank}{{\sqcup}}
+\newcommand{\Prob}{{\mathbb P}}
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\VA}{{\mathbb E}}
+\newcommand{\btheta}{{\boldsymbol{\theta}}}
+\newcommand{\btau}{{\boldsymbol{\tau}}}
+\newcommand{\bomega}{{\boldsymbol{\omega}}}
+\newcommand{\Bomega}{{\boldsymbol{\Omega}}}
+\newcommand{\bmu}{{\boldsymbol{\mu}}}
+\newcommand{\brho}{{\boldsymbol{\rho}}}
+\newcommand{\bnu}{{\boldsymbol{\nu}}}
+\newcommand{\bsigma}{{\boldsymbol{\sigma}}}
+\newcommand{\blambda}{{\boldsymbol{\lambda}}}
+\newcommand{\N}{{\mathbb N}}
+\newcommand{\quat}{{\mathbb H}}
+\newcommand{\C}{{\mathbb C}}
+\newcommand{\Sn}{{\mathcal S_n}}
+\newcommand{\An}{{\mathcal A_n}}
+\newcommand{\E}{{\mathcal E}}
+\newcommand{\B}{{\mathcal B}}
+\newcommand{\mcm}{{\text{mcm}}}
+\newcommand{\rg}{{\text{rg}}}
+\newcommand{\dq}{{\dot{\mathbf q}}}
+\newcommand{\de}{{\dot{\mathbf e}}}
+\newcommand{\dy}{{\dot{\mathbf y}}}
+\newcommand{\ddq}{{\ddot{\mathbf q}}}
+\newcommand{\ddy}{{\ddot{\mathbf y}}}
+\newcommand{\ve}{{\bar v}}
+\newcommand{\spaz}{{\text{\hphantom{aa}}}}
+\newcommand{\MCD}{{\text{MCD}}}
+\newcommand{\tc}{{\text{ tale che }}}
+\newcommand{\supp}{{\text{Supp}}}
+\newcommand{\acc}{\\\hphantom{}\\}
+\newcommand{\esempio}[1]{{\acc\large\color{sapienza}\textbf{Esempio #1 \hphantom{a}}\acc}}
+\newcommand{\bra}[1]{\langle #1 \rangle}
+\newcommand{\aut}{{\text{Aut}}}
+\newcommand{\Span}{{\text{Span}}}
+\newcommand{\End}{{\text{End}}}
+\newcommand{\cen}{{\text{Centro}}}
+\newcommand{\norm}{{\unlhd}}
+\newcommand{\ciclS}{{\left \langle }}
+\newcommand{\ciclE}{{\right \rangle }}
+\newcommand{\boxedMath}[1]{\begin{tabular}{|c|}\hline \texttt{#1} \\ \hline\end{tabular} :} 
+\newcommand{\shell}[1]{\colorbox{black}{\textcolor{white}{\texttt{#1}}}}
+\newcommand{\eqImportante}[1]{\begin{center}\huge\lefthand\hphantom{a}
+    \normalsize\texttt{#1}
+    \hphantom{aaa}\huge\righthand\end{center}}
+
+\fancyhf{}
+\pagestyle{fancy}
+\usepackage{pgf-pie}  
+\usetikzlibrary{positioning}
+
+% Updated header to match the image style (removed ornaments, added simple rule and italics)
+\fancyhead[L]{\textit{Medical Robotics -- Final Project}} % Change this text as needed
+\fancyhead[R]{\textit{Godot-Based Surgical Simulator}}    % Change this text as needed
+\renewcommand{\headrulewidth}{0.4pt}
+
+%sta roba serve per il codice C
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+\lstdefinestyle{CppStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#}
+    keywordstyle=\color{blue}\ttfamily,
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{red}\ttfamily,
+    basicstyle=\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+\lstset{language=C++,
+                basicstyle=\ttfamily,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{green}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#}
+}
+%fine roba che serve per il codice C
+\usepackage{minted}
+\usepackage[scaled]{helvet}
+\usepackage{needspace}
+\tcbuselibrary{theorems}
+
+%TEOREMI ECC 
+\newtcbtheorem[number within=section]{boxdefinition}{Definition}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!20, right color=sapienza!40}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxtheorem}{Theorem}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!20, right color=sapienza!40}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxproposition}{Proposition}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxequation}{Equation}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxlemma}{Lemma}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxobservation}{Observation}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\newtcbtheorem[number within=section]{boxpostulate}{Postulate}{
+    enhanced,
+    before skip=15pt, after skip=15pt,
+    colback=white, % Fondo bianco per il testo
+    colframe=sapienza!50!black!30, % Colore del bordo (verde chiaro/grigio)
+    fonttitle=\bfseries,
+    coltitle=black,
+    % Stile della "linguetta" superiore
+    attach boxed title to top left={xshift=10mm, yshift=-3.5mm, yshifttext=-1mm},
+    boxed title style={
+        colframe=sapienza!50!black!30,
+        arc=3mm,
+        outer arc=3mm,
+        left=10pt, right=10pt,
+        top=2pt, bottom=2pt,
+        % Sfumatura di verde (gradient) come nell'immagine
+        interior style={left color=sapienza!30, right color=sapienza!50}
+    },
+    % Arrotondamento del box principale
+    arc=4mm,
+    separator sign none, % Rimuove i due punti automatici se vuoi scriverli tu nel titolo
+    description font=\normalfont\bfseries,
+    description delimiters={: }{ } % Formatta il titolo come "Definition 2.1: Titolo"
+}{def}
+
+\titleformat{\section}
+  {\needspace{3\baselineskip} % <--- Chiede almeno 3 righe di spazio libero
+   \fontfamily{phv}\selectfont\huge\bfseries} 
+  {\color{sapienza}\fontsize{20}{20}\selectfont\thesection} 
+  {12pt} 
+  {} 
+  [\vspace{2pt}\nopagebreak\color{sapienza!40}\hrule height 3pt]
+
+% Per la Sottosezione
+\titleformat{\subsection}
+  {\needspace{2\baselineskip} % <--- Chiede almeno 2 righe di spazio libero
+   \fontfamily{phv}\selectfont\Large\bfseries} 
+  {\color{sapienza}\fontsize{16}{16}\selectfont\thesubsection} 
+  {12pt} 
+  {} 
+  [\vspace{2pt}\nopagebreak\color{sapienza!40}\hrule height 1.5pt]
