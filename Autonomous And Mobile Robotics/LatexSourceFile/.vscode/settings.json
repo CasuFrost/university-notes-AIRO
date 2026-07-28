@@ -1,0 +1,23 @@
+{
+    "cSpell.words": [
+        "Casu",
+        "Denavit",
+        "eigen",
+        "Farkas",
+        "feedforward",
+        "Hartenberg",
+        "Hirsh",
+        "iperpiani",
+        "iperpiano",
+        "l'iperpiano",
+        "Linearization",
+        "nonlinearities",
+        "polytopes",
+        "Servoing",
+        "Tecnicalità"
+    ]
+
+    "github.copilot.enable": {
+        "*": false
+    }
+}
