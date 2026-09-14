@@ -1,0 +1,118 @@
+\documentclass[10pt, a4paper]{report}
+% !TeX program = xelatex
+%==================PREAMBOLO=======================%
+\input{../../preamble/preamble_new.tex}
+\newcommand{\y}{{\mathbf y}}
+\newcommand{\q}{{\mathbf q}}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+ \usepackage{multirow}
+\newcommand{\titolo}{Elective in Robotics}
+
+ %TOGLI COMMENTO SE USI XELATEX
+%\usepackage{fontspec}
+\title{\titolo} %========TITOLO========%
+\author{Marco Casu}
+\date{\vspace{-5ex}}
+\begin{document}
+
+%==================COPERTINA=======================%
+\input{../../preamble/title.tex}
+%===================FINE COPERTINA======================%
+\newpage
+%\pagecolor{cartaRiciclata}%\setmainfont{Algerian}
+\Large
+This document summarizes and presents the topics for the \titolo course for the Master's degree in Artificial Intelligence and Robotics at Sapienza University of Rome. The document is free for any use. If the reader notices any typos, they are kindly requested to report them to the author.
+\vfill
+\begin{figure}[h!]
+    \raggedright
+    \includegraphics[width=0.4\textwidth,right ]{../../preamble/tomodachi.pdf} 
+\end{figure}
+\newpage %\setmainfont{Times New Roman}
+\normalsize
+
+\tableofcontents 
+\newpage
+
+%==================FOOTER e HEADER=======================%
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{Section \thesection}
+\fancyfoot[C]{\thepage}
+\fancyfoot[L]{\titolo}
+\fancyfoot[R]{ Marco Casu}
+%\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
+%==================FOOTER e HEADER=======================%
+%==================INIZIO======================%
+\part{Modeling and Control of Multi-Rotor UAVs}
+\chapter{Introduction}
+UAVs stands for \textbf{Unmanned Aerial Vehicles}, also known with other names depending on the domain, like \textit{RPVs (Remotely Piloted Vehicles)} in the military domain, or \textit{Drones} in common parlance. We will use all of the three names indistinctively. The methods presented are valid also for remotely operated or autonomous vehicles (at different levels of autonomy).\bigskip
+
+The term UAVs refers to a broad category of vehicles, in general, any aerial vehicle without a pilot on board is a UAV. We will examine UAVs composed of multiple rotors, in particular \textbf{quadrotors}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/design based classification.png}
+    \caption{Design-based classification.}
+\end{figure}
+The quadrotors are used in various situations:\begin{itemize}
+    \item inspection, maintenance,
+    \item communication networks,
+    \item search and rescue operations,
+    \item aerial transportation, manipulation.
+\end{itemize}
+These activities require a vertical, stationary and slow flight. A quadrotor is characterized by an high maneuverability, can remain suspended in the air without moving (hovering), and perform a \textit{vertical take-off and landing (VTOL)}, differently from other vehicles like airplanes, that requires an horizontal movement in order to take-off and land.
+\section{Modeling}
+We call VTOLs the vehicles that can perform a vertical take-off and landing, these are modeled with the North-East-Down (NED) reference frame:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/NEDframe.eps}
+    \caption{The NED reference frame.}
+    \label{NED}
+\end{figure}
+\noindent This frame, often called $SR_i$, has the $\mathbf k$ axis pointing down to the center of the Earth. According to the dynamics of rigid bodies given by the Newton-Euler formalism, the translational dynamics of a body in the $SR_i$ frame is given by\begin{equation}\label{sum_forces}
+    \sum_j \mathbf F_j = m\dot {\mathbf V}
+\end{equation}
+where $\mathbf F_j$ are the external forces applied to the center of mass, and $\dot {\mathbf V}$ is the acceleration of the center of mass expressed in $SR_i$. The rotational dynamics is given by\begin{equation}\label{sum_moments}
+     \sum_j \mathbf  M_j = J\dot{\boldsymbol{\Omega}} + \boldsymbol{\Omega} \times J \boldsymbol{\Omega}
+\end{equation}
+where $\mathbf M_j$ are the external moments acting on the center of mass, $\boldsymbol{\Omega}$ is the angular velocity of the body expressed in the body frame, denoted $SR_b$ and $J$ is the inertia tensor, also expressed in $SR_b$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/bodyframe.pdf}
+    \caption{$SR_b$ is the reference frame attached to the center of mass of the vehicle, $R$ is the rotation matrix between the two frames.}
+    \label{NED}
+\end{figure}
+\noindent A more explicit expression of the forces in Equation \eqref{sum_forces} is the following:\begin{equation}
+    m\dot {\mathbf V} =  -T R\mathbf k
+    +\mathbf F_e(\mathbf V,\dot{\mathbf V},\boldsymbol{\Omega},\dot{\boldsymbol{\Omega}},\mathbf d(t))
+    +R\Sigma_R\btau
+\end{equation}
+where:\begin{itemize}
+    \item $\mathbf d(t)$ are the external disturbances that do not depend on 
+    the vehicle's state.
+    \item $\mathbf F_e$ are the external forces, that depend on the state.
+    \item $T$ is the \textbf{thrust}, that depends on the number and allocation of the rotors, while $\mathbf -k$ is the direction pointing upward (according to the NED frame as in Figure \ref{NED}). $R$ is the rotation matrix that describes the orientation of our vehicle with respect to the fixed NED frame $SR_i$,
+    \item hence the product $-T R\mathbf k$ is the main upward thrust.
+    \item $\btau$ is the torque generated by the propellers.
+    \item $R\Sigma_R\btau$ are the parasitic forces generated by the rotors/actuators. The coupling matrix $\Sigma_R$ maps the torques/rotations of the motors into small translational lateral forces (then rotated into $SR_I$ via $R$).
+\end{itemize}
+We know that the derivative of the rotation matrix $R$ depends on the skew-symmetric matrix of the angular velocity:\begin{equation}
+    \dot R= R S(\boldsymbol{\Omega})
+\end{equation}
+$S(\boldsymbol{\Omega})$ is important since it appears in the explicit expression of the term $ J\dot{\boldsymbol{\Omega}} $ in Equation \eqref{sum_moments}:
+\begin{equation}
+    J\dot{\boldsymbol{\Omega}}=-S(\boldsymbol{\Omega})J\boldsymbol{\Omega}+\btau+
+    \btau_e(\mathbf V,\dot{\mathbf V},\boldsymbol{\Omega},\dot{\boldsymbol{\Omega}},\mathbf d(t))+ \btau_g+ 
+    \Sigma_T T \mathbf k
+\end{equation}
+where:\begin{itemize}
+    \item $\btau_e$ are the torques induced by the external forces.
+    \item $\Sigma_T T \mathbf k$ is the parasitic moment due to the application of the thrust $T$ if the thrust line does not pass perfectly through the center of mass (constructive misalignment). $\Sigma_T$ is a matrix that represents the geometric misalignment between the effective axis of the total thrust $T$ and the center of mass of the vehicle. If the thrust vector does not pass exactly through the center of gravity, it generates a parasitic torque proportional to the thrust itself.
+    \item $\btau_g$ is the internal gyroscopic moment due to the inertia of the propellers rotating at high speed (particularly relevant in quadcopters when they change attitude rapidly).
+\end{itemize}
+We denote $\vec{\mathbf T}=-T\mathbf k_b$ the push in the opposite direction of $\mathbf k_b$ expressed in the vehicle frame $SR_b$. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\textwidth ]{images/thrust.pdf}
+\end{figure}
+\end{document}
