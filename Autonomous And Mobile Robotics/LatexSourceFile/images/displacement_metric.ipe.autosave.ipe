@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260914143535" modified="D:20260915095208"/>
+<info created="D:20260916163355" modified="D:20260916163439"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -313,24 +313,41 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" arrow="pointed/tiny">
-224 672 m
-240 672 l
+<path layer="alpha" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+112 640 m
+112 608 l
+112 592 l
+160 592 l
 </path>
-<path stroke="black" arrow="pointed/tiny">
-224 672 m
-224 656 l
+<path stroke="0.502" opacity="50%" stroke-opacity="opaque">
+108 592 m
+112 592 l
+112 588 l
 </path>
-<path matrix="1.10529 0 0 1.10529 -23.5842 -70.7527" stroke="black" arrow="pointed/tiny">
-224 672 m
-212 664 l
+<path matrix="1 0 0 1 128 0" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+112 640 m
+112 608 l
+112 592 l
+160 592 l
 </path>
-<use name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf x</text>
-<text matrix="1 0 0 1 -40 -8" transformations="translations" pos="244 668" stroke="black" type="label" width="4.885" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y</text>
-<text matrix="1 0 0 1 -16 -16" transformations="translations" pos="244 668" stroke="black" type="label" width="4.018" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf z</text>
-<text matrix="1 0 0 1 -16 -20.8197" transformations="translations" pos="244 668" stroke="black" type="label" width="15.463" height="3.459" depth="0" valign="baseline" size="tiny">down</text>
-<text matrix="1 0 0 1 -0.323696 -4.83574" transformations="translations" pos="244 668" stroke="black" type="label" width="16.259" height="3.459" depth="0" valign="baseline" size="tiny">north</text>
-<text matrix="1 0 0 1 -51.2465 -14.5695" transformations="translations" pos="244 668" stroke="black" type="label" width="11.865" height="3.064" depth="0" valign="baseline" size="tiny">east</text>
+<path matrix="1 0 0 1 128 0" stroke="0.502" opacity="50%" stroke-opacity="opaque">
+108 592 m
+112 592 l
+112 588 l
+</path>
+<use name="mark/fdisk(sfx)" pos="112 592" size="large"/>
+<use name="mark/fdisk(sfx)" pos="240 592" size="large"/>
+<use name="mark/fdisk(sfx)" pos="240 616" size="large"/>
+<use name="mark/fdisk(sfx)" pos="264 592" size="large"/>
+<path matrix="1 0 0 1 0 24" stroke="0" opacity="50%" stroke-opacity="opaque">
+24 0 0 24 240 592 e
+</path>
+<path matrix="1 0 0 1 24 0" stroke="0" opacity="50%" stroke-opacity="opaque">
+24 0 0 24 240 592 e
+</path>
+<path stroke="0" opacity="50%" stroke-opacity="opaque">
+240 592 m
+264 592 l
+</path>
 </page>
 </ipe>

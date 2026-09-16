@@ -40,13 +40,13 @@ This document summarizes and presents the topics for the \titolo course for the 
 \fancyhead[R]{Section \thesection}
 \fancyfoot[C]{\thepage}
 \fancyfoot[L]{\titolo}
-\fancyfoot[R]{ Marco Casu}
+\fancyfoot[R]{Marco Casu}
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
 %==================INIZIO======================%
 \part{Modeling and Control of Multi-Rotor UAVs}
 \chapter{Introduction}
-UAVs stands for \textbf{Unmanned Aerial Vehicles}, also known with other names depending on the domain, like \textit{RPVs (Remotely Piloted Vehicles)} in the military domain, or \textit{Drones} in common parlance. We will use all of the three names indistinctively. The methods presented are valid also for remotely operated or autonomous vehicles (at different levels of autonomy).\bigskip
+UAV stands for \textbf{Unmanned Aerial Vehicle}, also known with other names depending on the domain, like \textit{RPVs (Remotely Piloted Vehicles)} in the military domain, or \textit{Drones} in common parlance. We will use all of the three names interchangeably. The methods presented are valid also for remotely operated or autonomous vehicles (at different levels of autonomy).\bigskip
 
 The term UAVs refers to a broad category of vehicles, in general, any aerial vehicle without a pilot on board is a UAV. We will examine UAVs composed of multiple rotors, in particular \textbf{quadrotors}.
 \begin{figure}[H]
@@ -54,14 +54,14 @@ The term UAVs refers to a broad category of vehicles, in general, any aerial veh
     \includegraphics[width=0.7\textwidth ]{images/design based classification.png}
     \caption{Design-based classification.}
 \end{figure}
-The quadrotors are used in various situations:\begin{itemize}
+\noindent The quadrotors are used in various situations:\begin{itemize}
     \item inspection, maintenance,
     \item communication networks,
     \item search and rescue operations,
     \item aerial transportation, manipulation.
 \end{itemize}
-These activities require a vertical, stationary and slow flight. A quadrotor is characterized by an high maneuverability, can remain suspended in the air without moving (hovering), and perform a \textit{vertical take-off and landing (VTOL)}, differently from other vehicles like airplanes, that requires an horizontal movement in order to take-off and land.
-\section{Modeling}
+These activities require a vertical, stationary and slow flight. A quadrotor is characterized by a high maneuverability, can remain suspended in the air without moving (hovering), and perform a \textit{vertical take-off and landing (VTOL)}, unlike other vehicles like airplanes, that require a horizontal movement in order to take-off and land.
+\section{Quadrotor Modeling}
 We call VTOLs the vehicles that can perform a vertical take-off and landing, these are modeled with the North-East-Down (NED) reference frame:
 \begin{figure}[H]
     \centering
@@ -69,7 +69,7 @@ We call VTOLs the vehicles that can perform a vertical take-off and landing, the
     \caption{The NED reference frame.}
     \label{NED}
 \end{figure}
-\noindent This frame, often called $SR_i$, has the $\mathbf k$ axis pointing down to the center of the Earth. According to the dynamics of rigid bodies given by the Newton-Euler formalism, the translational dynamics of a body in the $SR_i$ frame is given by\begin{equation}\label{sum_forces}
+\noindent This frame, often called $SR_i$, has the $\mathbf z$ axis pointing down to the center of the Earth. According to the dynamics of rigid bodies given by the Newton-Euler formalism, the translational dynamics of a body in the $SR_i$ frame is given by\begin{equation}\label{sum_forces}
     \sum_j \mathbf F_j = m\dot {\mathbf V}
 \end{equation}
 where $\mathbf F_j$ are the external forces applied to the center of mass, and $\dot {\mathbf V}$ is the acceleration of the center of mass expressed in $SR_i$. The rotational dynamics is given by\begin{equation}\label{sum_moments}
@@ -80,10 +80,10 @@ where $\mathbf M_j$ are the external moments acting on the center of mass, $\bol
     \centering
     \includegraphics[width=0.7\textwidth ]{images/bodyframe.pdf}
     \caption{$SR_b$ is the reference frame attached to the center of mass of the vehicle, $R$ is the rotation matrix between the two frames.}
-    \label{NED}
+    \label{bodyframe}
 \end{figure}
 \noindent A more explicit expression of the forces in Equation \eqref{sum_forces} is the following:\begin{equation}
-    m\dot {\mathbf V} =  -T R\mathbf k
+    m\dot {\mathbf V} =  -T R\mathbf z
     +\mathbf F_e(\mathbf V,\dot{\mathbf V},\boldsymbol{\Omega},\dot{\boldsymbol{\Omega}},\mathbf d(t))
     +R\Sigma_R\btau
 \end{equation}
@@ -91,28 +91,170 @@ where:\begin{itemize}
     \item $\mathbf d(t)$ are the external disturbances that do not depend on 
     the vehicle's state.
     \item $\mathbf F_e$ are the external forces, that depend on the state.
-    \item $T$ is the \textbf{thrust}, that depends on the number and allocation of the rotors, while $\mathbf -k$ is the direction pointing upward (according to the NED frame as in Figure \ref{NED}). $R$ is the rotation matrix that describes the orientation of our vehicle with respect to the fixed NED frame $SR_i$,
-    \item hence the product $-T R\mathbf k$ is the main upward thrust.
+    \item $T$ is the \textbf{thrust}, that depends on the number and allocation of the rotors, while $-\mathbf z$ is the direction pointing upward (according to the NED frame as in Figure \ref{NED}). $R$ is the rotation matrix that describes the orientation of our vehicle with respect to the fixed NED frame $SR_i$,
+    \item hence the product $-T R\mathbf z$ is the main upward thrust.
     \item $\btau$ is the torque generated by the propellers.
-    \item $R\Sigma_R\btau$ are the parasitic forces generated by the rotors/actuators. The coupling matrix $\Sigma_R$ maps the torques/rotations of the motors into small translational lateral forces (then rotated into $SR_I$ via $R$).
+    \item $R\Sigma_R\btau$ are the parasitic forces generated by the rotors/actuators. The coupling matrix $\Sigma_R$ maps the torques/rotations of the motors into small translational lateral forces (then rotated into $SR_i$ via $R$).
 \end{itemize}
 We know that the derivative of the rotation matrix $R$ depends on the skew-symmetric matrix of the angular velocity:\begin{equation}
-    \dot R= R S(\boldsymbol{\Omega})
+    \dot R= R\cdot S(\boldsymbol{\Omega})
 \end{equation}
 $S(\boldsymbol{\Omega})$ is important since it appears in the explicit expression of the term $ J\dot{\boldsymbol{\Omega}} $ in Equation \eqref{sum_moments}:
 \begin{equation}
     J\dot{\boldsymbol{\Omega}}=-S(\boldsymbol{\Omega})J\boldsymbol{\Omega}+\btau+
     \btau_e(\mathbf V,\dot{\mathbf V},\boldsymbol{\Omega},\dot{\boldsymbol{\Omega}},\mathbf d(t))+ \btau_g+ 
-    \Sigma_T T \mathbf k
+    \Sigma_T T \mathbf z
 \end{equation}
 where:\begin{itemize}
     \item $\btau_e$ are the torques induced by the external forces.
-    \item $\Sigma_T T \mathbf k$ is the parasitic moment due to the application of the thrust $T$ if the thrust line does not pass perfectly through the center of mass (constructive misalignment). $\Sigma_T$ is a matrix that represents the geometric misalignment between the effective axis of the total thrust $T$ and the center of mass of the vehicle. If the thrust vector does not pass exactly through the center of gravity, it generates a parasitic torque proportional to the thrust itself.
+    \item $\Sigma_T T \mathbf z$ is a parasitic moment. $\Sigma_T$ is a matrix that represents the geometric misalignment between the effective axis of the total thrust $T$ and the center of mass of the vehicle. If the thrust vector does not pass exactly through the center of gravity, it generates a parasitic torque proportional to the thrust itself.
     \item $\btau_g$ is the internal gyroscopic moment due to the inertia of the propellers rotating at high speed (particularly relevant in quadcopters when they change attitude rapidly).
 \end{itemize}
-We denote $\vec{\mathbf T}=-T\mathbf k_b$ the push in the opposite direction of $\mathbf k_b$ expressed in the vehicle frame $SR_b$. 
+We denote $\vec{\mathbf T}=-T\mathbf z_b$ the push in the opposite direction of $\mathbf z_b$ expressed in the vehicle frame $SR_b$. 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth ]{images/thrust.pdf}
 \end{figure}
+\noindent A quadrotor is a UAV with four motors located at the extremities of a cross-shaped frame (Figure \ref{quadrotor}) and is controlled by imposing a desired angular speed on each rotor.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/quadrotor.pdf}
+    \caption{Schematic of a quadrotor.}
+    \label{quadrotor}
+\end{figure}
+Let's identify a disc on each rotor, that follows the profile of the propellers: We denote $f_i$ the scalar force on each propeller, and is perpendicular to the disc, its value is:\begin{equation}\label{f_i}
+    f_i=b\omega_i^2
+\end{equation}
+where $\omega_i$ is the angular speed of the $i$-th propeller, and $b$ is a constant \textit{thrust factor}, that depends on the rotor geometry and profile, and on air density. The rotational speed of each blade is controlled by a low level controller. 
+
+We denote $\tau_{R,i}$  the drag torque generated by the $i$-th rotor as it spins in the air:\begin{equation}\label{tau_R}
+    \tau_{R,i}=d\omega_i^2
+\end{equation}
+where $d$ is a \textit{drag factor} that, as the thrust factor, depends on the rotor.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/force_distribution.png}
+\end{figure}
+We denote $\varphi,\vartheta,\psi$ the roll-pitch-yaw angles of the vehicle with respect to the fixed reference frame $SR_i$, hence the already mentioned rotation matrix is:\begin{equation}
+    {}^iR_b=\begin{pmatrix}
+        \cos\psi\cos\vartheta& \cos\psi\sin\vartheta\sin\varphi-\sin\psi\cos\varphi&\cos\psi\sin\vartheta\cos\varphi+\sin\psi\sin\varphi\\
+        \sin\psi\cos\vartheta& \sin\psi\sin\vartheta\sin\varphi+\cos\psi\cos\varphi&  \sin\psi\sin\vartheta\cos\varphi-\sin\varphi\cos\psi\\
+        -\sin\vartheta&\cos\vartheta\sin\varphi&\cos\vartheta\cos\varphi
+    \end{pmatrix}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/configuration.eps}
+    \caption{Configuration of the quadrotor.}
+    \label{configuration}
+\end{figure}
+The linear velocity $\mathbf V$ of our quadrotor is expressed in $SR_i$ while the angular velocity $\boldsymbol{\Omega}$ is expressed in $SR_b$, we can make the reference system explicit using quotes as follows:\begin{equation}
+    {}^i\mathbf V=\begin{pmatrix}
+    v_x\\v_y\\v_z
+    \end{pmatrix},\quad {}^b\boldsymbol{\Omega}=\begin{pmatrix}
+        p\\ q\\ r
+    \end{pmatrix}.
+\end{equation}
+Let $\omega_1,\omega_2,\omega_3,\omega_4$  be our control inputs (the velocity of the rotors), $f_i$ and $\tau_{R,i}$ are derived from these quantities as in Equations \eqref{f_i} and \eqref{tau_R}. The total thrust will be:\begin{equation}
+    T=f_1+f_2+f_3+f_4.
+\end{equation}
+We recall that on the quadrotor, a force $\vec{\mathbf T}=-T\mathbf z_b$ acts in the same direction of $\mathbf z_b$ but with the opposite sense. Intuitively, if the forces $f_i$ are identical, we can expect the quadrotor to accelerate towards $-\mathbf z_b$ without rotating on itself. The presence of these forces, if they are not identical, will cause a rotation of the body, the torques generated on the axes $\mathbf x_b,\mathbf y_b,\mathbf z_b$ are the following:\begin{align}
+    &\tau_\varphi=l(f_2-f_4),\\ 
+    &\tau_\vartheta=l(f_1-f_3),\\
+    &\tau_\psi=-\tau_{R,1}+\tau_{R,2}-\tau_{R,3}+\tau_{R,4}.
+\end{align}
+$l$ represents the arm length (or lever arm) of the quadrotor, as shown in Figure \ref{configuration}.\bigskip
+
+\noindent For simplicity, we can assume that the inertia matrix shown in Equation \eqref{sum_moments} is diagonal:\begin{equation}
+    J=\begin{pmatrix}
+        I_x&0&0\\
+        0&I_y&0\\
+        0&0&I_z
+    \end{pmatrix}
+\end{equation}
+the angular velocity instead can be expressed in function of the roll-pitch-yaw angles:\begin{equation}
+    \boldsymbol{\Omega}=\begin{pmatrix}
+        p\\ q\\ r
+    \end{pmatrix}=\begin{pmatrix}
+        1&0&-\sin\vartheta\\ 
+        0&\cos\varphi&\cos\vartheta\sin\varphi\\ 
+        0&-\sin\varphi&\cos\vartheta\cos\varphi
+    \end{pmatrix}\begin{pmatrix}
+        \dot\varphi\\ \dot\vartheta\\ \dot\psi
+    \end{pmatrix}.
+\end{equation}
+Let's see in details what are the applied forces and moments. We explicit the sum of forces of the translational dynamics (that we recall is expressed in the fixed frame $SR_i$):\begin{equation}
+    \sum_j \mathbf F_j=\underbrace{\begin{pmatrix}
+        0\\0\\mg
+    \end{pmatrix}}_{\text{weight}}
+    +
+    \underbrace{{}^iR_b\begin{pmatrix}
+        0\\0\\-T
+    \end{pmatrix}}_{\text{actuation}} + \mathbf F_A+\mathbf F_D
+\end{equation}
+where $\mathbf F_A$ are the aerodynamics related forces, mainly include the aerodynamic resistance of the body and arms of the aircraft to advancement, as well as any parasitic lift effects generated by the shape of the drone or by the rotor discs in translation. While $\mathbf F_D$ are the disturbances (for example, wind).
+
+The sum of moments is the following:\begin{equation}
+    \sum_j \mathbf M_j=\underbrace{\begin{pmatrix}
+        L_\varphi\\L_\vartheta\\L_\psi
+    \end{pmatrix}}_{\text{gyroscopic effects}}+
+     \underbrace{\begin{pmatrix}
+     \tau_\varphi\\\tau_\vartheta\\\tau_\psi
+     \end{pmatrix}}_{\text{actuation}} +\btau_A+\btau_D.
+\end{equation}
+$\btau_A$ is the resulting torque induced by the aerodynamic forces distributed when they do not have an application point coinciding with the center of gravity of the vehicle, combined with the rotational drag that the air opposes to the rotations of the rigid body on roll, pitch and yaw. $\btau_D$ is the moment produced by the disturbances.
+
+\begin{boxdefinition}{State of the Quadrotor}{}
+Given the previous premises, we define the state of a quadrotor as a vector in $\R^{12}$ defined as follows:\begin{equation}
+    \boldsymbol{\xi}=(
+        x,\quad y,\quad z,\quad v_x,\quad v_y,\quad v_z,\quad \varphi ,\quad  \vartheta ,\quad  \psi,\quad  p ,\quad q,\quad r
+    )^T
+\end{equation}
+here $x,y,z$ is the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
+\end{boxdefinition}
+\noindent The evolution in time of the quadrotor state is given by a dynamical system of the following form:\begin{equation}\label{quadrotorSystem}
+    \dot{\boldsymbol{\xi}}=f(\boldsymbol{\xi})+g(\boldsymbol{\xi})\mathbf u 
+\end{equation}
+where $\mathbf u$ are the inputs of the system defined as follows:\begin{equation}
+    \mathbf{u}=\begin{pmatrix}T\\ \tau_\varphi \\  \tau_\vartheta \\  \tau_\psi
+    \end{pmatrix}
+\end{equation}
+these quantities depend on $f_i,\tau_{R,i}$, which in turn depend on the angular velocity of the rotors $\omega_i$, which we assume we can control perfectly. 
+\begin{boxdefinition}{Time Evolution of the Quadrotor}{time_ev}
+Let $\Omega_r$  be the average blades rotation velocity, and $I_r$ the blades inertia, the explicit expression of the system in Equation \eqref{quadrotorSystem} is the following:
+\begin{align}
+& \dot{x} = v_x \\
+& \dot{y} = v_y \\
+& \dot{z} = v_z \\
+& \dot{v}_x = F_{A,x} - (\cos(\psi) \sin(\vartheta) \cos(\varphi) + \sin(\psi) \sin(\varphi)) \frac{T}{m} \\
+& \dot{v}_y = F_{A,y} - (\sin(\psi) \sin(\vartheta) \cos(\varphi) - \sin(\varphi) \cos(\psi)) \frac{T}{m} \\
+& \dot{v}_z = F_{A,z} + g - \cos(\vartheta) \cos(\varphi) \frac{T}{m} \\
+& \dot{\varphi} = p + \sin(\varphi) \tan(\vartheta) q + \cos(\varphi) \tan(\vartheta) r \\
+& \dot{\vartheta} = \cos(\varphi) q - \sin(\varphi) r \\
+& \dot{\psi} = \sin(\varphi) \sec(\vartheta) q + \cos(\varphi) \sec(\vartheta) r \\
+& \dot{p} = \tau_{A,x} + \frac{I_r}{I_x} q \Omega_r + \frac{I_y - I_z}{I_x} q r + \frac{\tau_\varphi}{I_x} \\
+& \dot{q} = \tau_{A,y} + \frac{I_r}{I_y} p \Omega_r + \frac{I_z - I_x}{I_y} p r + \frac{\tau_\vartheta}{I_y} \\
+& \dot{r} = \tau_{A,z} + \frac{I_x - I_y}{I_z} p q + \frac{\tau_\psi}{I_z}
+\end{align}
+\end{boxdefinition}
+\section{Quadrotor Control}
+The model in Definition \ref{def:time_ev} is too complex for control purposes. We neglect aerodynamics and gyroscopic effects, we assume small changes for $\varphi$ and $\vartheta$ such that\begin{equation}
+    \begin{pmatrix}
+        \dot\varphi&\dot\vartheta&\dot\psi
+    \end{pmatrix}^T\simeq \begin{pmatrix}
+        p&q&r
+    \end{pmatrix}^T
+\end{equation}
+we assume that the shape is symmetric and we neglect the disturbances.
+\begin{boxdefinition}{Simplified Time Evolution of the Quadrotor}{}
+    \begin{align}
+& \ddot{x} = -(\cos(\psi) \sin(\vartheta) \cos(\varphi) + \sin(\psi) \sin(\varphi)) \frac{T}{m} \\
+& \ddot{y} = -(\sin(\psi) \sin(\vartheta) \cos(\varphi) - \sin(\varphi) \cos(\psi)) \frac{T}{m} \\
+& \ddot{z} = - \cos(\vartheta) \cos(\varphi) \frac{T}{m} + g \\
+& \ddot{\varphi} = \frac{\tau_\varphi}{I_x} \\
+& \ddot{\vartheta} = \frac{\tau_\vartheta}{I_y} \\
+& \ddot{\psi} = \frac{\tau_\psi}{I_z}
+\end{align}
+\end{boxdefinition}
+\noindent Note how we changed the notation of the acceleration ($\ddot x=\dot v_x,\ \ddot y=\dot v_y,\ \ddot z=\dot v_z$).
 \end{document}

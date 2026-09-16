@@ -12,7 +12,9 @@ Below is a list of some of the courses and links to the corresponding notes.
 | [Robotics 1](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%201/LatexSourceFile/Robotics1.pdf) | Completed | 
 | [Robotics 2](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Robotics%202/LatexSourceFile/Robotics2.pdf) | Completed | 
 | [Neuroengineering](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Neuroengineering/LatexSourceFile/Neuroengineering.pdf) | Completed | 
+| [Autonomous And Mobile Robotics](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Autonomous%20And%20Mobile%20Robotics/LatexSourceFile/AutonomousAndMobileRobotics.pdf) | In progress | 
 | [Elective in Robotics](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Elective%20in%20Robotics/LatexSourceFile/ElectiveInRobotics.pdf) | In progress | 
+| [Reinforcement Learning](https://github.com/CasuFrost/university-notes-AIRO/raw/main/Reinforcement%20Learning/LatexSourceFile/ReinforcementLearning.pdf) | In progress | 
 
 </div>
 

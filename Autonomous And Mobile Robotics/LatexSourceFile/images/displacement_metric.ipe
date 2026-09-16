@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260914143535" modified="D:20260915095208"/>
+<info created="D:20260916163355" modified="D:20260916163945"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -313,24 +313,80 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" arrow="pointed/tiny">
-224 672 m
-240 672 l
+<path layer="alpha" stroke="1 0 0" opacity="50%" stroke-opacity="opaque">
+112 624 m
+144 592 l
 </path>
-<path stroke="black" arrow="pointed/tiny">
-224 672 m
-224 656 l
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+112 640 m
+112 608 l
+112 592 l
+160 592 l
 </path>
-<path matrix="1.10529 0 0 1.10529 -23.5842 -70.7527" stroke="black" arrow="pointed/tiny">
-224 672 m
-212 664 l
+<path matrix="1 0 0 1 95.9999 0.00012191" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+112 640 m
+112 608 l
+112 592 l
+160 592 l
 </path>
-<use name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf x</text>
-<text matrix="1 0 0 1 -40 -8" transformations="translations" pos="244 668" stroke="black" type="label" width="4.885" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y</text>
-<text matrix="1 0 0 1 -16 -16" transformations="translations" pos="244 668" stroke="black" type="label" width="4.018" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf z</text>
-<text matrix="1 0 0 1 -16 -20.8197" transformations="translations" pos="244 668" stroke="black" type="label" width="15.463" height="3.459" depth="0" valign="baseline" size="tiny">down</text>
-<text matrix="1 0 0 1 -0.323696 -4.83574" transformations="translations" pos="244 668" stroke="black" type="label" width="16.259" height="3.459" depth="0" valign="baseline" size="tiny">north</text>
-<text matrix="1 0 0 1 -51.2465 -14.5695" transformations="translations" pos="244 668" stroke="black" type="label" width="11.865" height="3.064" depth="0" valign="baseline" size="tiny">east</text>
+<path matrix="1 0 0 1 -32.0001 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+240 616 m
+240 592 l
+264 592 l
+240 616 m
+264 616 l
+264 592 m
+278.402 611.202 l
+268 620 m
+264 620 l
+264 612 l
+268 612 l
+277.819 616.986 m
+275.33 613.855 l
+281.593 608.878 l
+284.082 612.009 l
+</path>
+<path matrix="1 0 0 1 95.9999 0.00020313" stroke="0.502" opacity="50%" stroke-opacity="opaque">
+108 592 m
+112 592 l
+112 588 l
+</path>
+<use matrix="1 0 0 1 -32.0001 0.00020313" name="mark/fdisk(sfx)" pos="240 592" size="large"/>
+<use matrix="1 0 0 1 -32.0001 0.00020313" name="mark/fdisk(sfx)" pos="264 592" size="large"/>
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+112 592 m
+144 592 l
+</path>
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+148 596 m
+144 596 l
+144 588 l
+148 588 l
+</path>
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+112 592 m
+112 624 l
+</path>
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+108 628 m
+108 624 l
+116 624 l
+116 628 l
+</path>
+<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0.502" opacity="50%" stroke-opacity="opaque">
+108 592 m
+112 592 l
+112 588 l
+</path>
+<use matrix="1 0 0 1 -0.00012519 0.00012191" name="mark/fdisk(sfx)" pos="112 592" size="large"/>
+<use matrix="1 0 0 1 -31.9997 -0.00010506" name="mark/fdisk(sfx)" pos="240 616" size="large"/>
+<text matrix="0.562549 0 0 0.562549 51.4934 266.01" pos="136 612" stroke="1 0 0" type="label" width="29.413" height="5.234" depth="1.74" valign="baseline" size="script" style="math">d(q_a,q_b)</text>
+<text matrix="0.562549 0 0 0.562549 139.493 262.01" pos="136 612" stroke="1 0 0" type="label" width="31.632" height="5.234" depth="1.74" valign="baseline" size="script" style="math">d(\mathbf q_a,\mathbf q_b)</text>
+<path matrix="1 0 0 1 -31.9996 -0.00031969" stroke="1 0 0" opacity="50%" stroke-opacity="opaque">
+240 616 m
+278.566 611.182 l
+</path>
+<text matrix="1 0 0 1 4 -4" transformations="translations" pos="124 584" stroke="0" type="label" width="54.836" height="4.849" depth="1.35" halign="center" valign="center" size="script">1R manipulator</text>
+<text matrix="1 0 0 1 100 -4" transformations="translations" pos="124 584" stroke="0" type="label" width="54.836" height="4.849" depth="1.35" halign="center" valign="center" size="script">2R manipulator</text>
 </page>
 </ipe>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260914154843" modified="D:20260914155211"/>
+<info created="D:20260914154843" modified="D:20260915095254"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -367,9 +367,9 @@ h
 212 664 l
 </path>
 <use matrix="1 0 0 1 -15.9996 -80.0002" name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text matrix="1 0 0 1 -15.9996 -80.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="2.532" height="4.843" depth="0" valign="baseline" size="script" style="math">\mathbf i</text>
-<text matrix="1 0 0 1 -55.9996 -88.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="2.78" height="4.849" depth="1.35" valign="baseline" size="script" style="math">\mathbf j</text>
-<text matrix="1 0 0 1 -31.9996 -96.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="4.843" depth="0" valign="baseline" size="script" style="math">\mathbf k</text>
+<text matrix="1 0 0 1 -15.9996 -80.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf x</text>
+<text matrix="1 0 0 1 -55.9996 -88.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="4.885" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y</text>
+<text matrix="1 0 0 1 -31.9996 -96.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="4.018" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf z</text>
 <path matrix="0.675107 0.73772 -0.73772 0.675107 648.441 5.1671" stroke="black" arrow="pointed/tiny">
 224 672 m
 240 672 l
@@ -383,9 +383,9 @@ h
 212 664 l
 </path>
 <use matrix="0.675107 0.73772 -0.73772 0.675107 648.441 5.1671" name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text matrix="0.675107 0.73772 -0.73772 0.675107 648.441 5.1671" transformations="translations" pos="244 668" stroke="black" type="label" width="6.185" height="4.85" depth="1.05" valign="baseline" size="script" style="math">\mathbf i_b</text>
-<text matrix="0.675107 0.73772 -0.73772 0.675107 627.339 -29.7426" transformations="translations" pos="244 668" stroke="black" type="label" width="6.433" height="4.849" depth="1.35" valign="baseline" size="script" style="math">\mathbf j_b</text>
-<text matrix="0.675107 0.73772 -0.73772 0.675107 645.443 -21.4381" transformations="translations" pos="244 668" stroke="black" type="label" width="8.414" height="4.85" depth="1.05" valign="baseline" size="script" style="math">\mathbf k_b</text>
+<text matrix="0.675107 0.73772 -0.73772 0.675107 648.441 5.1671" transformations="translations" pos="244 668" stroke="black" type="label" width="8.414" height="3.107" depth="1.05" valign="baseline" size="script" style="math">\mathbf x_b</text>
+<text matrix="0.675107 0.73772 -0.73772 0.675107 627.339 -29.7426" transformations="translations" pos="244 668" stroke="black" type="label" width="8.414" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y_b</text>
+<text matrix="0.675107 0.73772 -0.73772 0.675107 645.443 -21.4381" transformations="translations" pos="244 668" stroke="black" type="label" width="7.671" height="3.107" depth="1.05" valign="baseline" size="script" style="math">\mathbf z_b</text>
 <text matrix="1 0 0 1 -55.9996 -68.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="17.565" height="6.812" depth="1.49" valign="baseline" style="math">SR_i</text>
 <text matrix="1 0 0 1 84.0004 -48.0002" transformations="translations" pos="244 668" stroke="black" type="label" width="18.249" height="6.812" depth="1.49" valign="baseline" style="math">SR_b</text>
 <path stroke="0.502 0 0" dash="dotted" arrow="pointed/small">

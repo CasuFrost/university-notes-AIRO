@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260914143535" modified="D:20260915095208"/>
+<info created="D:20260915191310" modified="D:20260915191525"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -313,24 +313,41 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" arrow="pointed/tiny">
-224 672 m
-240 672 l
+<path layer="alpha" matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="black">
+16 0 0 16 248 728 e
 </path>
-<path stroke="black" arrow="pointed/tiny">
-224 672 m
-224 656 l
+<path matrix="0.697082 0.344985 -0.221776 0.448124 237.433 316.147" stroke="black">
+252 760 m
+4 0 0 -4 252 756 252 752 a
+240 752 l
+4 0 0 -4 240 756 240 760 a
+h
 </path>
-<path matrix="1.10529 0 0 1.10529 -23.5842 -70.7527" stroke="black" arrow="pointed/tiny">
-224 672 m
-212 664 l
+<path matrix="0.697082 0.344985 -0.221776 0.448124 253.401 283.882" stroke="black">
+252 760 m
+4 0 0 -4 252 756 252 752 a
+240 752 l
+4 0 0 -4 240 756 240 760 a
+h
 </path>
-<use name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf x</text>
-<text matrix="1 0 0 1 -40 -8" transformations="translations" pos="244 668" stroke="black" type="label" width="4.885" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y</text>
-<text matrix="1 0 0 1 -16 -16" transformations="translations" pos="244 668" stroke="black" type="label" width="4.018" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf z</text>
-<text matrix="1 0 0 1 -16 -20.8197" transformations="translations" pos="244 668" stroke="black" type="label" width="15.463" height="3.459" depth="0" valign="baseline" size="tiny">down</text>
-<text matrix="1 0 0 1 -0.323696 -4.83574" transformations="translations" pos="244 668" stroke="black" type="label" width="16.259" height="3.459" depth="0" valign="baseline" size="tiny">north</text>
-<text matrix="1 0 0 1 -51.2465 -14.5695" transformations="translations" pos="244 668" stroke="black" type="label" width="11.865" height="3.064" depth="0" valign="baseline" size="tiny">east</text>
+<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="black" fill="white">
+248 732 m
+264 732 l
+268 728 l
+264 724 l
+248 724 l
+248 732 l
+</path>
+<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="0.502 0 1" arrow="linear/tiny">
+248 728 m
+284 728 l
+</path>
+<use matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" name="mark/disk(sx)" pos="248 728" size="normal" stroke="0.502 0 1"/>
+<text matrix="0.624441 0 0 0.624441 102.315 264.645" pos="216 724" stroke="0.502 0 1" type="label" width="18.762" height="5.234" depth="1.74" valign="baseline" size="script" style="math">(x,y)</text>
+<text matrix="0.624441 0 0 0.624441 147.475 277.118" pos="216 724" stroke="0.502 0 1" type="label" width="5.24" height="3.009" depth="1.35" valign="baseline" size="script" style="math">\varphi</text>
+<path stroke="0.722 0.443 1" dash="dotted">
+280 724 m
+32 0 0 32 248 724 277.079 737.356 a
+</path>
 </page>
 </ipe>

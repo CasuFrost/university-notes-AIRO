@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260914143535" modified="D:20260915095208"/>
+<info created="D:20260916152623" modified="D:20260916152836"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -313,24 +313,36 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" arrow="pointed/tiny">
-224 672 m
-240 672 l
+<path layer="alpha" fill="0.753" opacity="50%" stroke-opacity="opaque">
+256 720 m
+256 688 l
+288 688 l
+288 720 l
+h
 </path>
-<path stroke="black" arrow="pointed/tiny">
-224 672 m
-224 656 l
+<text matrix="1 0 0 1 -4 16" transformations="translations" pos="248 704" stroke="black" type="label" width="8.88" height="4.494" depth="0" halign="center" valign="center" size="script" style="math">2\pi</text>
+<path matrix="1 0 0 1.16667 0 -113.333" stroke="black" arrow="linear/small">
+256 680 m
+256 728 l
 </path>
-<path matrix="1.10529 0 0 1.10529 -23.5842 -70.7527" stroke="black" arrow="pointed/tiny">
-224 672 m
-212 664 l
+<path matrix="1.16667 0 0 1 -41.3333 0" stroke="black" arrow="linear/small">
+248 688 m
+296 688 l
 </path>
-<use name="mark/disk(sx)" pos="224 672" size="tiny" stroke="black"/>
-<text transformations="translations" pos="244 668" stroke="black" type="label" width="4.761" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf x</text>
-<text matrix="1 0 0 1 -40 -8" transformations="translations" pos="244 668" stroke="black" type="label" width="4.885" height="3.105" depth="1.35" valign="baseline" size="script" style="math">\mathbf y</text>
-<text matrix="1 0 0 1 -16 -16" transformations="translations" pos="244 668" stroke="black" type="label" width="4.018" height="3.099" depth="0" valign="baseline" size="script" style="math">\mathbf z</text>
-<text matrix="1 0 0 1 -16 -20.8197" transformations="translations" pos="244 668" stroke="black" type="label" width="15.463" height="3.459" depth="0" valign="baseline" size="tiny">down</text>
-<text matrix="1 0 0 1 -0.323696 -4.83574" transformations="translations" pos="244 668" stroke="black" type="label" width="16.259" height="3.459" depth="0" valign="baseline" size="tiny">north</text>
-<text matrix="1 0 0 1 -51.2465 -14.5695" transformations="translations" pos="244 668" stroke="black" type="label" width="11.865" height="3.064" depth="0" valign="baseline" size="tiny">east</text>
+<text matrix="1 0 0 1 40 -24" transformations="translations" pos="248 704" stroke="black" type="label" width="8.88" height="4.494" depth="0" halign="center" valign="center" size="script" style="math">2\pi</text>
+<path stroke="black" opacity="50%" stroke-opacity="opaque">
+252 720 m
+256 720 l
+</path>
+<path stroke="black" opacity="50%" stroke-opacity="opaque">
+288 688 m
+288 684 l
+</path>
+<text matrix="1 0 0 1 24 0" transformations="translations" pos="248 704" stroke="black" type="label" width="5.827" height="6.808" depth="0" halign="center" valign="center" style="math">\mathcal C</text>
+<path stroke="black" dash="dotted" opacity="50%" stroke-opacity="opaque">
+256 720 m
+288 720 l
+288 688 l
+</path>
 </page>
 </ipe>
