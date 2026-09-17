@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20251128171610" modified="D:20260916154947"/>
-<preamble>\usepackage{amssymb}
-\usepackage{amsmath}</preamble>
+<info created="D:20260917104609" modified="D:20260917104609"/>
 <bitmap id="1" width="1343" height="866" BitsPerComponent="8" ColorSpace="DeviceGray" Filter="FlateDecode" length="65827" encoding="base64">
 eNrsvU2v5sa1LlbRh1vRR6sJXcUyolgbTORIAY7SaOKi2zFgNQIi6FgTwbgEtnDvoAcG0ZMT
 tM/ANTAMIQMBhCaeGAI40kAecSIYyIwD+wcQ8C8g/A/qL+ywit9kFatq1ap3v3vvWoNjH/d+
@@ -1534,27 +1532,37 @@ h
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
+<ipestyle>
+<preamble>
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    \usepackage{mathpazo}  
+  </preamble>
+</ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<image layer="alpha" matrix="0.0943632 0 0 0.0943632 72.2702 528" rect="0 0 1343 866" opacity="75%" bitmap="1"/>
-<text matrix="1 0 0 1 -25.4256 92.7128" transformations="translations" pos="80 520" stroke="0" type="label" width="85.865" height="7.473" depth="2.49" valign="baseline" style="math">\mathcal C=SO(2)\times SO(2)</text>
-<path fill="1 0.502 1" opacity="50%" stroke-opacity="opaque">
+<image layer="alpha" matrix="0.0943632 0 0 0.0943632 152.27 592" rect="0 0 1343 866" opacity="75%" bitmap="1"/>
+<text matrix="1 0 0 1 54.5744 156.713" transformations="translations" pos="80 520" stroke="0" type="label" width="86.49" height="7.791" depth="2.6" valign="baseline" style="math">\mathcal C=SO(2)\times SO(2)</text>
+<path matrix="1 0 0 1 80 64" fill="1 0.502 1" opacity="50%" stroke-opacity="opaque">
 140 588 m
 164 608 l
 216 600 l
 192 580 l
 h
 </path>
-<path matrix="1 0 0 1 -12.7395 -10.5486" stroke="0.502">
+<path matrix="1 0 0 1 67.2605 53.4514" stroke="0.502">
 164.006 607.992 m
 215.998 600.004 l
 </path>
-<path matrix="1 0 0 1 23.6095 -3.62262" stroke="0.502">
+<path matrix="1 0 0 1 103.609 60.3774" stroke="0.502">
 139.999 587.987 m
 164.011 607.995 l
 </path>
-<text matrix="1 0 0 1 -6.65952 -2.35649" transformations="translations" pos="167.427 594.034" stroke="0" type="label" width="6.047" height="4.435" depth="1.93" valign="baseline" style="math">\mathbf q</text>
-<use matrix="1 0 0 1 -0.00056402 0.0003847" name="mark/disk(sx)" pos="174.783 593.948" size="normal"/>
+<text matrix="1 0 0 1 73.3405 61.6435" transformations="translations" pos="167.427 594.034" stroke="0" type="label" width="6.336" height="4.698" depth="2.58" valign="baseline" style="math">\mathbf q</text>
+<use matrix="1 0 0 1 79.9994 64.0004" name="mark/disk(sx)" pos="174.783 593.948" size="normal"/>
 </page>
 </ipe>

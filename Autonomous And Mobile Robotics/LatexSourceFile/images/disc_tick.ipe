@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260915191310" modified="D:20260915191525"/>
+<info created="D:20260917103951" modified="D:20260917103951"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -310,27 +310,37 @@ h
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
+<ipestyle>
+<preamble>
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    \usepackage{mathpazo}  
+  </preamble>
+</ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="black">
+<path layer="alpha" matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -86.9054" stroke="black">
 16 0 0 16 248 728 e
 </path>
-<path matrix="0.697082 0.344985 -0.221776 0.448124 237.433 316.147" stroke="black">
+<path matrix="0.697082 0.344985 -0.221776 0.448124 237.433 268.147" stroke="black">
 252 760 m
 4 0 0 -4 252 756 252 752 a
 240 752 l
 4 0 0 -4 240 756 240 760 a
 h
 </path>
-<path matrix="0.697082 0.344985 -0.221776 0.448124 253.401 283.882" stroke="black">
+<path matrix="0.697082 0.344985 -0.221776 0.448124 253.401 235.882" stroke="black">
 252 760 m
 4 0 0 -4 252 756 252 752 a
 240 752 l
 4 0 0 -4 240 756 240 760 a
 h
 </path>
-<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="black" fill="white">
+<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -86.9054" stroke="black" fill="white">
 248 732 m
 264 732 l
 268 728 l
@@ -338,14 +348,14 @@ h
 248 724 l
 248 732 l
 </path>
-<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" stroke="0.502 0 1" arrow="linear/tiny">
+<path matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -86.9054" stroke="0.502 0 1" arrow="linear/tiny">
 248 728 m
 284 728 l
 </path>
-<use matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -38.9054" name="mark/disk(sx)" pos="248 728" size="normal" stroke="0.502 0 1"/>
-<text matrix="0.624441 0 0 0.624441 102.315 264.645" pos="216 724" stroke="0.502 0 1" type="label" width="18.762" height="5.234" depth="1.74" valign="baseline" size="script" style="math">(x,y)</text>
-<text matrix="0.624441 0 0 0.624441 147.475 277.118" pos="216 724" stroke="0.502 0 1" type="label" width="5.24" height="3.009" depth="1.35" valign="baseline" size="script" style="math">\varphi</text>
-<path stroke="0.722 0.443 1" dash="dotted">
+<use matrix="0.896248 0.443552 -0.443552 0.896248 349.674 -86.9054" name="mark/disk(sx)" pos="248 728" size="normal" stroke="0.502 0 1"/>
+<text matrix="0.624441 0 0 0.624441 102.315 216.645" pos="216 724" stroke="0.502 0 1" type="label" width="16.4" height="5.452" depth="1.93" valign="baseline" size="script" style="math">(x,y)</text>
+<text matrix="0.624441 0 0 0.624441 147.475 229.118" pos="216 724" stroke="0.502 0 1" type="label" width="4.631" height="3.37" depth="1.93" valign="baseline" size="script" style="math">\varphi</text>
+<path matrix="1 0 0 1 0 -48" stroke="0.722 0.443 1" dash="dotted">
 280 724 m
 32 0 0 32 248 724 277.079 737.356 a
 </path>

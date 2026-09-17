@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260916152623" modified="D:20260916152836"/>
+<info created="D:20260917104328" modified="D:20260917104331"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -310,36 +310,46 @@ h
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
+<ipestyle>
+<preamble>
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    \usepackage{mathpazo}  
+  </preamble>
+</ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" fill="0.753" opacity="50%" stroke-opacity="opaque">
+<path layer="alpha" matrix="1 0 0 1 -112 -48" fill="0.753" opacity="50%" stroke-opacity="opaque">
 256 720 m
 256 688 l
 288 688 l
 288 720 l
 h
 </path>
-<text matrix="1 0 0 1 -4 16" transformations="translations" pos="248 704" stroke="black" type="label" width="8.88" height="4.494" depth="0" halign="center" valign="center" size="script" style="math">2\pi</text>
-<path matrix="1 0 0 1.16667 0 -113.333" stroke="black" arrow="linear/small">
+<text matrix="1 0 0 1 -116 -32" transformations="translations" pos="248 704" stroke="black" type="label" width="8.564" height="4.769" depth="0.06" halign="center" valign="center" size="script" style="math">2\pi</text>
+<path matrix="1 0 0 1.16667 -112 -161.333" stroke="black" arrow="linear/small">
 256 680 m
 256 728 l
 </path>
-<path matrix="1.16667 0 0 1 -41.3333 0" stroke="black" arrow="linear/small">
+<path matrix="1.16667 0 0 1 -153.333 -48" stroke="black" arrow="linear/small">
 248 688 m
 296 688 l
 </path>
-<text matrix="1 0 0 1 40 -24" transformations="translations" pos="248 704" stroke="black" type="label" width="8.88" height="4.494" depth="0" halign="center" valign="center" size="script" style="math">2\pi</text>
-<path stroke="black" opacity="50%" stroke-opacity="opaque">
+<text matrix="1 0 0 1 -72 -72" transformations="translations" pos="248 704" stroke="black" type="label" width="8.564" height="4.769" depth="0.06" halign="center" valign="center" size="script" style="math">2\pi</text>
+<path matrix="1 0 0 1 -112 -48" stroke="black" opacity="50%" stroke-opacity="opaque">
 252 720 m
 256 720 l
 </path>
-<path stroke="black" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 -112 -48" stroke="black" opacity="50%" stroke-opacity="opaque">
 288 688 m
 288 684 l
 </path>
-<text matrix="1 0 0 1 24 0" transformations="translations" pos="248 704" stroke="black" type="label" width="5.827" height="6.808" depth="0" halign="center" valign="center" style="math">\mathcal C</text>
-<path stroke="black" dash="dotted" opacity="50%" stroke-opacity="opaque">
+<text matrix="1 0 0 1 -88 -48" transformations="translations" pos="248 704" stroke="black" type="label" width="6.306" height="7.078" depth="0" halign="center" valign="center" style="math">\mathcal C</text>
+<path matrix="1 0 0 1 -112 -48" stroke="black" dash="dotted" opacity="50%" stroke-opacity="opaque">
 256 720 m
 288 720 l
 288 688 l

@@ -45,4 +45,138 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================FOOTER e HEADER=======================%
 %==================INIZIO======================%
 \chapter{Introduction}
+\begin{boxdefinition}{Reinforcement Learning}{}
+With \textbf{Reinforcement Learning} we mean the process to \textit{learn} what to do in order to maximize a numerical reward signal:\begin{itemize}
+    \item The learner must discover which actions yield the highest reward by trying them.
+    \item The actions might affect not only immediate reward, but also subsequent ones. It is a \textit{trial-and-error} process.
+\end{itemize}
+\end{boxdefinition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/RL_intro.png} 
+\end{figure}
+\noindent The agent has to:\begin{itemize}
+    \item \textbf{Exploit}  what it has already experienced to obtain a reward.
+    \item  \textbf{Explore} in order to make better action selections in the future.
+\end{itemize}
+One of the main challenges of reinforcement learning is the exploration-exploitation trade-off. On stochastic tasks, each action must be tried many times, in order to correctly estimate expected reward.
+\section{Markov Decision Processes}
+First of all we introduce a \textit{sequential} decision making approach. We see the agent that has to learn the policy, as an entity that can interact with the world/environment through actions $a_t$, and can receive by the environment an observation $o_t$ and a reward $r_t$ after each action. The agent interacts at discrete time steps, such discrete interaction generates a \textbf{trajectory} (or history) of tuples (observation-action-reward):\begin{equation}
+    \underbrace{h_t}_{\text{history at time $t$}} = (o_0,a_0,r_1,o_1,a_1,r_2\dots, r_t,o_t,a_t).
+\end{equation}
+We define a state function $s_t=f(h_t)$ that describes the current state of the agent at time $t$ and depends on the history $h_t$ and is typically hidden or unknown.
+\begin{boxdefinition}{Markov Assumption}{}
+    A state $s_t$ is \textbf{Markovian} if the future is independent of the past information, given the present state: The probability of occurring in a given state $s_{t+1}$ by applying $a_t$ at time $t$, depend only on the current state $s_t$ and not on the history $h_t$:\begin{equation}
+        \Prob(s_{t+1} \  |  \ s_t,a_t)=\Prob(s_{t+1} \  |  \ h_t,a_t).
+    \end{equation}
+\end{boxdefinition}
+\noindent A state can always be made Markovian if we define the state exactly as the previous history:\begin{equation}
+    s_t=h_t.
+\end{equation}
+In practice the current state is defined as the \textit{latest observation}:\begin{equation}
+    s_t=o_t
+\end{equation}
+in this case the state is said to be \textbf{fully observable}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/MDP.eps} 
+    \caption{Markov Decision Process scheme.}
+    \label{MDP}
+\end{figure}
+A \textbf{Markov Decision Process (MDP)} is a sequential decision making scheme under the Markov assumption. The transition dynamics is generally stochastic: $\Prob(s_{t+1} \  |  \ s_t,a_t)$. An alternative notation to denote the fact that the next state is stochastic by applying $a_t$ on $s_t$ is the following:\begin{align}
+    &s_{t+1}\sim \Prob(\cdot  \  |  \ s_t,a_t)\\
+    \text{ or }\quad &s'\sim \Prob(\cdot  \  |  \ s,a)
+\end{align}
+A \textbf{reward} $r_t$ is a scalar signal representing feedback on the actions taken by the agent, and indicates how well an agent is doing at a given time step $t$. The reward is a function of the state and action (reward taken by applying a given action at a given state):\begin{equation}
+    r_{t+1}=R(s_t,a_t).
+\end{equation} 
+We define the \textbf{cost} as the opposite of the reward. Although in reinforcement learning the objective is always to maximize the reward function, the fact that this is the best way to reach a goal is not guaranteed, in fact the so-called \textbf{Reward Hypothesis}:
+\begin{quote}
+``\textit{can all goals be achieved through the maximization of 
+a numerical reward?}''
+\end{quote}
+remains an open question today.
+\begin{boxdefinition}{Markov Decision Process}{MDP}
+    An MDP is defined by a 5-tuple:\begin{equation}
+        (S,A,\Prob,R,\gamma) 
+    \end{equation}
+    where:\begin{itemize}
+        \item $S$ is the set of all possible states.
+        \item $A$ is the set of all the actions the agent can take.
+        \item $\Prob$ is the transition probability, which defines the dynamics of the environment.
+        \item $R$ is the reward function.
+        \item $\gamma$ is the \textbf{discount factor}, a real value within the interval $[0, 1]$ that determines the importance of future rewards compared to immediate ones.
+    \end{itemize}
+\end{boxdefinition}
+\noindent The behavior of an agent is given by a policy, a function that determines how agents select actions.
+\begin{boxdefinition}{Policy}{}
+    A \textbf{policy} is a function $\pi:S\to A$ that assigns an action to every state.
+\end{boxdefinition}
+\noindent A policy can be deterministic:\begin{equation}
+    \pi(s)=a
+\end{equation}
+\noindent or stochastic:\begin{equation}
+    \pi(a \  |  \ s)\in [0,1] \quad \text{ with } \quad \sum_{a\in A}\pi(a \  |  \ s)=1.
+\end{equation}
+We can also write $a\sim \pi(\cdot  \  |  \  s)$. We can now define the \textbf{probability of a trajectory}: What's the probability of seeing a trajectory at time $t$ 
+according to $\pi$ starting at $s_0$? We have the trajectory\begin{equation}
+    (s_0,a_0,s_1\dots,s_t,a_t)
+\end{equation}
+and
+\begin{align}
+    &\Prob^\pi(s_0,a_0,s_1\dots,s_t,a_t)\\
+    =& \pi(a_0 \  |  \ s_0)\Prob(s_1 \  |  \ s_0,a_0)\pi(a_1 \  |  \ s_1)\Prob(s_2 \  |  \ s_1,a_1)\dots 
+    \Prob(s_t \  |  \ s_{t-1},a_{t-1})\pi(a_t \  |  \ s_t)
+\end{align}
+notice how we added $\pi$ as superscript to denote the fact that this probability depends on the given policy function. We can also define the \textbf{state visitation probability}, i.e. the probability of visiting a particular state $\hat s$ at time $t$ according to $\pi$ starting from $s_0$:\begin{equation}
+    \Prob^\pi_t(s_t=\hat s \  |  \ s_0)=\sum_{a_0,s_1\dots a_{t-1}} \Prob^\pi(s_0,a_0,s_1\dots,s_t=\hat s).
+\end{equation}
+A basic example of a Markov decision process is a robotic manipulator with a hand gripper that can grab and carry a ball:\begin{itemize}
+    \item the states are the possible robot configurations (joint values) and the ball position,
+    \item the actions are the possible torques on the arm and the finger joints,
+    \item the transition is stochastic, given by the physics (how the torques update the joint values over time) and by the noise,
+    \item the policy maps each configuration+ball position to a torque for the joints,
+    \item the cost (inverse of the reward) is the magnitude of the torque and the distance to the goal.
+\end{itemize}
+\subsection{MDP Horizon}
+In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1]$. This term weights the importance of immediate rewards with respect to future rewards:\begin{itemize}
+    \item $\gamma=0$: Our agent only cares about immediate rewards.
+    \item $\gamma=1$: Immediate and future rewards are equally important.
+\end{itemize}
+The discount factor is used in the \textbf{Value Function} $V^\pi$, a function that estimates the goodness of states and actions based on their value. It is also a measure to compare different policies.\begin{boxdefinition}{Value Function}{}
+    The \textbf{Value Function} $V^\pi$ measures the cumulative reward (the sum of all future rewards, possibly discounted by the $\gamma$ factor) starting from $s_t$ and continuing to follow the policy $\pi$  for all subsequent actions. 
+    \begin{align}
+    V^\pi(s_t)=&\VA_\pi[r_{t+1}+\gamma r_{t+2}+\gamma^2 r_{t+3}+\gamma^3 r_{t+4}\dots  \  |  \  s_t]\\ 
+    =&\VA\left[
+        \sum_{h=0}^\infty \gamma^hr_{h+1}  \  |  \  s_0=s_t, a_h=\pi(s_h),s_{h+1}\sim \Prob(\cdot  \  |  \  s_h,a_h)
+    \right].
+\end{align}
+\end{boxdefinition}
+With $\VA$ we denote the expected value.
+The Action-Value function $Q^\pi$ goes one step further than $V^\pi$, tying the value not only to the state, but also to the action you choose to take.
+\begin{boxdefinition}{Action-Value Function}{}
+    The \textbf{Action-Value Function} $Q^\pi$  measures the expected value of the cumulative return starting from a state $s_t$, performing a specific action $a_t$ and then continuing to follow the policy $\pi$.
+    \begin{align}
+    Q^\pi(s_t,a_t)=\VA\left[
+         \sum_{h=0}^\infty\gamma^hr_h \  |  \ 
+         (s_0,a_0)=(s_t,a_t), a_{h}=\pi(s_h), s_{h+1}\sim \Prob(\cdot \ | \ s_h,a_h)
+    \right].
+\end{align}
+\end{boxdefinition}
+\begin{boxtheorem}{The Bellman Equation}{}
+    The value of a certain state can be expanded in terms of the 
+current reward and the value of the next states according to 
+the policy:\begin{equation}\label{Bellman_V}
+    V^\pi(s_t)=\VA_\pi[r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3 r_{t+3}\dots  \  |  \  s_t]= 
+    r_t+\gamma \VA_{s_{t+1}\sim \Prob(\cdot \ | \ s_t,\greenText{ \pi(s_t)})}[V^\pi(s_{t+1})].
+\end{equation}
+\end{boxtheorem}
+\noindent The Bellman equation can be applied to the action-value function:\begin{equation}\label{Bellman_Q}
+    Q^\pi(s_t,\greenText{a_t})=r_t+\gamma\VA_{s_{t+1}\sim \Prob(\cdot \ | \ s_t,\greenText{ a_t})}[V^\pi(s_{t+1})]
+\end{equation}
+In Equation \eqref{Bellman_V} $r$ is a function of $s$ and $\pi(s)$ while in equation \eqref{Bellman_Q} it is a function of $s$ and $a$ (as highlighted by the \greenText{ green } characters). As a result of these equations we have the following identity:
+\begin{equation}
+    V^\pi(s)=Q^\pi(s,\pi(s))
+\end{equation}
+$V^\pi$ can be expressed in terms of $Q^\pi$.
 \end{document}

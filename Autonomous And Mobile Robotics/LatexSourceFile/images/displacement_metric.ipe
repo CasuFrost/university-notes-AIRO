@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260916163355" modified="D:20260916163945"/>
+<info created="D:20260917104810" modified="D:20260917105919"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -310,83 +310,99 @@ h
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
+<ipestyle>
+<preamble>
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    \usepackage{mathpazo}  
+  </preamble>
+</ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="1 0 0" opacity="50%" stroke-opacity="opaque">
-112 624 m
-144 592 l
-</path>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+<path layer="alpha" matrix="1 0 0 1 47.9999 96.0001" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
 112 640 m
 112 608 l
 112 592 l
 160 592 l
 </path>
-<path matrix="1 0 0 1 95.9999 0.00012191" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 144 96.0001" stroke="0.502" arrow="linear/small" rarrow="linear/small" opacity="50%" stroke-opacity="opaque">
 112 640 m
 112 608 l
 112 592 l
 160 592 l
 </path>
-<path matrix="1 0 0 1 -32.0001 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
-240 616 m
-240 592 l
-264 592 l
-240 616 m
-264 616 l
-264 592 m
-278.402 611.202 l
-268 620 m
-264 620 l
-264 612 l
-268 612 l
-277.819 616.986 m
-275.33 613.855 l
-281.593 608.878 l
-284.082 612.009 l
-</path>
-<path matrix="1 0 0 1 95.9999 0.00020313" stroke="0.502" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 144 96.0002" stroke="0.502" opacity="50%" stroke-opacity="opaque">
 108 592 m
 112 592 l
 112 588 l
 </path>
-<use matrix="1 0 0 1 -32.0001 0.00020313" name="mark/fdisk(sfx)" pos="240 592" size="large"/>
-<use matrix="1 0 0 1 -32.0001 0.00020313" name="mark/fdisk(sfx)" pos="264 592" size="large"/>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 47.9999 96.0001" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
 112 592 m
 144 592 l
 </path>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 47.9999 96.0001" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
 148 596 m
 144 596 l
 144 588 l
 148 588 l
 </path>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 47.9999 96.0001" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
 112 592 m
 112 624 l
 </path>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 47.9999 96.0001" stroke="0" pen="ultrafat" opacity="50%" stroke-opacity="opaque">
 108 628 m
 108 624 l
 116 624 l
 116 628 l
 </path>
-<path matrix="1 0 0 1 -0.00012519 0.00012191" stroke="0.502" opacity="50%" stroke-opacity="opaque">
+<path matrix="1 0 0 1 47.9999 96.0001" stroke="0.502" opacity="50%" stroke-opacity="opaque">
 108 592 m
 112 592 l
 112 588 l
 </path>
-<use matrix="1 0 0 1 -0.00012519 0.00012191" name="mark/fdisk(sfx)" pos="112 592" size="large"/>
-<use matrix="1 0 0 1 -31.9997 -0.00010506" name="mark/fdisk(sfx)" pos="240 616" size="large"/>
-<text matrix="0.562549 0 0 0.562549 51.4934 266.01" pos="136 612" stroke="1 0 0" type="label" width="29.413" height="5.234" depth="1.74" valign="baseline" size="script" style="math">d(q_a,q_b)</text>
-<text matrix="0.562549 0 0 0.562549 139.493 262.01" pos="136 612" stroke="1 0 0" type="label" width="31.632" height="5.234" depth="1.74" valign="baseline" size="script" style="math">d(\mathbf q_a,\mathbf q_b)</text>
-<path matrix="1 0 0 1 -31.9996 -0.00031969" stroke="1 0 0" opacity="50%" stroke-opacity="opaque">
-240 616 m
-278.566 611.182 l
+<use matrix="1 0 0 1 47.9999 96.0001" name="mark/fdisk(sfx)" pos="112 592" size="large"/>
+<text matrix="0.562549 0 0 0.562549 99.4934 362.01" pos="136 612" stroke="1 0 0" type="label" width="25.195" height="5.452" depth="1.93" valign="baseline" size="script" style="math">d(q_a,q_b)</text>
+<text matrix="0.562549 0 0 0.562549 191.274 357.093" pos="136 612" stroke="1 0 0" type="label" width="27.259" height="5.454" depth="1.82" valign="baseline" size="script" style="math">d(\mathbf q_a,\mathbf q_b)</text>
+<text matrix="1 0 0 1 52 92" transformations="translations" pos="124 584" stroke="0" type="label" width="48.37" height="5.052" depth="1.96" halign="center" valign="center" size="script">1R manipulator</text>
+<text matrix="1 0 0 1 148 92" transformations="translations" pos="124 584" stroke="0" type="label" width="48.37" height="5.052" depth="1.96" halign="center" valign="center" size="script">2R manipulator</text>
+<path stroke="black" pen="ultrafat">
+256 712 m
+256 688 l
+280 688 l
 </path>
-<text matrix="1 0 0 1 4 -4" transformations="translations" pos="124 584" stroke="0" type="label" width="54.836" height="4.849" depth="1.35" halign="center" valign="center" size="script">1R manipulator</text>
-<text matrix="1 0 0 1 100 -4" transformations="translations" pos="124 584" stroke="0" type="label" width="54.836" height="4.849" depth="1.35" halign="center" valign="center" size="script">2R manipulator</text>
+<path stroke="black" pen="ultrafat">
+256 712 m
+280 712 l
+</path>
+<path stroke="black" pen="ultrafat">
+284 716 m
+280 716 l
+280 708 l
+284 708 l
+</path>
+<path matrix="0.964402 0.264442 -0.264442 0.964402 191.935 -49.4487" stroke="black" pen="ultrafat">
+280 688 m
+294.402 707.202 l
+293.819 712.986 m
+291.33 709.855 l
+297.593 704.878 l
+300.082 708.009 l
+</path>
+<use matrix="1 0 0 1 16.0002 96.0003" name="mark/fdisk(sfx)" pos="240 592" size="large"/>
+<use matrix="1 0 0 1 16.0002 96.0003" name="mark/fdisk(sfx)" pos="264 592" size="large"/>
+<use matrix="1 0 0 1 16.0006 96" name="mark/fdisk(sfx)" pos="240 616" size="large"/>
+<path stroke="1 0 0">
+256 712 m
+280 688 l
+</path>
+<path matrix="1 0 0 1 47.9998 96.0001" stroke="1 0 0" opacity="50%" stroke-opacity="opaque">
+112 624 m
+144 592 l
+</path>
 </page>
 </ipe>

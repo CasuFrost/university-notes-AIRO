@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260915100001" modified="D:20260915101825"/>
+<info created="D:20260917103740" modified="D:20260917103740"/>
 <bitmap id="1" width="1445" height="645" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="59791" alphaLength="1808" encoding="base64">
 eNrsnXt0VNXZ/4UiERUQhIXt+pW0RcHb29RLra7aZlnxLRRWg5fXVkFHtNoLxFgQyZWEXMhN
 gsaJ4psQfQmtJNH0TRRJlpJUkKRKk3iLvqVhwiWgiZILWkgg6O9Z7OVep3NmJjO5zpn5fP5g
@@ -1453,34 +1453,44 @@ h
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
+<ipestyle>
+<preamble>
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    \usepackage{mathpazo}  
+  </preamble>
+</ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<image layer="alpha" matrix="0.213494 0 0 0.213494 64 667.296" rect="0 0 1445 645" bitmap="1"/>
-<text matrix="1 0 0 1 -43.8086 -48.7511" transformations="translations" pos="109.754 759.175" stroke="black" type="label" width="17.565" height="6.812" depth="1.49" valign="baseline" style="math">SR_i</text>
-<text matrix="1 0 0 1 117.722 -19.0959" transformations="translations" pos="109.754 759.175" stroke="0 0 1" type="label" width="18.249" height="6.812" depth="1.49" valign="baseline" style="math">SR_b</text>
-<text matrix="1 0 0 1 14.6387 5.26752" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="9.094" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf z_b</text>
-<text matrix="1 0 0 1 29.1516 18.6355" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="10.048" height="4.435" depth="1.93" valign="baseline" style="math">\mathbf y_b</text>
-<text matrix="1 0 0 1 17.7041 38.6021" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="10.048" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf x_b</text>
-<text matrix="1 0 0 1 -150.847 -22.2664" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="9.094" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf z_b</text>
-<text matrix="1 0 0 1 -126.088 -2.03353" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="10.048" height="4.435" depth="1.93" valign="baseline" style="math">\mathbf y_b</text>
-<text matrix="1 0 0 1 -137.536 17.9331" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="10.048" height="4.432" depth="1.49" valign="baseline" style="math">\mathbf x_b</text>
-<path fill="white">
+<image layer="alpha" matrix="0.213494 0 0 0.213494 112 619.296" rect="0 0 1445 645" bitmap="1"/>
+<text matrix="1 0 0 1 4.1914 -96.7511" transformations="translations" pos="109.754 759.175" stroke="black" type="label" width="15.674" height="7.021" depth="2.03" valign="baseline" style="math">SR_i</text>
+<text matrix="1 0 0 1 165.722 -67.0959" transformations="translations" pos="109.754 759.175" stroke="0 0 1" type="label" width="17.075" height="7.026" depth="2.15" valign="baseline" style="math">SR_b</text>
+<text matrix="1 0 0 1 62.6387 -42.7325" transformations="translations" pos="234.227 704.932" stroke="0 0.251 0.502" type="label" width="9.423" height="4.575" depth="2.15" valign="baseline" style="math">\mathbf z_b</text>
+<text matrix="1 0 0 1 77.1516 -26.9435" transformations="translations" pos="234.227 704.932" stroke="0 0.251 0.502" type="label" width="9.981" height="4.568" depth="2.65" valign="baseline" style="math">\mathbf y_b</text>
+<text matrix="1 0 0 1 65.7041 -9.3979" transformations="translations" pos="234.227 704.932" stroke="0 0.251 0.502" type="label" width="9.423" height="4.699" depth="2.15" valign="baseline" style="math">\mathbf x_b</text>
+<text matrix="1 0 0 1 -102.847 -70.2664" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="9.423" height="4.575" depth="2.15" valign="baseline" style="math">\mathbf z_b</text>
+<text matrix="1 0 0 1 -78.088 -50.0335" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="9.981" height="4.568" depth="2.65" valign="baseline" style="math">\mathbf y_b</text>
+<text matrix="1 0 0 1 -89.536 -30.0669" transformations="translations" pos="234.227 704.932" stroke="0" type="label" width="9.423" height="4.699" depth="2.15" valign="baseline" style="math">\mathbf x_b</text>
+<path matrix="1 0 0 1 48 -48" fill="white">
 160.991 797.271 m
 160.991 784.976 l
 176.667 784.976 l
 176.667 797.271 l
 h
 </path>
-<text matrix="1 0 0 1 -16.4965 -8.70884" transformations="translations" pos="181.892 796.349" stroke="0" type="label" width="9.347" height="6.926" depth="1.93" valign="baseline" style="math">f_2</text>
-<path matrix="1.80713 0 0 1.80713 -146.632 -610.436" stroke="0" dash="dotted">
+<text matrix="1 0 0 1 31.5035 -56.7088" transformations="translations" pos="181.892 796.349" stroke="0" type="label" width="8.847" height="7.257" depth="2.75" valign="baseline" style="math">f_2</text>
+<path matrix="1.80713 0 0 1.80713 -98.632 -658.436" stroke="0" dash="dotted">
 243.719 729.139 m
 219.901 715.573 l
 </path>
-<path matrix="1 0 0 1 -32.2127 -17.5706" stroke="0.502 0 1" arrow="linear/small" rarrow="linear/small">
+<path matrix="1 0 0 1 15.7873 -65.5706" stroke="0.502 0 1" arrow="linear/small" rarrow="linear/small">
 244.112 729.016 m
 293.713 706.934 l
 </path>
-<text matrix="1 0 0 1 -6.8779 -11.5358" transformations="translations" pos="234.227 704.932" stroke="0.502 0 1" type="label" width="3.169" height="6.918" depth="0" valign="baseline" style="math">l</text>
+<text matrix="1 0 0 1 41.1221 -59.5358" transformations="translations" pos="234.227 704.932" stroke="0.502 0 1" type="label" width="3.317" height="7.257" depth="0.09" valign="baseline" style="math">l</text>
 </page>
 </ipe>
