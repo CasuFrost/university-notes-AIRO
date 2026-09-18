@@ -66,7 +66,7 @@ First of all we introduce a \textit{sequential} decision making approach. We see
 \end{equation}
 We define a state function $s_t=f(h_t)$ that describes the current state of the agent at time $t$ and depends on the history $h_t$ and is typically hidden or unknown.
 \begin{boxdefinition}{Markov Assumption}{}
-    A state $s_t$ is \textbf{Markovian} if the future is independent of the past information, given the present state: The probability of occurring in a given state $s_{t+1}$ by applying $a_t$ at time $t$, depend only on the current state $s_t$ and not on the history $h_t$:\begin{equation}
+    A state $s_t$ is \textbf{Markovian} if the future is independent of the past information, given the present state: The probability of occurring in a given state $s_{t+1}$ by applying $a_t$ at time $t$, depends only on the current state $s_t$ and not on the history $h_t$:\begin{equation}
         \Prob(s_{t+1} \  |  \ s_t,a_t)=\Prob(s_{t+1} \  |  \ h_t,a_t).
     \end{equation}
 \end{boxdefinition}
@@ -118,7 +118,7 @@ remains an open question today.
 \noindent or stochastic:\begin{equation}
     \pi(a \  |  \ s)\in [0,1] \quad \text{ with } \quad \sum_{a\in A}\pi(a \  |  \ s)=1.
 \end{equation}
-We can also write $a\sim \pi(\cdot  \  |  \  s)$. We can now define the \textbf{probability of a trajectory}: What's the probability of seeing a trajectory at time $t$ 
+We can also write $a\sim \pi(\cdot  \  |  \  s)$. Let's define the \textbf{probability of a trajectory}: What's the probability of seeing a given trajectory at time $t$ 
 according to $\pi$ starting at $s_0$? We have the trajectory\begin{equation}
     (s_0,a_0,s_1\dots,s_t,a_t)
 \end{equation}
@@ -128,15 +128,17 @@ and
     =& \pi(a_0 \  |  \ s_0)\Prob(s_1 \  |  \ s_0,a_0)\pi(a_1 \  |  \ s_1)\Prob(s_2 \  |  \ s_1,a_1)\dots 
     \Prob(s_t \  |  \ s_{t-1},a_{t-1})\pi(a_t \  |  \ s_t)
 \end{align}
-notice how we added $\pi$ as superscript to denote the fact that this probability depends on the given policy function. We can also define the \textbf{state visitation probability}, i.e. the probability of visiting a particular state $\hat s$ at time $t$ according to $\pi$ starting from $s_0$:\begin{equation}
+notice how we added $\pi$ as superscript to denote the fact that this probability depends on the given policy function. We can also define the \textbf{state visitation probability}, i.e. the probability of visiting a particular state $\hat s$ at time $t$ according to $\pi$ starting from $s_0$:\begin{equation}\label{state_visitation}
     \Prob^\pi_t(s_t=\hat s \  |  \ s_0)=\sum_{a_0,s_1\dots a_{t-1}} \Prob^\pi(s_0,a_0,s_1\dots,s_t=\hat s).
 \end{equation}
+The summation in equation \eqref{state_visitation} sums over all trajectories of length $t$ that start at $s_0$ and end in $\hat{s}$.
+
 A basic example of a Markov decision process is a robotic manipulator with a hand gripper that can grab and carry a ball:\begin{itemize}
     \item the states are the possible robot configurations (joint values) and the ball position,
     \item the actions are the possible torques on the arm and the finger joints,
     \item the transition is stochastic, given by the physics (how the torques update the joint values over time) and by the noise,
     \item the policy maps each configuration+ball position to a torque for the joints,
-    \item the cost (inverse of the reward) is the magnitude of the torque and the distance to the goal.
+    \item the cost (opposite of the reward) is the magnitude of the torque and the distance to the goal.
 \end{itemize}
 \subsection{MDP Horizon}
 In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1]$. This term weights the importance of immediate rewards with respect to future rewards:\begin{itemize}
@@ -144,22 +146,46 @@ In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1]$. Th
     \item $\gamma=1$: Immediate and future rewards are equally important.
 \end{itemize}
 The discount factor is used in the \textbf{Value Function} $V^\pi$, a function that estimates the goodness of states and actions based on their value. It is also a measure to compare different policies.\begin{boxdefinition}{Value Function}{}
-    The \textbf{Value Function} $V^\pi$ measures the cumulative reward (the sum of all future rewards, possibly discounted by the $\gamma$ factor) starting from $s_t$ and continuing to follow the policy $\pi$  for all subsequent actions. 
+    The \textbf{Value Function} $V^\pi$ measures the cumulative reward (the sum of all future rewards, possibly discounted by the $\gamma$ factor) starting from $s$ and continuing to follow the policy $\pi$  for all subsequent actions. 
     \begin{align}
-    V^\pi(s_t)=&\VA_\pi[r_{t+1}+\gamma r_{t+2}+\gamma^2 r_{t+3}+\gamma^3 r_{t+4}\dots  \  |  \  s_t]\\ 
+    V^\pi(s)=&\VA_\pi\left[ 
+    \sum_{h=0}^\infty  \gamma^hr_{h+1}  
+    \  |  \  s_0=s
+    \right]\\ 
     =&\VA\left[
-        \sum_{h=0}^\infty \gamma^hr_{h+1}  \  |  \  s_0=s_t, a_h=\pi(s_h),s_{h+1}\sim \Prob(\cdot  \  |  \  s_h,a_h)
+        \sum_{h=0}^\infty \gamma^h\cdot\underbrace{r_{h+1}}_{R(s_h,a_h)}  \  |  \  s_0=s,\  a_h\sim \pi(\ \cdot \ | \ s_h),\ s_{h+1}\sim \Prob(\cdot  \  |  \  s_h,a_h)
     \right].
 \end{align}
 \end{boxdefinition}
-With $\VA$ we denote the expected value.
+With $\VA$ we denote the expected value. The value function $V^\pi$ considers all the possible infinite trajectories that are generated by applying $\pi$ starting from the argument $s$, since the transition and the policy are (or might be) stochastic, a probability is assigned to each trajectory, so the expected value is considered, i.e. the sum over the cumulative reward of a given trajectory, weighted by the probability of that trajectory.\bigskip 
+
+\noindent \textbf{Example}: Let's assume that, there is an MDP with three possible trajectories starting from $s_a$:\begin{align}
+    &\text{trajectory 1}: (s_a, a,s_c)\\
+    &\text{trajectory 2}: (s_a, a, s_b, a,s_c)\\
+    &\text{trajectory 3}: (s_a, a, s_b, a,s_b,a,s_c)
+\end{align}
+There is only one action (always chosen by the policy) and the reward function is deterministic:\begin{align}
+    &R(s_a,a)=2\\ 
+    &R(s_b,a)=1\\ 
+    &R(s_c,a)=0
+\end{align} Usually these trajectories are infinite, but in this case we assume that they all end up in $s_c$, an ending state where all actions have a reward of zero with probability 1:\begin{equation}
+    \Prob(s_c|s_c,a)=1.
+\end{equation}
+The expected value of the cumulative reward assuming the following probabilities:\begin{align}
+    &\Prob(s_a, a,s_c)=0.2\\
+    &\Prob(s_a, a, s_b, a,s_c)=0.1\\
+    &\Prob(s_a, a, s_b, a,s_b,a,s_c)=0.7
+\end{align}
+assuming $\gamma=1$ is\begin{equation}
+    2\cdot 0.2+3\cdot 0.1+ 4\cdot 0.7=3.5.
+\end{equation}
 The Action-Value function $Q^\pi$ goes one step further than $V^\pi$, tying the value not only to the state, but also to the action you choose to take.
 \begin{boxdefinition}{Action-Value Function}{}
-    The \textbf{Action-Value Function} $Q^\pi$  measures the expected value of the cumulative return starting from a state $s_t$, performing a specific action $a_t$ and then continuing to follow the policy $\pi$.
+    The \textbf{Action-Value Function} $Q^\pi$  measures the expected value of the cumulative return starting from a state $s$, performing a specific action $a$ and then continuing to follow the policy $\pi$.
     \begin{align}
-    Q^\pi(s_t,a_t)=\VA\left[
-         \sum_{h=0}^\infty\gamma^hr_h \  |  \ 
-         (s_0,a_0)=(s_t,a_t), a_{h}=\pi(s_h), s_{h+1}\sim \Prob(\cdot \ | \ s_h,a_h)
+    Q^\pi(s,a)=\VA\left[
+         \sum_{h=0}^\infty\gamma^h\cdot\underbrace{r_{h+1}}_{R(s_h,a_h)} \  |  \ 
+         (s_0,a_0)=(s,a),\ \underbrace{a_h\sim \pi(\ \cdot \ | \ s_h)}_{\forall \ h \ge 1},\ s_{h+1}\sim \Prob(\cdot \ | \ s_h,a_h)
     \right].
 \end{align}
 \end{boxdefinition}
@@ -167,16 +193,144 @@ The Action-Value function $Q^\pi$ goes one step further than $V^\pi$, tying the 
     The value of a certain state can be expanded in terms of the 
 current reward and the value of the next states according to 
 the policy:\begin{equation}\label{Bellman_V}
-    V^\pi(s_t)=\VA_\pi[r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3 r_{t+3}\dots  \  |  \  s_t]= 
-    r_t+\gamma \VA_{s_{t+1}\sim \Prob(\cdot \ | \ s_t,\greenText{ \pi(s_t)})}[V^\pi(s_{t+1})].
+   V^\pi(s)=\sum_{\greenText{a}\in A}\pi(\greenText{a} \ | \ s)\left[
+    R(s,\greenText{a})+\gamma\sum_{s'\in S}\Prob(s' \ | \ s,\greenText{a})V^\pi(s')
+   \right].
 \end{equation}
 \end{boxtheorem}
 \noindent The Bellman equation can be applied to the action-value function:\begin{equation}\label{Bellman_Q}
-    Q^\pi(s_t,\greenText{a_t})=r_t+\gamma\VA_{s_{t+1}\sim \Prob(\cdot \ | \ s_t,\greenText{ a_t})}[V^\pi(s_{t+1})]
+    Q^\pi(s,\greenText{a})=R(s,\greenText{a})+\gamma\sum_{s'\in S}\Prob(s' \ | \ s,\greenText{a})V^\pi(s').
 \end{equation}
 In Equation \eqref{Bellman_V} $r$ is a function of $s$ and $\pi(s)$ while in equation \eqref{Bellman_Q} it is a function of $s$ and $a$ (as highlighted by the \greenText{ green } characters). As a result of these equations we have the following identity:
 \begin{equation}
     V^\pi(s)=Q^\pi(s,\pi(s))
 \end{equation}
-$V^\pi$ can be expressed in terms of $Q^\pi$.
+$V^\pi$ can be expressed in terms of $Q^\pi$. One last quantity that we introduce is the following.
+\begin{boxdefinition}{Discounted State-Action Distribution}{}
+    The discounted state-action distribution quantifies how often (and with what discounted time weight) the pair $(s, a)$ is visited along the entire infinite horizon.
+    \begin{equation}
+        d_{s_0}^\pi(s,a)=(1-\gamma)\sum_{h=0}^\infty \gamma^h\Prob^\pi(s_h = s \mid s_0)\pi(a \mid s).
+    \end{equation}
+    Since there is a discount factor $\gamma < 1$, events that occur far away in time matter less and less.
+\end{boxdefinition}
+$\Prob^\pi(s_h = s \mid s_0)\pi(a \mid s)$ is the exact probability of being in state $s$ and executing action $a$ exactly at time step $h$, conditioned on having started in $s_0$ and having followed the $\pi$ policy for all previous steps.
+\section{Optimality of a Policy}
+For an infinite horizon MDP there always exists a deterministic \textbf{optimal policy} $\pi^*$ that satisfies:\begin{equation}
+    V^{\pi^*}(s)\ge V^\pi(s), \quad \forall s, \ \forall \pi
+\end{equation}
+This means that the policy $\pi^*$ is the one that guarantees a greater reward (in expected value), since it dominates all other policies in each state. We will use also the following notation:\begin{align}
+    &V^{\pi^*}=V^*\\ 
+    &Q^{\pi^*}=Q^*.
+\end{align}
+The \textbf{Bellman Optimality} condition states that:\begin{equation}\label{BellmanOptimality}
+    V^*(s)=\max_{a\in A}Q^*(s,a).
+\end{equation}
+\noindent\textbf{Example}: Consider the MDP in Figure \ref{MDP_example}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/MDP_example.eps} 
+    \caption{Three states MDP example.}
+    \label{MDP_example}
+\end{figure}
+We assume that $V^*$ is known in the states $s'$ and $s''$. We want to try $a'$ and $a''$ in $s$ in order to get the rewards and compute $Q^*$ in $s$ for the actions:\begin{itemize}
+    \item We apply $a'$ and get $R(s,a')$. We can compute $Q^*(s,a')=R(s,a')+\gamma \underbrace{V^*(s')}_{\text{known}}$.
+    \item We apply $a''$ and get $R(s,a'')$. We can compute $Q^*(s,a'')=R(s,a'')+\gamma \underbrace{V^*(s'')}_{\text{known}}$.
+\end{itemize}
+Now we can use the identity in Equation \eqref{BellmanOptimality} to compute $V^*(s)$:\begin{equation}
+    V^*(s)=\max\{Q^*(s,a'), \ Q^*(s,a'')\}.
+\end{equation}
+\begin{boxtheorem}{Bellman Optimality (Existence)}{}
+    The optimal value function $V^*(s)$ satisfies the nonlinear Bellman equation:
+    \begin{equation}\label{BellmanEquation}
+        V^*(s) = \max_{a \in {A}} \left[ R(s,a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right]
+    \end{equation}
+    hence the policy:\begin{equation}\label{optimal_policy}
+        \hat \pi(s) = \arg\max_{a\in A} Q^*(s,a)
+    \end{equation}
+    is the optimal policy: $V^{\hat \pi}=V^*$.
+\end{boxtheorem}
+\noindent\textit{Proof}: First we prove that $V^*$ satisfies the Bellman Equation \eqref{BellmanEquation}.
+For a generic policy $\pi$, we can write the Bellman equation by isolating the first action $a\sim\pi(\cdot \ | \ s)$:\begin{equation}
+    V^\pi(s) = \sum_{a \in {A}} \pi(a \mid s) \left[ R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^\pi(s') \right].
+\end{equation}
+The optimal value function can be written as follows:\begin{equation}
+    V^*(s)=\max_\pi\sum_{a \in {A}} \pi(a \mid s) \left[ R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^\pi(s') \right].
+\end{equation}
+Consequently, the maximum on $\pi$ coincides with the maximization on a single action $a \in {A}$ by placing $V^*(s')$ in the future steps:\begin{equation}
+    V^*(s) = \max_{a \in {A}} \left[ R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right]
+\end{equation}
+hence $V^*$ satisfies the Bellman equation. Now we have to prove that $\hat \pi$ is the optimal policy. We define the deterministic policy $\hat\pi$ as in Equation \eqref{optimal_policy}. Since $\hat\pi(s)$ selects the action that maximizes $Q^*$ we can write:\begin{align}
+    V^*(s) =&\max_{a \in {A}} \left[ R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right]\\ =&R(s, \hat{\pi}(s)) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s)) V^*(s').\label{hatPi}
+\end{align}
+On the other hand, from the Bellman expectation equation applied to $\hat \pi$ we can write:\begin{equation}\label{expectation}
+    V^{\hat{\pi}}(s) = R(s, \hat{\pi}(s)) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s)) V^{\hat{\pi}}(s')
+\end{equation}
+if we subtract \eqref{expectation} from \eqref{hatPi} we get:\begin{equation}
+    V^*(s) - V^{\hat{\pi}}(s) = \gamma \sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s)) \Big( V^*(s') - V^{\hat{\pi}}(s') \Big).
+\end{equation}
+Now we take the absolute value of both sides:
+\begin{equation}
+    |V^*(s) - V^{\hat{\pi}}(s)| = \big\vert{}\gamma \sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s)) \Big( V^*(s') - V^{\hat{\pi}}(s') \Big)\big\vert{}.
+\end{equation}
+we apply the $L_\infty$ norm to the right side to get the following inequality:
+\begin{equation}
+    |V^*(s) - V^{\hat{\pi}}(s)| \le \gamma \sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s)) \|V^* - V^{\hat{\pi}} \|_\infty.
+\end{equation}
+$\|V^* - V^{\hat{\pi}} \|_\infty$ is constant and $\displaystyle\sum_{s' \in {S}} \Prob(s' \mid s, \hat{\pi}(s))=1$ hence
+\begin{equation}
+    |V^*(s) - V^{\hat{\pi}}(s)| \le \gamma\|V^* - V^{\hat{\pi}} \|_\infty.
+\end{equation}
+this holds for each $s$ hence:
+\begin{align}
+    &\|V^* - V^{\hat{\pi}} \|_\infty \le \gamma\|V^* - V^{\hat{\pi}} \|_\infty\implies \\ 
+    &\|V^* - V^{\hat{\pi}} \|_\infty=0\implies \\ 
+    &V^{\hat{\pi}}(s)=V^*(s), \quad \forall s.
+\end{align}
+\hfill$\blacksquare$
+\begin{boxtheorem}{Bellman Optimality (Uniqueness)}{}
+    Let $\gamma\in[0,1)$. For any value function $V$, if\begin{equation}
+       V(s) = \max_{a \in A} \left[ R(s,a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V(s') \right] \quad \forall s \in {S}
+    \end{equation}
+    then $V(s)=V^*(s)$ for all $s\in S$.
+\end{boxtheorem}
+\noindent\textit{Proof}: Let $V$  be any value function satisfying the Bellman optimality equation for all $s \in S$. Since $V^*$ is also a solution, we can write (for any state $s$):\begin{align}
+    &\vert{}V(s) - V^*(s)\vert{}\\ =&\left\vert{} \max_{a \in {A}} \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V(s') \right) - \max_{a \in {A}} \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right) \right\vert{}. 
+\end{align}
+Using the property $\displaystyle\vert{}\max_a f(a) - \max_a g(a)\vert{} \le \max_a \vert{}f(a) - g(a)\vert{}$: \begin{align}
+    &\vert{}V(s) - V^*(s)\vert{}\\ \le &\max_{a \in {A}} \left\vert{} \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V(s') \right) - \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right) \right\vert{} 
+\end{align}
+we can cancel out $R(s,a)$ and move $\gamma$ outside the max function:\begin{equation}
+    \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}} \left\vert{} \sum_{s' \in {S}} \Prob(s' \mid s, a) \big( V(s') - V^*(s') \big) \right\vert{} 
+\end{equation}
+by the triangle inequality we can move out the summation from the absolute value function:\begin{equation}\label{after_triangle_ineq}
+    \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}}  \sum_{s' \in {S}} \Prob(s' \mid s, a)\left\vert{}  V(s') - V^*(s')  \right\vert{} .
+\end{equation}
+We use the definition of $L_\infty$ norm:\begin{equation}
+    \vert{}V(s') - V^*(s')\vert{} \le \max_{y \in {S}} \vert{}V(y) - V^*(y)\vert{} = \Vert{}V - V^*\Vert{}_\infty
+\end{equation}
+Equation \eqref{after_triangle_ineq} becomes:\begin{equation}
+    \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}} \sum_{s' \in {S}} \Prob(s' \mid s, a) \Vert{}V - V^*\Vert{}_\infty 
+\end{equation}
+$\Vert{}V - V^*\Vert{}_\infty$ is a constant hence can be moved out the summation:\begin{equation}
+    \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}} \left( \Vert{}V - V^*\Vert{}_\infty \sum_{s' \in {S}} \Prob(s' \mid s, a) \right)
+\end{equation}
+trivially
+$$\sum_{s' \in {S}} \Prob(s' \mid s, a)=1$$
+hence
+\begin{equation}
+    \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}} \Big( \Vert{}V - V^*\Vert{}_\infty \cdot 1 \Big) = \gamma \Vert{}V - V^*\Vert{}_\infty
+\end{equation}
+since this inequality holds for each state $s\in S$, we can write:\begin{align}
+    &\underbrace{\max_{s \in {S}} \vert{}V(s) - V^*(s)\vert{}}_{\Vert{}V - V^*\Vert{}_\infty} \le \gamma \Vert{}V - V^*\Vert{}_\infty\implies\\[1.5ex]
+    &\Vert{}V - V^*\Vert{}_\infty \le \gamma \Vert{}V - V^*\Vert{}_\infty \implies \\[1.5ex]
+    &(1 - \gamma) \Vert{}V - V^*\Vert{}_\infty \le 0\implies  \Vert{}V - V^*\Vert{}_\infty =0.
+\end{align}
+This holds since $\gamma\in[0,1)$, hence $(1-\gamma)\ne 0$. By definition:\begin{align}
+    &\Vert{}V - V^*\Vert{}_\infty =0\implies \\ 
+    &V(s) = V^*(s) \quad \forall s \in {S}.
+\end{align}
+\hfill$\blacksquare$\bigskip
+
+
+This formulation reduces the multi-step problem to a one-step greedy choice plus the continuation value $V(s')$. By uniqueness of the fixed point, any function $V$ satisfying this optimality equation coincides with $V^*$.
 \end{document}
