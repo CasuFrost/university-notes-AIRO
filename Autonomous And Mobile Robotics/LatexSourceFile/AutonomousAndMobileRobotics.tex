@@ -63,7 +63,7 @@ in our context, it usually describes the Cartesian coordinates of a single body 
 \begin{boxdefinition}{Configuration Space}{}
     The configuration space, usually denoted $\mathcal C$, is the set of all possible values of the configuration of a robot. The \textit{dimension} of $\mathcal C$ is the number $n$ of parameters (generalized coordinates) in $\q$.
 \end{boxdefinition}
-Let's see an example, we consider a disk robot that moves on a plane, that can also rotate along its main axis to point towards a desired direction, shown in Figure \ref{disc_tick}.
+Let's see an example: consider a disk robot that moves on a plane, that can also rotate along its main axis to point towards a desired direction, shown in Figure \ref{disc_tick}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth ]{images/disc_tick.eps}
@@ -77,7 +77,7 @@ and it's not Euclidean, despite being called \textit{special Euclidean group}. A
 \begin{equation}
     \mathcal C = \R^3\times SO(3)=SE(3).
 \end{equation}
-We have seen in the previous courses of robotics that the number of generalized coordinates of an  $n$-link serial manipulator is exactly $n$.
+We have seen in previous courses of robotics that the number of generalized coordinates of an  $n$-link serial manipulator is exactly $n$.
 \subsection{Topology of a Space}
 We are interested in describing the configuration space of a given manipulator, since it's not Euclidean (in most cases), we would like to have an idea of how to navigate this space. Before defining formally what a \textit{topology} is, we give some examples.\bigskip 
 
@@ -101,7 +101,7 @@ To overcome this problem, we might try to represent the configuration space as a
     \centering
     \includegraphics[width=0.3\textwidth ]{images/2pi_times_2pi.eps}
 \end{figure}
-This representation also presents a problem: The distance between two configurations in $\mathcal C$ does not represent the true distance between two postures in the workspace: Two very distant configurations $\mathbf q_a$ and $\mathbf q_b$ in $\mathcal C$ can be mapped to two very close postures in $W$:
+This representation also presents a problem: The distance between two configurations in $\mathcal C$ does not represent the true distance between two postures in the workspace: Two very distant configurations $\q_a$ and $\q_b$ in $\mathcal C$ can be mapped to two very close postures in $W$:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth ]{images/a_b_distance.pdf}
@@ -155,13 +155,13 @@ This distance is called \textbf{displacement metric}. Notice how in the definiti
 \end{figure}
 To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an infinite and uncountable set. If the links are polygonal shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
 
-A more computationally feasible approach is to check only for a finite set of points in the robot structure, called \textbf{control points}, let \begin{equation}
+A more computationally feasible approach is to check only for a finite set of points in the robot structure, called \textbf{control points}. Let \begin{equation}
     P=\{\mathbf p_1,\mathbf p_2,\dots, \mathbf p_c\}
 \end{equation}
 be a set of $c$ points of the robot (in general, they all depend on the configuration $\q$). We compute the distance between two postures in the following way:\begin{equation}\label{cp_metric}
     d(\q_a,\q_b)=\max_{1\le i \le c}\|\mathbf p_i(\q_a)-\mathbf p_i(\q_b)\|.
 \end{equation}
-Not all the points of a robot are feasible control points, for example, the base of a manipulator usually doesn't change with the configuration.  $P$ is a set of \textit{proper control points} if the function $d$ as defined in Equation \eqref{cp_metric} satisfies the properties of a distance given in Definition \ref{def:distance}.
+Not all the points of a robot are feasible control points, for example, the base of a manipulator usually doesn't change with the configuration. $P$ is a set of \textit{proper control points} if the function $d$ as defined in Equation \eqref{cp_metric} satisfies the properties of a distance given in Definition \ref{def:distance}.
 \begin{boxobservation}{Approximation for Local Motion}{}
 Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold with the Euclidean distance.
 \end{boxobservation}
