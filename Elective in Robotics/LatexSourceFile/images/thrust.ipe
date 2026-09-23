@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20260917103248" modified="D:20260917103248"/>
+<info created="D:20260917103248" modified="D:20260921163219"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -376,9 +376,9 @@ h
 224 672 m
 212 664 l
 </path>
-<text matrix="1.09265 1.19399 -1.19399 1.09265 782.334 -333.579" transformations="translations" pos="244 668" stroke="0" type="label" width="4.712" height="3.49" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf i_b</text>
-<text matrix="1.09265 1.19399 -1.19399 1.09265 754.943 -384.855" transformations="translations" pos="244 668" stroke="0" type="label" width="4.712" height="3.49" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf j_b</text>
-<text matrix="1.09265 1.19399 -1.19399 1.09265 783.22 -375.102" transformations="translations" pos="244 668" stroke="0" type="label" width="6.097" height="3.574" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf k_b</text>
+<text matrix="1.09265 1.19399 -1.19399 1.09265 782.334 -333.579" transformations="translations" pos="244 668" stroke="0" type="label" width="5.544" height="2.346" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf x_b</text>
+<text matrix="1.09265 1.19399 -1.19399 1.09265 754.943 -384.855" transformations="translations" pos="244 668" stroke="0" type="label" width="5.823" height="2.284" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf y_b</text>
+<text matrix="1.09265 1.19399 -1.19399 1.09265 783.22 -375.102" transformations="translations" pos="244 668" stroke="0" type="label" width="5.544" height="2.284" depth="1.96" valign="baseline" size="tiny" style="math">\mathbf z_b</text>
 <use matrix="1 0 0 1 -40 -68" name="mark/disk(sx)" pos="272 736" size="tiny"/>
 <path matrix="0.231316 -0.171614 0.0624803 0.0842166 117.986 674.275" stroke="0.502 0 0">
 352 768 m
