@@ -256,7 +256,59 @@ we assume that the shape is symmetric and we neglect the disturbances.
 & \ddot{\psi} = \frac{\tau_\psi}{I_z}.
 \end{align}
 \end{boxdefinition}
-\noindent Note how we changed the notation of the acceleration ($\ddot x=\dot v_x,\ \ddot y=\dot v_y,\ \ddot z=\dot v_z$). The basic control objectives for a quadrotor are the following:\begin{itemize}
+\noindent Note how we changed the notation of the acceleration ($\ddot x=\dot v_x,\ \ddot y=\dot v_y,\ \ddot z=\dot v_z$).
+\subsection{Linear Control}
+Let's denote\begin{equation}
+    \mathbf p=\begin{pmatrix}
+        x\\y\\z 
+    \end{pmatrix},\quad 
+    \boldsymbol{\Theta}=\begin{pmatrix}
+        \varphi\\\vartheta\\\psi
+    \end{pmatrix},\quad \boldsymbol{\Gamma}=\begin{pmatrix}
+        \tau_\varphi\\\tau_\vartheta\\\tau_\psi 
+    \end{pmatrix}
+\end{equation}
+we re-write the state as\begin{equation}
+     \boldsymbol{\xi}=\begin{pmatrix}
+        \mathbf p^T&\dot {\mathbf p}^T& \boldsymbol{\Theta}^T&\dot{ \boldsymbol{\Theta}}^T
+     \end{pmatrix}^T
+\end{equation}
+with our input vector:\begin{equation}
+    \mathbf u = \begin{pmatrix}
+        T\\ \boldsymbol{\Gamma}
+    \end{pmatrix}.
+\end{equation}
+Let's separate the translational and rotational dynamics:\begin{align}
+    \ddot{\mathbf p}=&g\mathbf e_3-{}^IR_B(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\\ 
+\ddot{\boldsymbol{\Theta}}=&J^{-1}\boldsymbol{\Gamma}. 
+\end{align}
+Managing the non-linear dynamics is hard for the real time controller. We apply linearization around an equilibrium point, in particular in an hovering condition.
+Let \begin{equation}
+    \mathbf p_e=\begin{pmatrix}
+        x_e\\y_e\\z_e
+    \end{pmatrix},\quad 
+    \boldsymbol{\Theta}_e=\begin{pmatrix}
+        \varphi_e\\\vartheta_e\\\psi_e
+    \end{pmatrix}
+\end{equation}
+be our equilibrium point.
+We assume that our drone is perfectly horizontal, i.e. $\vartheta_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
+    T_e=mg.
+\end{equation}
+We apply the hypothesis of small variations around $( \mathbf p_e \ \boldsymbol{\Theta}_e)$, hence \begin{equation}
+    \sin x\approx x, \quad \cos x \approx 1
+\end{equation}
+and the dynamics equations becomes decoupled:\begin{align}
+    &\ddot x = -g\vartheta\\ 
+    &\ddot y = g\varphi \\
+    & \ddot z= -\frac{\delta T}{m}
+\end{align}
+with $\delta T$ being a small variation of the input thrust $T$.
+
+\redText{TODO}
+
+\subsection{Basic Control and Planning Problems}
+The basic control objectives for a quadrotor are the following:\begin{itemize}
     \item attitude control,
     \item height control,
     \item position control,
