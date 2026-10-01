@@ -169,4 +169,40 @@ Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close confi
 The configuration space of a robot with \textit{only} prismatic joints is Euclidean.
 \end{boxobservation}
 \section{Mechanics of Mobile Robots}
+\redText{TODO}
+\section{Constraints and Mobility}
+The presence of the wheels in contact with the ground introduce a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraint and the implication in mobility.
+\subsection{Geometric Constraints}
+We have seen how the configuration $\q$ is in general a point of a manifold $\mathcal C$, that is locally homeomorphic to $\R^n$, with $n$ being the dimensionality of the configuration space $\mathcal C$.
+We will focus on equality time-invariant constraints. All the geometric constraints are expressed in the following form:\begin{equation}
+    h(\q)=0
+\end{equation}
+and they depend only on the configuration. Usually we have $k<n$ geometric constraints, and they are reflected on the degrees of freedom of a robot:\begin{align}
+   &h_1(\q)=0\\
+   &\vdots\\ 
+   &h_k(\q)=0.
+\end{align}
+If the configuration space is a 2-manifold, one single geometric constraint will reduce the degree of freedom of the robot, constraining it to move on a 1-dimensional manifold (a curve).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/1-constraint.eps}
+    \caption{If the configuration space is $\R^2$, one constraint will let the configuration to lies on a curve in the plane.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/1-constraint_3D.eps}
+    \caption{If the configuration space is $\R^3$, one constraint will let the configuration to lies on a surface in the space.}
+\end{figure}
+In general, a robot with a configuration space that is an $n$-manifold with $k$ geometric constraints, will move on an $n-k$-manifold. Instead of using the vector $\q$, we can reduce the number of coordinates in many ways, consider one constraint:\begin{equation}
+    h(\q)=0
+\end{equation}
+one can solve the equation for a coordinate $q_i$:\begin{equation}
+    q_i=h'(q_1,\dots,q_{i-1},q_{i+1},\dots, q_n).
+\end{equation}
+For example, consider a 2 degrees of freedom robot with the following constraint:\begin{equation}
+    q_1^2+q_2^2=1
+\end{equation}
+the configuration space is limited at the unit circle in $\R^2$ (1-manifold), we solve the constraint for $q_2$:\begin{equation}
+    q_2=\pm\sqrt{1-q_1^2}.
+\end{equation}
 \end{document}
