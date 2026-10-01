@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20261001115741" modified="D:20261001170505"/>
+<info created="D:20261001165338" modified="D:20261001171244"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -323,173 +323,41 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" matrix="1 0 0 1 48 -144" stroke="black" arrow="linear/normal">
-224 640 m
-224 720 l
+<path layer="alpha" stroke="0" opacity="50%" stroke-opacity="opaque">
+176 512 m
+192 536
+224 544 c
 </path>
-<path matrix="1 0 0 1 48 -144" stroke="black" arrow="linear/normal">
-208 656 m
-336 656 l
+<path stroke="0" opacity="50%" stroke-opacity="opaque">
+304 560 m
+284 548
+256 508 c
 </path>
-<text matrix="1 0 0 1 52 -152" transformations="translations" pos="212 724" stroke="black" type="label" width="9.146" height="4.822" depth="2.75" halign="center" valign="center" style="math">q_3</text>
-<text matrix="1 0 0 1 168 -220" transformations="translations" pos="212 724" stroke="black" type="label" width="9.146" height="4.822" depth="2.75" halign="center" valign="center" style="math">q_1</text>
-<text matrix="1 0 0 1 152 -180" transformations="translations" pos="212 724" stroke="0 0 1" type="label" width="38.999" height="7.791" depth="2.6" halign="center" valign="center" style="math">h(\mathbf q)=0</text>
-<path stroke="0" arrow="linear/normal">
-288 520 m
-208 480 l
+<path stroke="0" opacity="50%" stroke-opacity="opaque">
+176 512 m
+220 524
+256 508 c
 </path>
-<text matrix="1 0 0 1 -12 -240" transformations="translations" pos="212 724" stroke="black" type="label" width="9.146" height="4.822" depth="2.75" halign="center" valign="center" style="math">q_2</text>
-<path matrix="1 0 0 1 -101.231 81.1674" stroke="0 0 1" fill="0.467 0.467 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-400 444
-440 468 c
-408 452
-400 428 c
-360 404
-320 416 c
+<path stroke="0" opacity="50%" stroke-opacity="opaque">
+224 544 m
+228 544
+248 536
+292 564
+304 560 c
+</path>
+<path matrix="1 0 0 1 1.02528 -4" fill="0.502" opacity="50%" stroke-opacity="opaque">
+256 548 m
+248 532 l
+268 540 l
+276 556 l
 h
 </path>
-<path matrix="1 0 0 1 -69.0015 117.09" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
+<path matrix="1 0 0 1 0.00023365 -0.00022404" stroke="0 0 1" arrow="linear/small" opacity="50%" stroke-opacity="opaque">
+264 540 m
+252 568 l
 </path>
-<path matrix="1 0 0 1 -74.9508 113.144" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -80.2324 109.319" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -85.1228 105.123" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -89.0231 101.227" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -92.5277 97.2084" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -95.4716 93.143" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -97.7614 89.2178" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -99.724 85.0589" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-360 404
-400 428 c
-</path>
-<path matrix="1 0 0 1 -97.2394 80.0696" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -93.2755 79.068" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -89.2263 78.3434" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -85.1984 77.8106" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -81.199 77.4546" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -77.2064 77.095" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -73.1778 77.2388" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -69.1853 77.3108" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -65.2287 77.5625" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -61.2721 78.1381" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -57.2076 78.7495" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -53.251 79.7567" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -49.3303 80.7638" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -45.1782 82.031" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -41.2466 83.2769" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -37.1767 85.0212" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -33.1898 86.7101" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -29.3136 88.7312" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
-<path matrix="1 0 0 1 -25.216 90.9461" stroke="0 0 1" opacity="50%" stroke-opacity="opaque">
-320 416 m
-328 440
-360 456 c
-</path>
+<text matrix="1 0 0 1 0 4" transformations="translations" pos="268 508" stroke="0" type="label" width="47.422" height="5.768" depth="0.17" valign="baseline" size="footnote">sub-manifold</text>
+<text matrix="0.717085 0 0 0.717085 23.7557 168.918" pos="268 508" stroke="0.502" type="label" width="42.184" height="4.233" depth="1.96" valign="baseline" size="script">tangent space</text>
+<text matrix="1 0 0 1 -12 60" transformations="translations" pos="268 508" stroke="0 0 1" type="label" width="15.641" height="5.799" depth="2.75" valign="baseline" size="footnote" style="math">\nabla h_{\mathbf q}</text>
 </page>
 </ipe>

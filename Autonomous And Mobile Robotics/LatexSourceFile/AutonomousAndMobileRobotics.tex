@@ -48,13 +48,13 @@ This document summarizes and presents the topics for the \titolo course for the 
 \section{Configuration Space}   
 We can define a robot as a collection of $n_b$ bodies moving in an operative space, denoted $W$ and called the \textbf{workspace}. $W$ can be $\R^2$ (if the robot moves on a plane, like a planar 2R) as well as $\R^3$, if the robot moves in the space. For example, an elbow-type spatial manipulator is a system of $n_b=3$ rigid bodies moving in $W=\R^3$. A quadrotor is a single body ($n_b=1$) moving in the same workspace $W=\R^3$. 
 
-To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, by requiring a total of 12 parameters for the whole system, despite that, we know that 2 variables are enough to describe the whole configuration of the system.
+To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, which requires a total of 12 parameters for the whole system, despite that, we know that 2 variables are enough to describe the whole configuration of the system.
 \begin{boxdefinition}{Configuration}{}
 The configuration of a robot is a \textbf{minimum} set of parameters that allows one to specify the posture\footnote{
     with posture, we indicate the position of all the points of the robot.
 } of the robot in the workspace.
 \end{boxdefinition}
-The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique, despite that, each robot always has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
+The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique, however, each robot always has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
     \q=\begin{pmatrix}
         q_1\\ \vdots\\ q_n 
     \end{pmatrix}
@@ -63,7 +63,7 @@ in our context, it usually describes the Cartesian coordinates of a single body 
 \begin{boxdefinition}{Configuration Space}{}
     The configuration space, usually denoted $\mathcal C$, is the set of all possible values of the configuration of a robot. The \textit{dimension} of $\mathcal C$ is the number $n$ of parameters (generalized coordinates) in $\q$.
 \end{boxdefinition}
-Let's see an example: consider a disk robot that moves on a plane, that can also rotate along its main axis to point towards a desired direction, shown in Figure \ref{disc_tick}.
+Let's see an example: consider a disk robot that moves on a plane, that can also rotate about its vertical axis to point towards a desired direction, shown in Figure \ref{disc_tick}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth ]{images/disc_tick.eps}
@@ -146,14 +146,14 @@ In the robotics context, we want to define the distance between two postures of 
 For example, we might let $\mathbf p$ be the center of mass of the manipulator, and observe how it changes by varying $\q\in \mathcal C$. One simple way to define a distance metric is to consider the maximum Euclidean distance between two points of the manipulator in two different configurations:\begin{equation}\label{displacement_metric}
     d(\q_a,\q_b)=\max_{\mathbf p\in \text{robot}}\|\mathbf p(\q_a)-\mathbf p(\q_b)\|
 \end{equation}
-This distance is called \textbf{displacement metric}. Notice how in the definition we are writing $\mathbf p \in \text{robot}$, by letting robot to be the set of all the points in the structure of the manipulator, which clearly depend on the current configuration. This kind of metric works under the assumption that, if the region occupied by the robot is similar in two different postures, then the distance between their respective configurations is small:\begin{equation}
+This distance is called \textbf{displacement metric}. Notice how in the definition we are writing $\mathbf p \in \text{robot}$, by letting robot be the set of all the points in the structure of the manipulator, which clearly depend on the current configuration. This kind of metric works under the assumption that, if the region occupied by the robot is similar in two different postures, then the distance between their respective configurations is small:\begin{equation}
     B(\q_a)\simeq B(\q_b)\implies d(\q_a,\q_b)\simeq 0.
 \end{equation}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth ]{images/displacement_metric.eps}
 \end{figure}
-To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an infinite and uncountable set. If the links are polygonal shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
+To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an uncountably infinite set. If the links are polygonal shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
 
 A more computationally feasible approach is to check only for a finite set of points in the robot structure, called \textbf{control points}. Let \begin{equation}
     P=\{\mathbf p_1,\mathbf p_2,\dots, \mathbf p_c\}
@@ -163,7 +163,7 @@ be a set of $c$ points of the robot (in general, they all depend on the configur
 \end{equation}
 Not all the points of a robot are feasible control points, for example, the base of a manipulator usually doesn't change with the configuration. $P$ is a set of \textit{proper control points} if the function $d$ as defined in Equation \eqref{cp_metric} satisfies the properties of a distance given in Definition \ref{def:distance}.
 \begin{boxobservation}{Approximation for Local Motion}{}
-Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold with the Euclidean distance.
+Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold (assuming it is smooth) with the Euclidean distance.
 \end{boxobservation}
 \begin{boxobservation}{Prismatic Joints}{}
 The configuration space of a robot with \textit{only} prismatic joints is Euclidean.
@@ -171,7 +171,7 @@ The configuration space of a robot with \textit{only} prismatic joints is Euclid
 \section{Mechanics of Mobile Robots}
 \redText{TODO}
 \section{Constraints and Mobility}
-The presence of the wheels in contact with the ground introduce a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraint and the implication in mobility.
+The presence of the wheels in contact with the ground introduce a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraints and the implications in mobility.
 \subsection{Geometric Constraints}
 We have seen how the configuration $\q$ is in general a point of a manifold $\mathcal C$, that is locally homeomorphic to $\R^n$, with $n$ being the dimensionality of the configuration space $\mathcal C$.
 We will focus on equality time-invariant constraints. All the geometric constraints are expressed in the following form:\begin{equation}
@@ -182,21 +182,21 @@ and they depend only on the configuration. Usually we have $k<n$ geometric const
    &\vdots\\ 
    &h_k(\q)=0.
 \end{align}
-If the configuration space is a 2-manifold, one single geometric constraint will reduce the degree of freedom of the robot, constraining it to move on a 1-dimensional manifold (a curve).
+If the configuration space is a 2-manifold, one single geometric constraint will reduce the degrees of freedom of the robot, constraining it to move on a 1-dimensional manifold (a curve).
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth ]{images/1-constraint.eps}
-    \caption{If the configuration space is $\R^2$, one constraint will let the configuration to lies on a curve in the plane.}
+    \caption{If the configuration space is $\R^2$, one constraint will let the configurations lie on a curve in the plane.}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth ]{images/1-constraint_3D.eps}
-    \caption{If the configuration space is $\R^3$, one constraint will let the configuration to lies on a surface in the space.}
+    \includegraphics[width=0.4\textwidth ]{images/1-constraint_3D.pdf}
+    \caption{If the configuration space is $\R^3$, one constraint will let the configurations lie on a surface in the space.}
 \end{figure}
-In general, a robot with a configuration space that is an $n$-manifold with $k$ geometric constraints, will move on an $n-k$-manifold. Instead of using the vector $\q$, we can reduce the number of coordinates in many ways, consider one constraint:\begin{equation}
+In general, a robot with a configuration space that is an $n$-manifold with $k$ independent geometric constraints, will move on an $(n-k)$-manifold. Instead of using the vector $\q$, we can reduce the number of coordinates in many ways, like for one constraint:\begin{equation}
     h(\q)=0
 \end{equation}
-one can solve the equation for a coordinate $q_i$:\begin{equation}
+we can solve the equation for a coordinate $q_i$:\begin{equation}
     q_i=h'(q_1,\dots,q_{i-1},q_{i+1},\dots, q_n).
 \end{equation}
 For example, consider a 2 degrees of freedom robot with the following constraint:\begin{equation}
@@ -205,4 +205,129 @@ For example, consider a 2 degrees of freedom robot with the following constraint
 the configuration space is limited at the unit circle in $\R^2$ (1-manifold), we solve the constraint for $q_2$:\begin{equation}
     q_2=\pm\sqrt{1-q_1^2}.
 \end{equation}
+Actually this is not a good way to choose a coordinate, since the $\pm$ term prevents us from assigning a single value of $q_2$ to each value of $q_1$, requiring a local resolution. For this example of the circle it is better to use the arc length $s\in[0,2\pi)$ as the single coordinate.
+\begin{boxobservation}{Sub-Manifold}{}
+    If the configuration space $\mathcal C$ is an $n$ manifold, the $k$ constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
+\end{boxobservation}
+\subsection{Kinematic Constraints}
+A kinematic constraint is local, it prevents the configuration to move towards some directions. A general constraint of this kind is in the form:\begin{equation}
+    a(\q,\dq)=0
+\end{equation}
+it depends on the state of the robot. In every given configuration $\q^*$, we can immediately infer from $a(\q^*,\dq)=0$ which velocities are allowed. All the relevant kinematic constraints in the robotic domain are in \textbf{Pfaffian form}:\begin{equation}
+   \mathbf a^T(\q)\dq=0
+\end{equation}
+with $\mathbf a$ being an $n$ dimensional vector that depends on the configuration. The Pfaffian form expresses a condition of orthogonality: in a given configuration the velocity must be orthogonal to the vector $\mathbf a$. More kinematic constraints can be arranged in matrix form:\begin{equation}
+    \begin{pmatrix}
+        \mathbf a_1^T(\q)\\
+        \mathbf a_2^T(\q)\\ \vdots\\ 
+        \mathbf a_k^T(\q)
+    \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\implies \dq\in\mathcal N(A).
+\end{equation}
+The admissible velocities are the one that lie on the null space of $A$\footnote{
+    Sometimes, we let the dependencies of a term implicit.
+}, hence they lie in a linear space. 
+\begin{boxobservation}{Relationship Between Geometric and Kinematic Constraints}{}
+    Any geometric constraint implies a kinematic constraint.
+\end{boxobservation}
+Consider a geometric constraint\begin{equation}
+    h(\q)=0
+\end{equation}
+this constraint must be satisfied as the time goes on, hence its derivative should also satisfy the following relation:\begin{equation}
+    \dot h(\q)=0
+\end{equation}
+by applying the chain rule:\begin{equation}
+    \dot h(\q)=\frac{\partial h}{\partial \q}\dq =0
+\end{equation}
+$\frac{\partial h}{\partial \q}$ is a row vector, the gradient of $h$ transpose:\begin{equation}
+    (\nabla_\q h)^T\dq=0
+\end{equation}
+this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the vector orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out the sub-manifold defined by the geometric constraints.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth ]{images/tangent_plane.eps}
+    \caption{The admissible velocities are the one that lie on the tangent space of the sub-manifold in the given configuration.}
+\end{figure}
+We have seen how a geometric constraint always implies a kinematic one. The opposite is not generally true, consider a generic kinematic constraint:\begin{equation}
+    \mathbf a^T(\q)\dq=0
+\end{equation}
+this implies a geometric constraint if exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
+    \nabla_\q h=\mathbf a
+\end{equation}
+hence $\mathbf a(\q)$ should be \textit{integrable}.
+\begin{boxdefinition}{Holonomic Constraint}{}
+    An integrable kinematic constraint is called \textbf{holonomic}, and it defines a geometric constraint.
+\end{boxdefinition}
+What conditions determine if a constraint is integrable or not? In general, the conditions are stated in the \textit{Frobenius Theorem}, we will not discuss this result, which belongs to the domain of differential geometry. We will determine if a given constraint is holonomic or not by a different way.
+
+Consider the following kinematic constraint for a 2-dimensional robot:\begin{equation}
+     q_1\dot q_1+q_2\dot q_2=0
+\end{equation}
+is this integrable? The answer is yes. The resulting geometric constraint is\begin{equation}
+    q_1^2+q_2^2=c, \quad c\in \R^+.
+\end{equation}
+In general, in Equation \eqref{holonomic} we can add a scalar integrating factor that depend on the configuration:
+\begin{equation}
+    \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^T(\q)
+\end{equation}
+since the right-hand side is zero, $\gamma$ can be dropped.
+\subsection{Non-Holonomic Constraints}
+A non-holonomic constraint defines a local limitation, it stops the robot from moving towards a certain direction when it is in that specific configuration, it does not prevent the robot from reaching a configuration by following an allowed path. The simplest example of a system with a non-holonomic constraint is a rolling disk.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/rolling_disk.eps}
+\end{figure}
+The configuration is given by the vector $\begin{pmatrix}
+    x&y&\theta
+\end{pmatrix}^T$, $\theta$ is its orientation with respect the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
+    \sin\theta\dot x-\cos\theta \dot y = 0
+\end{equation}
+or in vector form:\begin{equation}
+    \begin{pmatrix}
+        \sin\theta& -\cos\theta& 0 
+    \end{pmatrix}\begin{pmatrix}
+   \dot x\\\dot y\\\dot \theta
+\end{pmatrix}=0
+\end{equation}
+$\mathbf{n}^T=\begin{pmatrix}
+        \sin\theta& -\cos\theta 
+\end{pmatrix}$
+is the vector \textit{normal} to the direction. Any velocity that has a component on the line spanned by $\mathbf{n}$ is not allowed.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/rolling_disk2.eps}
+\end{figure}
+This constraint does not imply any global limitation, any configuration is still reachable, hence it is a non-holonomic constraint. To prove this, instead of using the Frobenius theorem, we give a non-formal proof by showing that, for any couple of configurations $\q_s,\q_g$, there exists a trajectory in the configuration space that connects these two configurations without violating the kinematic constraint. Let\begin{equation}
+    \q_s=\begin{pmatrix}
+        x_s\\y_s\\\theta_s
+    \end{pmatrix},\quad \q_g=\begin{pmatrix}
+        x_g\\y_g\\\theta_g
+    \end{pmatrix}.
+\end{equation}
+\begin{enumerate}
+    \item $\dot \theta$ is not constrained, first of all we move the orientation from $\theta_s$ to $\theta^*$, where $\theta^*$ is defined as the angle such that\begin{equation}
+        \begin{pmatrix}
+        \sin\theta^*& -\cos\theta^*
+    \end{pmatrix}\begin{pmatrix}
+    x_g-x_s\\y_g-y_s
+\end{pmatrix}=0.
+    \end{equation}
+    \item Then, we can move on the direction $\begin{pmatrix}
+    x_g-x_s&y_g-y_s
+\end{pmatrix}^T$, in this way we can reach the desired position $\begin{pmatrix}
+    x_g&y_g
+\end{pmatrix}^T$.
+    \item At the end, we move the orientation from $\theta^*$ to $\theta_g$.
+\end{enumerate}
+This is called \textbf{universal maneuver}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/universal_man.pdf}
+    \caption{The universal maneuver in five steps.}
+\end{figure}
+There are no global mobility limitations. We can also observe this trajectory in the configuration space:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/manuvre_C_space.eps}
+\end{figure}
+Note how for simplicity we have drawn the configuration space as Euclidean. Of course it is not Euclidean because $\theta\in SO(2)$.
 \end{document}
