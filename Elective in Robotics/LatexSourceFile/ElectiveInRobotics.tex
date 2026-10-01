@@ -372,4 +372,81 @@ To recap the whole control scheme:\begin{itemize}
     \caption{Structure of the control system.}
     \label{hierarchical_control_system}
 \end{figure}
+\chapter{Control Methods}
+\section{Backstepping}
+For a dynamic system:\begin{equation}
+    \begin{cases}
+        \dot{\mathbf x}=f(\mathbf x)\\ 
+        f(\mathbf 0)=\mathbf 0
+    \end{cases}
+\end{equation}
+we recall that a Lyapunov function is a scalar function that depends on $\mathbf x$, is continuously differentiable and positive definite:\begin{align}
+    &V(\mathbf x)>0,\quad \forall \mathbf x\ne\mathbf 0\\
+    &V(\mathbf 0)=0.
+\end{align}
+If $\dot V=\frac{\partial V}{\partial \mathbf x}f(\mathbf x)$ is negative definite, then the system is asymptotically stable at the equilibrium $\mathbf x=\mathbf 0$. We also know that:\begin{itemize}
+    \item If $V$ is radially unbounded, the system is globally asymptotically stable.
+    \item If $\exists c_1>0,c_2>0,c_3>0$ with $c_1\le c_2$ such that \begin{align}
+        &c_1\|\mathbf x\|^2\le V\le c_2\|\mathbf x\|^2,\\
+        &\dot V \le -c_3\|\mathbf x\|^2
+    \end{align}
+    the system is globally exponentially stable.
+    \item If $\dot V$ is negative semidefinite, the asymptotic stability can be proved using LaSalle's invariance principle.
+\end{itemize}
+In general, $V$ is hard to find, so the backstepping method is used to construct both $V$ and the control law, it renders Globally Asymptotically Stable (GAS) an equilibrium point or a trajectory of a nonlinear system.
+
+The assumption is that our system is in strict-feedback (triangular) form, the quadrotor model satisfies this assumption. We will construct a simple 2-dimensional example of how backstepping works. We have the following nonlinear system:\begin{align}
+    &\dot x_1=f_1(x_1)+g_1(x_1)x_2\\ 
+    &\dot x_2=f_2(x_1,x_2)+g_2(x_1,x_2)u
+\end{align}
+with $x_1=0$ being an equilibrium for the first subsystem. Notice the triangular structure: the first subsystem that describes the dynamics of $x_1$ depends nonlinearly only on $x_1$, and linearly from $x_2$. The second subsystem depends linearly from $u$ (control input) and nonlinearly on $(x_1,x_2)$. We also assume that
+\begin{equation}
+    \begin{matrix}
+        g_1(x_1)\ne 0\\ 
+        g_2(x_1,x_2)\ne 0
+    \end{matrix}\quad\quad\forall(x_1,x_2).
+\end{equation}
+\begin{itemize}
+    \item \textbf{Step 1}: We stabilize $x_1$, by assuming that $x_2$ is a control input (can be chosen arbitrarily):\begin{equation}
+        x_2=\alpha(x_1)=\frac{1}{g_1(x_1)}[-f_1(x_1)-k_1x_1]
+    \end{equation}
+    with the Lyapunov function $V_1=\frac{1}{2}x_1^2$. This leads the system to a simple differential equation:\begin{equation}
+        \dot x_1=-k_1x_1
+    \end{equation}
+    and\begin{equation}
+        \dot V_1=-k_1x_1^2
+    \end{equation}
+    hence the controller will globally stabilize $x_1$ to $0$.
+    \item \textbf{Step 2}: In reality, $x_2$ has its own dynamics and is not necessarily equal to our \textit{virtual} control input $\alpha(x_1)$, hence we define an error:\begin{equation}
+        z=x_2-\alpha(x_1)
+    \end{equation}
+    the dynamics of this error is\begin{equation}
+        \dot z=\dot x_2-\dot \alpha
+    \end{equation}
+    we substitute $\dot x_2$ with its dynamics:\begin{equation}
+         \dot z=f_2+g_2u-\frac{\partial\alpha}{\partial x_1}\dot x_1
+    \end{equation}
+    notice how we dropped the dependencies (for the sake of notation). Now we substitute $\dot x_1$ with its dynamics:\begin{equation}\label{dot_z}
+         \dot z=f_2+g_2u-\frac{\partial\alpha}{\partial x_1}(f_1+g_1x_2).
+    \end{equation}
+\end{itemize}
+For the system in Equation \eqref{dot_z} we consider the following Lyapunov function: $$V=\frac{1}{2}x_1^2+\frac{1}{2}z^2$$ that is zero only at $x_1=0, z=0$. We want to stabilize $z$ to $0$ (nullify the error on $x_2$). The derivative is:
+\begin{equation}
+    \dot V=-k_1x_1^2+x_1g_1z+z(f_2+g_2u-\dot\alpha).
+\end{equation}
+To reach the desired behavior, we choose $u$ (our real control input) in order to make $\dot V$ negative definite:\begin{align}
+    u=&\frac{1}{g_2}[-f_2+\dot\alpha-k_2z-x_1g_1]\implies \\
+    \dot V = &-k_1x_1^2-k_2z^2\le -2\min(k_1,k_2)V
+\end{align}
+with $k_1,k_2$ being two positive real numbers. The term $-k_2z$ drives $x_2$ to $\alpha(x_1)$. This control law achieves exponential stability for the system in $x_1$ and $z$, and global asymptotic stability in $x_1$ and $x_2$. The achieved closed loop system in the error coordinates is\begin{equation}
+    \begin{pmatrix}
+        \dot x_1\\\dot z 
+    \end{pmatrix}=\begin{pmatrix}
+        -k_1&g_1\\ 
+        -g_1&-k_2
+    \end{pmatrix}\begin{pmatrix}
+        x_1\\z
+    \end{pmatrix}.
+\end{equation}
+\redText{TODO}
 \end{document}
