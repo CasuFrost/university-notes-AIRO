@@ -44,7 +44,7 @@ This document summarizes and presents the topics for the \titolo course for the 
 %\fancyfoot[R]{\setmainfont{Palace Script MT}\huge Marco Casu \setmainfont{Times New Roman}}
 %==================FOOTER e HEADER=======================%
 %==================INIZIO======================%
-\chapter{Introduction}
+\chapter{Exploration and Exploitation}
 \begin{boxdefinition}{Reinforcement Learning}{}
 With \textbf{Reinforcement Learning} we mean the process to \textit{learn} what to do in order to maximize a numerical reward signal:\begin{itemize}
     \item The learner must discover which actions yield the highest reward by trying them.
@@ -60,6 +60,183 @@ With \textbf{Reinforcement Learning} we mean the process to \textit{learn} what 
     \item  \textbf{Explore} in order to make better action selections in the future.
 \end{itemize}
 One of the main challenges of reinforcement learning is the exploration-exploitation trade-off. In stochastic tasks, each action must be tried many times, in order to correctly estimate the expected reward.
+\section{Multi-Armed Bandits}
+One of the main problems in reinforcement learning is to decide when we should continue to explore (collect more information about the environment) or to exploit (use the available information in order to get closer to the goal). 
+We need to \textit{carefully} and \textit{systematically} explore. The \textbf{multi-armed bandits (MAB)} problem is a simplified problem that describes the exploration paradigm.\bigskip 
+
+\noindent We have $K$ different arms, that are our actions:\begin{equation}
+    a_1,a_2,\dots, a_K
+\end{equation}
+and a reward $r\in [0,1]$, that is the scalar signal representing a feedback. Each single arm has an unknown reward distribution $\nu_i$ with mean $\mu_i$, every time we pull one of the $K$ arms we observe a reward. We interact with the MAB in the following way:\begin{itemize}
+    \item for $t=0,1,\dots,T-1$:\begin{enumerate}
+        \item pull an arm $I_t\in\{a_1,a_2,\dots, a_K\}$ based on historical information 
+        \item observe the reward $r_t\sim \nu_{I_t}$ of the arm $I_t$.
+    \end{enumerate}
+\end{itemize}
+The goal of this process is to minimize the \textbf{opportunity loss}. Assume that the best arm to pull is known ($a^*$), with its mean reward ($\mu^*$):\begin{equation}
+    \mu^*=\max_{i\in \{1,\dots, K\}}\mu_i.
+\end{equation}
+Consider the total expected reward obtained if we pull the best arm for $T$ rounds:\begin{equation}
+    T\mu^*
+\end{equation}
+and the total expected reward of the arms we actually pulled over $T$ rounds:\begin{equation}
+    \sum_{t=0}^{T-1}\mu_{I_t}
+\end{equation}
+the \textbf{regret} is the difference between these two quantities:\begin{equation}
+    \text{Regret}_T=T\mu^*-\sum_{t=0}^{T-1}\mu_{I_t}
+\end{equation}
+the regret is the expression of the opportunity loss, which we want to minimize. In the MAB example, the exploration-exploitation trade-off manifests itself in the form of the following question:\begin{quotation}
+    \textit{Should we pull arms that have been tried less frequently in the past (i.e., explore), or should we commit to
+    the current best arm (i.e., exploit)?}
+\end{quotation}
+We consider different strategies. The \textbf{greedy algorithm} tries each arm once, and then commits to the one that has the highest observed reward. This algorithm is not optimal: a low mean arm might generate a high reward the single time we sample it.
+\subsection{The Hoeffding Inequality and Regret Calculation}
+A better choice of algorithm is the \textbf{Explore \& Commit}: we try each arm multiple times, and we compute the empirical mean of the rewards. Then we commit to the arm with the highest empirical mean.\begin{enumerate}
+    \item Let $N$ be a fixed value, and $T\ge NK$
+    \item for $k=1,\dots,K$\begin{itemize}
+        \item pull the arm $a_k$ for $N$ times
+        \item observe the set of observations $\{r_1^{(k)},r_2^{(k)},\dots, r_N^{(k)}\}$
+        \item compute the empirical mean $\displaystyle \hat\mu_k=\frac{1}{N}\sum_{i=1}^{N}r_i^{(k)}$
+    \end{itemize} 
+    \item for $t=NK,\dots,T-1$\begin{itemize}
+        \item pull the best empirical arm $\displaystyle I_t=\operatorname*{arg\,max}_{i\in \{1,\dots, K\}}\hat\mu_i$
+    \end{itemize} 
+\end{enumerate}
+\begin{boxproposition}{Hoeffding Inequality}{Hoeffding}
+ Given a distribution with mean $\mu$, where we have observed $N$ independent  and bounded samples $r_i\in[0,1]$, the following inequality holds with probability $1-\delta$:\begin{equation}
+     \left\vert{}\frac{1}{N}\sum_{i=1}^{N}r_i-\mu \right\vert{}
+     \le
+     \sqrt{\frac{\ln(\nicefrac{2}{\delta})}{2N}}.
+ \end{equation}
+\end{boxproposition}
+The Proposition \ref{def:Hoeffding} gives us a confidence interval on our empirical mean.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.14\textwidth]{images/Hoeffding.eps} 
+    \caption{The true mean is located at a bounded distance from the sampled mean with probability $1-\delta$.}
+    \label{img:Hoeffding}
+\end{figure}
+\noindent For example, if $\delta=0.01$, the bound holds with probability $99\%$. The Hoeffding inequality can also be applied for all the arms at once. During the exploration phase, for \textbf{all the arms}: with probability $1-\delta$ the following inequalities hold:\begin{equation}
+    \left\vert{}\frac{1}{N}\sum_{i=1}^{N}r_i^{(k)}-\mu_k \right\vert{}
+    \le
+    \sqrt{\frac{\ln(\nicefrac{2K}{\delta})}{2N}}\quad\text{for every $k\in \{1,\dots, K\}$}.
+\end{equation}
+This comes from a union bound over the $K$ arms, which is why $\nicefrac{2}{\delta}$ becomes $\frac{2K}{\delta}$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Hoeffding_multi.eps}
+    \caption{Hoeffding inequalities for multiple arms.}
+    \label{img:Hoeffding_multi} 
+\end{figure}
+In Figure \ref{img:Hoeffding_multi} is qualitatively shown an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
+    \text{Regret}_{exploit}=(T-NK)(\mu_3-\mu_2)
+\end{equation} 
+where $T-NK$ is the number of remaining steps dedicated to exploitation (total steps $T$ minus those used to explore $NK$). The difference $(\mu_3-\mu_2)$ is small, less than the confidence ranges.
+
+Since we assumed that the reward range is $[0,1]$, the maximum loss for a single round is at most 1, so the regret accumulated in the exploration phase is bounded above by:\begin{equation}
+     \text{Regret}_{explore}\le N(\underbrace{K-1}_{\text{one is optimal}})\le NK.
+\end{equation}
+Let $\hat I$ be the empirical best arm and $I^*$ the true best arm, the worst possible regret in exploitation is\begin{equation}
+    \text{Regret}_{exploit}\le (T-NK)(\mu_{I^*}-\mu_{\hat I})
+\end{equation}
+where\begin{align}
+    \mu_{I^*}-\mu_{\hat I}\le&
+    \left[\hat \mu_{I^*}+\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\right]-
+     \left[\hat \mu_{\hat I}-\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\right]\\ 
+     =&\underbrace{\hat\mu_{I^*}-\hat\mu_{\hat I}}_{\le 0}+2\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\le 2\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}
+\end{align}
+hence the regret is at most twice our confidence interval:\begin{equation}
+    \text{Regret}_{exploit}\le2T\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}.
+\end{equation}
+The total regret is\begin{equation}
+    \text{Regret}_T= \text{Regret}_{explore}+\text{Regret}_{exploit}\le NK+2T\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}.
+\end{equation}
+We want to minimize the regret by choosing the optimal value of $N$, this can be done by taking the derivative with respect to $N$ of the regret and setting it to zero, then we solve for $N$. This leads to:\begin{equation}
+    N=\left(
+        \frac{T\sqrt{\ln(\nicefrac{K}{\delta})}}{K}
+    \right)^\frac{2}{3}
+\end{equation}
+The following inequality holds\begin{equation}
+    \text{Regret}_T= O(T^\frac{2}{3}K^\frac{1}{3}\ln^\frac{1}{3}(\nicefrac{K}{\delta})).
+\end{equation}
+This \textbf{growth rate} of the regret using the Explore \& Commit algorithm is kind of slow. We would like to get something faster, like $O(\sqrt{T})$ (that is proven to be the minimum we can get). We want to design a new algorithm, first of all we need a list of generic statistics useful to maintain in order to compute our confidence
+bounds and the regret:\begin{itemize}
+    \item we denote $N_t(i)$ the number of times we have tried the arm $a_i$ so far:\begin{equation}
+        N_t(i)=\sum_{\tau=0}^{t-1}\mathbb{1}\{I_\tau=a_i\}
+    \end{equation}
+    \item the empirical mean so far:\begin{equation}
+        \hat\mu_t(i)=\sum_{\tau=0}^{t-1}\mathbb{1}\{I_\tau=a_i\}\frac{r_\tau}{N_t(i)}
+    \end{equation}
+    \item the confidence with probability $1-\delta$:\begin{equation}\label{conf_interval}
+        | \hat\mu_t(i)-\mu_i|\le\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(i)}}.
+    \end{equation}
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Hoeffding_multi_new.eps}
+    \caption{In the confidence interval in Equation \eqref{conf_interval}, the length depends on how many times one arm has been tried.}
+    \label{img:Hoeffding_multi_new} 
+\end{figure}
+For example, in Figure \ref{img:Hoeffding_multi_new} the confidence interval of arm 2 is wider
+because we did not try arm 2 as many times as arm
+1 and 3. We select the arm with the highest upper confidence bound, and we make an optimistic assumption: the true mean actually corresponds to the upper confidence bound. 
+
+\begin{itemize}
+    \item If the bound is large, it means either that arm has been tested few times, therefore if that is
+ not good, the more we choose it the more the upper bound decreases and eventually
+ another one will be the highest, or that it is actually good.
+    \item If a confidence interval is large then we want to explore, a small interval on the selected arm means its high UCB reflects a genuinely high mean.
+
+\end{itemize}
+\noindent The \textbf{UCB algorithm} works as follows:\begin{itemize}
+    \item For the first $K$ iterations, we pull each arm once
+    \item for $t=K,\dots, T-1$:\begin{itemize}
+        \item We pick the arm with the highest upper confidence bound:\begin{equation}
+            I_t= \operatorname*{arg\,max}_{i=1,\dots,K}\left(
+                \hat\mu_t(i)+\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(i)}}
+            \right)
+        \end{equation}
+        \item update the statistics.
+    \end{itemize}
+\end{itemize}
+\noindent  Now let's compute the regret at a given time step $t$, we have:\begin{equation}
+    \mu^*-\mu_{I_t}\le\hat\mu_t(I_t)+\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(I_t)}}-\mu_{I_t}\le 2\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(I_t)}}
+\end{equation}
+if $N_t$ is small, we have a high regret but we have to explore, if it's large, we exploit and the regret is small. The total regret summing over all iterations is:\begin{equation}
+    \text{Regret}_T = \sum_{t=0}^{T-1} (\mu^* - \mu_{I_t}) \le \sum_{t=0}^{T-1} 2 \sqrt{\frac{\ln(TK/\delta)}{N_t(I_t)}} \le 2\sqrt{\ln(TK/\delta)} \cdot \underbrace{\sum_{t=0}^{T-1} \sqrt{\frac{1}{N_t(I_t)}}}_{\le O(\sqrt{KT})}.
+\end{equation}
+\begin{boxtheorem}{Regret of the UCB}{}
+    With the UCB algorithm, the following statement:
+    \begin{equation}
+        \text{Regret}_T= O\left(\sqrt{KT\ln\left(\frac{KT}{\delta}\right)}\right)
+    \end{equation}
+    or
+    \begin{equation}
+        \text{Regret}_T=\tilde O(\sqrt{KT})
+    \end{equation}
+    holds with probability $1-\delta$.
+\end{boxtheorem}
+\noindent\textit{Proof}:  We want to bound the summation term appearing in the UCB regret bound. First we cluster the pulled arms into $K$ groups, where the $i$-th group contains all steps where arm $i$ is pulled:\begin{equation}
+    \sum_{t=0}^{T-1}\sqrt{\frac{1}{n_t(I_t)}}=\sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}
+\end{equation}
+where $n_t(i)$ is the size of the specific group. \begin{equation}\label{specific}
+    \sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}=
+    \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}.
+\end{equation}
+We use the following inequality:\begin{equation}
+    \sum_{k=1}^{N}\frac{1}{\sqrt{k}}\le2\sqrt{N}
+\end{equation}
+hence from Equation \eqref{specific} we have:\begin{equation}
+     \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}\le  
+     2\sum_{i=1}^{K}\sqrt{n_T(i)}.
+\end{equation}
+Since all $n_T(i)$ sum to $T$, by the Jensen's inequality (concavity of $\sqrt\cdot$) we have:\begin{equation}
+    2\sum_{i=1}^{K}\sqrt{n_T(i)}=2K \left( \frac{1}{K} \sum_{i=1}^K \sqrt{n_T(i)} \right) \le2 K \sqrt{\frac{1}{K} \sum_{i=1}^K n_T(i)} = 2K \sqrt{\frac{T}{K}} = 2\sqrt{KT}.
+\end{equation}
+\hfill$\blacksquare$
+\section{Contextual and Bayesian Bandits}
+\redText{TODO}
+\chapter{Markovian Processes}
 \section{Markov Decision Processes}
 First of all we introduce a \textit{sequential} decision making approach. We see the agent that has to learn the policy as an entity that can interact with the world/environment through actions $a_t$, and can receive from the environment an observation $o_t$ and a reward $r_t$ after each action. The agent interacts at discrete time steps; such discrete interaction generates a \textbf{trajectory} (or history) of tuples (observation-action-reward):\begin{equation}
     \underbrace{h_t}_{\text{history at time $t$}} = (o_0,a_0,r_1,o_1,a_1,r_2\dots, r_t,o_t,a_t).
@@ -343,179 +520,5 @@ This holds since $\gamma\in[0,1)$, hence $(1-\gamma)> 0$. By definition:\begin{a
 
 This formulation reduces the multi-step problem to a one-step greedy choice plus the continuation value $V(s')$. By uniqueness of the fixed point, any function $V$ satisfying this optimality equation coincides with $V^*$.
 
-\chapter{Exploration}
-\section{Multi-Armed Bandits}
-One of the main problems in reinforcement learning is to decide when we should continue to explore (collect more information about the environment) or to exploit (use the available information in order to get closer to the goal). 
-We need to \textit{carefully} and \textit{systematically} explore. The \textbf{multi-armed bandits (MAB)} problem is a simplified problem that describes the exploration paradigm.\bigskip 
 
-\noindent We have $K$ different arms, that are our actions:\begin{equation}
-    a_1,a_2,\dots, a_K
-\end{equation}
-and a reward $r\in [0,1]$, that is the scalar signal representing a feedback. Each single arm has an unknown reward distribution $\nu_i$ with mean $\mu_i$, every time we pull one of the $K$ arms we observe a reward. We interact with the MAB in the following way:\begin{itemize}
-    \item for $t=0,1,\dots,T-1$:\begin{enumerate}
-        \item pull an arm $I_t\in\{a_1,a_2,\dots, a_K\}$ based on historical information 
-        \item observe the reward $r_t\sim \nu_{I_t}$ of the arm $I_t$.
-    \end{enumerate}
-\end{itemize}
-The goal of this process is to minimize the \textbf{opportunity loss}. Assume that the best arm to pull is known ($a^*$), with its mean reward ($\mu^*$):\begin{equation}
-    \mu^*=\max_{i\in \{1,\dots, K\}}\mu_i.
-\end{equation}
-Consider the total expected reward obtained if we pull the best arm for $T$ rounds:\begin{equation}
-    T\mu^*
-\end{equation}
-and the total expected reward of the arms we actually pulled over $T$ rounds:\begin{equation}
-    \sum_{t=0}^{T-1}\mu_{I_t}
-\end{equation}
-the \textbf{regret} is the difference between these two quantities:\begin{equation}
-    \text{Regret}_T=T\mu^*-\sum_{t=0}^{T-1}\mu_{I_t}
-\end{equation}
-the regret is the expression of the opportunity loss, which we want to minimize. In the MAB example, the exploration-exploitation trade-off manifests itself in the form of the following question:\begin{quotation}
-    \textit{Should we pull arms that have been tried less frequently in the past (i.e., explore), or should we commit to
-    the current best arm (i.e., exploit)?}
-\end{quotation}
-We consider different strategies. The \textbf{greedy algorithm} tries each arm once, and then commits to the one that has the highest observed reward. This algorithm is not optimal: a low mean arm might generate a high reward the single time we sample it.
-\subsection{The Hoeffding Inequality and Regret Calculation}
-A better choice of algorithm is the \textbf{Explore \& Commit}: we try each arm multiple times, and we compute the empirical mean of the rewards. Then we commit to the arm with the highest empirical mean.\begin{enumerate}
-    \item Let $N$ be a fixed value, and $T\ge NK$
-    \item for $k=1,\dots,K$\begin{itemize}
-        \item pull the arm $a_k$ for $N$ times
-        \item observe the set of observations $\{r_1^{(k)},r_2^{(k)},\dots, r_N^{(k)}\}$
-        \item compute the empirical mean $\displaystyle \hat\mu_k=\frac{1}{N}\sum_{i=1}^{N}r_i^{(k)}$
-    \end{itemize} 
-    \item for $t=NK,\dots,T-1$\begin{itemize}
-        \item pull the best empirical arm $\displaystyle I_t=\operatorname*{arg\,max}_{i\in \{1,\dots, K\}}\hat\mu_i$
-    \end{itemize} 
-\end{enumerate}
-\begin{boxproposition}{Hoeffding Inequality}{Hoeffding}
- Given a distribution with mean $\mu$, where we have observed $N$ independent  and bounded samples $r_i\in[0,1]$, the following inequality holds with probability $1-\delta$:\begin{equation}
-     \left\vert{}\frac{1}{N}\sum_{i=1}^{N}r_i-\mu \right\vert{}
-     \le
-     \sqrt{\frac{\ln(\nicefrac{2}{\delta})}{2N}}.
- \end{equation}
-\end{boxproposition}
-The Proposition \ref{def:Hoeffding} gives us a confidence interval on our empirical mean.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.14\textwidth]{images/Hoeffding.eps} 
-    \caption{The true mean is located at a bounded distance from the sampled mean with probability $1-\delta$.}
-    \label{img:Hoeffding}
-\end{figure}
-\noindent For example, if $\delta=0.01$, the bound holds with probability $99\%$. The Hoeffding inequality can also be applied for all the arms at once. During the exploration phase, for \textbf{all the arms}: with probability $1-\delta$ the following inequalities hold:\begin{equation}
-    \left\vert{}\frac{1}{N}\sum_{i=1}^{N}r_i^{(k)}-\mu_k \right\vert{}
-    \le
-    \sqrt{\frac{\ln(\nicefrac{2K}{\delta})}{2N}}\quad\text{for every $k\in \{1,\dots, K\}$}.
-\end{equation}
-This comes from a union bound over the $K$ arms, which is why $\nicefrac{2}{\delta}$ becomes $\frac{2K}{\delta}$.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{images/Hoeffding_multi.eps}
-    \caption{Hoeffding inequalities for multiple arms.}
-    \label{img:Hoeffding_multi} 
-\end{figure}
-In Figure \ref{img:Hoeffding_multi} is qualitatively shown an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
-    \text{Regret}_{exploit}=(T-NK)(\mu_3-\mu_2)
-\end{equation} 
-where $T-NK$ is the number of remaining steps dedicated to exploitation (total steps $T$ minus those used to explore $NK$). The difference $(\mu_3-\mu_2)$ is small, less than the confidence ranges.
-
-Since we assumed that the reward range is $[0,1]$, the maximum loss for a single round is at most 1, so the regret accumulated in the exploration phase is bounded above by:\begin{equation}
-     \text{Regret}_{explore}\le N(\underbrace{K-1}_{\text{one is optimal}})\le NK.
-\end{equation}
-Let $\hat I$ be the empirical best arm and $I^*$ the true best arm, the worst possible regret in exploitation is\begin{equation}
-    \text{Regret}_{exploit}\le (T-NK)(\mu_{I^*}-\mu_{\hat I})
-\end{equation}
-where\begin{align}
-    \mu_{I^*}-\mu_{\hat I}\le&
-    \left[\hat \mu_{I^*}+\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\right]-
-     \left[\hat \mu_{\hat I}-\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\right]\\ 
-     =&\underbrace{\hat\mu_{I^*}-\hat\mu_{\hat I}}_{\le 0}+2\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}\le 2\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}
-\end{align}
-hence the regret is at most twice our confidence interval:\begin{equation}
-    \text{Regret}_{exploit}\le2T\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}.
-\end{equation}
-The total regret is\begin{equation}
-    \text{Regret}_T= \text{Regret}_{explore}+\text{Regret}_{exploit}\le NK+2T\sqrt{\frac{\ln(\nicefrac{K}{\delta})}{N}}.
-\end{equation}
-We want to minimize the regret by choosing the optimal value of $N$, this can be done by taking the derivative with respect to $N$ of the regret and setting it to zero, then we solve for $N$. This leads to:\begin{equation}
-    N=\left(
-        \frac{T\sqrt{\ln(\nicefrac{K}{\delta})}}{K}
-    \right)^\frac{2}{3}
-\end{equation}
-The following inequality holds\begin{equation}
-    \text{Regret}_T= O(T^\frac{2}{3}K^\frac{1}{3}\ln^\frac{1}{3}(\nicefrac{K}{\delta})).
-\end{equation}
-This \textbf{growth rate} of the regret using the Explore \& Commit algorithm is kind of slow. We would like to get something faster, like $O(\sqrt{T})$ (that is proven to be the minimum we can get). We want to design a new algorithm, first of all we need a list of generic statistics useful to maintain in order to compute our confidence
-bounds and the regret:\begin{itemize}
-    \item we denote $N_t(i)$ the number of times we have tried the arm $a_i$ so far:\begin{equation}
-        N_t(i)=\sum_{\tau=0}^{t-1}\mathbb{1}\{I_\tau=a_i\}
-    \end{equation}
-    \item the empirical mean so far:\begin{equation}
-        \hat\mu_t(i)=\sum_{\tau=0}^{t-1}\mathbb{1}\{I_\tau=a_i\}\frac{r_\tau}{N_t(i)}
-    \end{equation}
-    \item the confidence with probability $1-\delta$:\begin{equation}\label{conf_interval}
-        | \hat\mu_t(i)-\mu_i|\le\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(i)}}.
-    \end{equation}
-\end{itemize}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{images/Hoeffding_multi_new.eps}
-    \caption{In the confidence interval in Equation \eqref{conf_interval}, the length depends on how many times one arm has been tried.}
-    \label{img:Hoeffding_multi_new} 
-\end{figure}
-For example, in Figure \ref{img:Hoeffding_multi_new} the confidence interval of arm 2 is wider
-because we did not try arm 2 as many times as arm
-1 and 3. We select the arm with the highest upper confidence bound, and we make an optimistic assumption: the true mean actually corresponds to the upper confidence bound. 
-
-\begin{itemize}
-    \item If the bound is large, it means either that arm has been tested few times, therefore if that is
- not good, the more we choose it the more the upper bound decreases and eventually
- another one will be the highest, or that it is actually good.
-    \item If a confidence interval is large then we want to explore, a small interval on the selected arm means its high UCB reflects a genuinely high mean.
-
-\end{itemize}
-\noindent The \textbf{UCB algorithm} works as follows:\begin{itemize}
-    \item For the first $K$ iterations, we pull each arm once
-    \item for $t=K,\dots, T-1$:\begin{itemize}
-        \item We pick the arm with the highest upper confidence bound:\begin{equation}
-            I_t= \operatorname*{arg\,max}_{i=1,\dots,K}\left(
-                \hat\mu_t(i)+\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(i)}}
-            \right)
-        \end{equation}
-        \item update the statistics.
-    \end{itemize}
-\end{itemize}
-\noindent  Now let's compute the regret at a given time step $t$, we have:\begin{equation}
-    \mu^*-\mu_{I_t}\le\hat\mu_t(I_t)+\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(I_t)}}-\mu_{I_t}\le 2\sqrt{\frac{\ln(\nicefrac{KT}{\delta})}{N_t(I_t)}}
-\end{equation}
-if $N_t$ is small, we have a high regret but we have to explore, if it's large, we exploit and the regret is small. The total regret summing over all iterations is:\begin{equation}
-    \text{Regret}_T = \sum_{t=0}^{T-1} (\mu^* - \mu_{I_t}) \le \sum_{t=0}^{T-1} 2 \sqrt{\frac{\ln(TK/\delta)}{N_t(I_t)}} \le 2\sqrt{\ln(TK/\delta)} \cdot \underbrace{\sum_{t=0}^{T-1} \sqrt{\frac{1}{N_t(I_t)}}}_{\le O(\sqrt{KT})}.
-\end{equation}
-\begin{boxtheorem}{Regret of the UCB}{}
-    With the UCB algorithm, the following statement:
-    \begin{equation}
-        \text{Regret}_T= O\left(\sqrt{KT\ln\left(\frac{KT}{\delta}\right)}\right)
-    \end{equation}
-    or
-    \begin{equation}
-        \text{Regret}_T=\tilde O(\sqrt{KT})
-    \end{equation}
-    holds with probability $1-\delta$.
-\end{boxtheorem}
-\noindent\textit{Proof}:  We want to bound the summation term appearing in the UCB regret bound. First we cluster the pulled arms into $K$ groups, where the $i$-th group contains all steps where arm $i$ is pulled:\begin{equation}
-    \sum_{t=0}^{T-1}\sqrt{\frac{1}{n_t(I_t)}}=\sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}
-\end{equation}
-where $n_t(i)$ is the size of the specific group. \begin{equation}\label{specific}
-    \sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}=
-    \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}.
-\end{equation}
-We use the following inequality:\begin{equation}
-    \sum_{k=1}^{N}\frac{1}{\sqrt{k}}\le2\sqrt{N}
-\end{equation}
-hence from Equation \eqref{specific} we have:\begin{equation}
-     \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}\le  
-     2\sum_{i=1}^{K}\sqrt{n_T(i)}.
-\end{equation}
-Since all $n_T(i)$ sum to $T$, by the Jensen's inequality (concavity of $\sqrt\cdot$) we have:\begin{equation}
-    2\sum_{i=1}^{K}\sqrt{n_T(i)}=2K \left( \frac{1}{K} \sum_{i=1}^K \sqrt{n_T(i)} \right) \le2 K \sqrt{\frac{1}{K} \sum_{i=1}^K n_T(i)} = 2K \sqrt{\frac{T}{K}} = 2\sqrt{KT}.
-\end{equation}
-\hfill$\blacksquare$
 \end{document} 

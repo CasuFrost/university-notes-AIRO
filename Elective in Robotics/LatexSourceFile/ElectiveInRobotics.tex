@@ -307,7 +307,7 @@ with $\delta T$ being a small variation of the input thrust $T$.
 
 \redText{TODO}
 
-\subsection{Basic Control and Planning Problems}
+\subsection{Basic Control and Planning Problems}\label{basic_control_planning}
 The basic control objectives for a quadrotor are the following:\begin{itemize}
     \item attitude control,
     \item height control,
@@ -448,5 +448,57 @@ with $k_1,k_2$ being two positive real numbers. The term $-k_2z$ drives $x_2$ to
         x_1\\z
     \end{pmatrix}.
 \end{equation}
+The backstepping method can be recursively applied to a general triangular $n$-th order system:\begin{align}
+    \dot x_i =& f_i(x_1,\dots, x_i)+g_i(x_1,\dots,x_i)x_{i+1},\quad \quad i=1\dots n-1\\ 
+    \dot x_n=&f_n(\mathbf x)+g_n(\mathbf x)u.
+\end{align}
+For each step we define the error $z_i$, with the addition of a term on the Lyapunov function:\begin{align}
+    &\dot z_i=-k_iz_i-g_{i-1}z_{i-1}+g_iz_{i+1}\\
+    &\dot V =-\sum_ik_iz_i.
+\end{align}
+The backstepping method is a design procedure, not a defined control law, and it doesn't needs to cancel the non linearities of a system to achieve stability. The problem is that the complexity of this procedure grows exponentially since each step needs the analytical derivative of the previous virtual input.
+\subsection{Backstepping for Height Control}
+Let's see an application of the backstepping. The height dynamics of the quadrotor is the following:\begin{align}
+    &\dot z = v_z\\ 
+    &v_z=g-\cos\varphi\cos\vartheta\frac{T}{m}
+\end{align}
+we choose $T$ in order to compensate the gravity and linearize the system:\begin{equation}
+    T=\frac{m}{\cos\varphi\cos\vartheta}(g-\tilde T)\implies 
+    \dot v_z=\tilde T
+\end{equation}
+with $\tilde T$ to be chosen later.
+Given the desired height $z_d(t)$ we define the error:\begin{equation}
+    e_z=z_d-z\implies \dot e_z=\dot z_d-v_z.
+\end{equation}
+If the velocity $v_z$ would have been the control input, we would have chose:\begin{equation}\label{desired_vz}
+    v_z=K_{zp}e_z+\dot z_d\implies \dot e_z=-K_{pz}e_z
+\end{equation}
+but $v_z$ has its own dynamics, hence we consider the formula in Equation \eqref{desired_vz} as a virtual control input denoted $v_z^d$:
+\begin{equation}
+    v^d_z=K_{zp}e_z+\dot z_D
+\end{equation}
+so we can define the error between the virtual input and the real velocity:\begin{equation}
+     e_{v_z}=v_z^d-v_z
+\end{equation}
+furthermore:\begin{align}
+    \dot e_z&=-K_{pz}e_z+e_{v_z}
+    \\\dot e_{v_z}&=K_{zp}\dot e_z+\ddot z_d-\tilde T.
+\end{align}
+The Lyapunov function becomes:\begin{align}
+    V&=\frac{1}{2}(e_z^2+e_{v_z}^2)
+    \\\dot V&=-K_{pz}e_z^2+e_{v_z}(
+        e_z+K_{zp}\dot e_z+\ddot z_d-\tilde T
+    )
+\end{align}
+now we choose $\tilde T$ to make $\dot V$ negative definite\begin{align}
+    \tilde T  &=\ddot z_d+e_z+K_{zp}\dot e_z+K_{zd}e_{v_z}\implies \\ 
+    \dot V &= -K_{pz}e_z^2-K_{dz}e_{vz}^2
+\end{align}
+by putting everything together, the final control law is:\begin{equation}
+    T = \frac{m}{\cos \varphi \cos \vartheta} \left( g - \ddot{z}_d - (1 + K_{zp} K_{zd}) e_z - (K_{zp} + K_{zd}) \dot{e}_z \right).
+\end{equation}
+\subsection{PD Compared With Backstepping}
+What are the differences between the PD seen in Section \ref{basic_control_planning} and the backstepping?
+
 \redText{TODO}
 \end{document}
