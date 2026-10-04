@@ -169,7 +169,46 @@ Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close confi
 The configuration space of a robot with \textit{only} prismatic joints is Euclidean.
 \end{boxobservation}
 \section{Mechanics of Mobile Robots}
-\redText{TODO}
+The main sources of movement for a mobile robot are:\begin{itemize}
+    \item Wheels: wheeled robots usually consists of one single rigid body, with the wheels in contact with ground.
+    \item Feet: legged robots, several rigid bodies articulated through joints.
+\end{itemize}
+The wheels are in contact with the ground, and this introduce some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact point. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass, falls inside the support polygon. Of course a robot must be balanced in order to not fall to the ground.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/balance.pdf}
+\end{figure}
+The convex hull of two points is a line, hence a robot with only two wheels can't be easily balanced in a static fashion.\bigskip
+
+\noindent There are three main types of wheels:\begin{itemize}
+    \item \textbf{Fixed Wheels}: They have a fixed orientation: Can roll but can't steer on their $z$-axis (see Figure \ref{fixed_wheel}). They are usually actuated, if passive, are used for balance and offer a contact point.
+    \item \textbf{Steerable Wheels}: They can steer and are used for orientation, hence they are typically active (i.e. the front wheels of a car).
+    \item \textbf{Caster Wheels}: They have a variable orientation but they are typically not actuated. Their axis of orientation are not aligned, this property makes the wheels align automatically with the direction of motion, hence they are ``invisible'' kinematically, but offer a contact point.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth ]{images/wheels.png}
+    \caption{Fixed, steerable and caster wheels.}
+    \label{fixed_wheel}
+\end{figure}
+\subsection{Main Kinematic Structures}
+The simplest wheeled robot that we can have is the \textbf{differential drive} robot: it uses two aligned fixed wheels that are independently actuated, and one caster wheel added for balance. The \textbf{synchro-drive} mobile robots have three steerable wheels and two actuators: one controls simultaneously the orientation of all the wheels, and the other rolls them together. The base over the wheels hence will never change orientation. This type of configuration is preferable when the body to move is particularly heavy.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth ]{images/structures.eps}
+\end{figure}
+The tricycle has two fixed wheels in the back and one actuated steerable wheel in the front, the car-like is similar, but with two steerable wheels.\bigskip
+
+Consider the following path taken by a car-like robot:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/differential.eps}
+\end{figure}
+In the same time interval, the wheels on the outer path travels a longer distance with respect to the wheels on the inner path, hence their rotation speed must be higher. In order to avoid using two distinct actuators for the front wheels we use a device called \textbf{differential}.
+\begin{boxdefinition}{Differential}{}
+   A mechanical differential is a gear assembly (usually using bevel or planetary gears) connected to a single drive motor. It splits power to two wheels on the same axle while allowing them to rotate at different speeds. When a robot with a single motor turns, the outside wheel must travel a larger arc than the inside wheel. The differential lets the wheels spin at their own natural speeds, preventing tire slip, scrubbing, and mechanical strain on the drivetrain.
+\end{boxdefinition}
+
 \section{Constraints and Mobility}
 The presence of the wheels in contact with the ground introduce a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraints and the implications in mobility.
 \subsection{Geometric Constraints}
@@ -197,17 +236,17 @@ In general, a robot with a configuration space that is an $n$-manifold with $k$ 
     h(\q)=0
 \end{equation}
 we can solve the equation for a coordinate $q_i$:\begin{equation}
-    q_i=h'(q_1,\dots,q_{i-1},q_{i+1},\dots, q_n).
+    q_i=\tilde h(q_1,\dots,q_{i-1},q_{i+1},\dots, q_n).
 \end{equation}
 For example, consider a 2 degrees of freedom robot with the following constraint:\begin{equation}
     q_1^2+q_2^2=1
 \end{equation}
-the configuration space is limited at the unit circle in $\R^2$ (1-manifold), we solve the constraint for $q_2$:\begin{equation}
+the configuration space is limited to the unit circle in $\R^2$ (1-manifold), we solve the constraint for $q_2$:\begin{equation}
     q_2=\pm\sqrt{1-q_1^2}.
 \end{equation}
 Actually this is not a good way to choose a coordinate, since the $\pm$ term prevents us from assigning a single value of $q_2$ to each value of $q_1$, requiring a local resolution. For this example of the circle it is better to use the arc length $s\in[0,2\pi)$ as the single coordinate.
 \begin{boxobservation}{Sub-Manifold}{}
-    If the configuration space $\mathcal C$ is an $n$ manifold, the $k$ constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
+    If the configuration space $\mathcal C$ is an $n$-manifold, the $k$ constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
 \end{boxobservation}
 \subsection{Kinematic Constraints}
 A kinematic constraint is local, it prevents the configuration to move towards some directions. A general constraint of this kind is in the form:\begin{equation}
@@ -223,7 +262,7 @@ with $\mathbf a$ being an $n$ dimensional vector that depends on the configurati
         \mathbf a_k^T(\q)
     \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\implies \dq\in\mathcal N(A).
 \end{equation}
-The admissible velocities are the one that lie on the null space of $A$\footnote{
+The admissible velocities are the ones that lie in the null space of $A$\footnote{
     Sometimes, we let the dependencies of a term implicit.
 }, hence they lie in a linear space. 
 \begin{boxobservation}{Relationship Between Geometric and Kinematic Constraints}{}
@@ -238,10 +277,10 @@ this constraint must be satisfied as the time goes on, hence its derivative shou
 by applying the chain rule:\begin{equation}
     \dot h(\q)=\frac{\partial h}{\partial \q}\dq =0
 \end{equation}
-$\frac{\partial h}{\partial \q}$ is a row vector, the gradient of $h$ transpose:\begin{equation}
+$\frac{\partial h}{\partial \q}$ is a row vector, the transpose of the gradient of $h$:\begin{equation}
     (\nabla_\q h)^T\dq=0
 \end{equation}
-this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the vector orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out the sub-manifold defined by the geometric constraints.
+this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the vector orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out of the sub-manifold defined by the geometric constraints.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth ]{images/tangent_plane.eps}
@@ -250,7 +289,7 @@ this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ eva
 We have seen how a geometric constraint always implies a kinematic one. The opposite is not generally true, consider a generic kinematic constraint:\begin{equation}
     \mathbf a^T(\q)\dq=0
 \end{equation}
-this implies a geometric constraint if exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
+this implies a geometric constraint if there exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
     \nabla_\q h=\mathbf a
 \end{equation}
 hence $\mathbf a(\q)$ should be \textit{integrable}.
@@ -263,7 +302,7 @@ Consider the following kinematic constraint for a 2-dimensional robot:\begin{equ
      q_1\dot q_1+q_2\dot q_2=0
 \end{equation}
 is this integrable? The answer is yes. The resulting geometric constraint is\begin{equation}
-    q_1^2+q_2^2=c, \quad c\in \R^+.
+    q_1^2+q_2^2=c, \quad c>0.
 \end{equation}
 In general, in Equation \eqref{holonomic} we can add a scalar integrating factor that depend on the configuration:
 \begin{equation}
@@ -278,7 +317,7 @@ A non-holonomic constraint defines a local limitation, it stops the robot from m
 \end{figure}
 The configuration is given by the vector $\begin{pmatrix}
     x&y&\theta
-\end{pmatrix}^T$, $\theta$ is its orientation with respect the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
+\end{pmatrix}^T$, $\theta$ is its orientation with respect to the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
     \sin\theta\dot x-\cos\theta \dot y = 0
 \end{equation}
 or in vector form:\begin{equation}
@@ -296,7 +335,7 @@ is the vector \textit{normal} to the direction. Any velocity that has a componen
     \centering
     \includegraphics[width=0.5\textwidth ]{images/rolling_disk2.eps}
 \end{figure}
-This constraint does not imply any global limitation, any configuration is still reachable, hence it is a non-holonomic constraint. To prove this, instead of using the Frobenius theorem, we give a non-formal proof by showing that, for any couple of configurations $\q_s,\q_g$, there exists a trajectory in the configuration space that connects these two configurations without violating the kinematic constraint. Let\begin{equation}
+This constraint does not imply any global limitation, any configuration is still reachable, hence it is a non-holonomic constraint. To prove this, instead of using the Frobenius theorem, we give a non-formal proof by showing that, for any pair of configurations $\q_s,\q_g$, there exists a trajectory in the configuration space that connects these two configurations without violating the kinematic constraint. Let\begin{equation}
     \q_s=\begin{pmatrix}
         x_s\\y_s\\\theta_s
     \end{pmatrix},\quad \q_g=\begin{pmatrix}
