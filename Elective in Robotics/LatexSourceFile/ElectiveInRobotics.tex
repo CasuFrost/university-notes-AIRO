@@ -498,7 +498,18 @@ by putting everything together, the final control law is:\begin{equation}
     T = \frac{m}{\cos \varphi \cos \vartheta} \left( g - \ddot{z}_d - (1 + K_{zp} K_{zd}) e_z - (K_{zp} + K_{zd}) \dot{e}_z \right).
 \end{equation}
 \subsection{PD Compared With Backstepping}
-What are the differences between the PD seen in Section \ref{basic_control_planning} and the backstepping?
+What are the differences between the PD seen in Section \ref{basic_control_planning} and the backstepping? They share a similar structure, but with a different choice of coordinates. The control laws are identical if we set the gain of the PD as follows:\begin{align}
+    K_p&=1+K_{zp}K_{zd}\\
+    K_d&=K_{zp}+K_{zd}.
+\end{align}
+The PD controller aim to nullify the position and velocity errors $(e_z,\dot e_z)$ while the backstepping law instead of $\dot e_z$ considers $e_{v_z}=\dot e_z+\greenText{K_{zp}e_z}$, hence the desired velocity already contains a term relative to the \greenText{ position correction}.
 
-\redText{TODO}
+The gains  have different roles:\begin{itemize}
+    \item $K_{zp}$ controls the decay rate of the position error, when  the velocity error is zero.
+    \item $K_{zd}$ is the decay rate of the velocity error (the inner loop of the backstepping).
+    \item In the PD controller, the speed and damping of the errors are given by\begin{align}
+        \omega_n&=\sqrt{K_p}\\
+        \zeta&=\frac{K_d}{2\sqrt{K_p}}.
+    \end{align}
+\end{itemize}
 \end{document}
