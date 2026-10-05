@@ -7,6 +7,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
  \usepackage{multirow}
+ \pgfplotsset{compat=newest}
 \newcommand{\titolo}{Reinforcement Learning}
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -60,7 +61,7 @@ With \textbf{Reinforcement Learning} we mean the process to \textit{learn} what 
     \item  \textbf{Explore} in order to make better action selections in the future.
 \end{itemize}
 One of the main challenges of reinforcement learning is the exploration-exploitation trade-off. In stochastic tasks, each action must be tried many times, in order to correctly estimate the expected reward.
-\section{Multi-Armed Bandits}
+\section{Multi-Armed Bandits}\label{bandits}
 One of the main problems in reinforcement learning is to decide when we should continue to explore (collect more information about the environment) or to exploit (use the available information in order to get closer to the goal). 
 We need to \textit{carefully} and \textit{systematically} explore. The \textbf{multi-armed bandits (MAB)} problem is a simplified problem that describes the exploration paradigm.\bigskip 
 
@@ -128,7 +129,7 @@ This comes from a union bound over the $K$ arms, which is why $\nicefrac{2}{\del
     \caption{Hoeffding inequalities for multiple arms.}
     \label{img:Hoeffding_multi} 
 \end{figure}
-In Figure \ref{img:Hoeffding_multi} is qualitatively shown an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
+In Figure \ref{img:Hoeffding_multi} qualitatively shows an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
     \text{Regret}_{exploit}=(T-NK)(\mu_3-\mu_2)
 \end{equation} 
 where $T-NK$ is the number of remaining steps dedicated to exploitation (total steps $T$ minus those used to explore $NK$). The difference $(\mu_3-\mu_2)$ is small, less than the confidence ranges.
@@ -206,7 +207,7 @@ if $N_t$ is small, we have a high regret but we have to explore, if it's large, 
     \text{Regret}_T = \sum_{t=0}^{T-1} (\mu^* - \mu_{I_t}) \le \sum_{t=0}^{T-1} 2 \sqrt{\frac{\ln(TK/\delta)}{N_t(I_t)}} \le 2\sqrt{\ln(TK/\delta)} \cdot \underbrace{\sum_{t=0}^{T-1} \sqrt{\frac{1}{N_t(I_t)}}}_{\le O(\sqrt{KT})}.
 \end{equation}
 \begin{boxtheorem}{Regret of the UCB}{}
-    With the UCB algorithm, the following statement:
+    With the UCB algorithm, the following bound holds:
     \begin{equation}
         \text{Regret}_T= O\left(\sqrt{KT\ln\left(\frac{KT}{\delta}\right)}\right)
     \end{equation}
@@ -214,10 +215,10 @@ if $N_t$ is small, we have a high regret but we have to explore, if it's large, 
     \begin{equation}
         \text{Regret}_T=\tilde O(\sqrt{KT})
     \end{equation}
-    holds with probability $1-\delta$.
+    with probability $1-\delta$.
 \end{boxtheorem}
 \noindent\textit{Proof}:  We want to bound the summation term appearing in the UCB regret bound. First we cluster the pulled arms into $K$ groups, where the $i$-th group contains all steps where arm $i$ is pulled:\begin{equation}
-    \sum_{t=0}^{T-1}\sqrt{\frac{1}{n_t(I_t)}}=\sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}
+    \sum_{t=0}^{T-1}\sqrt{\frac{1}{n_t(I_t)}}=\sum_{i=1}^{K}\sum_{t=0}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}
 \end{equation}
 where $n_t(i)$ is the size of the specific group. \begin{equation}\label{specific}
     \sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}=
@@ -235,11 +236,129 @@ Since all $n_T(i)$ sum to $T$, by the Jensen's inequality (concavity of $\sqrt\c
 \end{equation}
 \hfill$\blacksquare$
 \section{Contextual and Bayesian Bandits}
-\redText{TODO}
+We introduce the \textit{context}: there is a set $X$ of contexts/states, $x_t\in X$ is the state at time $t$, the reward depends not only on the action but also on the current state: $r(x_t,a_t)$. For simplicity we assume that the reward function is deterministic.\begin{itemize}
+    \item At each time step, we are in the state $x_t$.
+    \item We choose an action $a_t$ and observe $r(x_t,a_t)$.
+    \item The next state $x_{t+1}$ does not depend on the action, but is sampled from a distribution $\mu$.
+\end{itemize}
+A \textbf{policy} $\pi$ is a mapping from \textit{all} the states to the actions. Is important to emphasize that a policy must assign an action to \textbf{each possible state}; if it is not defined on a particular state, then it is not a policy.\begin{itemize}
+    \item Can be deterministic: $a=\pi(s)$,
+    \item or stochastic $\pi( a \mid s)$.
+\end{itemize}
+Note how we denoted $s$ a state, this is a general notation. In the bandits context, we will use $x$ to denote the state. We define the \textbf{optimal policy} the one that maximizes the expected value for the reward:\begin{equation}
+    \pi^\star=\operatorname*{arg\,max}_{\pi}\underset{x\sim\mu}{\mathbb E} r(x,\pi(x)).
+\end{equation}
+If the set of states $X$ is discrete the expected value is\begin{equation}
+        \pi^\star=\operatorname*{arg\,max}_{\pi}\sum_{x\in X} r(x,\pi(x))\mu(x)
+\end{equation}
+with $\mu(x)$\footnote{
+    Formally, we should write $\mu(\{x\})$, since $\mu$ is a measure on $X$.
+} being the probability of sampling the state $x$. \bigskip 
+
+Let $\{\pi^0,\pi^1,\dots,\pi^{T-1}\}$ be the sequence of policies that we learned at each time step from the beginning to $t=T-1$. At the $T$-th iteration, we define the \textbf{regret} as the total expected reward obtained using the optimal policy $\pi^\star$ minus the total expected reward obtained by using our sequence of policies:\begin{equation}
+    \text{Regret}_T=T\underset{x\sim\mu}{\mathbb E}\left[
+        r(x,\pi^\star(x))
+    \right]- 
+    \sum_{t=0}^{T-1}\underset{x\sim\mu}{\mathbb E}\left[
+        r(x,\pi^t(x))
+    \right]
+\end{equation}
+we recall that at every time step, the states are sampled by the distribution $\mu$ independently from the previous states.
+\subsection{Explore and Commit}
+Let's see how the explore \& commit algorithm works on the contextual bandit, the goal is to build a \textit{table} that assign to each pair of state and action, the estimated expected value of the reward.
+\begin{algorithm}[H]
+\caption{Explore \& Commit}\label{alg:explore_commit_context}
+\begin{algorithmic}[1]
+\For{$t=0,\dots,N-1$ \textbf{(explore)}}
+\State observe the current state $x_t\sim\mu$
+\State sample a random action from a uniform distribution $a_t\sim\text{Unif}(A)$
+\State observe the reward $r_t=r(x_t,a_t)$
+\State build an unbiased estimator $\mathbf r_t$ defined as follows:\begin{equation}
+    \mathbf r_t[a]=\begin{cases}
+        0\quad\text{ if }a\ne a_t\\ 
+        r_t\cdot |A|\text{ else }
+    \end{cases}
+\end{equation}
+at each time step $t$ the estimator assigns zero to all the actions $\mathbf r_t$ except for the one used at time $t$, to which it assigns the reward multiplied by the number of actions.
+\EndFor
+\State compute the policy as follows:\begin{equation}
+    \hat\pi=\operatorname*{arg\,max}_{\pi}\sum_{i=0}^{N-1}\mathbf r_i[\pi(x_i)]
+\end{equation}
+\For{$t=N,\dots,T-1$ \textbf{(commit)}}
+\State observe the current state $x_t\sim\mu$
+\State play the arm $a_t=\hat\pi(x_t)$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+\noindent\textbf{About the estimator}: We want to give a description of how the estimator $\mathbf r_t$ works. There are $N$ vectors $\mathbf r_0,\mathbf r_1,\mathbf r_2\dots,\mathbf r_{N-1}$, each of dimension $|A|$ (the number of possible actions). For a given time step $t$, $\mathbf r_t$ is null on each action, except for the action chosen at time $t$:\begin{equation}
+    \mathbf r_0=\begin{pmatrix}
+        \nicefrac{r_0}{p(a_0)}\\ 0\\ \vdots\\ 0\\ \vdots\\ 0
+    \end{pmatrix},\quad
+    \mathbf r_1=\begin{pmatrix}
+        0\\ \nicefrac{r_1}{p(a_1)}\\ \vdots\\ 0\\ \vdots\\ 0
+    \end{pmatrix},\quad\dots\quad,
+    \mathbf r_t=\begin{pmatrix}
+        0\\ 0\\ \vdots\\ \nicefrac{r_t}{p(a_t)}\\ \vdots\\ 0
+    \end{pmatrix},\quad\dots\quad,
+    \mathbf r_{N-1}=\begin{pmatrix}
+        0\\ 0\\ \vdots\\ 0\\ \vdots\\ \nicefrac{r_{N-1}}{p(a_{N-1})}
+    \end{pmatrix}.
+\end{equation}
+$p(a_t)$ is the probability of choosing the action $a_t$, since they are sampled from a uniform distribution, for each action $a$ we have $p(a)=\frac{1}{|A|}$ hence $\frac{r_t}{p(a_t)}=r_t\cdot|A|$.
+The regret for this algorithm has the following asymptotic behavior:\begin{equation}
+    O(T^{\nicefrac{2}{3}}\cdot|A|^{\nicefrac{1}{3}}\cdot\ln^{\nicefrac{1}{3}}(|\Pi|))
+\end{equation} 
+where $\Pi$ is the set of all the policies.
+\subsection{$\epsilon$-Greedy}
+The $\epsilon$-greedy algorithm never stops exploring, at each time step, with a given probability it selects a random action, else it selects the best action, exploiting the known information. We denote $\pi^t$ the current policy that we are selecting as our best policy at time $t$. Let $\epsilon\in [0,1]$, if $\epsilon=0$, we just exploit the available information, if $\epsilon=1$, we explore by randomly choosing the actions.
+\begin{algorithm}[H]
+\caption{$\epsilon$-Greedy}\label{alg:eps_greedy_context}
+\begin{algorithmic}[1]
+\For{$t=0,\dots,T-1$}
+\State observe the current state $x_t\sim\mu$
+\State select a random number $c\sim \text{Unif}([0,1])$
+\If{$c\le \epsilon$}
+\State sample a random action from a uniform distribution $a_t\sim\text{Unif}(A)$ (\textbf{explore})
+\Else
+\State choose the best action $a_t=\pi^t(x_t)$ (\textbf{exploit})
+\EndIf
+\State observe the reward $r_t=r(x_t,a_t)$
+\State build an unbiased estimator $\mathbf r_t$ defined as follows:\begin{equation}\mathbf r_t[a]=\begin{cases}0\quad\text{ if }a\ne a_t\\ \frac{r_t}{p_t(a_t)}\text{ else }\end{cases}\end{equation}where\begin{equation}p_t(a)=\frac{\epsilon}{|A|}+(1-\epsilon)\mathbb 1\{a=\pi^t(x_t)\}\end{equation}
+\State update the policy\begin{equation}
+    \pi^{t+1}=\operatorname*{arg\,max}_{\pi}\sum_{i=0}^{t}\mathbf r_i[\pi(x_i)]
+\end{equation}
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+$\epsilon$ can also be time-varying, by making it high at the beginning (first explore) and then decaying as the time goes on (then exploit), for example $\epsilon(t)=0.9\exp(-t)+0.1$.
+\subsection{Gaussian Bayesian Bandits}
+In the previous discussion, we treated the reward $r$ as deterministic. Now let $r$ be random again. We denote $\nu(i)$ the reward distribution, for the specific action $a_i$ (hence we have a reward distribution for each action), we are making a step back by removing the context, the following discussion assumes that there is only one state.
+We exploit  prior knowledge by \textit{assuming} that the distributions $\nu(i)$ are \textbf{Gaussians}:\begin{equation}
+    \nu(i)=\mathcal N\big(\mu(i),\sigma^2(i)\big)
+\end{equation}
+with $\mu(i)$ and $\sigma^2(i)$ being the mean and variance for the reward by choosing the action $a_i$.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[axis x line=bottom,axis y line=none,xtick=\empty,ytick=\empty,enlargelimits=true,width=10cm,height=6cm,domain=-6:6,samples=100,declare function={gauss(\x,\mu,\sigma)=1/(\sigma*sqrt(2*pi))*exp(-((\x-\mu)^2)/(2*\sigma^2));}]
+\addplot[thick,blue]{gauss(x,0,1)};
+\addplot[thick,red]{gauss(x,-2,0.5)};
+\addplot[thick,green!70!black]{gauss(x,2,1.5)};
+\end{axis}
+\end{tikzpicture}\end{center}
+Usually, at the beginning we assume as prior knowledge that the mean of all the Gaussians is zero and the standard deviation is 1. In the algorithm we will start exploring and trying different actions, sampling the rewards in order to fit the Gaussians with the correct values for the mean and the standard deviation.\bigskip 
+
+Assume that we have fitted the Gaussians, we can apply the UCB to this case, the best action is the one with the highest upper bound for the reward, hence we choose the action with the Gaussian with the highest  standard deviation (considering also the mean). Let $K$ be the number of actions:\begin{equation}
+    a_t=\operatorname*{arg\,max}_{1\le i \le K}\mu_t(i)+\frac{c\sigma_t(i)}{\sqrt{N_t(i)}}
+\end{equation}
+where\begin{itemize}
+    \item $\mu_t(i),\sigma_t(i)$ are the current estimation at time $t$ for the mean and the standard deviation of the distributions of the $i$-th action.
+    \item $c$ is an exploration parameter.
+    \item $N_t(i)$ is the total number of times that the $i$-th action has been selected.
+\end{itemize}
 \chapter{Markovian Processes}
 \section{Markov Decision Processes}
 First of all we introduce a \textit{sequential} decision making approach. We see the agent that has to learn the policy as an entity that can interact with the world/environment through actions $a_t$, and can receive from the environment an observation $o_t$ and a reward $r_t$ after each action. The agent interacts at discrete time steps; such discrete interaction generates a \textbf{trajectory} (or history) of tuples (observation-action-reward):\begin{equation}
-    \underbrace{h_t}_{\text{history at time $t$}} = (o_0,a_0,r_1,o_1,a_1,r_2\dots, r_t,o_t,a_t).
+    \underbrace{h_t}_{\text{history at time $t$}} = (o_0,a_0,r_1,o_1,a_1,r_2,\dots, r_t,o_t,a_t).
 \end{equation}
 We define a state function $s_t=f(h_t)$ that describes the current state of the agent at time $t$ and depends on the history $h_t$ and is typically hidden or unknown.
 \begin{boxdefinition}{Markov Assumption}{}
@@ -322,7 +441,7 @@ In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1]$. Th
     \item $\gamma=1$: Immediate and future rewards are equally important.
 \end{itemize}
 The discount factor is used in the \textbf{Value Function} $V^\pi$, a function that estimates the goodness of a state based on its value. It is also a measure to compare different policies.\begin{boxdefinition}{Value Function}{}
-    The \textbf{Value Function} $V^\pi$ measures the cumulative reward (the sum of all future rewards, possibly discounted by the $\gamma$ factor) starting from $s$ and continuing to follow the policy $\pi$ for all subsequent actions. 
+    The \textbf{Value Function} $V^\pi$ measures the expected cumulative reward (the sum of all future rewards, possibly discounted by the $\gamma$ factor) starting from $s$ and continuing to follow the policy $\pi$ for all subsequent actions. 
     \begin{align}
     V^\pi(s)=&\VA_\pi\left[ 
     \sum_{h=0}^\infty  \gamma^hr_{h+1}  
@@ -395,12 +514,12 @@ $V^\pi$ can be expressed in terms of $Q^\pi$. One last quantity that we introduc
 \end{boxdefinition}
 $\Prob^\pi(s_h = s \mid s_0)\pi(a \mid s)$ is the exact probability of being in state $s$ and executing action $a$ exactly at time step $h$, conditioned on having started in $s_0$ and having followed the $\pi$ policy for all previous steps.
 \section{Optimality of a Policy}
-For an infinite horizon MDP there always exists a deterministic \textbf{optimal policy} $\pi^*$ that satisfies:\begin{equation}
-    V^{\pi^*}(s)\ge V^\pi(s), \quad \forall s, \ \forall \pi
+For an infinite horizon MDP there always exists a deterministic \textbf{optimal policy} $\pi^\star$ that satisfies:\begin{equation}
+    V^{\pi^\star}(s)\ge V^\pi(s), \quad \forall s, \ \forall \pi
 \end{equation}
-This means that the policy $\pi^*$ is the one that guarantees a greater reward (in expected value), since it dominates all other policies in each state. We will use also the following notation:\begin{align}
-    &V^{\pi^*}=V^*\\ 
-    &Q^{\pi^*}=Q^*.
+This means that the policy $\pi^\star$ is the one that guarantees the greatest expected reward, since it dominates all other policies in each state. We will use also the following notation:\begin{align}
+    &V^{\pi^\star}=V^*\\ 
+    &Q^{\pi^\star}=Q^*.
 \end{align}
 The \textbf{Bellman Optimality} condition states that:\begin{equation}\label{BellmanOptimality}
     V^*(s)=\max_{a\in A}Q^*(s,a).
@@ -488,7 +607,7 @@ Using the property $\displaystyle\vert{}\max_a f(a) - \max_a g(a)\vert{} \le \ma
 we can cancel out $R(s,a)$ and move $\gamma$ outside the max function:\begin{equation}
     \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}} \left\vert{} \sum_{s' \in {S}} \Prob(s' \mid s, a) \big( V(s') - V^*(s') \big) \right\vert{} 
 \end{equation}
-by the triangle inequality we can move out the absolute value from the sum:\begin{equation}\label{after_triangle_ineq}
+by the triangle inequality we can move the absolute value inside the sum:\begin{equation}\label{after_triangle_ineq}
     \vert{}V(s) - V^*(s)\vert{} \le \gamma \max_{a \in {A}}  \sum_{s' \in {S}} \Prob(s' \mid s, a)\left\vert{}  V(s') - V^*(s')  \right\vert{} .
 \end{equation}
 We use the definition of $L_\infty$ norm:\begin{equation}
