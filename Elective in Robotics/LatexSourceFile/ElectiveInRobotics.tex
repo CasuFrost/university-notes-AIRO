@@ -530,4 +530,231 @@ $h_\varphi$ represents the nonlinear terms, for example the gyroscopic effects.
 We define the integral action of the error:
 
 \todo{finire pacco di slide 02}
+\section{Dynamic Feedback Linearization}
+One of the most important and effective way to control a nonlinear dynamical system is by making them linear trough feedback.
+\begin{boxdefinition}{Feedback Linearization}{}
+    The feedback linearization is the exact cancellation of the nonlinearities by
+    feedback and change of coordinates.
+\end{boxdefinition}
+\noindent\textbf{Recap of the model}: For control purposes, we are using the (already seen) simplified model that assumes small changes for $\varphi$ and $\vartheta$
+$$(\dot\varphi,\dot\vartheta,\dot\psi)\simeq(p,q,r)$$
+and negligible aerodynamics/gyroscopic effects:\begin{align}
+    &\ddot x = -(\cos\psi\sin\vartheta\cos\varphi+\sin\psi\sin\varphi)\frac{T}{m}\\
+    &\ddot y = -(\sin\psi\sin\vartheta\cos\varphi-\sin\varphi\cos\psi)\frac{T}{m}\\
+    &\ddot z = -\cos\vartheta\cos\varphi\frac{T}{m}+g\\
+    & \ddot{\varphi} = \frac{\tau_\varphi}{I_x} \\
+    & \ddot{\vartheta} = \frac{\tau_\vartheta}{I_y} \\
+    & \ddot{\psi} = \frac{\tau_\psi}{I_z}.
+\end{align}
+We have used the symbol $\bxi$ for the state and $\mathbf u$ for the inputs. The compact form is\begin{equation}\label{compact_form}
+\begin{cases}
+    \ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\mathbf b(\boldsymbol{\Theta})\\ 
+    \ddot{\boldsymbol{\Theta}}=J^{-1}\boldsymbol{\Gamma}.
+\end{cases}
+\end{equation}
+where we defined:\begin{align}
+   &\mathbf  b(\boldsymbol{\Theta})={}^IR_B(\boldsymbol{\Theta})\mathbf e_3\\ 
+   & \mathbf p = \begin{pmatrix}
+    x&y&z
+   \end{pmatrix}^T\\ 
+   &\boldsymbol{\Theta}=\begin{pmatrix}
+   \varphi&\vartheta&\psi
+   \end{pmatrix}^T\\
+   &\boldsymbol{\Gamma}=\begin{pmatrix}
+   \tau_\varphi&\tau_\vartheta&\tau_\psi
+   \end{pmatrix}^T\\
+   &J=\text{diag}(I_x,I_y,I_z).
+\end{align}
+\subsection{Static Linearization}
+Before discussing the linearization of the quadrotor model, we will give some definitions for a general nonlinear system, hence keep in mind the model in Equation \eqref{compact_form} for later.\bigskip 
+
+\noindent Consider the following nonlinear system:\begin{equation}
+    \dot\bxi=f(\bxi)+g(\bxi)\mathbf u\quad\quad\begin{matrix}\bxi\in\R^n\\\mathbf u \in \R^m\end{matrix}.
+\end{equation}
+If possible, we \textit{want to find} a \textbf{static} state feedback and a change of coordinates:\begin{align}
+    \mathbf u&=\alpha(\bxi)+\beta(\bxi)\mathbf v\\ \mathbf z&=\phi(\bxi)
+\end{align}
+with $\beta$ a non-singular function and $\phi$ a diffeomorphism, such that the closed loop system becomes linear and controllable:\begin{align}
+    &\dot\bxi=f(\bxi)+g(\bxi)\greenText{\mathbf u}\implies \\
+    &\dot\bxi=f(\bxi)+g(\bxi)\greenText{(\alpha(\bxi)+\beta(\bxi)\mathbf v)} \end{align}
+    since $\bxi=\phi^{-1}(\mathbf z)$:
+    \begin{align}
+    &\dot\phi^{-1}(\mathbf z)=f(\phi^{-1}(\mathbf z))+g(\phi^{-1}(\mathbf z))(\alpha(\phi^{-1}(\mathbf z))+\beta({\phi^{-1}(\mathbf z)})\mathbf v)\implies \\ 
+    &\dot {\mathbf z}=A\mathbf z+B\mathbf v 
+\end{align} 
+with $A$ and $B$ being constant matrices. This linearization is exact and holds whenever $\beta$ and $\phi$ are well defined, the control designed is completed by choosing $\mathbf v$ trough the rules of linear control theory, and since $\phi$ is a diffeomorphism, by controlling $\mathbf z$ we can indirectly control $\bxi$.
+\subsection{Input-Output Linearization}
+With this method, we focus on a subset of the state vector that we want to control, by allowing (in general) a residual internal dynamic on the unchosen variables. We choose $m$ variables (same number of inputs) with a (sufficiently smooth) function $h$:\begin{equation}
+    \boldsymbol{\eta}=h(\bxi)\in\R^m 
+\end{equation}
+We know that the inputs $\mathbf u$ are present in $\dot\bxi$, hence by differentiating $h(\bxi)$, at some point one or more inputs of $\mathbf u$ should appear. $\boldsymbol{\eta}$ is a vector of functions $\eta_i$, $1\le i \le m$, we have to differentiate each of these functions until \textit{at least} one of the inputs of $\mathbf u$ appears.
+\begin{algorithm}[H]
+\caption{Input-Output Linearization}\label{alg:input_output_lin}
+\begin{algorithmic}[1]
+\For{$i=1,\dots,m$}
+\For{$r_i=1,\dots,+\infty$}
+\For{$j=1,\dots,m$}
+\If{$u_j$ is present in $\eta_i^{(r_i)}$}
+\State save $\eta_i^{(r_i)}$
+\State break
+\EndIf
+\EndFor
+\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+\noindent The explicit expression of $\eta_i^{(r_i)}$ is\begin{equation}\label{eta_i}
+    \eta_i^{(r_i)}=\underbrace{L_f^{r_i}h_i(\bxi)}_{\text{Lie derivative}}+\sum_{j=1}^mL_{g_j}L_f^{r_i-1}h_i(\bxi)u_j.
+\end{equation}
+where $r_i$ is the relative degree of differentiation for the $i$-th component of $\boldsymbol{\eta}$. Clearly, $h$ should be in the class $C^r$ with $r=\max_ir_i$. The Lie derivatives are defined as follows:\begin{align}
+    L_f^0h_i(\bxi)&=h_i(\bxi)\\
+    L_f^1h_i(\bxi)=L_fh_i(\bxi) &= \frac{\partial h_i(\bxi)}{\partial \bxi}f(\bxi)\\
+    L_f^{k}h_i(\bxi) &= \frac{\partial (L_f^{k-1}h_i)}{\partial \bxi}f(\bxi)\\
+\end{align}
+$L_{g_j} L_f^{r_i - 1} h_i(\bxi)$ represents the Lie derivative of the intermediate scalar function $L_f^{r_i - 1} h_i(\bxi)$ along the input vector field $g_j(\bxi)$:\begin{equation}
+    L_{g_j} L_f^{r_i - 1} h_i(\bxi) = \frac{\partial (L_f^{r_i - 1} h_i(\bxi))}{\partial \bxi} g_j(\bxi).
+\end{equation}
+\begin{boxnotation}{}{}
+When as superscript to a symbol there is a symbol between round brackets, we are denoting a derivative, if there is no brackets, it's an exponent or index:\begin{align}
+    &a^k \text{ is $a$ with $k$ as exponent}\\
+    &a^{(k)} \text{ is $a$ (function) differentiated up to the $k$-th order.}
+\end{align}
+\end{boxnotation}
+For the particular case of the Lie derivatives, the superscript $k$ in $L_f^k$ does not represent an exponent but an order of differentiation, even if it's not in the brackets.\bigskip
+
+\noindent We can stuck the $m$ equations defined in \eqref{eta_i} and write the system in compact form:\begin{equation}
+    \begin{pmatrix}
+        \eta_1^{(r_1)}\\\vdots\\
+        \eta_m^{(r_m)}
+    \end{pmatrix}=I(\bxi)+D(\bxi)\mathbf u
+\end{equation}
+$D(\bxi)$ is called the \textbf{Decoupling Matrix}, if it's non singular. Let $\mathbf v\in\R^m$, by the choice of the following control law:\begin{equation}
+    \mathbf u=J^{-1}(\bxi)(-I(\bxi)+{\mathbf v})
+\end{equation}
+we achieve the following dynamic behavior:\begin{equation}
+    \eta_i^{(r_i)}=v_i,\quad i=1,\dots,m 
+\end{equation}
+we obtained $m$ \textbf{decoupled chains of integrators} from $v_i$ to $\eta_i$.
+\begin{itemize}
+    \item if $\sum_ir_i=n$, we have \textbf{full state linearization}, and $z=(\eta_i,\eta_i^{(1)}\,dots,\eta_i^{r_{i-1}})$ for $i=1\dots m$ are coordinates.
+    \item if $\sum_ir_i<n$, there will be an $(n-\sum_ir_i)$-dimentional internal dynamics, whose stability must be checked separately.
+\end{itemize}
+\subsection{Linearization of the Quadrotor Model}
+From the quadrotor model in Equation \eqref{compact_form} we consider as natural output the position and the yaw angle:\begin{equation}
+    \boldsymbol{\eta}=\begin{pmatrix}
+        x&y&z&\varphi
+    \end{pmatrix}^T 
+\end{equation}
+the model relative only to these variables is:\begin{equation}\label{compact_model_2}
+    \boldsymbol{\eta}=\begin{pmatrix}
+        \ddot{\mathbf p}\\ \ddot\varphi 
+    \end{pmatrix}=\begin{pmatrix}
+        g\mathbf e_3\\ 0
+    \end{pmatrix}+\begin{pmatrix}
+        -\frac{1}{m}\mathbf b(\boldsymbol{\Theta})&\mathbf 0&\mathbf 0&\mathbf 0\\ 
+        0&0&0&\frac{1}{I_z}
+    \end{pmatrix}\begin{pmatrix}
+        T\\ \tau_\varphi\\\tau_\vartheta\\\tau_\psi 
+    \end{pmatrix}.
+\end{equation}
+The quadrotor have six degrees of freedom and 4 control inputs, its underactuated nature makes impossible to linearize the full state with a simple stati feedback linearization $\mathbf u=\alpha(\bxi)+\beta(\bxi)\mathbf v$. If we tried to linearize only the output statically, we would be left with non-linearized internal dynamics.
+
+To overcome this problem, we must add a \textbf{dynamic compensator}, by introducing a set of $\nu$ additional states to the controller:\begin{equation}
+    \bzeta\in\R^\nu \text{ (additional states)}
+\end{equation}
+we have to specify a dynamics for these states:\begin{equation}
+    \dot\bzeta=a(\bxi,\bzeta)+b(\bxi,\bzeta)\mathbf u 
+\end{equation}
+defined by the functions $a,b$ such that, in addition with the controller:\begin{equation}
+    \mathbf u=c(\bxi,\bzeta)+d(\bxi,\bzeta)\mathbf v 
+\end{equation}
+for some functions $c,d$ the closed loop system, of dimension $n+\nu$, is
+equivalent under a state transformation $\mathbf z=\phi(\bxi,\bzeta))$ to a \textit{linear
+controllable system}. Physically in the quadcopter, the auxiliary state $\bzeta$ typically consists of adding integrators on the thrust input $T$ (thrust). By integrating the thrust once or twice, the true thrust becomes a state coordinate of the extended system, delaying the immediate appearance of the input into the derivatives and allowing the rotational dynamics to align with the translational ones without singularities. \bigskip
+
+Let's see the \textbf{algorithm of dynamic extension}: the construction procedure used to find the dynamic compensator and completely linearize the system.\begin{enumerate}
+    \item We choose an $m$-dimensional output $\boldsymbol{\eta}=h(\bxi)$.
+    \item We derive the outputs with respect to time until the inputs appear such that the decoupling matrix is non-singular (invertible).
+    \item When differentiating the components of $\boldsymbol{\eta}$, it often happens that some inputs appear at a lower derivation order than others, making the decoupling matrix singular. We add integrators on those input channels: the inputs become states of the compensator, their derivatives are the new input.
+    \item If, at the end of the algorithm, the sum of the derivation orders reached for each output equals the size of the extended state space:$$\sum_{i=1}^m r_i = n + \nu$$
+    (where $n$ is the size of the original physical state and $\nu$ is the total number of integrators added), \textit{full input-state-output linearization} is obtained.
+    \item Applying the inversion law on the extended system, the behavior between the new inputs $v_i$ and the physical outputs $\eta_i$ is exactly equivalent to $m$ independent and decoupled chains of pure integrators:\begin{equation}
+        \eta_i^{(r_i)} = v_i, \quad i = 1, \dots, m.
+    \end{equation}
+\end{enumerate}
+The linearizing quadrotor output that we choose is the position with the yaw angle:\begin{equation}
+    \boldsymbol{\eta}=\begin{pmatrix}
+        x&y&z&\varphi 
+    \end{pmatrix}^T
+\end{equation}
+The model is the one in Equation \eqref{compact_model_2}. The input appears in a non singular way only after differentiating $\eta_1,\eta_2,\eta_3$ four times and $\eta_4$ two times. The explicit expression of the vector $\mathbf b$ in the model is\begin{equation}
+    \mathbf  b(\boldsymbol{\Theta})={}^IR_B(\boldsymbol{\Theta})\mathbf e_3
+    =\begin{pmatrix}
+    \cos\psi \sin\vartheta \cos\varphi + \sin\psi \sin\varphi \\
+    \sin\psi \sin\vartheta \cos\varphi - \cos\psi \sin\varphi \\
+    \cos\vartheta \cos\varphi
+    \end{pmatrix}
+\end{equation}
+we will need it's Jacobian:\begin{equation}
+    \frac{\partial\mathbf b}{\partial\boldsymbol{\Theta}}=\begin{pmatrix}
+\sin\psi \cos\varphi - \cos\psi \sin\vartheta \sin\varphi & \cos\psi \cos\vartheta \cos\varphi & \cos\psi \sin\varphi - \sin\psi \sin\vartheta \cos\varphi \\
+-\cos\psi \cos\varphi - \sin\psi \sin\vartheta \sin\varphi & \sin\psi \cos\vartheta \cos\varphi & \sin\psi \sin\varphi + \cos\psi \sin\vartheta \cos\varphi \\
+-\cos\vartheta \sin\varphi & -\sin\vartheta \cos\varphi & 0
+\end{pmatrix}.
+\end{equation}
+By differentiating $\eta_1,\eta_2,\eta_3$ two times we get the translational part of the model:\begin{equation}
+    \begin{pmatrix}
+        \eta_1&\eta_2&\eta_3
+    \end{pmatrix}^T=\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\mathbf b(\boldsymbol{\Theta})
+\end{equation}
+we keep differentiating until the inputs $T,\boldsymbol{\Gamma}$ appears:\begin{equation}
+    \mathbf p^{(3)}=-\frac{1}{m}(\dot T\mathbf b+TB\dot{\boldsymbol{\Theta}})
+\end{equation}
+one last step:\begin{equation}
+     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+TB\greenText{\ddot{\boldsymbol{\Theta}}})
+\end{equation}
+$\ddot{\boldsymbol{\Theta}}$ is directly mapped to $\boldsymbol{\Gamma}$ trough the inertia matrix:\begin{equation}
+     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+TBJ^{-1}\boldsymbol{\Gamma})
+\end{equation}
+finally the inputs $\boldsymbol{\Gamma}$ appears in the cartesian snap $\mathbf p^{(4)}$. Since $\eta_4=\varphi$, we need just two derivations in order to get a non singular dependance from $\tau_\varphi$:\begin{equation}
+    \ddot\varphi=\frac{\tau_\varphi}{I_x}.
+\end{equation}
+In order to control $\mathbf p^{(4)}$ we have to choose $\ddot T$, hence this will be our input, while $T$ and $\dot T$ becomes states:\begin{equation}
+    \zeta_1=T,\quad\zeta_2=\dot T  
+\end{equation}
+the model becomes:\begin{equation}
+    \begin{pmatrix}
+\boldsymbol{p}^{(4)} \\
+\psi^{(2)}
+\end{pmatrix}
+=
+\underbrace{
+\begin{pmatrix}
+-\dfrac{1}{m}\left( 2\zeta_2\,B\,\dot{\boldsymbol{\Theta}} + \zeta_1\,\dot{B}\,\dot{\boldsymbol{\Theta}} \right) \\
+0
+\end{pmatrix}
+}_{I(\boldsymbol{\xi}, \boldsymbol{\zeta})}
++
+\underbrace{
+\begin{pmatrix}
+-\dfrac{1}{m}\,B & -\dfrac{\zeta_1}{m}\,B\,\boldsymbol{I}^{-1} \\
+0 & 0\quad 0\quad \dfrac{1}{I_z}
+\end{pmatrix}
+}_{D(\boldsymbol{\xi}, \boldsymbol{\zeta})}
+\begin{pmatrix}
+\ddot{T} \\
+\tau_\varphi \\
+\tau_\vartheta \\
+\tau_\psi
+\end{pmatrix}
+\end{equation}
+In order to have the inputs appear in a non singular way, $D$ must be non singular. Its determinant is:\begin{equation}
+    \det D=-\frac{T^2\cos\varphi}{m^3I_xI_yI_z}
+\end{equation}
+is non singular if and only if $T\ne0$ (free fall) and $\varphi\ne \pm\frac{\pi}{2}$. Away from the singularities, the sum of the relative degrees is\begin{equation}
+    \sum_ir_i = 4+4+4+2=14=n+\nu  
+\end{equation}
+hence \textit{full state linearization} with no zero dynamics is achieved. 
+
+\todo{slide 14}
 \end{document}
