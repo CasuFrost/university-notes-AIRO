@@ -305,7 +305,7 @@ and the dynamics equations becomes decoupled:\begin{align}
 \end{align}
 with $\delta T$ being a small variation of the input thrust $T$.
 
-\redText{TODO}
+\todo{}
 
 \subsection{Basic Control and Planning Problems}\label{basic_control_planning}
 The basic control objectives for a quadrotor are the following:\begin{itemize}
@@ -512,4 +512,22 @@ The gains  have different roles:\begin{itemize}
         \zeta&=\frac{K_d}{2\sqrt{K_p}}.
     \end{align}
 \end{itemize}
+With the same choices for the gains (for example, $K_p=K_d=2$), the closed loop poles are:\begin{itemize}
+    \item \textbf{backstepping}: $-2\pm i$ 
+    \item \textbf{PD}: $-1\pm i$ (twice as slow).
+\end{itemize}
+A PD controller can be obtained from the backstepping procedure. The backstepping provides a hierarchical tuning procedure, with an explicit Lyapunov function. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/PD_vs_backstepping.png}
+    \caption{Simulated comparison between backstepping and PD.}
+\end{figure}
+\subsection{Integral Backstepping}
+Now we consider the roll dynamics:\begin{equation}
+    \ddot\varphi=\frac{\tau_\varphi}{I_x}+h_\varphi
+\end{equation}
+$h_\varphi$ represents the nonlinear terms, for example the gyroscopic effects.
+We define the integral action of the error:
+
+\todo{finire pacco di slide 02}
 \end{document}
