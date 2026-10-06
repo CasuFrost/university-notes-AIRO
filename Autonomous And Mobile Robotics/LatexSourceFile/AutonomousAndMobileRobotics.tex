@@ -170,19 +170,19 @@ The configuration space of a robot with \textit{only} prismatic joints is Euclid
 \end{boxobservation}
 \section{Mechanics of Mobile Robots}
 The main sources of movement for a mobile robot are:\begin{itemize}
-    \item Wheels: wheeled robots usually consists of one single rigid body, with the wheels in contact with ground.
+    \item Wheels: wheeled robots usually consist of one single rigid body, with the wheels in contact with ground.
     \item Feet: legged robots, several rigid bodies articulated through joints.
 \end{itemize}
-The wheels are in contact with the ground, and this introduce some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact point. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass, falls inside the support polygon. Of course a robot must be balanced in order to not fall to the ground.
+The wheels are in contact with the ground, and this introduces some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact points. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass, falls inside the support polygon. Of course a robot must be balanced in order to not fall to the ground.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/balance.pdf}
 \end{figure}
-The convex hull of two points is a line, hence a robot with only two wheels can't be easily balanced in a static fashion.\bigskip
+The convex hull of two points is a line segment, hence a robot with only two wheels can't be easily balanced in a static fashion.\bigskip
 
 \noindent There are three main types of wheels:\begin{itemize}
     \item \textbf{Fixed Wheels}: They have a fixed orientation: Can roll but can't steer on their $z$-axis (see Figure \ref{fixed_wheel}). They are usually actuated, if passive, are used for balance and offer a contact point.
-    \item \textbf{Steerable Wheels}: They can steer and are used for orientation, hence they are typically active (i.e. the front wheels of a car).
+    \item \textbf{Steerable Wheels}: They can steer and are used for orientation, hence they are typically active (e.g. the front wheels of a car).
     \item \textbf{Caster Wheels}: They have a variable orientation but they are typically not actuated. Their axis of orientation are not aligned, this property makes the wheels align automatically with the direction of motion, hence they are ``invisible'' kinematically, but offer a contact point.
 \end{itemize}
 \begin{figure}[H]
@@ -210,13 +210,13 @@ In the same time interval, the wheels on the outer path travels a longer distanc
 \end{boxdefinition}
 
 \section{Constraints and Mobility}
-The presence of the wheels in contact with the ground introduce a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraints and the implications in mobility.
+The presence of the wheels in contact with the ground introduces a series of \textit{geometric} and \textit{kinematic} constraints. We will also see the relationship between these two types of constraints and the implications in mobility.
 \subsection{Geometric Constraints}
 We have seen how the configuration $\q$ is in general a point of a manifold $\mathcal C$, that is locally homeomorphic to $\R^n$, with $n$ being the dimensionality of the configuration space $\mathcal C$.
 We will focus on equality time-invariant constraints. All the geometric constraints are expressed in the following form:\begin{equation}
     h(\q)=0
 \end{equation}
-and they depend only on the configuration. Usually we have $k<n$ geometric constraints, and they are reflected on the degrees of freedom of a robot:\begin{align}
+and they depend only on the configuration. Usually we have $k<n$ geometric constraints, and they are reflected in the degrees of freedom of a robot:\begin{align}
    &h_1(\q)=0\\
    &\vdots\\ 
    &h_k(\q)=0.
@@ -249,7 +249,7 @@ Actually this is not a good way to choose a coordinate, since the $\pm$ term pre
     If the configuration space $\mathcal C$ is an $n$-manifold, the $k$ constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
 \end{boxobservation}
 \subsection{Kinematic Constraints}
-A kinematic constraint is local, it prevents the configuration to move towards some directions. A general constraint of this kind is in the form:\begin{equation}
+A kinematic constraint is local, it prevents the configuration from moving towards some directions. A general constraint of this kind is in the form:\begin{equation}
     a(\q,\dq)=0
 \end{equation}
 it depends on the state of the robot. In every given configuration $\q^*$, we can immediately infer from $a(\q^*,\dq)=0$ which velocities are allowed. All the relevant kinematic constraints in the robotic domain are in \textbf{Pfaffian form}:\begin{equation}
@@ -284,7 +284,7 @@ this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ eva
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth ]{images/tangent_plane.eps}
-    \caption{The admissible velocities are the one that lie on the tangent space of the sub-manifold in the given configuration.}
+    \caption{The admissible velocities are the ones that lie on the tangent space of the sub-manifold in the given configuration.}
 \end{figure}
 We have seen how a geometric constraint always implies a kinematic one. The opposite is not generally true, consider a generic kinematic constraint:\begin{equation}
     \mathbf a^T(\q)\dq=0
@@ -292,7 +292,7 @@ We have seen how a geometric constraint always implies a kinematic one. The oppo
 this implies a geometric constraint if there exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
     \nabla_\q h=\mathbf a
 \end{equation}
-hence $\mathbf a(\q)$ should be \textit{integrable}.
+hence the constraint defined by $\mathbf a(\q)$ should be \textit{integrable}.
 \begin{boxdefinition}{Holonomic Constraint}{}
     An integrable kinematic constraint is called \textbf{holonomic}, and it defines a geometric constraint.
 \end{boxdefinition}
@@ -370,12 +370,12 @@ There are no global mobility limitations. We can also observe this trajectory in
 \end{figure}
 Note how for simplicity we have drawn the configuration space as Euclidean. Of course it is not Euclidean because $\theta\in SO(2)$.
 \section{Kinematic Models}
-We have seen how the the kinematic constraints are defined in Pfaffian form as $A(\q)\dq=\mathbf 0$, with $A$ being a $k\times n$ matrix. We are interested in finding a base for the null space of $A(\q)$:\begin{equation}
+We have seen how  the kinematic constraints are defined in Pfaffian form as $A(\q)\dq=\mathbf 0$, with $A$ being a $k\times n$ matrix. We are interested in finding a basis for the null space of $A(\q)$:\begin{equation}
     \mathcal N(A(\q))=\text{span}\left\{ 
         \mathbf g_1(\q),\mathbf g_2(\q),\dots,\mathbf g_m(\q)
     \right\}
 \end{equation}
-$\mathcal N(A(\q))$ have dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the base is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
+$\mathcal N(A(\q))$ has dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the base is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
     \dq=\sum_{i=1}^m u_i\mathbf g_i(\q)
 \end{equation}
 we can write any admissible velocity in compact form by using an $m$ dimensional vector $\mathbf u$:\begin{equation}
@@ -390,27 +390,27 @@ we can write any admissible velocity in compact form by using an $m$ dimensional
 the \textbf{kinematic model} is:\begin{equation}
     \dq=G(\q)\mathbf u
 \end{equation}
-with $\mathbf u$ being a velocity-level quantity. We can see the model as a dynamical system, with $\q$ being the $n$-dimensional state vector and $\mathbf u$ the $m$-dimensional input vector, of course is a nonlinear system due to $G(\q)$ that depends (in general) nonlinearly from $\q$.
+with $\mathbf u$ being a velocity-level quantity. We can see the model as a dynamical system, with $\q$ being the $n$-dimensional state vector and $\mathbf u$ the $m$-dimensional input vector, of course it is a nonlinear system due to $G(\q)$ that depends (in general) nonlinearly on $\q$.
 This system satisfies the \textbf{driftless property}:\begin{equation}
     \mathbf u = \mathbf 0 \implies \dq=\mathbf 0
 \end{equation}
-it does not have a free evolution. The kinematic model is not unique, since we can select a different choice for the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, all the basis are equivalent for the description of the system, but the interpretation of the vector $\mathbf u$ depend on the choice of the basis. We can interpret $\mathbf u$ as the ``virtual'' velocities in the kinematically constrained configuration space.\bigskip
+it does not have a free evolution. The kinematic model is not unique, since we can select a different choice for the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, all the bases are equivalent for the description of the system, but the interpretation of the vector $\mathbf u$ depends on the choice of the basis. We can interpret $\mathbf u$ as the ``virtual'' velocities in the kinematically constrained configuration space.\bigskip
 
 Now we want to observe the differences between a kinematically constrained robot and an unconstrained robot. Consider an open-chain manipulator with revolute joints, with $\q$ being the DH frames. This choice of coordinates makes the manipulator free from any constraint, the configuration can ``fly'' in the configuration space, any joint velocity $\dq$ is always admissible, hence its kinematic model is\begin{equation}
     \dq=\mathbf u.
 \end{equation}
-This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this do not holds. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represents directly the joint velocity, but is called \textbf{pseudo velocity}.
+This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this does not hold. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represent directly the joint velocity, but is called \textbf{pseudo velocity}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth ]{images/constrained_vs_unconstrained.eps}
 \end{figure}
-\noindent Let's discuss about controllability of the constrained model. The controllability of a system can be proved formally trough nonlinear control theory, or constructively, by the definition of a universal manuvre (as we did in the previous section).
+\noindent Let's discuss about controllability of the constrained model. The controllability of a system can be proved formally through nonlinear control theory, or constructively, by the definition of a universal maneuver (as we did in the previous section).
 \begin{boxdefinition}{Controllability}{}
     The kinematic model of a manipulator is controllable if any desired state $\q$ of the configuration space can be reached.
 \end{boxdefinition}
-For any holonomic constraint, is defined a geometric constraint, that stops the robot to access a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the presence of holonomic constraints.
+A holonomic constraint defines a geometric constraint that prevents the robot from accessing a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the presence of holonomic constraints.
 \begin{boxobservation}{}{}
-    The kinematic model of a robot is controllable \textbf{if and only if} all the kinematic constraints are non-holonomic.
+    The kinematic model of a robot is controllable \textbf{if and only if}  the set of kinematic constraints is non-holonomic.
 \end{boxobservation}
 \subsection{The Unicycle Model}
 Let's define the kinematic model of a unicycle, that is equivalent to the rolling disk seen in Section \ref{sec:nonhol}. It has one kinematic constraint, the pure rolling condition imposes that:\begin{equation}
@@ -447,7 +447,7 @@ the kinematic model is\begin{equation}
         \dot\theta = u_2
     \end{cases}.
 \end{equation}
-$u_1$ is the scalar velocity along the sagittal arc
+$u_1$ is the scalar velocity along the sagittal axis
 \begin{equation}
     u_1=\pm\sqrt{\dot x^2+\dot y^2}
 \end{equation}
@@ -464,4 +464,17 @@ We can rewrite the kinematic model by splitting the cartesian part from the angu
         0\\0\\1 
     \end{pmatrix}\omega.
 \end{equation} 
+Is this model controllable? Yes, we already proved for the rolling disk that a universal maneuver exists.\bigskip
+
+What are the real world robots that are kinematically and mechanically equivalent to the unicycle? First of all the differential drive, since it can rotate along its vertical axis, and move in the cartesian plane only towards its sagittal axis (it can't slide laterally). It has two actuated wheels, of radius $r$ and rolling velocities $\omega_R,\omega_L$. Its cartesian velocity $v$ is given by the average angular velocity of the two wheels:\begin{equation}
+    v=r\frac{\omega_R+\omega_L}{2}
+\end{equation}
+while its angular velocity is given by the difference:\begin{equation}
+    \omega=(\omega_R-\omega_L)\frac{r}{d}
+\end{equation}
+where $d$ is the distance between the contact points of the wheels.\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/diff_drive.eps}
+\end{figure}
+The other robot that is equivalent to the unicycle is the synchro-drive, it has two motors equipped with a pulley and belt mechanism, one controls the orientation of all the wheels, the other the rolling speed, hence these motors directly controls $v$ and $\omega$, where $v$ is relative to the velocity of the geometric center of the three contact points.
 \end{document}
