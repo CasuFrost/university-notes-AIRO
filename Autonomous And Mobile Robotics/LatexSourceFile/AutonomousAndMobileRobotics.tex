@@ -309,7 +309,7 @@ In general, in Equation \eqref{holonomic} we can add a scalar integrating factor
     \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^T(\q)
 \end{equation}
 since the right-hand side is zero, $\gamma$ can be dropped.
-\subsection{Non-Holonomic Constraints}
+\subsection{Non-Holonomic Constraints}\label{sec:nonhol}
 A non-holonomic constraint defines a local limitation, it stops the robot from moving towards a certain direction when it is in that specific configuration, it does not prevent the robot from reaching a configuration by following an allowed path. The simplest example of a system with a non-holonomic constraint is a rolling disk.
 \begin{figure}[H]
     \centering
@@ -369,4 +369,99 @@ There are no global mobility limitations. We can also observe this trajectory in
     \includegraphics[width=0.6\textwidth ]{images/manuvre_C_space.eps}
 \end{figure}
 Note how for simplicity we have drawn the configuration space as Euclidean. Of course it is not Euclidean because $\theta\in SO(2)$.
+\section{Kinematic Models}
+We have seen how the the kinematic constraints are defined in Pfaffian form as $A(\q)\dq=\mathbf 0$, with $A$ being a $k\times n$ matrix. We are interested in finding a base for the null space of $A(\q)$:\begin{equation}
+    \mathcal N(A(\q))=\text{span}\left\{ 
+        \mathbf g_1(\q),\mathbf g_2(\q),\dots,\mathbf g_m(\q)
+    \right\}
+\end{equation}
+$\mathcal N(A(\q))$ have dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the base is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
+    \dq=\sum_{i=1}^m u_i\mathbf g_i(\q)
+\end{equation}
+we can write any admissible velocity in compact form by using an $m$ dimensional vector $\mathbf u$:\begin{equation}
+    \dq=\underbrace{\begin{pmatrix}
+        | &|&&|\\
+        \mathbf g_1(\q)&\mathbf g_2(\q)&\dots&\mathbf g_m(\q)\\
+        | &|&&|
+    \end{pmatrix}}_{G(\q)}\underbrace{\begin{pmatrix}
+    u_1\\ \vdots\\ u_m
+    \end{pmatrix}}_{\mathbf u}
+\end{equation}
+the \textbf{kinematic model} is:\begin{equation}
+    \dq=G(\q)\mathbf u
+\end{equation}
+with $\mathbf u$ being a velocity-level quantity. We can see the model as a dynamical system, with $\q$ being the $n$-dimensional state vector and $\mathbf u$ the $m$-dimensional input vector, of course is a nonlinear system due to $G(\q)$ that depends (in general) nonlinearly from $\q$.
+This system satisfies the \textbf{driftless property}:\begin{equation}
+    \mathbf u = \mathbf 0 \implies \dq=\mathbf 0
+\end{equation}
+it does not have a free evolution. The kinematic model is not unique, since we can select a different choice for the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, all the basis are equivalent for the description of the system, but the interpretation of the vector $\mathbf u$ depend on the choice of the basis. We can interpret $\mathbf u$ as the ``virtual'' velocities in the kinematically constrained configuration space.\bigskip
+
+Now we want to observe the differences between a kinematically constrained robot and an unconstrained robot. Consider an open-chain manipulator with revolute joints, with $\q$ being the DH frames. This choice of coordinates makes the manipulator free from any constraint, the configuration can ``fly'' in the configuration space, any joint velocity $\dq$ is always admissible, hence its kinematic model is\begin{equation}
+    \dq=\mathbf u.
+\end{equation}
+This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this do not holds. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represents directly the joint velocity, but is called \textbf{pseudo velocity}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/constrained_vs_unconstrained.eps}
+\end{figure}
+\noindent Let's discuss about controllability of the constrained model. The controllability of a system can be proved formally trough nonlinear control theory, or constructively, by the definition of a universal manuvre (as we did in the previous section).
+\begin{boxdefinition}{Controllability}{}
+    The kinematic model of a manipulator is controllable if any desired state $\q$ of the configuration space can be reached.
+\end{boxdefinition}
+For any holonomic constraint, is defined a geometric constraint, that stops the robot to access a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the presence of holonomic constraints.
+\begin{boxobservation}{}{}
+    The kinematic model of a robot is controllable \textbf{if and only if} all the kinematic constraints are non-holonomic.
+\end{boxobservation}
+\subsection{The Unicycle Model}
+Let's define the kinematic model of a unicycle, that is equivalent to the rolling disk seen in Section \ref{sec:nonhol}. It has one kinematic constraint, the pure rolling condition imposes that:\begin{equation}
+    \sin\theta\dot x-\cos\theta\dot y=0.
+\end{equation}
+It says that the velocity of the contact point must be aligned with the \textit{sagittal axis} defined by $\theta$, i.e. it can't have components on the zero-motion line. In matrix form the constraint is:\begin{equation}
+    \underbrace{\begin{pmatrix}
+    \sin\theta&-\cos\theta&0
+    \end{pmatrix}}_{A(\q)}\begin{pmatrix}
+        \dot x\\ \dot y\\ \dot\theta 
+    \end{pmatrix}=0.
+\end{equation}
+The dimension of $\mathcal N(A)$ is 2, hence we will have a 2-dimensional vector of the pseudo velocity.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/unicycle.eps}
+\end{figure}
+\noindent A basis for the null space of $A$ is the following:\begin{equation}
+    \mathbf g_1(\q)=\begin{pmatrix}
+        \cos\theta\\\sin\theta\\ 0
+    \end{pmatrix},\quad 
+     \mathbf g_2(\q)=\begin{pmatrix}
+       0\\0\\1
+    \end{pmatrix}
+\end{equation}
+the kinematic model is\begin{equation}
+  \dq=  G(\q)\mathbf u=\begin{pmatrix}
+         \cos\theta&0\\\sin\theta&0\\ 0&1
+    \end{pmatrix}\begin{pmatrix}
+       u_1\\ u_2
+    \end{pmatrix}\implies\begin{cases}
+        \dot x = \cos\theta u_1\\ 
+        \dot y = \sin\theta u_1\\ 
+        \dot\theta = u_2
+    \end{cases}.
+\end{equation}
+$u_1$ is the scalar velocity along the sagittal arc
+\begin{equation}
+    u_1=\pm\sqrt{\dot x^2+\dot y^2}
+\end{equation}
+while $u_2$ is exactly $\dot\theta$. We rename these quantities:\begin{align}
+    &v=u_1\\ &\omega=u_2
+\end{align}
+$v$ is related to the rolling velocity $\omega_{\text{roll}}$ and the radius of the wheel:\begin{equation}
+    v=\omega_{\text{roll}}\cdot r.
+\end{equation}
+We can rewrite the kinematic model by splitting the cartesian part from the angular one:\begin{equation}
+    \dq=\begin{pmatrix}
+        \cos\theta\\\sin\theta\\0 
+    \end{pmatrix}v+\begin{pmatrix}
+        0\\0\\1 
+    \end{pmatrix}\omega.
+\end{equation} 
 \end{document}
