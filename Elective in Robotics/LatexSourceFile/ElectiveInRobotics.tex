@@ -46,23 +46,23 @@ This document summarizes and presents the topics for the \titolo course for the 
 %==================INIZIO======================%
 \part{Modeling and Control of Multi-Rotor UAVs}
 \chapter{Introduction}
-UAV stands for \textbf{Unmanned Aerial Vehicle}, also known by other names depending on the domain, like \textit{RPVs (Remotely Piloted Vehicles)} in the military domain, or \textit{Drones} in common parlance. We will use all of the three names interchangeably. The methods presented are valid also for remotely operated or autonomous vehicles (at different levels of autonomy).\bigskip
+UAV stands for \textbf{Unmanned Aerial Vehicle}, also known by other names depending on the domain, like \textit{RPVs (Remotely Piloted Vehicles)} in the military domain, or \textit{Drones} in common parlance. We will use all three names interchangeably. The methods presented are valid also for remotely operated or autonomous vehicles (at different levels of autonomy).\bigskip
 
-The term UAVs refers to a broad category of vehicles, in general, any aerial vehicle without a pilot on board is a UAV. We will examine UAVs composed of multiple rotors, in particular \textbf{quadrotors}.
+The term UAVs refers to a broad category of vehicles; in general, any aerial vehicle without a pilot on board is a UAV. We will examine UAVs composed of multiple rotors, in particular \textbf{quadrotors}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth ]{images/design based classification.png}
     \caption{Design-based classification.}
 \end{figure}
-\noindent The quadrotors are used in various situations:\begin{itemize}
+\noindent Quadrotors are used in various situations:\begin{itemize}
     \item inspection, maintenance,
     \item communication networks,
     \item search and rescue operations,
     \item aerial transportation, manipulation.
 \end{itemize}
-These activities require a vertical, stationary and slow flight. A quadrotor is characterized by a high maneuverability, can remain suspended in the air without moving (hovering), and perform a \textit{vertical take-off and landing (VTOL)}, unlike other vehicles like airplanes, that require a horizontal movement in order to take-off and land.
+These activities require a vertical, stationary and slow flight. A quadrotor is characterized by high maneuverability, can remain suspended in the air without moving (hovering), and can perform a \textit{vertical take-off and landing (VTOL)}, unlike other vehicles such as airplanes, which require a horizontal movement in order to take off and land.
 \section{Quadrotor Modeling}
-We call VTOLs the vehicles that can perform a vertical take-off and landing, these are modeled with the North-East-Down (NED) reference frame:
+We call VTOLs the vehicles that can perform a vertical take-off and landing; these are modeled with the North-East-Down (NED) reference frame:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth ]{images/NEDframe.eps}
@@ -75,7 +75,7 @@ We call VTOLs the vehicles that can perform a vertical take-off and landing, the
 where $\mathbf F_j$ are the external forces applied to the center of mass, and $\dot {\mathbf V}$ is the acceleration of the center of mass expressed in $SR_i$. The rotational dynamics is given by\begin{equation}\label{sum_moments}
      \sum_j \mathbf  M_j = J\dot{\boldsymbol{\Omega}} + \boldsymbol{\Omega} \times J \boldsymbol{\Omega}
 \end{equation}
-where $\mathbf M_j$ are the external moments acting on the center of mass, $\boldsymbol{\Omega}$ is the angular velocity of the body expressed in the body frame, denoted $SR_b$ and $J$ is the inertia tensor, also expressed in $SR_b$.
+where $\mathbf M_j$ are the external moments acting on the center of mass, $\boldsymbol{\Omega}$ is the angular velocity of the body expressed in the body frame, denoted $SR_b$, and $J$ is the inertia tensor, also expressed in $SR_b$.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth ]{images/bodyframe.pdf}
@@ -90,9 +90,9 @@ where $\mathbf M_j$ are the external moments acting on the center of mass, $\bol
 where:\begin{itemize}
     \item $\mathbf d(t)$ are the external disturbances that do not depend on 
     the vehicle's state.
-    \item $\mathbf F_e$ are the external forces, that depend on the state.
-    \item $T$ is the \textbf{thrust}, that depends on the number and allocation of the rotors, while $-\mathbf z$ is the direction pointing upward (according to the NED frame as in Figure \ref{NED}). $R$ is the rotation matrix that describes the orientation of our vehicle with respect to the fixed NED frame $SR_i$,
-    \item hence the product $-T R\mathbf z$ is the main upward thrust.
+    \item $\mathbf F_e$ are the external forces, which depend on the state.
+    \item $T$ is the \textbf{thrust}, which depends on the number and allocation of the rotors, while $-\mathbf z$ is the direction pointing upward (according to the NED frame as in Figure \ref{NED}). $R$ is the rotation matrix that describes the orientation of our vehicle with respect to the fixed NED frame $SR_i$.
+    \item Hence, the product $-T R\mathbf z$ is the main upward thrust.
     \item $\btau$ is the torque generated by the propellers.
     \item $R\Sigma_R\btau$ are the parasitic forces generated by the rotors/actuators. The coupling matrix $\Sigma_R$ maps the torques/rotations of the motors into small translational lateral forces (then rotated into $SR_i$ via $R$).
 \end{itemize}
@@ -108,7 +108,7 @@ $S(\boldsymbol{\Omega})$ is important since it appears in the explicit expressio
 where:\begin{itemize}
     \item $\btau_e$ are the torques induced by the external forces.
     \item $\Sigma_T T \mathbf z$ is a parasitic moment. $\Sigma_T$ is a matrix that represents the geometric misalignment between the effective axis of the total thrust $T$ and the center of mass of the vehicle. If the thrust vector does not pass exactly through the center of gravity, it generates a parasitic torque proportional to the thrust itself.
-    \item $\btau_g$ is the internal gyroscopic moment due to the inertia of the propellers rotating at high speed (particularly relevant in quadcopters when they change attitude rapidly).
+    \item $\btau_g$ is the internal gyroscopic moment due to the inertia of the propellers rotating at high speed (particularly relevant in quadrotors when they change attitude rapidly).
 \end{itemize}
 We denote $\vec{\mathbf T}=-T\mathbf z_b$ the push in the opposite direction of $\mathbf z_b$ expressed in the vehicle frame $SR_b$. 
 \begin{figure}[H]
@@ -122,15 +122,15 @@ We denote $\vec{\mathbf T}=-T\mathbf z_b$ the push in the opposite direction of 
     \caption{Schematic of a quadrotor.}
     \label{quadrotor}
 \end{figure}
-Let's identify a disc on each rotor, that follows the profile of the propellers: we denote $f_i$ the scalar force on each propeller, which is perpendicular to the disc, its value is:\begin{equation}\label{f_i}
+Let's identify a disc on each rotor, which follows the profile of the propellers: we denote by $f_i$ the scalar force on each propeller, which is perpendicular to the disc; its value is:\begin{equation}\label{f_i}
     f_i=b\omega_i^2
 \end{equation}
-where $\omega_i$ is the angular speed of the $i$-th propeller, and $b$ is a constant \textit{thrust factor}, that depends on the rotor geometry and profile, and on air density. The rotational speed of each blade is controlled by a low level controller. 
+where $\omega_i$ is the angular speed of the $i$-th propeller, and $b$ is a constant \textit{thrust factor}, that depends on the rotor geometry and profile, and on air density. The rotational speed of each blade is controlled by a low-level controller. 
 
 We denote $\tau_{R,i}$  the drag torque generated by the $i$-th rotor as it spins in the air:\begin{equation}\label{tau_R}
     \tau_{R,i}=d\omega_i^2
 \end{equation}
-where $d$ is a \textit{drag factor} that, as the thrust factor, depends on the rotor.
+where $d$ is a \textit{drag factor} that, like the thrust factor, depends on the rotor.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth ]{images/force_distribution.eps}
@@ -158,7 +158,7 @@ The linear velocity $\mathbf V$ of our quadrotor is expressed in $SR_i$ while th
 Let $\omega_1,\omega_2,\omega_3,\omega_4$  be our control inputs (the velocity of the rotors), $f_i$ and $\tau_{R,i}$ are derived from these quantities as in Equations \eqref{f_i} and \eqref{tau_R}. The total thrust will be:\begin{equation}
     T=f_1+f_2+f_3+f_4.
 \end{equation}
-We recall that on the quadrotor, a force $\vec{\mathbf T}=-T\mathbf z_b$ acts in the same direction of $\mathbf z_b$ but with the opposite sense. Intuitively, if the forces $f_i$ are identical, we can expect the quadrotor to accelerate towards $-\mathbf z_b$ without rotating on itself. The presence of these forces, if they are not identical, will cause a rotation of the body. The torques generated on the axes $\mathbf x_b,\mathbf y_b,\mathbf z_b$ are the following:\begin{align}
+We recall that on the quadrotor, a force $\vec{\mathbf T}=-T\mathbf z_b$ acts in the same direction as $\mathbf z_b$ but with the opposite sense. Intuitively, if the forces $f_i$ are identical, we can expect the quadrotor to accelerate towards $-\mathbf z_b$ without rotating on itself. If the forces are not identical, they will cause a rotation of the body. The torques generated on the axes $\mathbf x_b,\mathbf y_b,\mathbf z_b$ are the following:\begin{align}
     &\tau_\varphi=l(f_2-f_4),\\ 
     &\tau_\vartheta=l(f_1-f_3),\\
     &\tau_\psi=-\tau_{R,1}+\tau_{R,2}-\tau_{R,3}+\tau_{R,4}.
@@ -172,7 +172,7 @@ $l$ represents the arm length (or lever arm) of the quadrotor, as shown in Figur
         0&0&I_z
     \end{pmatrix}
 \end{equation}
-the angular velocity instead can be expressed in function of the roll-pitch-yaw angles:\begin{equation}
+the angular velocity instead can be expressed as a function of the roll-pitch-yaw angles:\begin{equation}
     \boldsymbol{\Omega}=\begin{pmatrix}
         p\\ q\\ r
     \end{pmatrix}=\begin{pmatrix}
@@ -183,7 +183,7 @@ the angular velocity instead can be expressed in function of the roll-pitch-yaw 
         \dot\varphi\\ \dot\vartheta\\ \dot\psi
     \end{pmatrix}.
 \end{equation}
-Let's see in details what are the applied forces and moments. We explicit the sum of forces of the translational dynamics (that we recall is expressed in the fixed frame $SR_i$):\begin{equation}
+Let's see in detail what the applied forces and moments are. We write explicitly the sum of forces of the translational dynamics (that we recall is expressed in the fixed frame $SR_i$):\begin{equation}
     \sum_j \mathbf F_j=\underbrace{\begin{pmatrix}
         0\\0\\mg
     \end{pmatrix}}_{\text{weight}}
@@ -192,7 +192,7 @@ Let's see in details what are the applied forces and moments. We explicit the su
         0\\0\\-T
     \end{pmatrix}}_{\text{actuation}} + \mathbf F_A+\mathbf F_D
 \end{equation}
-where $\mathbf F_A$ are the aerodynamics related forces, which mainly include the aerodynamic resistance of the body and arms of the aircraft to advancement, as well as any parasitic lift effects generated by the shape of the drone or by the rotor discs in translation, while $\mathbf F_D$ are the disturbances (for example, wind).
+where $\mathbf F_A$ are the aerodynamics-related forces, which mainly include the aerodynamic resistance of the body and arms of the aircraft to advancement, as well as any parasitic lift effects generated by the shape of the drone or by the rotor discs in translation, while $\mathbf F_D$ are the disturbances (for example, wind).
 
 The sum of moments is the following:\begin{equation}
     \sum_j \mathbf M_j=\underbrace{\begin{pmatrix}
@@ -202,7 +202,7 @@ The sum of moments is the following:\begin{equation}
      \tau_\varphi\\\tau_\vartheta\\\tau_\psi
      \end{pmatrix}}_{\text{actuation}} +\btau_A+\btau_D.
 \end{equation}
-$\btau_A$ is the resulting torque induced by the aerodynamic forces distributed when they do not have an application point coinciding with the center of gravity of the vehicle, combined with the rotational drag that the air opposes to the rotations of the rigid body on roll, pitch and yaw. $\btau_D$ is the moment produced by the disturbances.
+$\btau_A$ is the resulting torque induced by the distributed aerodynamic forces when they do not have an application point coinciding with the center of gravity of the vehicle, combined with the rotational drag that the air exerts against the rotations of the rigid body in roll, pitch and yaw. $\btau_D$ is the moment produced by the disturbances.
 
 \begin{boxdefinition}{State of the Quadrotor}{}
 Given the previous premises, we define the state of a quadrotor as a vector in $\R^{12}$ defined as follows:\begin{equation}
@@ -210,7 +210,7 @@ Given the previous premises, we define the state of a quadrotor as a vector in $
         x,\quad y,\quad z,\quad v_x,\quad v_y,\quad v_z,\quad \varphi ,\quad  \vartheta ,\quad  \psi,\quad  p ,\quad q,\quad r
     )^T
 \end{equation}
-here $x,y,z$ is the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
+Here $x,y,z$ is the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
 \end{boxdefinition}
 \noindent The evolution in time of the quadrotor state is given by a dynamical system of the following form:\begin{equation}\label{quadrotorSystem}
     \dot{\boldsymbol{\xi}}=f(\boldsymbol{\xi})+g(\boldsymbol{\xi})\mathbf u 
@@ -221,7 +221,7 @@ where $\mathbf u$ are the inputs of the system defined as follows:\begin{equatio
 \end{equation}
 these quantities depend on $f_i,\tau_{R,i}$, which in turn depend on the angular velocity of the rotors $\omega_i$, which we assume we can control perfectly. 
 \begin{boxdefinition}{Time Evolution of the Quadrotor}{time_ev}
-Let $\Omega_r$  be the average blades rotation velocity, and $I_r$ the blades inertia, the explicit expression of the system in Equation \eqref{quadrotorSystem} is the following:
+Let $\Omega_r$ be the average rotation velocity of the blades, and $I_r$ the inertia of the blades; the explicit expression of the system in Equation \eqref{quadrotorSystem} is the following:
 \begin{align}
 & \dot{x} = v_x \\
 & \dot{y} = v_y \\
@@ -238,14 +238,14 @@ Let $\Omega_r$  be the average blades rotation velocity, and $I_r$ the blades in
 \end{align}
 \end{boxdefinition}
 \section{Quadrotor Control}
-The model in Definition \ref{def:time_ev} is too complex for control purposes. We neglect aerodynamics and gyroscopic effects, and we assume small changes for $\varphi$ and $\vartheta$ such that\begin{equation}
+The model in Definition \ref{def:time_ev} is too complex for control purposes. We neglect aerodynamics and gyroscopic effects, and we assume small variations of $\varphi$ and $\vartheta$ such that\begin{equation}
     \begin{pmatrix}
         \dot\varphi&\dot\vartheta&\dot\psi
     \end{pmatrix}^T\simeq \begin{pmatrix}
         p&q&r
     \end{pmatrix}^T
 \end{equation}
-we assume that the shape is symmetric and we neglect the disturbances.
+we assume that the shape is symmetric, and we neglect the disturbances.
 \begin{boxdefinition}{Simplified Time Evolution of the Quadrotor}{}
     \begin{align}
 & \ddot{x} = -(\cos(\psi) \sin(\vartheta) \cos(\varphi) + \sin(\psi) \sin(\varphi)) \frac{T}{m} \label{ddotx_quadrotor} \\
@@ -256,7 +256,7 @@ we assume that the shape is symmetric and we neglect the disturbances.
 & \ddot{\psi} = \frac{\tau_\psi}{I_z}.
 \end{align}
 \end{boxdefinition}
-\noindent Note how we changed the notation of the acceleration ($\ddot x=\dot v_x,\ \ddot y=\dot v_y,\ \ddot z=\dot v_z$).
+\noindent Note how we changed the notation for the acceleration ($\ddot x=\dot v_x,\ \ddot y=\dot v_y,\ \ddot z=\dot v_z$).
 \subsection{Linear Control}
 Let's denote\begin{equation}
     \mathbf p=\begin{pmatrix}
@@ -268,7 +268,7 @@ Let's denote\begin{equation}
         \tau_\varphi\\\tau_\vartheta\\\tau_\psi 
     \end{pmatrix}
 \end{equation}
-we re-write the state as\begin{equation}
+we rewrite the state as\begin{equation}
      \boldsymbol{\xi}=\begin{pmatrix}
         \mathbf p^T&\dot {\mathbf p}^T& \boldsymbol{\Theta}^T&\dot{ \boldsymbol{\Theta}}^T
      \end{pmatrix}^T
@@ -279,10 +279,10 @@ with our input vector:\begin{equation}
     \end{pmatrix}.
 \end{equation}
 Let's separate the translational and rotational dynamics:\begin{align}
-    \ddot{\mathbf p}=&g\mathbf e_3-{}^IR_B(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\\ 
+    \ddot{\mathbf p}=&g\mathbf e_3-{}^iR_b(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\\ 
 \ddot{\boldsymbol{\Theta}}=&J^{-1}\boldsymbol{\Gamma}. 
 \end{align}
-Managing the non-linear dynamics is hard for the real time controller. We apply linearization around an equilibrium point, in particular in an hovering condition.
+Managing the nonlinear dynamics is hard for the real-time controller. We apply linearization around an equilibrium point, in particular in a hovering condition.
 Let \begin{equation}
     \mathbf p_e=\begin{pmatrix}
         x_e\\y_e\\z_e
@@ -292,13 +292,13 @@ Let \begin{equation}
     \end{pmatrix}
 \end{equation}
 be our equilibrium point.
-We assume that our drone is perfectly horizontal, i.e. $\vartheta_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
+We assume that our drone is perfectly horizontal, i.e., $\varphi_e=\vartheta_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
     T_e=mg.
 \end{equation}
-We apply the hypothesis of small variations around $( \mathbf p_e \ \boldsymbol{\Theta}_e)$, hence \begin{equation}
+We apply the hypothesis of small variations around $(\mathbf p_e,\boldsymbol{\Theta}_e)$, hence \begin{equation}
     \sin x\approx x, \quad \cos x \approx 1
 \end{equation}
-and the dynamics equations becomes decoupled:\begin{align}
+and the dynamic equations become decoupled:\begin{align}
     &\ddot x = -g\vartheta\\ 
     &\ddot y = g\varphi \\
     & \ddot z= -\frac{\delta T}{m}
@@ -317,7 +317,7 @@ The basic control objectives for a quadrotor are the following:\begin{itemize}
     \item trajectory planning and tracking,
     \item obstacle avoidance. 
 \end{itemize}
-With \textbf{attitude control}, we intend the process of determining the torques $\tau_\varphi,\tau_\vartheta,\tau_\psi$ needed to obtain a stable desired attitude $\varphi_d,\vartheta_d,\psi_d$. A trivial solution is a proportional-derivative (PD) action on the error.
+With \textbf{attitude control}, we mean the process of determining the torques $\tau_\varphi,\tau_\vartheta,\tau_\psi$ needed to obtain a stable desired attitude $\varphi_d,\vartheta_d,\psi_d$. A simple solution is a proportional-derivative (PD) action on the error.
 \begin{boxdefinition}{PD Controller for the Attitude}{PD_attitude}
 \begin{align}
     &\tau_\varphi=K_{\varphi p}(\varphi_d-\varphi)+K_{\varphi d}(\dot \varphi_d-\dot \varphi)\\
@@ -325,19 +325,19 @@ With \textbf{attitude control}, we intend the process of determining the torques
     &\tau_\psi=K_{\psi p}(\psi_d-\psi)+K_{\psi d}(\dot \psi_d-\dot \psi).
 \end{align}
 \end{boxdefinition}
-\noindent For the \textbf{height control} we consider the dynamic model, in particular the Equation \eqref{ddotz_quadrotor}. We choose the value of $T$ that linearizes the system. 
+\noindent For the \textbf{height control} we consider the dynamical model, in particular Equation \eqref{ddotz_quadrotor}. We choose the value of $T$ that linearizes the system. 
 \begin{boxdefinition}{Height Control with FBL}{}
-    To bring and keep the quadrotor to a desired height $z_d$ we apply the feedback linearization plus a PD controller.
+    To bring the quadrotor to a desired height $z_d$ and keep it there, we apply feedback linearization (FBL) plus a PD controller.
     \begin{equation}
             T=\frac{m}{\cos\vartheta\cos\varphi}[g-\ddot z_d-K_{zp}(z_d-z)-K_{zd}(\dot z_d-\dot z)].
     \end{equation}
 \end{boxdefinition}
 \begin{boxobservation}{}{}
-A quadrotor is an underactuated system: it has 6 degrees of freedom in space ($x, y, z$ and three attitude angles), but only 4 independent control inputs (the total thrust $T$ and the three torque moments $\tau_\varphi, \tau_\vartheta, \tau_\psi$). There are no side motors to push the drone directly along the $x$ axis or the $y$ axis. To translate horizontally, the drone must first tilt (rotate) so that a thrust component $T$ points in the desired direction.
+A quadrotor is an underactuated system: it has 6 degrees of freedom in space ($x, y, z$ and three attitude angles), but only 4 independent control inputs (the total thrust $T$ and the three torque moments $\tau_\varphi, \tau_\vartheta, \tau_\psi$). There are no side motors to push the drone directly along the $x$ axis or the $y$ axis. To translate horizontally, the drone must first tilt (rotate) so that a component of the thrust $T$ points in the desired direction.
 \end{boxobservation}
-Given the underactuated nature of the quadrotor, while we are controlling the altitude $z$ we can't directly control $x$ and $y$, hence we adopt a \textit{hierarchical} control scheme.
+Given the underactuated nature of the quadrotor, while we are controlling the altitude $z$ we cannot directly control $x$ and $y$, hence we adopt a \textit{hierarchical} control scheme.
 \begin{enumerate}
-    \item First of all we assume that we have direct control on $x$ and $y$, with two \textbf{virtual control inputs} $u_x$ and $u_y$:\begin{align}
+    \item First, we assume that we have direct control on $x$ and $y$, with two \textbf{virtual control inputs} $u_x$ and $u_y$:\begin{align}
         &\ddot x=u_x\\ 
         &\ddot y=u_y.
     \end{align}
@@ -358,12 +358,12 @@ Given the underactuated nature of the quadrotor, while we are controlling the al
         &\varphi_d=\arcsin\left(T_y\cos\psi-T_x\sin\psi\right)\\ 
         &\vartheta_d=-\arcsin\left(\frac{T_x\cos\psi+T_y\sin\psi}{\cos\varphi_d}\right).
     \end{align}
-    \item In the end the inner loop will generate the desired values for $(\tau_\varphi, \tau_\vartheta, \tau_\psi)$ to achieve $\varphi_d$ and $\vartheta_d$.
+    \item Finally, the inner loop will generate the desired values for $(\tau_\varphi, \tau_\vartheta, \tau_\psi)$ to achieve $\varphi_d$ and $\vartheta_d$.
 \end{enumerate}
 To recap the whole control scheme:\begin{itemize}
-    \item  The quadrotor has no laterally oriented propellers, but generates a single main thrust $T$ perpendicular to its frame. Consequently, there is no independent direct force on $x$ and $y$.
+    \item  The quadrotor has no laterally oriented propellers, and generates a single main thrust $T$ perpendicular to its frame. Consequently, there is no independent direct force on $x$ and $y$.
     \item $T$ is set as a priority to support the weight of the quadrotor and govern the $z$ altitude.
-    \item  If we keep the drone perfectly horizontal, the thrust only points upwards. If, however, we tilt it to roll ($\varphi$) and pitch ($\vartheta$), the thrust vector breaks down: one part continues to compensate for gravity along $z$, while the other is projected onto the horizontal plane.
+    \item  If we keep the drone perfectly horizontal, the thrust only points upwards. If, however, we tilt it in roll ($\varphi$) and pitch ($\vartheta$), the thrust vector is decomposed: one part continues to compensate for gravity along $z$, while the other is projected onto the horizontal plane.
     \item  The position loop calculates how much horizontal acceleration $(\ddot{x}, \ddot{y})$ is needed to reach the target and, working backwards, determines exactly which roll and pitch angles $(\varphi_d, \vartheta_d)$ project the necessary amount of thrust $T$ in that precise direction.
 \end{itemize}
 \begin{figure}[H]
@@ -374,7 +374,7 @@ To recap the whole control scheme:\begin{itemize}
 \end{figure}
 \chapter{Control Methods}
 \section{Backstepping}
-For a dynamic system:\begin{equation}
+For a dynamical system:\begin{equation}
     \begin{cases}
         \dot{\mathbf x}=f(\mathbf x)\\ 
         f(\mathbf 0)=\mathbf 0
@@ -393,13 +393,13 @@ If $\dot V=\frac{\partial V}{\partial \mathbf x}f(\mathbf x)$ is negative defini
     the system is globally exponentially stable.
     \item If $\dot V$ is negative semidefinite, the asymptotic stability can be proved using LaSalle's invariance principle.
 \end{itemize}
-In general, $V$ is hard to find, so the backstepping method is used to construct both $V$ and the control law, it renders Globally Asymptotically Stable (GAS) an equilibrium point or a trajectory of a nonlinear system.
+In general, $V$ is hard to find, so the backstepping method is used to construct both $V$ and the control law; it renders an equilibrium point or a trajectory of a nonlinear system globally asymptotically stable (GAS).
 
-The assumption is that our system is in strict-feedback (triangular) form, the quadrotor model satisfies this assumption. We will construct a simple 2-dimensional example of how backstepping works. We have the following nonlinear system:\begin{align}
+The assumption is that our system is in strict-feedback (triangular) form; the quadrotor model satisfies this assumption. We will construct a simple two-dimensional example of how backstepping works. We have the following nonlinear system:\begin{align}
     &\dot x_1=f_1(x_1)+g_1(x_1)x_2\\ 
     &\dot x_2=f_2(x_1,x_2)+g_2(x_1,x_2)u
 \end{align}
-with $x_1=0$ being an equilibrium for the first subsystem. Notice the triangular structure: the first subsystem that describes the dynamics of $x_1$ depends nonlinearly only on $x_1$, and linearly from $x_2$. The second subsystem depends linearly from $u$ (control input) and nonlinearly on $(x_1,x_2)$. We also assume that
+with $x_1=0$ being an equilibrium for the first subsystem. Notice the triangular structure: the first subsystem that describes the dynamics of $x_1$ depends nonlinearly only on $x_1$, and linearly on $x_2$. The second subsystem depends linearly on $u$ (control input) and nonlinearly on $(x_1,x_2)$. We also assume that
 \begin{equation}
     \begin{matrix}
         g_1(x_1)\ne 0\\ 
@@ -407,10 +407,10 @@ with $x_1=0$ being an equilibrium for the first subsystem. Notice the triangular
     \end{matrix}\quad\quad\forall(x_1,x_2).
 \end{equation}
 \begin{itemize}
-    \item \textbf{Step 1}: We stabilize $x_1$, by assuming that $x_2$ is a control input (can be chosen arbitrarily):\begin{equation}
+    \item \textbf{Step 1}: We stabilize $x_1$ by assuming that $x_2$ is a control input (can be chosen arbitrarily):\begin{equation}
         x_2=\alpha(x_1)=\frac{1}{g_1(x_1)}[-f_1(x_1)-k_1x_1]
     \end{equation}
-    with the Lyapunov function $V_1=\frac{1}{2}x_1^2$. This leads the system to a simple differential equation:\begin{equation}
+    with the Lyapunov function $V_1=\frac{1}{2}x_1^2$. This leads to a simple differential equation:\begin{equation}
         \dot x_1=-k_1x_1
     \end{equation}
     and\begin{equation}
@@ -426,7 +426,7 @@ with $x_1=0$ being an equilibrium for the first subsystem. Notice the triangular
     we substitute $\dot x_2$ with its dynamics:\begin{equation}
          \dot z=f_2+g_2u-\frac{\partial\alpha}{\partial x_1}\dot x_1
     \end{equation}
-    notice how we dropped the dependencies (for the sake of notation). Now we substitute $\dot x_1$ with its dynamics:\begin{equation}\label{dot_z}
+    notice how we dropped the dependencies (for the sake of notational simplicity). Now we substitute $\dot x_1$ with its dynamics:\begin{equation}\label{dot_z}
          \dot z=f_2+g_2u-\frac{\partial\alpha}{\partial x_1}(f_1+g_1x_2).
     \end{equation}
 \end{itemize}
@@ -449,20 +449,20 @@ with $k_1,k_2$ being two positive real numbers. The term $-k_2z$ drives $x_2$ to
     \end{pmatrix}.
 \end{equation}
 The backstepping method can be recursively applied to a general triangular $n$-th order system:\begin{align}
-    \dot x_i =& f_i(x_1,\dots, x_i)+g_i(x_1,\dots,x_i)x_{i+1},\quad \quad i=1\dots n-1\\ 
+    \dot x_i =& f_i(x_1,\dots, x_i)+g_i(x_1,\dots,x_i)x_{i+1},\quad \quad i=1,\dots,n-1\\ 
     \dot x_n=&f_n(\mathbf x)+g_n(\mathbf x)u.
 \end{align}
-For each step we define the error $z_i$, with the addition of a term on the Lyapunov function:\begin{align}
+For each step we define the error $z_i$, with the addition of a term to the Lyapunov function:\begin{align}
     &\dot z_i=-k_iz_i-g_{i-1}z_{i-1}+g_iz_{i+1}\\
-    &\dot V =-\sum_ik_iz_i.
+    &\dot V =-\sum_ik_iz_i^2.
 \end{align}
-The backstepping method is a design procedure, not a defined control law, and it doesn't needs to cancel the non linearities of a system to achieve stability. The problem is that the complexity of this procedure grows exponentially since each step needs the analytical derivative of the previous virtual input.
+The backstepping method is a design procedure, not a defined control law, and it does not need to cancel the nonlinearities of a system to achieve stability. The problem is that the complexity of this procedure grows exponentially since each step needs the analytical derivative of the previous virtual input.
 \subsection{Backstepping for Height Control}
-Let's see an application of the backstepping. The height dynamics of the quadrotor is the following:\begin{align}
+Let's see an application of backstepping. The height dynamics of the quadrotor is the following:\begin{align}
     &\dot z = v_z\\ 
-    &v_z=g-\cos\varphi\cos\vartheta\frac{T}{m}
+    &\dot v_z=g-\cos\varphi\cos\vartheta\frac{T}{m}
 \end{align}
-we choose $T$ in order to compensate the gravity and linearize the system:\begin{equation}
+we choose $T$ in order to compensate for gravity and linearize the system:\begin{equation}
     T=\frac{m}{\cos\varphi\cos\vartheta}(g-\tilde T)\implies 
     \dot v_z=\tilde T
 \end{equation}
@@ -470,29 +470,29 @@ with $\tilde T$ to be chosen later.
 Given the desired height $z_d(t)$ we define the error:\begin{equation}
     e_z=z_d-z\implies \dot e_z=\dot z_d-v_z.
 \end{equation}
-If the velocity $v_z$ would have been the control input, we would have chose:\begin{equation}\label{desired_vz}
-    v_z=K_{zp}e_z+\dot z_d\implies \dot e_z=-K_{pz}e_z
+If the velocity $v_z$ were the control input, we would choose:\begin{equation}\label{desired_vz}
+    v_z=K_{zp}e_z+\dot z_d\implies \dot e_z=-K_{zp}e_z
 \end{equation}
 but $v_z$ has its own dynamics, hence we consider the formula in Equation \eqref{desired_vz} as a virtual control input denoted $v_z^d$:
 \begin{equation}
-    v^d_z=K_{zp}e_z+\dot z_D
+    v^d_z=K_{zp}e_z+\dot z_d
 \end{equation}
 so we can define the error between the virtual input and the real velocity:\begin{equation}
      e_{v_z}=v_z^d-v_z
 \end{equation}
 furthermore:\begin{align}
-    \dot e_z&=-K_{pz}e_z+e_{v_z}
+    \dot e_z&=-K_{zp}e_z+e_{v_z}
     \\\dot e_{v_z}&=K_{zp}\dot e_z+\ddot z_d-\tilde T.
 \end{align}
 The Lyapunov function becomes:\begin{align}
     V&=\frac{1}{2}(e_z^2+e_{v_z}^2)
-    \\\dot V&=-K_{pz}e_z^2+e_{v_z}(
+    \\\dot V&=-K_{zp}e_z^2+e_{v_z}(
         e_z+K_{zp}\dot e_z+\ddot z_d-\tilde T
     )
 \end{align}
 now we choose $\tilde T$ to make $\dot V$ negative definite\begin{align}
     \tilde T  &=\ddot z_d+e_z+K_{zp}\dot e_z+K_{zd}e_{v_z}\implies \\ 
-    \dot V &= -K_{pz}e_z^2-K_{dz}e_{vz}^2
+    \dot V &= -K_{zp}e_z^2-K_{zd}e_{v_z}^2
 \end{align}
 by putting everything together, the final control law is:\begin{equation}
     T = \frac{m}{\cos \varphi \cos \vartheta} \left( g - \ddot{z}_d - (1 + K_{zp} K_{zd}) e_z - (K_{zp} + K_{zd}) \dot{e}_z \right).
@@ -502,17 +502,17 @@ What are the differences between the PD seen in Section \ref{basic_control_plann
     K_p&=1+K_{zp}K_{zd}\\
     K_d&=K_{zp}+K_{zd}.
 \end{align}
-The PD controller aim to nullify the position and velocity errors $(e_z,\dot e_z)$ while the backstepping law instead of $\dot e_z$ considers $e_{v_z}=\dot e_z+\greenText{K_{zp}e_z}$, hence the desired velocity already contains a term relative to the \greenText{ position correction}.
+The PD controller aims to nullify the position and velocity errors $(e_z,\dot e_z)$, while the backstepping law considers $e_{v_z}=\dot e_z+\greenText{K_{zp}e_z}$ instead of $\dot e_z$, hence the desired velocity already contains a term related to the \greenText{ position correction}.
 
-The gains  have different roles:\begin{itemize}
+The gains have different roles:\begin{itemize}
     \item $K_{zp}$ controls the decay rate of the position error, when  the velocity error is zero.
     \item $K_{zd}$ is the decay rate of the velocity error (the inner loop of the backstepping).
-    \item In the PD controller, the speed and damping of the errors are given by\begin{align}
+    \item In the PD controller, the natural frequency and the damping ratio of the error dynamics are given by\begin{align}
         \omega_n&=\sqrt{K_p}\\
         \zeta&=\frac{K_d}{2\sqrt{K_p}}.
     \end{align}
 \end{itemize}
-With the same choices for the gains (for example, $K_p=K_d=2$), the closed loop poles are:\begin{itemize}
+With the same choices for the gains (for example, $K_p=K_d=2$), the closed-loop poles are:\begin{itemize}
     \item \textbf{backstepping}: $-2\pm i$ 
     \item \textbf{PD}: $-1\pm i$ (twice as slow).
 \end{itemize}
@@ -531,9 +531,9 @@ We define the integral action of the error:
 
 \todo{finire pacco di slide 02}
 \section{Dynamic Feedback Linearization}
-One of the most important and effective way to control a nonlinear dynamical system is by making them linear trough feedback.
+One of the most important and effective ways to control a nonlinear dynamical system is to make it linear through feedback.
 \begin{boxdefinition}{Feedback Linearization}{}
-    The feedback linearization is the exact cancellation of the nonlinearities by
+    Feedback linearization is the exact cancellation of the nonlinearities by
     feedback and change of coordinates.
 \end{boxdefinition}
 \noindent\textbf{Recap of the model}: For control purposes, we are using the (already seen) simplified model that assumes small changes for $\varphi$ and $\vartheta$
@@ -553,7 +553,7 @@ We have used the symbol $\bxi$ for the state and $\mathbf u$ for the inputs. The
 \end{cases}
 \end{equation}
 where we defined:\begin{align}
-   &\mathbf  b(\boldsymbol{\Theta})={}^IR_B(\boldsymbol{\Theta})\mathbf e_3\\ 
+   &\mathbf  b(\boldsymbol{\Theta})={}^iR_b(\boldsymbol{\Theta})\mathbf e_3\\ 
    & \mathbf p = \begin{pmatrix}
     x&y&z
    \end{pmatrix}^T\\ 
@@ -566,7 +566,7 @@ where we defined:\begin{align}
    &J=\text{diag}(I_x,I_y,I_z).
 \end{align}
 \subsection{Static Linearization}
-Before discussing the linearization of the quadrotor model, we will give some definitions for a general nonlinear system, hence keep in mind the model in Equation \eqref{compact_form} for later.\bigskip 
+Before discussing the linearization of the quadrotor model, we will give some definitions for a general nonlinear system, but keep in mind the model in Equation \eqref{compact_form}, as we will need it later.\bigskip 
 
 \noindent Consider the following nonlinear system:\begin{equation}
     \dot\bxi=f(\bxi)+g(\bxi)\mathbf u\quad\quad\begin{matrix}\bxi\in\R^n\\\mathbf u \in \R^m\end{matrix}.
@@ -574,31 +574,36 @@ Before discussing the linearization of the quadrotor model, we will give some de
 If possible, we \textit{want to find} a \textbf{static} state feedback and a change of coordinates:\begin{align}
     \mathbf u&=\alpha(\bxi)+\beta(\bxi)\mathbf v\\ \mathbf z&=\phi(\bxi)
 \end{align}
-with $\beta$ a non-singular function and $\phi$ a diffeomorphism, such that the closed loop system becomes linear and controllable:\begin{align}
+with $\beta$ a non-singular function and $\phi$ a diffeomorphism, such that the closed-loop system becomes linear and controllable:\begin{align}
     &\dot\bxi=f(\bxi)+g(\bxi)\greenText{\mathbf u}\implies \\
     &\dot\bxi=f(\bxi)+g(\bxi)\greenText{(\alpha(\bxi)+\beta(\bxi)\mathbf v)} \end{align}
     since $\bxi=\phi^{-1}(\mathbf z)$:
     \begin{align}
-    &\dot\phi^{-1}(\mathbf z)=f(\phi^{-1}(\mathbf z))+g(\phi^{-1}(\mathbf z))(\alpha(\phi^{-1}(\mathbf z))+\beta({\phi^{-1}(\mathbf z)})\mathbf v)\implies \\ 
+    &\frac{d}{dt}\phi^{-1}(\mathbf z)=f(\phi^{-1}(\mathbf z))+g(\phi^{-1}(\mathbf z))(\alpha(\phi^{-1}(\mathbf z))+\beta({\phi^{-1}(\mathbf z)})\mathbf v)\implies \\ 
     &\dot {\mathbf z}=A\mathbf z+B\mathbf v 
 \end{align} 
-with $A$ and $B$ being constant matrices. This linearization is exact and holds whenever $\beta$ and $\phi$ are well defined, the control designed is completed by choosing $\mathbf v$ trough the rules of linear control theory, and since $\phi$ is a diffeomorphism, by controlling $\mathbf z$ we can indirectly control $\bxi$.
+with $A$ and $B$ being constant matrices. This linearization is exact and holds whenever $\beta$ and $\phi$ are well defined; the control design is completed by choosing $\mathbf v$ through the rules of linear control theory, and since $\phi$ is a diffeomorphism, by controlling $\mathbf z$ we can indirectly control $\bxi$.
 \subsection{Input-Output Linearization}
-With this method, we focus on a subset of the state vector that we want to control, by allowing (in general) a residual internal dynamic on the unchosen variables. We choose $m$ variables (same number of inputs) with a (sufficiently smooth) function $h$:\begin{equation}
+With this method, we focus on a subset of the state vector that we want to control, by allowing (in general) a residual internal dynamics on the remaining variables. We choose $m$ variables (same number of inputs) with a (sufficiently smooth) function $h$:\begin{equation}
     \boldsymbol{\eta}=h(\bxi)\in\R^m 
 \end{equation}
-We know that the inputs $\mathbf u$ are present in $\dot\bxi$, hence by differentiating $h(\bxi)$, at some point one or more inputs of $\mathbf u$ should appear. $\boldsymbol{\eta}$ is a vector of functions $\eta_i$, $1\le i \le m$, we have to differentiate each of these functions until \textit{at least} one of the inputs of $\mathbf u$ appears.
+We know that the inputs $\mathbf u$ are present in $\dot\bxi$, hence by differentiating $h(\bxi)$, at some point one or more inputs of $\mathbf u$ will appear. $\boldsymbol{\eta}$ is a vector of functions $\eta_i$, $1\le i \le m$, we have to differentiate each of these functions until \textit{at least} one of the inputs of $\mathbf u$ appears.
 \begin{algorithm}[H]
 \caption{Input-Output Linearization}\label{alg:input_output_lin}
 \begin{algorithmic}[1]
 \For{$i=1,\dots,m$}
+\State $found \gets \text{false}$
 \For{$r_i=1,\dots,+\infty$}
 \For{$j=1,\dots,m$}
 \If{$u_j$ is present in $\eta_i^{(r_i)}$}
 \State save $\eta_i^{(r_i)}$
+\State $found \gets \text{true}$
 \State break
 \EndIf
 \EndFor
+\If{$found$}
+\State break
+\EndIf
 \EndFor
 \EndFor
 \end{algorithmic}
@@ -609,45 +614,45 @@ We know that the inputs $\mathbf u$ are present in $\dot\bxi$, hence by differen
 where $r_i$ is the relative degree of differentiation for the $i$-th component of $\boldsymbol{\eta}$. Clearly, $h$ should be in the class $C^r$ with $r=\max_ir_i$. The Lie derivatives are defined as follows:\begin{align}
     L_f^0h_i(\bxi)&=h_i(\bxi)\\
     L_f^1h_i(\bxi)=L_fh_i(\bxi) &= \frac{\partial h_i(\bxi)}{\partial \bxi}f(\bxi)\\
-    L_f^{k}h_i(\bxi) &= \frac{\partial (L_f^{k-1}h_i)}{\partial \bxi}f(\bxi)\\
+    L_f^{k}h_i(\bxi) &= \frac{\partial (L_f^{k-1}h_i)}{\partial \bxi}f(\bxi).
 \end{align}
 $L_{g_j} L_f^{r_i - 1} h_i(\bxi)$ represents the Lie derivative of the intermediate scalar function $L_f^{r_i - 1} h_i(\bxi)$ along the input vector field $g_j(\bxi)$:\begin{equation}
     L_{g_j} L_f^{r_i - 1} h_i(\bxi) = \frac{\partial (L_f^{r_i - 1} h_i(\bxi))}{\partial \bxi} g_j(\bxi).
 \end{equation}
 \begin{boxnotation}{}{}
-When as superscript to a symbol there is a symbol between round brackets, we are denoting a derivative, if there is no brackets, it's an exponent or index:\begin{align}
-    &a^k \text{ is $a$ with $k$ as exponent}\\
-    &a^{(k)} \text{ is $a$ (function) differentiated up to the $k$-th order.}
+When the superscript of a symbol is enclosed in round brackets, it denotes a derivative; if there are no brackets, it is an exponent or an index:\begin{align}
+    &a^k \text{ is $a$ raised to the power $k$}\\
+    &a^{(k)} \text{ is the $k$-th derivative of the function $a$.}
 \end{align}
 \end{boxnotation}
-For the particular case of the Lie derivatives, the superscript $k$ in $L_f^k$ does not represent an exponent but an order of differentiation, even if it's not in the brackets.\bigskip
+For the particular case of the Lie derivatives, the superscript $k$ in $L_f^k$ does not represent an exponent but an order of differentiation, even though it is not enclosed in brackets.\bigskip
 
-\noindent We can stuck the $m$ equations defined in \eqref{eta_i} and write the system in compact form:\begin{equation}
+\noindent We can stack the $m$ equations defined in \eqref{eta_i} and write the system in compact form:\begin{equation}
     \begin{pmatrix}
         \eta_1^{(r_1)}\\\vdots\\
         \eta_m^{(r_m)}
     \end{pmatrix}=I(\bxi)+D(\bxi)\mathbf u
 \end{equation}
-$D(\bxi)$ is called the \textbf{Decoupling Matrix}, if it's non singular. Let $\mathbf v\in\R^m$, by the choice of the following control law:\begin{equation}
-    \mathbf u=J^{-1}(\bxi)(-I(\bxi)+{\mathbf v})
+$D(\bxi)$ is called the \textbf{decoupling matrix}. If it is non-singular, then, for $\mathbf v\in\R^m$, choosing the following control law:\begin{equation}
+    \mathbf u=D^{-1}(\bxi)(-I(\bxi)+{\mathbf v})
 \end{equation}
 we achieve the following dynamic behavior:\begin{equation}
     \eta_i^{(r_i)}=v_i,\quad i=1,\dots,m 
 \end{equation}
-we obtained $m$ \textbf{decoupled chains of integrators} from $v_i$ to $\eta_i$.
+we obtain $m$ \textbf{decoupled chains of integrators} from $v_i$ to $\eta_i$.
 \begin{itemize}
-    \item if $\sum_ir_i=n$, we have \textbf{full state linearization}, and $z=(\eta_i,\eta_i^{(1)}\,dots,\eta_i^{r_{i-1}})$ for $i=1\dots m$ are coordinates.
-    \item if $\sum_ir_i<n$, there will be an $(n-\sum_ir_i)$-dimentional internal dynamics, whose stability must be checked separately.
+    \item if $\sum_ir_i=n$, we have \textbf{full state linearization}, and $\mathbf z=(\eta_i,\eta_i^{(1)},\dots,\eta_i^{(r_i-1)})$, for $i=1,\dots,m$, are coordinates.
+    \item if $\sum_ir_i<n$, there will be an $(n-\sum_ir_i)$-dimensional internal dynamics, whose stability must be checked separately.
 \end{itemize}
 \subsection{Linearization of the Quadrotor Model}
-From the quadrotor model in Equation \eqref{compact_form} we consider as natural output the position and the yaw angle:\begin{equation}
+From the quadrotor model in Equation \eqref{compact_form} we consider as natural outputs the position and the yaw angle:\begin{equation}
     \boldsymbol{\eta}=\begin{pmatrix}
-        x&y&z&\varphi
+        x&y&z&\psi
     \end{pmatrix}^T 
 \end{equation}
 the model relative only to these variables is:\begin{equation}\label{compact_model_2}
-    \boldsymbol{\eta}=\begin{pmatrix}
-        \ddot{\mathbf p}\\ \ddot\varphi 
+    \ddot{\boldsymbol{\eta}}=\begin{pmatrix}
+        \ddot{\mathbf p}\\ \ddot\psi 
     \end{pmatrix}=\begin{pmatrix}
         g\mathbf e_3\\ 0
     \end{pmatrix}+\begin{pmatrix}
@@ -657,7 +662,7 @@ the model relative only to these variables is:\begin{equation}\label{compact_mod
         T\\ \tau_\varphi\\\tau_\vartheta\\\tau_\psi 
     \end{pmatrix}.
 \end{equation}
-The quadrotor have six degrees of freedom and 4 control inputs, its underactuated nature makes impossible to linearize the full state with a simple stati feedback linearization $\mathbf u=\alpha(\bxi)+\beta(\bxi)\mathbf v$. If we tried to linearize only the output statically, we would be left with non-linearized internal dynamics.
+The quadrotor has six degrees of freedom and four control inputs; its underactuated nature makes it impossible to linearize the full state with a simple static feedback linearization $\mathbf u=\alpha(\bxi)+\beta(\bxi)\mathbf v$. If we tried to linearize only the output statically, we would be left with non-linearized internal dynamics.
 
 To overcome this problem, we must add a \textbf{dynamic compensator}, by introducing a set of $\nu$ additional states to the controller:\begin{equation}
     \bzeta\in\R^\nu \text{ (additional states)}
@@ -665,66 +670,66 @@ To overcome this problem, we must add a \textbf{dynamic compensator}, by introdu
 we have to specify a dynamics for these states:\begin{equation}
     \dot\bzeta=a(\bxi,\bzeta)+b(\bxi,\bzeta)\mathbf u 
 \end{equation}
-defined by the functions $a,b$ such that, in addition with the controller:\begin{equation}
+defined by the functions $a,b$ such that, together with the controller:\begin{equation}
     \mathbf u=c(\bxi,\bzeta)+d(\bxi,\bzeta)\mathbf v 
 \end{equation}
-for some functions $c,d$ the closed loop system, of dimension $n+\nu$, is
-equivalent under a state transformation $\mathbf z=\phi(\bxi,\bzeta))$ to a \textit{linear
-controllable system}. Physically in the quadcopter, the auxiliary state $\bzeta$ typically consists of adding integrators on the thrust input $T$ (thrust). By integrating the thrust once or twice, the true thrust becomes a state coordinate of the extended system, delaying the immediate appearance of the input into the derivatives and allowing the rotational dynamics to align with the translational ones without singularities. \bigskip
+for some functions $c,d$ the closed-loop system, of dimension $n+\nu$, is
+equivalent under a state transformation $\mathbf z=\phi(\bxi,\bzeta)$ to a \textit{linear
+controllable system}. Physically, in the quadrotor, the auxiliary state $\bzeta$ typically consists of integrators added on the thrust input $T$. By integrating the thrust once or twice, the true thrust becomes a state coordinate of the extended system, delaying the immediate appearance of the input into the derivatives and allowing the rotational dynamics to align with the translational ones without singularities. \bigskip
 
 Let's see the \textbf{algorithm of dynamic extension}: the construction procedure used to find the dynamic compensator and completely linearize the system.\begin{enumerate}
     \item We choose an $m$-dimensional output $\boldsymbol{\eta}=h(\bxi)$.
-    \item We derive the outputs with respect to time until the inputs appear such that the decoupling matrix is non-singular (invertible).
-    \item When differentiating the components of $\boldsymbol{\eta}$, it often happens that some inputs appear at a lower derivation order than others, making the decoupling matrix singular. We add integrators on those input channels: the inputs become states of the compensator, their derivatives are the new input.
-    \item If, at the end of the algorithm, the sum of the derivation orders reached for each output equals the size of the extended state space:$$\sum_{i=1}^m r_i = n + \nu$$
+    \item We differentiate the outputs with respect to time until the inputs appear such that the decoupling matrix is non-singular (invertible).
+    \item When differentiating the components of $\boldsymbol{\eta}$, it often happens that some inputs appear at a lower differentiation order than others, making the decoupling matrix singular. We add integrators on those input channels: the inputs become states of the compensator, their derivatives become the new inputs.
+    \item If, at the end of the algorithm, the sum of the differentiation orders reached for each output equals the size of the extended state space:$$\sum_{i=1}^m r_i = n + \nu$$
     (where $n$ is the size of the original physical state and $\nu$ is the total number of integrators added), \textit{full input-state-output linearization} is obtained.
     \item Applying the inversion law on the extended system, the behavior between the new inputs $v_i$ and the physical outputs $\eta_i$ is exactly equivalent to $m$ independent and decoupled chains of pure integrators:\begin{equation}
         \eta_i^{(r_i)} = v_i, \quad i = 1, \dots, m.
     \end{equation}
 \end{enumerate}
-The linearizing quadrotor output that we choose is the position with the yaw angle:\begin{equation}
+The linearizing quadrotor output that we choose is the position together with the yaw angle:\begin{equation}
     \boldsymbol{\eta}=\begin{pmatrix}
-        x&y&z&\varphi 
+        x&y&z&\psi 
     \end{pmatrix}^T
 \end{equation}
-The model is the one in Equation \eqref{compact_model_2}. The input appears in a non singular way only after differentiating $\eta_1,\eta_2,\eta_3$ four times and $\eta_4$ two times. The explicit expression of the vector $\mathbf b$ in the model is\begin{equation}
-    \mathbf  b(\boldsymbol{\Theta})={}^IR_B(\boldsymbol{\Theta})\mathbf e_3
+The model is the one in Equation \eqref{compact_model_2}. The inputs appear in a non-singular way only after differentiating $\eta_1,\eta_2,\eta_3$ four times and $\eta_4$ twice. The explicit expression of the vector $\mathbf b$ in the model is\begin{equation}
+    \mathbf  b(\boldsymbol{\Theta})={}^iR_b(\boldsymbol{\Theta})\mathbf e_3
     =\begin{pmatrix}
     \cos\psi \sin\vartheta \cos\varphi + \sin\psi \sin\varphi \\
     \sin\psi \sin\vartheta \cos\varphi - \cos\psi \sin\varphi \\
     \cos\vartheta \cos\varphi
     \end{pmatrix}
 \end{equation}
-we will need it's Jacobian:\begin{equation}
-    \frac{\partial\mathbf b}{\partial\boldsymbol{\Theta}}=\begin{pmatrix}
+we will need its Jacobian, denoted $B$:\begin{equation}
+    B=\frac{\partial\mathbf b}{\partial\boldsymbol{\Theta}}=\begin{pmatrix}
 \sin\psi \cos\varphi - \cos\psi \sin\vartheta \sin\varphi & \cos\psi \cos\vartheta \cos\varphi & \cos\psi \sin\varphi - \sin\psi \sin\vartheta \cos\varphi \\
 -\cos\psi \cos\varphi - \sin\psi \sin\vartheta \sin\varphi & \sin\psi \cos\vartheta \cos\varphi & \sin\psi \sin\varphi + \cos\psi \sin\vartheta \cos\varphi \\
 -\cos\vartheta \sin\varphi & -\sin\vartheta \cos\varphi & 0
 \end{pmatrix}.
 \end{equation}
-By differentiating $\eta_1,\eta_2,\eta_3$ two times we get the translational part of the model:\begin{equation}
+By differentiating $\eta_1,\eta_2,\eta_3$ twice we get the translational part of the model:\begin{equation}
     \begin{pmatrix}
-        \eta_1&\eta_2&\eta_3
+        \ddot\eta_1&\ddot\eta_2&\ddot\eta_3
     \end{pmatrix}^T=\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\mathbf b(\boldsymbol{\Theta})
 \end{equation}
-we keep differentiating until the inputs $T,\boldsymbol{\Gamma}$ appears:\begin{equation}
+we keep differentiating until the inputs $T,\boldsymbol{\Gamma}$ appear:\begin{equation}
     \mathbf p^{(3)}=-\frac{1}{m}(\dot T\mathbf b+TB\dot{\boldsymbol{\Theta}})
 \end{equation}
-one last step:\begin{equation}
-     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+TB\greenText{\ddot{\boldsymbol{\Theta}}})
+one last differentiation:\begin{equation}
+     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+T\dot B \dot{\boldsymbol{\Theta}}+TB\greenText{\ddot{\boldsymbol{\Theta}}})
 \end{equation}
-$\ddot{\boldsymbol{\Theta}}$ is directly mapped to $\boldsymbol{\Gamma}$ trough the inertia matrix:\begin{equation}
-     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+TBJ^{-1}\boldsymbol{\Gamma})
+$\ddot{\boldsymbol{\Theta}}$ is directly mapped to $\boldsymbol{\Gamma}$ through the inertia matrix:\begin{equation}
+     \mathbf p^{(4)}=-\frac{1}{m}(\ddot T\mathbf b+2\dot T B \dot{\boldsymbol{\Theta}}+T\dot B \dot{\boldsymbol{\Theta}}+TBJ^{-1}\boldsymbol{\Gamma})
 \end{equation}
-finally the inputs $\boldsymbol{\Gamma}$ appears in the cartesian snap $\mathbf p^{(4)}$. Since $\eta_4=\varphi$, we need just two derivations in order to get a non singular dependance from $\tau_\varphi$:\begin{equation}
-    \ddot\varphi=\frac{\tau_\varphi}{I_x}.
+finally, the inputs $\boldsymbol{\Gamma}$ appear in the Cartesian snap $\mathbf p^{(4)}$. Since $\eta_4=\psi$, we need just two differentiations in order to get a non-singular dependence on $\tau_\psi$:\begin{equation}
+    \ddot\psi=\frac{\tau_\psi}{I_z}.
 \end{equation}
-In order to control $\mathbf p^{(4)}$ we have to choose $\ddot T$, hence this will be our input, while $T$ and $\dot T$ becomes states:\begin{equation}
+In order to control $\mathbf p^{(4)}$ we have to choose $\ddot T$, hence this will be our input, while $T$ and $\dot T$ become states:\begin{equation}
     \zeta_1=T,\quad\zeta_2=\dot T  
 \end{equation}
 the model becomes:\begin{equation}
     \begin{pmatrix}
-\boldsymbol{p}^{(4)} \\
+\mathbf p^{(4)} \\
 \psi^{(2)}
 \end{pmatrix}
 =
@@ -737,7 +742,7 @@ the model becomes:\begin{equation}
 +
 \underbrace{
 \begin{pmatrix}
--\dfrac{1}{m}\,B & -\dfrac{\zeta_1}{m}\,B\,\boldsymbol{I}^{-1} \\
+-\dfrac{1}{m}\,\mathbf b & -\dfrac{\zeta_1}{m}\,B\,J^{-1} \\
 0 & 0\quad 0\quad \dfrac{1}{I_z}
 \end{pmatrix}
 }_{D(\boldsymbol{\xi}, \boldsymbol{\zeta})}
@@ -748,10 +753,10 @@ the model becomes:\begin{equation}
 \tau_\psi
 \end{pmatrix}
 \end{equation}
-In order to have the inputs appear in a non singular way, $D$ must be non singular. Its determinant is:\begin{equation}
+In order to have the inputs appear in a non-singular way, $D$ must be non-singular. Its determinant is\begin{equation}
     \det D=-\frac{T^2\cos\varphi}{m^3I_xI_yI_z}
 \end{equation}
-is non singular if and only if $T\ne0$ (free fall) and $\varphi\ne \pm\frac{\pi}{2}$. Away from the singularities, the sum of the relative degrees is\begin{equation}
+hence $D$ is non-singular if and only if $T\ne0$ (free fall) and $\varphi\ne \pm\frac{\pi}{2}$. Away from the singularities, the sum of the relative degrees is\begin{equation}
     \sum_ir_i = 4+4+4+2=14=n+\nu  
 \end{equation}
 hence \textit{full state linearization} with no zero dynamics is achieved. 
