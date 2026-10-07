@@ -279,7 +279,7 @@ with our input vector:\begin{equation}
     \end{pmatrix}.
 \end{equation}
 Let's separate the translational and rotational dynamics:\begin{align}
-    \ddot{\mathbf p}=&g\mathbf e_3-{}^iR_b(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\\ 
+    \ddot{\mathbf p}=&g\mathbf e_3-{}^iR_b(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\label{traslational_dynamic}\\ 
 \ddot{\boldsymbol{\Theta}}=&J^{-1}\boldsymbol{\Gamma}. 
 \end{align}
 Managing the nonlinear dynamics is hard for the real-time controller. We apply linearization around an equilibrium point, in particular in a hovering condition.
@@ -295,18 +295,52 @@ be our equilibrium point.
 We assume that our drone is perfectly horizontal, i.e., $\varphi_e=\vartheta_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
     T_e=mg.
 \end{equation}
-We apply the hypothesis of small variations around $(\mathbf p_e,\boldsymbol{\Theta}_e)$, hence \begin{equation}
-    \sin x\approx x, \quad \cos x \approx 1
+The full \textit{hovering equilibrium} condition is expressed as follows:\begin{equation}
+    \boldsymbol{\Theta}_e=\mathbf 0,\quad 
+    \boldsymbol{\Gamma}=\mathbf 0,\quad 
+    T_e=mg,\quad 
+    \dot{\mathbf p_e}=\mathbf 0,\quad 
+    \dot{\boldsymbol{\Theta}}_e=\mathbf 0.
 \end{equation}
-and the dynamic equations become decoupled:\begin{align}
-    &\ddot x = -g\vartheta\\ 
-    &\ddot y = g\varphi \\
-    & \ddot z= -\frac{\delta T}{m}
+We denote $\ddot{\mathbf p}=\mathbf F(\bTheta,T)$ the translational part in Equation \eqref{traslational_dynamic}.
+We approximate a small variation of $\ddot{\mathbf p}$ with its first order expansion around the equilibrium point:\begin{equation}
+    \delta\ddot{\mathbf p}\simeq \mathbf F(\bTheta_e,T_e)+\frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta+\frac{\partial\mathbf F}{\partial T}\Big|_e\delta T
+\end{equation}
+with $\delta T$ and $\delta\bTheta$ being small variations. Note how $\mathbf F(\bTheta_e,T_e)=\mathbf 0$, hence:
+\begin{equation}\label{delta_ddp}
+    \delta\ddot{\mathbf p}\simeq\frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta+\frac{\partial\mathbf F}{\partial T}\Big|_e\delta T.
+\end{equation}
+To compute the expansion, we need to compute the variation of the rotation matrix ${}^iR_b(\bTheta)$, given by the small variation $\delta\bTheta$ of the angles around $\bTheta_e=\mathbf 0$. We have\begin{equation}
+    \delta\ {}^iR_b=\frac{\partial {}^iR_b}{\partial\varphi}\Big|_{\mathbf 0}\delta\varphi+
+    \frac{\partial {}^iR_b}{\partial\vartheta}\Big|_{\mathbf 0}\delta\vartheta+
+    \frac{\partial {}^iR_b}{\partial\psi}\Big|_{\mathbf 0}\delta\psi.
+\end{equation}
+We recall that ${}^iR_b(\bTheta)=R_z(\psi)R_y(\vartheta)R_x(\varphi)$, hence (without showing the whole calculation):\begin{equation}
+    \delta {}^iR_b=\begin{pmatrix}
+        0&-\delta\psi&\delta\vartheta\\ 
+        \delta\psi&0&-\delta\varphi\\ 
+        -\delta\vartheta&\delta\varphi&0 
+    \end{pmatrix}
+\end{equation}
+this is exactly the skew-symmetric matrix $S(\delta\bTheta)$. Now we can explicit the formula in Equation \eqref{delta_ddp}:\begin{align}
+    \frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta&=-gS(\delta\bTheta)\mathbf e_3\\[1.5ex]
+    \frac{\partial\mathbf F}{\partial T}\Big|_e\delta T&=-\frac{\delta T}{m}\mathbf e_3\\[1.5ex]
+    \implies 
+     \delta\ddot{\mathbf p}&\simeq -g\begin{pmatrix}
+        \delta\vartheta\\-\delta\varphi\\0 
+     \end{pmatrix}-\frac{\delta T}{m}\mathbf e_3.
 \end{align}
-with $\delta T$ being a small variation of the input thrust $T$.
-
-\todo{}
-
+Now we drop the notation with the $\delta$ (small variations), the quadrotor system linearized around an equilibrium point is governed by the following equations:\begin{align}
+    &\ddot x=-g\vartheta,&\ddot\vartheta=\frac{\tau_\vartheta}{I_y},\\
+    &\ddot y=g\varphi,&\ddot\varphi=\frac{\tau_\varphi}{I_x},\\
+    &\ddot z=-\frac{T}{m},&\ddot\psi=\frac{\tau_\psi}{I_z}.
+\end{align} 
+This system is linear and decoupled:\begin{itemize}
+    \item In order to control $x$, we can control $\vartheta$ through $\tau_\vartheta$, hence $x$ is controllable with a chain of four integrators.
+    \item In order to control $y$, we can control $\varphi$ through $\tau_\varphi$, hence $y$ is controllable with a chain of four integrators.
+    \item In order to control $z$ we use $T$ in a chain of two integrators.
+    \item In order to control $\psi$ we use $\tau_\psi$ in a chain of two integrators.
+\end{itemize}
 \subsection{Basic Control and Planning Problems}\label{basic_control_planning}
 The basic control objectives for a quadrotor are the following:\begin{itemize}
     \item attitude control,
@@ -612,9 +646,9 @@ We know that the inputs $\mathbf u$ are present in $\dot\bxi$, hence by differen
     \eta_i^{(r_i)}=\underbrace{L_f^{r_i}h_i(\bxi)}_{\text{Lie derivative}}+\sum_{j=1}^mL_{g_j}L_f^{r_i-1}h_i(\bxi)u_j.
 \end{equation}
 where $r_i$ is the relative degree of differentiation for the $i$-th component of $\boldsymbol{\eta}$. Clearly, $h$ should be in the class $C^r$ with $r=\max_ir_i$. The Lie derivatives are defined as follows:\begin{align}
-    L_f^0h_i(\bxi)&=h_i(\bxi)\\
-    L_f^1h_i(\bxi)=L_fh_i(\bxi) &= \frac{\partial h_i(\bxi)}{\partial \bxi}f(\bxi)\\
-    L_f^{k}h_i(\bxi) &= \frac{\partial (L_f^{k-1}h_i)}{\partial \bxi}f(\bxi).
+    &L_f^0h_i(\bxi)=h_i(\bxi)\\[1.5ex]
+    &L_f^1h_i(\bxi)=L_fh_i(\bxi) = \frac{\partial h_i(\bxi)}{\partial \bxi}f(\bxi)\\[1.5ex]
+    &L_f^{k}h_i(\bxi) = \frac{\partial (L_f^{k-1}h_i)}{\partial \bxi}f(\bxi).
 \end{align}
 $L_{g_j} L_f^{r_i - 1} h_i(\bxi)$ represents the Lie derivative of the intermediate scalar function $L_f^{r_i - 1} h_i(\bxi)$ along the input vector field $g_j(\bxi)$:\begin{equation}
     L_{g_j} L_f^{r_i - 1} h_i(\bxi) = \frac{\partial (L_f^{r_i - 1} h_i(\bxi))}{\partial \bxi} g_j(\bxi).
@@ -760,6 +794,21 @@ hence $D$ is non-singular if and only if $T\ne0$ (free fall) and $\varphi\ne \pm
     \sum_ir_i = 4+4+4+2=14=n+\nu  
 \end{equation}
 hence \textit{full state linearization} with no zero dynamics is achieved. 
-
-\todo{slide 14}
+The new state $\mathbf z$ that we choose through a diffeomorphism $\phi$ is given by the outputs and their derivatives:\begin{equation}
+    \mathbf z=\phi(\bxi,\bzeta)=\begin{pmatrix}
+        \mathbf p&
+        \dot{\mathbf p}&
+        \ddot{\mathbf p}&
+        \dddot{\mathbf p}&
+        \psi&\dot\psi
+    \end{pmatrix}^T\in\R^{14}
+\end{equation}
+we can act on $\mathbf p^{(4)}$ hence its derivatives of lower orders becomes part of the state, with:\begin{align}
+    \ddot{\mathbf p}&=g\mathbf e_3-\frac{\zeta_1}{m}\mathbf b(\bTheta)\\
+     \dddot{\mathbf p}&=-\frac{1}{m}(\zeta_2\mathbf b(\bTheta)+\zeta_1B(\bTheta)\dot\bTheta).
+\end{align}
+The linearizing and decoupling control law is\begin{equation}
+    {\mathbf u}=D^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v).
+\end{equation}
+\todo{slide 15}
 \end{document}
