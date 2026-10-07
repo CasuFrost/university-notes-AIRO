@@ -210,7 +210,7 @@ Given the previous premises, we define the state of a quadrotor as a vector in $
         x,\quad y,\quad z,\quad v_x,\quad v_y,\quad v_z,\quad \varphi ,\quad  \vartheta ,\quad  \psi,\quad  p ,\quad q,\quad r
     )^T
 \end{equation}
-Here $x,y,z$ is the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
+Here $x,y,z$ are the coordinates of the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
 \end{boxdefinition}
 \noindent The evolution in time of the quadrotor state is given by a dynamical system of the following form:\begin{equation}\label{quadrotorSystem}
     \dot{\boldsymbol{\xi}}=f(\boldsymbol{\xi})+g(\boldsymbol{\xi})\mathbf u 
@@ -292,7 +292,7 @@ Let \begin{equation}
     \end{pmatrix}
 \end{equation}
 be our equilibrium point.
-We assume that our drone is perfectly horizontal, i.e., $\varphi_e=\vartheta_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
+We assume that our drone is perfectly horizontal, i.e., $\varphi_e=\vartheta_e=0$ with also $\psi_e=0$, and there are no active torques: $\boldsymbol{\Gamma}=\mathbf 0$. The thrust perfectly balances the gravity:\begin{equation}
     T_e=mg.
 \end{equation}
 The full \textit{hovering equilibrium} condition is expressed as follows:\begin{equation}
@@ -322,7 +322,7 @@ We recall that ${}^iR_b(\bTheta)=R_z(\psi)R_y(\vartheta)R_x(\varphi)$, hence (wi
         -\delta\vartheta&\delta\varphi&0 
     \end{pmatrix}
 \end{equation}
-this is exactly the skew-symmetric matrix $S(\delta\bTheta)$. Now we can explicit the formula in Equation \eqref{delta_ddp}:\begin{align}
+this is exactly the skew-symmetric matrix $S(\delta\bTheta)$. Now we can make explicit the formula in Equation \eqref{delta_ddp}:\begin{align}
     \frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta&=-gS(\delta\bTheta)\mathbf e_3\\[1.5ex]
     \frac{\partial\mathbf F}{\partial T}\Big|_e\delta T&=-\frac{\delta T}{m}\mathbf e_3\\[1.5ex]
     \implies 
@@ -546,7 +546,7 @@ The gains have different roles:\begin{itemize}
         \zeta&=\frac{K_d}{2\sqrt{K_p}}.
     \end{align}
 \end{itemize}
-With the same choices for the gains (for example, $K_p=K_d=2$), the closed-loop poles are:\begin{itemize}
+With the same choices for the gains $K_p=K_{zp},K_d=K_{zd}$ the closed-loop poles are (by setting $K_p=K_d=2$):\begin{itemize}
     \item \textbf{backstepping}: $-2\pm i$ 
     \item \textbf{PD}: $-1\pm i$ (twice as slow).
 \end{itemize}
@@ -709,7 +709,7 @@ defined by the functions $a,b$ such that, together with the controller:\begin{eq
 \end{equation}
 for some functions $c,d$ the closed-loop system, of dimension $n+\nu$, is
 equivalent under a state transformation $\mathbf z=\phi(\bxi,\bzeta)$ to a \textit{linear
-controllable system}. Physically, in the quadrotor, the auxiliary state $\bzeta$ typically consists of integrators added on the thrust input $T$. By integrating the thrust once or twice, the true thrust becomes a state coordinate of the extended system, delaying the immediate appearance of the input into the derivatives and allowing the rotational dynamics to align with the translational ones without singularities. \bigskip
+controllable system}. Physically, in the quadrotor, the auxiliary state $\bzeta$ typically consists of integrators added on the thrust input $T$. By integrating the thrust  twice, the true thrust becomes a state coordinate of the extended system, delaying the immediate appearance of the input into the derivatives and allowing the rotational dynamics to align with the translational ones without singularities. \bigskip
 
 Let's see the \textbf{algorithm of dynamic extension}: the construction procedure used to find the dynamic compensator and completely linearize the system.\begin{enumerate}
     \item We choose an $m$-dimensional output $\boldsymbol{\eta}=h(\bxi)$.
@@ -803,12 +803,38 @@ The new state $\mathbf z$ that we choose through a diffeomorphism $\phi$ is give
         \psi&\dot\psi
     \end{pmatrix}^T\in\R^{14}
 \end{equation}
-we can act on $\mathbf p^{(4)}$ hence its derivatives of lower orders becomes part of the state, with:\begin{align}
+we can act on $\mathbf p^{(4)}$ hence its derivatives of lower orders become part of the state, with:\begin{align}
     \ddot{\mathbf p}&=g\mathbf e_3-\frac{\zeta_1}{m}\mathbf b(\bTheta)\\
      \dddot{\mathbf p}&=-\frac{1}{m}(\zeta_2\mathbf b(\bTheta)+\zeta_1B(\bTheta)\dot\bTheta).
 \end{align}
 The linearizing and decoupling control law is\begin{equation}
     {\mathbf u}=D^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v).
 \end{equation}
-\todo{slide 15}
+the closed loop system becomes:\begin{align}
+    x^{(4)}&=v_1\\
+    y^{(4)}&=v_2\\
+    z^{(4)}&=v_3\\
+    \ddot\psi&=v_4.
+\end{align}
+The system is linear in the coordinates $\mathbf z$.
+To track a trajectory $\boldsymbol{\eta}_d$ we define the error $e_i=\eta_{id}-\eta_i$ for each $i$ and set a PD (with higher order derivatives):
+\begin{align}
+    &v_i = \eta^{(4)}_{id}+\sum_{j=1}^{4}c_{i,j-1}e_i^{(j-1)}\quad\quad i=1,2,3\\
+    & v_4=\ddot\eta_{4d}+c_{4,0}e_4+c_{4,1}\dot e_4.
+\end{align}
+The system is stable and converges exponentially to the equilibrium (zero error) with an appropriate choice of the gains $c_{i,j}$. The reference $\boldsymbol{\eta}_d$ must be differentiable four times at least for the first three components (position) and at least two times for the yaw $\psi$. The dynamic compensator has the following time evolution:\begin{align}
+    &\dot\zeta_1=\zeta_2\\ 
+    &\dot\zeta_2=D_1^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)\\ 
+    &T=\zeta_1\\ 
+    &\tau_\varphi=D_2^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)\\ 
+     &\tau_\vartheta=D_3^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)\\ 
+      &\tau_\psi=D_4^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)
+\end{align}
+with $D_i^{-1}$ being the $i$-th row of $D^{-1}$, hence $D_i^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)$ is the scalar result of a product between row and column.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/control_system.pdf}
+    \caption{Block diagram of the control system.}
+\end{figure}
 \end{document}
+\todo{slide 15}
