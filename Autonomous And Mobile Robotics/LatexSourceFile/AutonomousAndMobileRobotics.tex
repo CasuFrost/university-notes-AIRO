@@ -483,9 +483,9 @@ The other robot that is equivalent to the unicycle is the synchro-drive, it has 
 Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
     \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 
 \end{equation}
-with $\mathbf g_i:\R^n\rightarrow\R^n$ being a vector field and $u_1,\dots,u_m$ the inputs. In this general discussion we use the symbol $\mathbf x$ to denote the state of our system, despite we usually use $\q$ (in the robotics domain).
+with $\mathbf g_i:\R^n\rightarrow\R^n$ being a vector field and $u_1,\dots,u_m$ the inputs. In this general discussion we use the symbol $\mathbf x$ to denote the state of our system, although we usually use $\q$ (in the robotics domain).
 \begin{boxdefinition}{Controllability of a Nonlinear System}{}
-    The system in Equation \eqref{driftless_system} is \textbf{controllable} if, for any pair of states $(\mathbf x_i,\mathbf x_f)$, with $\mathbf x(0)=\mathbf x_i$, there exists a profile $\tilde{\mathbf u}(t)$ for the inputs in $t\in [0,T]$ such that the closed loop system will reach at the end the state $\mathbf x(T)=\mathbf x_f$.
+    The system in Equation \eqref{driftless_system} is \textbf{controllable} if, for any pair of states $(\mathbf x_i,\mathbf x_f)$, with $\mathbf x(0)=\mathbf x_i$, there exists a profile $\tilde{\mathbf u}(t)$ for the inputs in $t\in [0,T]$ such that the system will reach at the end the state $\mathbf x(T)=\mathbf x_f$.
 \end{boxdefinition} 
 In linear systems, the controllability is guaranteed when the controllability matrix of the system have full rank, we will see how also for the nonlinear case, the controllability test will result in the derivation of the rank of a matrix.
 \begin{boxdefinition}{Lie Brackets}{}
@@ -522,7 +522,7 @@ hence:\begin{equation}
 notice how in this case $[\mathbf g_1,\mathbf g_2]$ is linearly independent from $\mathbf g_1,\mathbf g_2$. Now we want to give an \textit{interpretation} of the Lie bracket. Consider the following 2-inputs system:\begin{equation}
     \dot{\mathbf x}=\mathbf g_1(\mathbf x)u_1+\mathbf g_2(\mathbf x)u_2
 \end{equation}
-the interpretation of the Lie brackets can be defined by considering the following time profilo for $u_1,u_2$ in $t\in [0,4\varepsilon]$:
+the interpretation of the Lie brackets can be defined by considering the following time profile for $u_1,u_2$ in $t\in [0,4\varepsilon]$:
 \begin{align}
     &(u_1,u_2)=(1,0)\quad  t\in[0,\varepsilon]\\ 
     &(u_1,u_2)=(0,1)\quad  t\in[\varepsilon,2\varepsilon]\\ 
@@ -535,7 +535,7 @@ the interpretation of the Lie brackets can be defined by considering the followi
 After applying this input profile the system will be in the state:\begin{equation}
     \mathbf x(4\varepsilon)=\mathbf x(0)+\underbrace{\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))+O(\varepsilon^3)}_{\text{displacement}}.
 \end{equation}
-This results affirms that the displacement will be in the direction of the Lie bracket, with an error given by the term $O(\varepsilon^3)$: if $\varepsilon\rightarrow 0$, the terms in $O(\varepsilon^3)$ will vanishes faster, and the displacement will be defined mainly by  $\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))$.
+This result affirms that the displacement will be in the direction of the Lie bracket, with an error given by the term $O(\varepsilon^3)$: if $\varepsilon\rightarrow 0$, the terms in $O(\varepsilon^3)$ will vanish faster, and the displacement will be defined mainly by  $\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))$.
 \begin{boxobservation}{}{}
     The Lie bracket gives the direction of the displacement of that particular input sequence.
 \end{boxobservation} 
@@ -574,9 +574,78 @@ Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension dependin
 So in practice, we have to build the matrix $M$ which the columns are the vector fields $\mathbf g_i$ and all their Lie brackets, and check if the rank is full.\begin{equation}
     M(\mathbf x)=\begin{pmatrix}
           |& &| & &| & &|&\\
-        \mathbf g_1(\mathbf x)&\dots&\mathbf g_m(\q)&\dots &[\mathbf g_i,\mathbf g_j](\mathbf x)&\dots&[\mathbf g_i,[\mathbf g_j,\mathbf g_k]](\mathbf x)\dots\\
+        \mathbf g_1(\mathbf x)&\dots&\mathbf g_m(\mathbf x)&\dots &[\mathbf g_i,\mathbf g_j](\mathbf x)&\dots&[\mathbf g_i,[\mathbf g_j,\mathbf g_k]](\mathbf x)\dots\\
          |& &| & &| & &|&
     \end{pmatrix}
 \end{equation}
-\todo{}
+It's impossible to write out all the columns, we can check each iteratively for the vector fields $\mathbf g_1,\dots,\mathbf g_m$, then for the first order Lie brackets, then for the higher order,  as soon as the rank of the matrix reaches size $n$, the criterion is satisfied ($\dim \Delta_{\mathcal{A}} = n$) and the system is controllable. All remaining infinite columns can be ignored. For systems described by analytic functions, the chain of Lie brackets stabilizes after a finite number of steps. If at a certain point the new Lie brackets no longer increase the rank and it remains lower than $n$, the process stops and the system is not controllable. \begin{boxproposition}{}{}
+If the system is analytical, the accessibility distribution stabilizes. The chain of Lie brackets cannot generate distributions of infinitely increasing size in a space of dimension $n$. Consequently, in the worst case, it is not necessary to go beyond the Lie brackets of order $n-1$ (or in any case limited according to the size of the state).
+\end{boxproposition}
+In computational practice (for example using symbolic calculation software such as MATLAB or Python), the brackets are calculated in ascending order of degree and those that do not increase the rank are immediately discarded, blocking the algorithm as soon as the rank is equal to $n$.\bigskip 
+\subsection{The Unicycle Case}
+The unicycle model is:\begin{equation}
+    \dq=\underbrace{\begin{pmatrix}
+        \cos\vartheta\\\sin\vartheta\\0 
+    \end{pmatrix}}_{\mathbf g_1}v+\underbrace{\begin{pmatrix}
+        0\\0\\1  
+    \end{pmatrix}}_{\mathbf g_2}\omega
+\end{equation}
+we compute the first order Lie bracket:\begin{equation}
+    \mathbf g_3(\q):=[\mathbf g_1,\mathbf g_2](\q)=-\begin{pmatrix}
+        0&0&-\sin\vartheta\\ 
+        0&0&\cos\vartheta \\ 
+        0&0&0
+    \end{pmatrix}\begin{pmatrix}
+        0\\0\\1 
+    \end{pmatrix}=\begin{pmatrix}
+       \sin\vartheta\\-\cos\vartheta\\ 0
+    \end{pmatrix}
+\end{equation}
+we denote $\mathbf g_3$ the Lie bracket, notice how is the unit vector orthogonal to the sagittal axis, called the \textbf{slide vector field}. Let's check the matrix given by $\mathbf g_1,\mathbf g_2,\mathbf g_3$:\begin{equation}
+    \text{rank}\begin{pmatrix}
+        \cos\vartheta&0&\sin\vartheta\\ 
+        \sin\vartheta&0&-\cos\vartheta\\ 
+        0&1&0
+    \end{pmatrix}= \text{rank}\begin{pmatrix}
+        \cos\vartheta&\sin\vartheta&0\\ 
+        \sin\vartheta&-\cos\vartheta&0\\ 
+        0&0&1
+    \end{pmatrix}=3
+\end{equation}
+The rank is full, we don't have to check the higher order Lie brackets, hence the system is controllable.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/slide_vector.eps}
+\end{figure}
+In this case the Lie bracket defines a velocity that is immediately unrealizable, but specifies a direction achievable through a sequence of motions.
+\subsection{The Bicycle Case}
+The model of the bicycle is:\begin{equation}
+    \dq=
+\underbrace{\begin{pmatrix}
+        \cos\vartheta\\\sin\vartheta\\\frac{1}{l}\tan\phi\\0 
+    \end{pmatrix}}_{\mathbf g_1}u_1+\underbrace{\begin{pmatrix}
+        0\\0\\0\\1  
+    \end{pmatrix}}_{\mathbf g_2}u_2
+\end{equation}
+the first Lie bracket (we don't show the computation) is:\begin{equation}
+    \mathbf g_3(\q):=[\mathbf g_1,\mathbf g_2](\q)=\begin{pmatrix}
+        0\\0\\-\frac{1}{l\cos^2\phi}\\0
+    \end{pmatrix}
+\end{equation}
+this vector is called \textbf{wriggle} and is clearly linearly independent from the others, hence the rank is at least 3. Let's compute the second order Lie bracket:\begin{equation}
+    \mathbf g_4:=[\mathbf g_1,\mathbf g_3](\q)=\begin{pmatrix}
+        -\frac{\sin\vartheta}{l\cos^2\phi} 
+        \\\frac{\cos\vartheta}{l\cos^2\phi} \\0\\0
+    \end{pmatrix}
+\end{equation}
+$\mathbf g_4$ is parallel to the slide vector field.
+It can be verified that:\begin{equation}
+    \text{rank}\begin{pmatrix}
+        \cos\vartheta&0&0& -\frac{\sin\vartheta}{l\cos^2\phi} \\
+        \sin\vartheta&0&0&\frac{\cos\vartheta}{l\cos^2\phi}\\
+        \frac{1}{l}\tan\phi&0&-\frac{1}{l\cos^2\phi}&0\\
+        0&1&0&0
+    \end{pmatrix}=4
+\end{equation}
+hence the model is controllable.
 \end{document}
