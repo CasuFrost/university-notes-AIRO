@@ -477,4 +477,106 @@ where $d$ is the distance between the contact points of the wheels.\begin{figure
     \includegraphics[width=0.6\textwidth ]{images/diff_drive.eps}
 \end{figure}
 The other robot that is equivalent to the unicycle is the synchro-drive, it has two motors equipped with a pulley and belt mechanism, one controls the orientation of all the wheels, the other the rolling speed, hence these motors directly controls $v$ and $\omega$, where $v$ is relative to the velocity of the geometric center of the three contact points.
+\subsection{The Bicycle Model}
+\todo{}
+\section{Nonlinear Controllability}
+Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
+    \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 
+\end{equation}
+with $\mathbf g_i:\R^n\rightarrow\R^n$ being a vector field and $u_1,\dots,u_m$ the inputs. In this general discussion we use the symbol $\mathbf x$ to denote the state of our system, despite we usually use $\q$ (in the robotics domain).
+\begin{boxdefinition}{Controllability of a Nonlinear System}{}
+    The system in Equation \eqref{driftless_system} is \textbf{controllable} if, for any pair of states $(\mathbf x_i,\mathbf x_f)$, with $\mathbf x(0)=\mathbf x_i$, there exists a profile $\tilde{\mathbf u}(t)$ for the inputs in $t\in [0,T]$ such that the closed loop system will reach at the end the state $\mathbf x(T)=\mathbf x_f$.
+\end{boxdefinition} 
+In linear systems, the controllability is guaranteed when the controllability matrix of the system have full rank, we will see how also for the nonlinear case, the controllability test will result in the derivation of the rank of a matrix.
+\begin{boxdefinition}{Lie Brackets}{}
+    Let $\mathbf g_1,\mathbf g_2$ be two vector fields on $\R^n$. The \textbf{Lie Bracket} of these vector fields is the new vector field $[\mathbf g_1,\mathbf g_2]$ defined as follows:\begin{equation}
+        [\mathbf g_1,\mathbf g_2](\mathbf x)=\frac{\partial \mathbf g_2}{\partial \mathbf x}\mathbf g_1(\mathbf x)-\frac{\partial \mathbf g_1}{\partial \mathbf x}\mathbf g_2(\mathbf x).
+    \end{equation}
+\end{boxdefinition}
+\noindent Let's see an example in $\R^3$:\begin{equation}
+    \mathbf g_1=\begin{pmatrix}
+        \cos x_3\\\sin x_3\\ 0 
+    \end{pmatrix},\quad\mathbf g_2=\begin{pmatrix}
+        0\\0\\ x_1 
+    \end{pmatrix}
+\end{equation}
+the Jacobians are:\begin{equation}
+    \frac{\partial  \mathbf g_1}{\partial \mathbf x}=\begin{pmatrix}
+        0&0&-\sin x_3\\ 
+        0&0&\cos x_3\\ 
+        0&0&0
+    \end{pmatrix},\quad 
+    \frac{\partial  \mathbf g_2}{\partial \mathbf x}=\begin{pmatrix}
+        0&0&0\\ 
+        0&0&0\\ 
+        1&0&0
+    \end{pmatrix}
+\end{equation}
+hence:\begin{equation}
+     [\mathbf g_1,\mathbf g_2](\mathbf x)=\begin{pmatrix}
+        x_1\sin x_3\\ 
+        -x_1\cos x_3 \\ 
+        \cos x_3
+     \end{pmatrix}
+\end{equation}
+notice how in this case $[\mathbf g_1,\mathbf g_2]$ is linearly independent from $\mathbf g_1,\mathbf g_2$. Now we want to give an \textit{interpretation} of the Lie bracket. Consider the following 2-inputs system:\begin{equation}
+    \dot{\mathbf x}=\mathbf g_1(\mathbf x)u_1+\mathbf g_2(\mathbf x)u_2
+\end{equation}
+the interpretation of the Lie brackets can be defined by considering the following time profilo for $u_1,u_2$ in $t\in [0,4\varepsilon]$:
+\begin{align}
+    &(u_1,u_2)=(1,0)\quad  t\in[0,\varepsilon]\\ 
+    &(u_1,u_2)=(0,1)\quad  t\in[\varepsilon,2\varepsilon]\\ 
+    &(u_1,u_2)=(-1,0)\quad t\in[2\varepsilon,3\varepsilon]\\ 
+    &(u_1,u_2)=(0,-1)\quad t\in[3\varepsilon,4\varepsilon].
+\end{align}\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/lie_inputs.eps}
+\end{figure}
+After applying this input profile the system will be in the state:\begin{equation}
+    \mathbf x(4\varepsilon)=\mathbf x(0)+\underbrace{\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))+O(\varepsilon^3)}_{\text{displacement}}.
+\end{equation}
+This results affirms that the displacement will be in the direction of the Lie bracket, with an error given by the term $O(\varepsilon^3)$: if $\varepsilon\rightarrow 0$, the terms in $O(\varepsilon^3)$ will vanishes faster, and the displacement will be defined mainly by  $\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))$.
+\begin{boxobservation}{}{}
+    The Lie bracket gives the direction of the displacement of that particular input sequence.
+\end{boxobservation} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/lie_bracket_direction.eps}
+\end{figure}
+\begin{boxdefinition}{Distribution}{}
+    Let $\mathcal C$ be a smooth manifold. A \textit{Distribution} $\Delta$ is a map that assign at each point $\mathbf x\in \mathcal C$ a subspace of the tangent space $T_\mathbf x\mathcal C$:\begin{equation}
+        \Delta : \mathbf x \mapsto \Delta(\mathbf x)\subset T_\mathbf x\mathcal C.
+    \end{equation}
+\end{boxdefinition}
+The tangent space in each point of a $n$-manifold have at most dimension $n$, hence the dimension of the subspace $\Delta (\mathbf x)$ can be at most $n$ (depending on the point on where we are evaluating $\Delta$). For a system in the form \eqref{driftless_system}, the \textit{input distribution} is defined as follows:\begin{equation}
+    \Delta(\mathbf x)=\text{span}\{\mathbf g_1(\mathbf x),\mathbf g_2(\mathbf x),\dots,\mathbf g_m(\mathbf x)\}.
+\end{equation}
+The controllability problem for nonlinear systems is strictly correlated to a particular distribution, called the \textbf{accessibility distribution} $\Delta_{\mathcal A}$, defined as follows:\begin{equation}
+    \Delta_{\mathcal A}(\mathbf x)=\text{span}\{\mathbf g_1(\mathbf x),\dots,\mathbf g_m(\mathbf x),\dots,[\mathbf g_i,\mathbf g_j](\mathbf x),\dots,[\mathbf g_i,[\mathbf g_j,\mathbf g_k]](\mathbf x),\dots\}.
+\end{equation}
+Let's break it down:\begin{itemize}
+    \item With $[\mathbf g_i,\mathbf g_j]$  we denote all Lie brackets given by all the possible pairs of vector fields for $1\le i,j\le m$. These are also called first order Lie brackets.
+    \item Each pair $\mathbf g_i,\mathbf g_j$ (with $i\ne j$) appears only one time, we don't have to add also $[\mathbf g_j,\mathbf g_i]$ since it is equal to $-[\mathbf g_i,\mathbf g_j]$ (they are linearly dependent, the span needs only one of them).
+    \item $[\mathbf g_i,[\mathbf g_j,\mathbf g_k]]$ for $1\le i,j,k\le m$ are the second order Lie brackets.
+    \item This nested definition can continue, for example the third order Lie brackets are in the form  $[\mathbf g_i,[\mathbf g_j,[\mathbf g_k,\mathbf g_h]]]$.
+    \item The definition of $\Delta_{\mathcal A}$ consider all the possible combination of Lie brackets, for each possible order, up to infinity.
+\end{itemize}
+Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension depending on $\mathbf x$, for a nonlinear system, to assert controllability, is \textit{mandatory} that $\Delta_{\mathcal A}(\mathbf x)$ have the same dimension on every single $\mathbf x\in\mathcal C$.
+\begin{boxdefinition}{Dimension of a Distribution}{}
+    The distribution $\Delta_{\mathcal A}$ have dimension $k$ if $\dim\Delta_{\mathcal A}(\mathbf x)=k$ for every $\mathbf x\in\mathcal C$. In that case we write $\dim\Delta_{\mathcal A}=k$.
+\end{boxdefinition}
+\noindent The nonlinear controllability problem is fully described by the following result.
+\begin{boxtheorem}{Accessibility Criterion}{}
+    A nonlinear system of the form \eqref{driftless_system} with an $n$-dimensional state vector is controllable \textit{if and only if} its accessibility distribution have dimension $n$:\begin{equation}
+        \dim\Delta_{\mathcal A}=n.
+    \end{equation}
+\end{boxtheorem}
+So in practice, we have to build the matrix $M$ which the columns are the vector fields $\mathbf g_i$ and all their Lie brackets, and check if the rank is full.\begin{equation}
+    M(\mathbf x)=\begin{pmatrix}
+          |& &| & &| & &|&\\
+        \mathbf g_1(\mathbf x)&\dots&\mathbf g_m(\q)&\dots &[\mathbf g_i,\mathbf g_j](\mathbf x)&\dots&[\mathbf g_i,[\mathbf g_j,\mathbf g_k]](\mathbf x)\dots\\
+         |& &| & &| & &|&
+    \end{pmatrix}
+\end{equation}
+\todo{}
 \end{document}
