@@ -457,7 +457,7 @@ while $u_2$ is exactly $\dot\theta$. We rename these quantities:\begin{align}
 $v$ is related to the rolling velocity $\omega_{\text{roll}}$ and the radius of the wheel:\begin{equation}
     v=\omega_{\text{roll}}\cdot r.
 \end{equation}
-We can rewrite the kinematic model by splitting the cartesian part from the angular one:\begin{equation}
+We can rewrite the kinematic model by splitting the Cartesian part from the angular one:\begin{equation}
     \dq=\begin{pmatrix}
         \cos\theta\\\sin\theta\\0 
     \end{pmatrix}v+\begin{pmatrix}
@@ -466,7 +466,7 @@ We can rewrite the kinematic model by splitting the cartesian part from the angu
 \end{equation} 
 Is this model controllable? Yes, we already proved for the rolling disk that a universal maneuver exists.\bigskip
 
-What are the real world robots that are kinematically and mechanically equivalent to the unicycle? First of all the differential drive, since it can rotate along its vertical axis, and move in the cartesian plane only towards its sagittal axis (it can't slide laterally). It has two actuated wheels, of radius $r$ and rolling velocities $\omega_R,\omega_L$. Its cartesian velocity $v$ is given by the average angular velocity of the two wheels:\begin{equation}
+What are the real world robots that are kinematically and mechanically equivalent to the unicycle? First of all the differential drive, since it can rotate along its vertical axis, and move in the Cartesian plane only towards its sagittal axis (it can't slide laterally). It has two actuated wheels, of radius $r$ and rolling velocities $\omega_R,\omega_L$. Its Cartesian velocity $v$ is given by the average angular velocity of the two wheels:\begin{equation}
     v=r\frac{\omega_R+\omega_L}{2}
 \end{equation}
 while its angular velocity is given by the difference:\begin{equation}
@@ -478,7 +478,135 @@ where $d$ is the distance between the contact points of the wheels.\begin{figure
 \end{figure}
 The other robot that is equivalent to the unicycle is the synchro-drive, it has two motors equipped with a pulley and belt mechanism, one controls the orientation of all the wheels, the other the rolling speed, hence these motors directly controls $v$ and $\omega$, where $v$ is relative to the velocity of the geometric center of the three contact points.
 \subsection{The Bicycle Model}
-\todo{}
+This kinematic model has two wheels, one fixed at the back (called rear wheel)  and one steerable in the front. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/bicycle.eps}
+    \caption{The bicycle model.}
+    \label{bicycle}
+\end{figure}
+As described in Figure \ref{bicycle}, the configuration space of the bicycle is $\mathcal C=\R^2\times SO(2)\times SO(2)$, the dimension is $n=4$. $l$ is the distance between the two contact points of the two wheels, the first identified by $(x,y)$, the second by $(x_f,y_f)$, clearly:\begin{align}
+    x_f&=x+l\cos\theta\\
+    y_f&=y+l\sin\theta
+\end{align}
+the configuration vector is\begin{equation}
+    \q=\begin{pmatrix}
+        x&y&\theta&\phi 
+    \end{pmatrix}^T.
+\end{equation}
+Since there are two wheels, we will have two constraints, that imposes the pure rolling condition both wheels. For the rear wheel and the front wheel, respectively::\begin{align}
+    &\sin\theta\dot x-\cos\theta \dot y=0\\ 
+    &\sin(\theta+\phi)\dot x_f-\cos(\theta+\phi)\dot y_f=0\label{front_wheel_constr}
+\end{align}
+in vector form:\begin{align}
+    &\underbrace{\begin{pmatrix}
+    \sin\theta&-\cos\theta
+    \end{pmatrix}}_{\mathbf a^T_1}\begin{pmatrix}
+        \dot x\\ \dot y  
+    \end{pmatrix}=0\\[1.5ex] 
+    &\underbrace{\begin{pmatrix}
+    \sin(\theta+\phi)&-\cos(\theta+\phi)
+    \end{pmatrix}}_{\mathbf a^T_2}\begin{pmatrix}
+        \dot x_f\\ \dot y_f
+    \end{pmatrix}=0
+\end{align}
+$\mathbf a_1$ and $\mathbf a_2$ identify the direction of the (forbidden) slide direction for both wheels. The two lines meet at the point known as \textbf{instantaneous center of rotation (ICR)}, as shown in Figure \ref{ICR}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/ICR.eps}
+    \caption{The instantaneous center of rotation.}
+    \label{ICR}
+\end{figure}
+The ICR represents the geometric point around which all the parts of the robot are rotating at a given instant. Now we want to make explicit $(\dot x_f,\dot y_f)$ in order to write the constraints only as a function of $\q$.\begin{align}
+    &\begin{cases}
+        x_f=x+l\cos\theta\\
+        y_f=y+l\sin\theta
+    \end{cases}\implies\\[1.5ex]
+    &\begin{cases}
+        \dot x_f=\dot x-\dot\theta l\sin\theta\\
+        \dot y_f=\dot y+\dot\theta l\cos\theta
+    \end{cases}
+\end{align}
+we rewrite the constraint in Equation \eqref{front_wheel_constr}:\begin{align}
+   & \sin(\theta+\phi)\dot x_f-\cos(\theta+\phi)\dot y_f=0\implies\\
+   & \sin(\theta+\phi)(\dot x-\dot\theta l\sin\theta)-\cos(\theta+\phi)(\dot y+\dot\theta l\cos\theta)=0\implies\\
+   &\sin(\theta+\phi)\dot x-\cos(\theta+\phi)\dot y-l\dot\theta\cos\phi=0.
+\end{align}
+The constraints in matrix form are:\begin{equation}
+    \underbrace{\begin{pmatrix}
+        \sin\theta&-\cos\theta&0&0\\ 
+        \sin(\theta+\phi)&-\cos(\theta+\phi)&-l\cos\phi&0
+    \end{pmatrix}}_{A(\q)}\begin{pmatrix}
+        \dot x\\\dot y\\\dot \theta\\\dot \phi 
+    \end{pmatrix}=\mathbf 0
+\end{equation}
+with $\text{dim}\mathcal N(A)=2$, we should find two vectors for the basis of $\mathcal N(A)$. Since the last column of $A$ is zero, one of the two vectors is:\begin{equation}
+    \mathbf g_2(\q)=\begin{pmatrix}
+        0\\0\\0\\1 
+    \end{pmatrix}.
+\end{equation}
+We want to find $\mathbf g_1(\q)$, a vector similar to the one used for the unicycle is\begin{equation}\mathbf g_1(\q)=\begin{pmatrix}
+    \cos\theta\\\sin\theta\\\alpha\\0
+\end{pmatrix}
+\end{equation}
+with $\alpha$ a term that has yet to be chosen. We see how:\begin{equation}
+    \begin{pmatrix}
+        \sin\theta&-\cos\theta&0&0\\ 
+        \sin(\theta+\phi)&-\cos(\theta+\phi)&-l\cos\phi&0
+    \end{pmatrix}\begin{pmatrix}
+    \cos\theta\\\sin\theta\\\alpha\\0
+\end{pmatrix}=\begin{pmatrix}
+    0\\ 
+     \sin(\theta+\phi)\cos\theta-\cos(\theta+\phi)\sin\theta-l\cos\phi\alpha
+\end{pmatrix}
+\end{equation}
+now we choose $\alpha$ to make the second component zero:\begin{align}
+     &\sin(\theta+\phi)\cos\theta-\cos(\theta+\phi)\sin\theta-l\cos\phi\alpha=0\implies\\
+     &\sin\phi-l\cos\phi\alpha=0\implies \\ 
+     &\alpha=\frac{1}{l}\tan\phi 
+\end{align}
+we have found our basis, now we can write out the kinematic model:\begin{equation}
+    \dq=\begin{pmatrix}
+        \dot x\\ \dot y \\ \dot\theta\\\dot\phi
+    \end{pmatrix}=\begin{pmatrix}
+        \cos\theta\\\sin\theta\\\frac{1}{l}\tan\phi \\0
+    \end{pmatrix}u_1+\begin{pmatrix}
+        0\\0\\0\\1 
+    \end{pmatrix}u_2
+\end{equation}
+$u_1=\pm\sqrt{\dot x^2+\dot y^2}$ is the magnitude of the velocity of the rear wheel contact point. If the robot is driven by the front wheel this model isn't appropriate, since $u_1$ is the velocity of the rear wheel.\bigskip
+
+This model has a singularity, since $\tan\phi$ isn't defined at $\phi=\frac{\pi}{2}$, hence $\mathbf g_1$ can't be evaluated, this is due to the fact that the model assumes only pure rolling for the wheels, and if $\phi=\frac{\pi}{2}$ any non zero $u_1$ will make the front wheel slide.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/phi_singularity.eps}
+\end{figure}
+\noindent This problem is easily avoided by considering a limits on the joint values. Now let's derive a model where $u_1$ is the velocity of the front wheel, to do so, we have to modify the first vector of the basis:\begin{equation}
+    \hat{\mathbf g}_1=\mathbf g_1\cos\phi
+\end{equation}
+then\begin{equation}
+    \dq=\underbrace{\begin{pmatrix}
+        \cos\theta\cos\phi\\\sin\theta\cos\phi\\\frac{1}{l}\sin\phi \\0
+    \end{pmatrix}}_{\hat{\mathbf g}_1}u_1+\begin{pmatrix}
+        0\\0\\0\\1 
+    \end{pmatrix}u_2
+\end{equation}
+now $u_1$ is $\pm\sqrt{\dot x_f^2+\dot y_f^2}$. Now the singularity on $\phi$ disappears, here a non zero $u_1$ when $\phi=\frac{\pi}{2}$ represents a motion around $(x,y)$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/phi_singularity2.eps}
+\end{figure}
+The bicycle constraints are non-holonomic and the model is controllable, we prove this fact by showing (in a non formal way) a universal maneuver. Consider two generic configurations $\q_s,\q_g$, we can draw the circles centered in the ICR that represent the Cartesian trajectory that the robot will perform by actuating just the rear wheel.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/bicycle_manuver_1.eps}
+\end{figure}
+The robot in $\q_s$ (left) can start tracking the circular trajectory until it is on the \textit{common tangent} between the two circles.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/bicycle_manuver_2.eps}
+\end{figure}
+There, it will steer by making $\phi=0$ and it will track the common tangent in order to reach the  circular path of $\q_g$. There, it will steer again and reach the goal configuration.
 \section{Nonlinear Controllability}
 Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
     \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 

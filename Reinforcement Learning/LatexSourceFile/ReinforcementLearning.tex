@@ -7,6 +7,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
  \usepackage{multirow}
+ \algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
  \pgfplotsset{compat=newest}
 \newcommand{\titolo}{Reinforcement Learning}
 
@@ -638,6 +639,183 @@ This holds since $\gamma\in[0,1)$, hence $(1-\gamma)> 0$. By definition:\begin{a
 
 
 This formulation reduces the multi-step problem to a one-step greedy choice plus the continuation value $V(s')$. By uniqueness of the fixed point, any function $V$ satisfying this optimality equation coincides with $V^*$.
+\section{Value iteration}
+We have seen how the value function estimates the goodness of a state based on their value, by applying a given policy, hence it is also a measure to compare policies.\begin{equation}
+    V^\pi(s_t)=\VA_\pi[r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}\dots\mid s_t]=\VA\left[
+        \sum_{h=0}^{\infty}\gamma^hr_{h}\mid  
+        s_0=s_t,\ a_h=\pi(s_h),\ s_{h+1}\sim p(\cdot\mid s_h,a_h)
+    \right].
+\end{equation}
+\subsection{Exact Policy Evaluation}
+In this section we will describe a method to \textit{compute exactly the value function} $V^\pi$ of a given policy $\pi$, by assuming that the reward function is deterministic, and the transition probabilities are known.
+For all the states, the Bellman expectation equation holds:\begin{equation}
+    V^\pi(s)=r(s,\pi(s))+\gamma\VA_{s'\sim p(\cdot\mid s,\pi(s))}[V^\pi(s')]=
+    r(s,\pi(s))+\gamma\sum_{s'\in S}V^\pi(s')p(s'|s,\pi(s))
+\end{equation}
+this can be written as a system of $|S|$ equations (one for each state), we define some  vector quantities:\begin{equation}
+    \mathbf V^\pi=\begin{pmatrix}
+        V^\pi(s_1)\\\vdots\\ V^\pi(s_m)
+    \end{pmatrix},\quad 
+    \mathbf r^\pi=\begin{pmatrix}
+       r(s_1,(\pi(s_1)))\\\vdots\\ r(s_m,(\pi(s_m)))
+    \end{pmatrix}
+\end{equation}
+by defining $m=|S|$. $\mathbf V^\pi,\mathbf r^\pi$ are vectors in $\R^m$, then we have the $m\times m$ matrix $P^\pi$ defined as follows:\begin{equation}
+    P^\pi(i,j)=p(s_j\mid s_i,\pi(s_i))
+\end{equation} 
+The element at row $i$ and column $j$ represents the conditional probability $p(s_j \vert{} s_i, \pi(s_i))$ of moving from state $s_i$ to state $s_j$ (given by the transition function):
+\begin{equation}
+     P^\pi=\begin{pmatrix}
+        p(s_1\mid s_1,\pi(s_1))&\dots&p(s_m\mid s_1,\pi(s_1))\\
+         \vdots&\ddots&\vdots\\
+         p(s_1\mid s_m,\pi(s_m))&\dots&p(s_m\mid s_m,\pi(s_m))
+     \end{pmatrix}
+\end{equation}
+hence the Bellman expectation can be expressed in matrix form:\begin{equation}
+    \mathbf V^\pi=\mathbf r^\pi+\gamma P^\pi \mathbf V^\pi
+\end{equation}
+if the rewards $\mathbf r^\pi$ and the transition probabilities $P^\pi$ are known, we can solve this system of equations for $\mathbf V^\pi$ by inverting the matrix:\begin{equation}
+     \mathbf V^\pi=(I-\gamma P^\pi)^{-1}\mathbf r^\pi 
+\end{equation}
+when $m=|S|$ is big (large number of states) this inversion becomes computationally expensive, since the number of operations are in $O(m^3)$.
+\subsection{Fixed Point Iteration}
+We will describe a computationally less expensive method to compute $V^\pi(s)$ for each $s$. Given a metric space $M$, consider a function $f:M \rightarrow M$. A point $\mathbf x\in M$ is called \textbf{fixed} if:\begin{equation}
+    f(\mathbf x)=\mathbf x.
+\end{equation}
+These points are related to a particular class of functions.
+\begin{boxdefinition}{Contraction Mapping}{}
+    A function $f:M \rightarrow M$ is a contraction mapping if, there exists a constant $k\in [0,1)$ such that, for every pair of point $\mathbf x,\mathbf y$ the following condition holds:\begin{equation}
+        \|f(\mathbf x)-f(\mathbf y)\|\le k\|\mathbf x-\mathbf y\|
+    \end{equation}
+\end{boxdefinition}
+\noindent The following result is crucial.
+\begin{boxtheorem}{Banach}{}
+    If $f:M\rightarrow M$ is a contraction mapping and $M$ is complete, then there exists a unique fixed point $\mathbf x^*\in M$
+  $$
+        f(\mathbf x^*)=\mathbf x^*
+$$
+    and, by starting from an arbitrary $\mathbf x_0\in M$, and applying iteratively  $$\mathbf x_{i+1}=f(\mathbf x_i)$$ for $i=0,1,\dots \infty$, the sequence will converge to $\mathbf x^*$.
+\end{boxtheorem}
+\noindent In the simplest case, the contraction mapping $f$ is just a matrix $O$:
+\begin{equation}
+        \|O\mathbf x-O\mathbf y\|\le \gamma \|\mathbf x-\mathbf y\|
+\end{equation}
+instead of $k$ we are now using our discount factor $\gamma$. We will use the fact that the value function $\mathbf V^\pi$ \textbf{is a fixed point} of a given operator, and can be found by applying that operator (that is a contraction mapping) iteratively.\bigskip 
 
 
+The metric space we work in, of which $\mathbf V^\pi$ is part, is $\R^m$. The contraction mapping $\mathcal B$ that we will use is the following:\begin{equation}
+    \mathcal B(\mathbf x)=\mathbf r^\pi+\gamma P^\pi\mathbf x
+\end{equation}
+this is a linear operator, defined through the rewards $\mathbf r^\pi$ and the probabilities of the transitions $P^\pi$. The value function $V^\pi$ is \textbf{the fixed point of} $\mathcal B$. Hence we have an iterative algorithm.
+
+\begin{algorithm}[H]
+\caption{Fixed Point Iteration}\label{alg:fixed_point_iteration}
+\begin{algorithmic}[1]
+\State initialize $\mathbf V_0=\mathbf 0$ 
+\State let $t=0$ 
+\Do
+\State $\mathbf V_{t+1}=\mathbf r^\pi+\gamma P^\pi\mathbf V_t$
+\State $t\leftarrow t+1$
+\doWhile{convergence is not met}
+\end{algorithmic}
+\end{algorithm}
+\noindent We can stop the iterations when the difference between $\mathbf V_{t+1}$ and $\mathbf V_{t}$ is less than a defined threshold $\epsilon$:\begin{equation}
+    \text{stop if }\|\mathbf V_{t+1}-\mathbf V_{t}\|\le\epsilon.
+\end{equation}
+We have to prove the fact that the Algorithm \ref{alg:fixed_point_iteration} converge to the value function $\mathbf V^\pi$.
+\begin{boxtheorem}{Iterative Policy Evaluation}{}
+    Let $\mathbf V_0$ be our starting guess for the value function $\mathbf V^\pi$, and\begin{equation}
+        \mathbf V_{t+1}=\mathcal B ( \mathbf V_t).
+    \end{equation}
+    We denote $V_t(s)$ the component of $\mathbf V_t$ relative to the state $s$.
+    For each single state $s\in S$ we have:\begin{equation}
+        |\mathcal B(V_t(s))-\mathcal B(V^\pi(s))|=|V_{t+1}(s)-V^\pi(s)|\le\gamma^{t+1}\|
+        \mathbf V_0-\mathbf V^\pi\|.
+    \end{equation}
+\end{boxtheorem}
+\noindent\textit{Proof}: The following reasoning holds for all the states $s\in S$. We have \begin{equation}
+    |V_{t+1}(s)-(s)V^\pi(s)|
+\end{equation}
+we expand $V_{t+1}(s)$ and $V^\pi(s)$:\begin{align}
+    &V_{t+1}(s)=r(s,\pi(s))+\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))\\ 
+    &V^\pi(s)=r(s,\pi(s))+\gamma\sum_{s'\in S}V^\pi(s')p(s'\mid s,\pi(s))
+\end{align}
+hence we have\begin{align}
+    &|V_{t+1}(s)-(s)V^\pi(s)|\\ 
+    =&\left|\sapText{r(s,\pi(s))}+\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
+    \sapText{-r(s,\pi(s))}-\gamma\sum_{s'\in S}V^\pi(s')p(s'\mid s,\pi(s))\right|
+\end{align}
+$r(s,\pi(s))$ can be canceled:\begin{equation}
+    \left|\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
+   -\gamma\sum_{s'\in S}V^\pi(s')p(s'\mid s,\pi(s))\right|
+\end{equation}
+the two terms are summing over the same set hence:\begin{equation}
+      \left|\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
+   -V^\pi(s')p(s'\mid s,\pi(s))\right|
+\end{equation}
+we apply the Jensen's inequality:\begin{align}
+    & \left|\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
+   -V^\pi(s')p(s'\mid s,\pi(s))\right|\\[1.5ex]
+   \le & \gamma\sum_{s'\in S}\left|V_t(s')p(s'\mid s,\pi(s))
+   -V^\pi(s')p(s'\mid s,\pi(s))\right|
+\end{align}
+we can group $p(s'\mid s,\pi(s))$\begin{equation}
+    \gamma\sum_{s'\in S}\left|p(s'\mid s,\pi(s))\big(V_t(s')
+   -V^\pi(s')\big)\right|
+\end{equation}
+since $$|V_t(s')
+   -V^\pi(s')|\le\|V_t-V^\pi\|_\infty $$
+   we can proceed as follows:\begin{align}
+    &\gamma\sum_{s'\in S}\left|p(s'\mid s,\pi(s))\big(V_t(s')
+   -V^\pi(s')\big)\right|\\ 
+   \le&\gamma\sum_{s'\in S}p(s'\mid s,\pi(s))\|V_t-V^\pi\|_\infty
+   \end{align}
+$\|V_t-V^\pi\|_\infty$ is constant hence we can move it out the sum and get:\begin{align}
+    &\gamma\sum_{s'\in S}p(s'\mid s,\pi(s))\|V_t-V^\pi\|_\infty\\[1.5ex] &=
+    \gamma\|V_t-V^\pi\|_\infty\underbrace{\sum_{s'\in S}p(s'\mid s,\pi(s))}_{\text{sum up to 1}}=
+    \gamma\|V_t-V^\pi\|_\infty.
+\end{align}
+We have obtained the following inequality\begin{equation}
+    |V_{t+1}(s)-V^\pi(s)|\le  \gamma\|V_t-V^\pi\|_\infty,\quad \forall s\in S
+\end{equation}
+since it holds for each $s$, we switch to the $L_\infty$ norm:\begin{equation}
+    \|V_{t+1}-V^\pi\|_\infty\le  \gamma\|V_t-V^\pi\|_\infty
+\end{equation}
+hence:\begin{equation}
+     \|V_{t+1}-V^\pi\|_\infty\le  \gamma\|V_t-V^\pi\|_\infty\le\gamma^{t+1}\|V_0-V^\pi\|_\infty.
+\end{equation}
+\hfill$\blacksquare$
+\noindent The computational cost of finding an $\epsilon$-accurate value function is in $O(m^2\ln\frac{1}{\epsilon})$.\bigskip
+
+Now that we know how to compute the value function of a given policy, we are interested in finding the optimal policy $\pi^*$. We can perform a brute force search, by listing all the possible policies and evaluating their value function, but this would be computationally unfeasible, in the order of $O(|A|^m\cdot m^3)$, where $m=|S|$.
+We can use the Bellman optimality equation:\begin{equation}
+    V^*(s) = \max_{a \in {A}} \left[ R(s,a) + \gamma \sum_{s' \in {S}} p(s' \mid s, a) V^*(s') \right].
+\end{equation}
+We define the operator $\mathcal B$ as the Bellman optimality equation:\begin{equation}
+    [\mathcal BV](s)=\max_{a \in {A}} \left[ R(s,a) + \gamma \sum_{s' \in {S}} p(s' \mid s, a) V(s') \right].
+\end{equation}
+we call this operator the \textbf{Bellman backup}. We recall that the infinity norm of a value function is $\|V\|_{\infty}=\max_s|V(s)|$.
+\begin{boxtheorem}{Bellman Backup is a Contraction}{}
+    Given two value function $V_k,V_j$ (that can be seen as vector in $\R^m$), then:\begin{equation}
+        \|\mathcal BV_k-\mathcal BV_j\|\le\gamma\|V_k-V_j\|
+    \end{equation}
+\end{boxtheorem}
+\noindent\textit{Proof}:\begin{align}
+&\|\mathcal{B}V_k - \mathcal{B}V_j\|_\infty\\ &= \left\| \max_{a} \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s')\right) - \max_{a'} \left(r(s,a') + \gamma \sum_{s'\in S} p(s' \mid s, a')V_j(s')\right) \right\|_\infty \\[10pt]
+&\le \max_{a} \left\| \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s') - r(s,a) - \gamma \sum_{s'\in S} p(s' \mid s, a)V_j(s')\right) \right\|_\infty \\[10pt]
+&= \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)(V_k(s') - V_j(s')) \right\|_\infty \\[10pt]
+&\le \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)\|V_k - V_j\| \right\|_\infty \\[10pt]
+&= \max_{a} \left\| \gamma \|V_k - V_j\| \sum_{s'\in S} p(s' \mid s, a) \right\|_\infty \\[10pt]
+&= \gamma \|V_k - V_j\|_\infty
+\end{align}\hfill$\blacksquare$\bigskip
+
+
+\noindent The backup operator is a $\gamma$-contraction, it makes value function closer by at least $\gamma$. Now we define the Bellman operator for the $Q$ function. We recall that $Q$ assigns a value to each pair state-action. The operator is defined as follows:\begin{equation}
+    [\mathcal B Q](s,a)=r(s,a)+\gamma\VA_{s'\sim p(\cdot \mid s,a)}\left(\max_{a'}[Q(s',a')]\right).
+\end{equation}
+Since $Q:S\times A \rightarrow \R$, then also $\mathcal B Q:S\times A \rightarrow \R$.
+\begin{boxproposition}{}{}
+    The $Q$-function associated to the optimal policy, denoted $Q^*$, is a fixed point of the Bellman operator $\mathcal B Q$, that is a contraction mapping.
+\end{boxproposition}
+\todo{continua da L04 pag 48}
 \end{document} 
