@@ -937,17 +937,62 @@ In the previous section we have described an algorithm that iterates over the va
 \caption{Policy Iteration}\label{alg:policy_iteration}
 \begin{algorithmic}[1]
 \State initialize $\pi_0$ with a random guess
-\For{$t=0,1,\dots,T$}
+\Do
 \State compute $Q^{\pi_t}$ for each pair $(s,a)$
 \State perform the \textit{policy improvement}:\begin{equation}
-    \pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}Q^{\pi_t}(s,a)
+    \pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}Q^{\pi_t}(s,a),\quad \forall s\in S 
 \end{equation}
-\EndFor
+\doWhile{convergence is not met}
 \end{algorithmic}
 \end{algorithm}
-For this algorithm, the performance progress is monotonic:\begin{align}
+\begin{boxproposition}{Monotonic Improvement}{}
+    For two consecutive steps in Algorithm \ref{alg:policy_iteration}, the performance progress is monotonic:
+    \begin{align}
     &Q^{\pi_{t+1}}\ge Q^{\pi_t} \quad \forall s,a \\ 
     &\|V^{\pi_t}-V^*\|_\infty\le\gamma^t\|V^{\pi_0}-V^*\|_\infty.
 \end{align}
-\todo{L05 pag 22}
+\end{boxproposition}
+\noindent\textit{Proof}: We want to prove that $Q^{\pi_{t+1}}\ge Q^{\pi_t}$ (the policy get better, its state-action value increase). The following reasoning holds for each pair $(s,a)$. Consider:\begin{equation}
+    Q^{\pi_{t+1}}(s,a)- Q^{\pi_t}(s,a)
+\end{equation}
+expand the definitions and simplify $r(s,a)$:
+\begin{equation}
+    Q^{\pi_{t+1}}(s,a)- Q^{\pi_t}(s,a)=
+    \gamma\VA_{s'\sim p(\cdot\mid s,a)}\left[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))-
+        Q^{\pi_{t}}(s',\pi_{t}(s'))
+    \right]
+\end{equation}
+we add and subtract $Q^{\pi_t}(s',\pi_{t+1}(s'))$:\begin{align}
+    &\gamma\VA_{s'\sim p(\cdot\mid s,a)}\left[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))-
+        Q^{\pi_{t}}(s',\pi_{t}(s'))
+    \right]\\[1.5ex]
+    =&\gamma\VA_{s'\sim p(\cdot\mid s,a)}\left[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))\blueText{-Q^{\pi_t}(s',\pi_{t+1}(s'))+Q^{\pi_t}(s',\pi_{t+1}(s'))}-
+        Q^{\pi_{t}}(s',\pi_{t}(s'))
+    \right]\\[1.5ex]
+    =&\gamma\VA_{s'\sim p(\cdot\mid s,a)}[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))-Q^{\pi_t}(s',\pi_{t+1}(s'))\underbrace{\sapText{+Q^{\pi_t}(s',\pi_{t+1}(s'))-
+        Q^{\pi_{t}}(s',\pi_{t}(s'))}}_{\ge 0}
+    ]\\
+    \sapText{\ge} &\gamma\VA_{s'\sim p(\cdot\mid s,a)}[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))-Q^{\pi_t}(s',\pi_{t+1}(s'))
+    ]
+\end{align}
+We have obtained the following inequality:\begin{equation}
+    Q^{\pi_{t+1}}(s,a)- Q^{\pi_t}(s,a)\ge
+     \gamma\VA_{s'\sim p(\cdot\mid s,a)}[
+        Q^{\pi_{t+1}}(s',\pi_{t+1}(s'))-Q^{\pi_t}(s',\pi_{t+1}(s'))
+    ]
+\end{equation}
+The term within the expected value has the exact same structure as the left-handed difference, but evaluated at the next time step (state $s'$, action $\pi_{t+1}(s')$). By repeatedly applying the same reasoning (expansion and policy improvement) to the subsequent terms, we will accumulate increasing powers of the discount factor $\gamma$:\begin{equation}
+    \ge \gamma^2 \mathbb{E}[\dots] \ge \gamma^3 \mathbb{E}[\dots] \dots \ge \lim_{k \to \infty} \gamma^k \mathbb{E}[\dots]
+\end{equation}
+Since the discount factor is strictly less than 1 and the rewards (and therefore the $Q$-values) are assumed to be bounded, the limit of $\gamma^k$ for $k \to \infty$ converges to $0$, hence:\begin{equation}
+    Q^{\pi_{t+1}}(s,a)- Q^{\pi_t}(s,a)\ge0\implies Q^{\pi_{t+1}}(s,a)\ge Q^{\pi_t}(s,a).
+\end{equation}
+\hfill$\blacksquare$\bigskip
+
+\noindent Usually we apply policy iteration until two consecutive policies are identical for any state.
 \end{document} 

@@ -7,6 +7,8 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
  \usepackage{multirow}
+ \usepackage{booktabs} 
+\usepackage{bm}
 \newcommand{\titolo}{Elective in Robotics}
 
  %TOGLI COMMENTO SE USI XELATEX
@@ -578,7 +580,7 @@ and negligible aerodynamics/gyroscopic effects:\begin{align}
     &\ddot z = -\cos\vartheta\cos\varphi\frac{T}{m}+g\\
     & \ddot{\varphi} = \frac{\tau_\varphi}{I_x} \\
     & \ddot{\vartheta} = \frac{\tau_\vartheta}{I_y} \\
-    & \ddot{\psi} = \frac{\tau_\psi}{I_z}.
+    & \ddot{\psi} = \frac{\tau_\psi}{I_z}\label{simplified_yaw_dynamics}.
 \end{align}
 We have used the symbol $\bxi$ for the state and $\mathbf u$ for the inputs. The compact form is\begin{equation}\label{compact_form}
 \begin{cases}
@@ -661,7 +663,7 @@ When the superscript of a symbol is enclosed in round brackets, it denotes a der
 \end{boxnotation}
 For the particular case of the Lie derivatives, the superscript $k$ in $L_f^k$ does not represent an exponent but an order of differentiation, even though it is not enclosed in brackets.\bigskip
 
-\noindent We can stack the $m$ equations defined in \eqref{eta_i} and write the system in compact form:\begin{equation}
+\noindent We can stack the $m$ equations defined in \eqref{eta_i} and write the system in compact form:\begin{equation}\label{i_o_linearized_model}
     \begin{pmatrix}
         \eta_1^{(r_1)}\\\vdots\\
         \eta_m^{(r_m)}
@@ -836,5 +838,153 @@ with $D_i^{-1}$ being the $i$-th row of $D^{-1}$, hence $D_i^{-1}(\bxi,\bzeta)(-
     \includegraphics[width=0.7\textwidth ]{images/control_system.pdf}
     \caption{Block diagram of the control system.}
 \end{figure}
+\subsection{Considering the Complete Model}
+In this section we discuss the dynamic feedback linearization for the quadrotor model, by removing the assumpion of small angles. We neglet only the aerodynamics and gyroscopic effects:
+\begin{align}\label{full_model}
+& \dot{x} = v_x & &\dot{\varphi} = p + s_\varphi \tan\vartheta q + c_\varphi \tan\vartheta r \\
+& \dot{y} = v_y & &\dot{\vartheta} = c_\varphi q - s_\varphi r \\
+& \dot{z} = v_z & &\dot{\psi} = s_\varphi \sec\vartheta q + c_\varphi \sec\vartheta r \\
+& \dot{v}_x =  - (c_\psi s_\vartheta c_\varphi + s_\psi s_\varphi) \frac{T}{m} & & 
+\dot{p} =  \frac{I_y - I_z}{I_x} q r + \frac{\tau_\varphi}{I_x}\label{dot_p} \\
+& \dot{v}_y =  - (s_\psi s_\vartheta c_\varphi - s_\varphi c_\psi) \frac{T}{m} & & \dot{q} =    \frac{I_z - I_x}{I_y} p r + \frac{\tau_\vartheta}{I_y}\label{dot_q} \\
+& \dot{v}_z =  g - c_\vartheta c_\varphi\frac{T}{m} 
+& & \dot{r} = \frac{I_x - I_y}{I_z} p q + \frac{\tau_\psi}{I_z}
+\end{align}
+we are using the short notation for $\sin$ and $\cos$. We denote $\Bomega=(p,q,r)^T$ the angular velocity, the model in compact form can be rewritten as:\begin{align}
+    &\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}R\mathbf e_3\\ 
+    &\dot R=RS(\Bomega)\\ 
+    &J\dot{\Bomega}=-\Bomega\times J\Bomega+\boldsymbol{\Gamma}.
+\end{align}
+We compute the dynamic feedback linearization (DFL) by setting the same output and extension:\begin{align}
+    \boldsymbol{\eta}=\begin{pmatrix}
+        x&y&z&\psi
+    \end{pmatrix}^T\\ 
+    \bzeta=\begin{pmatrix}
+        T&\dot T 
+    \end{pmatrix}^T
+\end{align}
+let's write out $\mathbf p^{(4)}$:\begin{align}
+    \mathbf p^{(3)}&=\frac{d}{dt}\left(g\mathbf e_3-\frac{T}{m}R\mathbf e_3\right)\\
+    &=-\frac{T}{m}\frac{d}{dt}(R\mathbf e_3)-\frac{\dot T}{m}R\mathbf e_3\\
+    &=-\frac{1}{m}R(\dot T\mathbf e_3+T\Bomega\times\mathbf e_3)\implies \\ 
+    \mathbf p^{(4)}&=-\frac{1}{m}R\begin{pmatrix}
+        T\dot q+2\dot T q+ Tpr\\ 
+        -T\dot p-2\dot Tp+Tqr\\ 
+        \ddot T-T(p^2+q^2)
+    \end{pmatrix}
+\end{align}
+the snap $\mathbf p^{(4)}$ depends on $\dot p,\dot q,\ddot T$. We substitute $\dot q,\dot p$ as in Equations \eqref{dot_p} and \eqref{dot_q}:\begin{equation}\label{snap_not_organized}
+    \mathbf p^{(4)}=-\frac{1}{m}R\begin{pmatrix}
+        T(\frac{I_z - I_x}{I_y} p r + \frac{\tau_\vartheta}{I_y})+2\dot T q+ Tpr\\ 
+        -T( \frac{I_y - I_z}{I_x} q r + \frac{\tau_\varphi}{I_x})-2\dot Tp+Tqr\\ 
+        \ddot T-T(p^2+q^2)
+    \end{pmatrix}
+\end{equation}
+In order to reorganize the snap equation, we define the following matrix and vector:\begin{equation}
+    N=\begin{pmatrix}
+        0&0&\frac{T}{I_y}\\
+        0&-\frac{T}{I_x}&0\\
+        1&0&0
+    \end{pmatrix},\quad 
+    \mathbf n=\begin{pmatrix}
+        (1+\frac{I_z-I_x}{I_y})Tpr+2\dot Tq\\ 
+        (1-\frac{I_y-I_z}{I_z})Tqr-2\dot Tp\\ 
+        -T(p^2+q^2)
+    \end{pmatrix}
+\end{equation}
+Equation \eqref{snap_not_organized} becomes:\begin{equation}
+    \mathbf p^{(4)}=
+    \underbrace{-\frac{1}{m}R\mathbf n}_{I_p(\bxi,\bzeta)} \quad
+    \underbrace{-\frac{1}{m}RN}_{D_p(\bxi,\bzeta)}
+    \begin{pmatrix}
+        \ddot T\\\tau_\varphi\\\tau_\vartheta
+    \end{pmatrix}
+\end{equation}
+$I_p,D_p$ are the translational part of the matrices $I,D$ of the model in the form in Equation \eqref{i_o_linearized_model}. Notice how the snap $\mathbf p^{(4)}$ does not depend on $\tau_\psi$. In the simplified model the yaw dynamics $\ddot\psi$ was a simple double integrator, as seen in Equation \eqref{simplified_yaw_dynamics}. This do not holds anymore, since:\begin{equation}
+    \dot{\psi} = s_\varphi \sec\vartheta q + c_\varphi \sec\vartheta r
+\end{equation}
+before deriving $\ddot\psi$ we introduce the following scalar:\begin{equation}
+   I_{\psi} = \frac{s_{\varphi} \frac{I_z-I_x}{I_y} p r + c_{\varphi} \frac{I_x-I_y}{I_z} p q}{c_{\vartheta}} + \frac{(c_{\varphi} q - s_{\varphi} r)\dot{\varphi}}{c_{\vartheta}} + \frac{(s_{\varphi} q + c_{\varphi} r) \tan \vartheta \, \dot{\vartheta}}{c_{\vartheta}}
+\end{equation}
+the yaw acceleration is exactly:\begin{equation}
+    \ddot\psi=I_\psi+\frac{s_\varphi}{c_\vartheta I_y}\tau_\vartheta+\frac{c_\varphi}{c_\vartheta I_z}\tau_\psi
+\end{equation}
+now both the contro torques $\tau_\vartheta,\tau_\psi$ acts on $\ddot\psi$. The complete model is:\begin{equation}
+    \begin{pmatrix}
+        \mathbf p^{(4)}\\
+        \ddot\psi 
+    \end{pmatrix}=\underbrace{\begin{pmatrix}
+        -\frac{1}{m}R\mathbf n\\ I_\psi 
+    \end{pmatrix}}_{I(\bxi,\bzeta)}+\underbrace{\begin{pmatrix}
+        &&& 0\\
+        &-\frac{1}{m}RN&& 0\\ &&& 0  \\
+        0&0&\frac{s_\varphi}{c_\vartheta I_y}&\frac{c_\varphi}{c_\vartheta I_z}
+    \end{pmatrix}}_{D(\bxi,\bzeta)}\begin{pmatrix}
+            \ddot T\\ \tau_\varphi\\\tau_\vartheta\\\tau_\psi
+        \end{pmatrix}
+\end{equation}
+with\begin{equation}
+    \det D=-\frac{T^2\cos\varphi}{m^3I_xI_yI_z\cos\vartheta}
+\end{equation}
+hence  model have a singularity on $T=0$ and $\varphi=\pm\frac{\pi}{2}$. Now we want to linearize this model, our virtual input is:\begin{equation}
+    \mathbf v=\begin{pmatrix}
+        v_1&v_2&v_3&v_4 
+    \end{pmatrix}
+\end{equation}
+with $v_1,v_2,v_3$ being relative to the snap and $v_4$ to the yaw. In order to linearize the snap we define the following vector:\begin{equation}
+        \bmu=\begin{pmatrix}
+            \mu_1\\\mu_2\\\mu_3 
+        \end{pmatrix}=-mR^T\begin{pmatrix}
+        v_1\\ v_2\\ v_3
+    \end{pmatrix}-\mathbf n
+    \end{equation}
+The linearizing control law is\begin{align}
+    &\ddot T=\mu_3\\ 
+    &\tau_\varphi=-\frac{I_x}{T}\mu_2\\
+    &\tau_\vartheta=\frac{I_y}{T}\mu_1\\ 
+    &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(v_4-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
+\end{align}
+the system becomes:\begin{align}
+        p^{(4)}_1&=v_1\\  p^{(4)}_2&=v_2\\  p^{(4)}_3&=v_3\\
+        \ddot\psi &=v_4.
+\end{align}
+\noindent The following table compares the simplified model with the complete one:
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.6} 
+    \begin{tabular}{lll}
+        \toprule
+        & \textsf{\textbf{approximate}} & \textsf{\textbf{complete}} \\
+        \midrule
+        rotational kinematics & $\dot{\boldsymbol{\Theta}} \simeq \boldsymbol{\Omega}$ & $\dot{\boldsymbol{\Theta}} = M(\boldsymbol{\Theta})^{-1}\boldsymbol{\Omega}$ \\
+        rotational dynamics   & $\ddot{\boldsymbol{\Theta}} = J^{-1}\boldsymbol{\Gamma}$ & $J\dot{\boldsymbol{\Omega}} = -\boldsymbol{\Omega} \times J\boldsymbol{\Omega} + \boldsymbol{\Gamma}$ \\
+        jerk $\mathbf{p}^{(3)}$   & $-\frac{1}{m}(\dot{T}\mathbf{b} + TB\dot{\boldsymbol{\Theta}})$ & $-\frac{1}{m}R(Tq, -Tp, \dot{T})^T$ \\
+        position block of $D$ & $-\frac{1}{m}(\mathbf{b} \quad TBJ^{-1})$ & $-\frac{1}{m}RN(T)$ \\
+        yaw row of $D$        & $(0, 0, 0, \frac{1}{I_z})$ & $\left(0, 0, \frac{s_\varphi}{c_\vartheta I_y}, \frac{c_\varphi}{c_\vartheta I_z}\right)$ \\
+        det $D$               & $-\dfrac{T^2 c_\varphi}{m^3 I_x I_y I_z}$ & $-\dfrac{T^2 c_\varphi}{m^3 I_x I_y I_z c_\vartheta}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\subsection{Flatness}
+\begin{boxdefinition}{Differentially Independent}{}
+    Let $\mathbf y$ be a vector of quantities that changes over time. The components of  $\mathbf y$ are \textbf{differentially independent} if there is no differential equation that links the individual components of $\mathbf y$ together, i.e. it is not possible to find an equation of the form:\begin{equation}
+        \Phi(\mathbf y,\dy,\ddy,\dots)=\mathbf 0.
+    \end{equation}
+\end{boxdefinition}
+\begin{boxdefinition}{Differentially Flat System}{}
+    A system $\dot\bxi=f(\bxi,\mathbf u)$ with $\mathbf u\in\R^m$ is \textbf{differentially flat} if there exists $m$ outputs:\begin{equation}
+        \mathbf y = h(\bxi,\mathbf u,\dot{\mathbf u},\dots,\mathbf u^{(k)})
+    \end{equation}
+    called \textbf{flat outputs} such that the state $\bxi$ and the inputs $\mathbf u$ can be rewritten as functions of $\mathbf y$ and it's derivatives (up to a finite order):\begin{align}
+        \bxi&= \Psi_\xi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(r_\xi)})\\
+        \mathbf u&=\Psi_u(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(r_u)})
+    \end{align}
+    and the component of $\mathbf y$ are differentially independent.
+\end{boxdefinition}
+If a system is differentially flat, the trajectories of the system are in one-to-one correspondence
+with arbitrary smooth curves $\mathbf y(t)$: there are no differential equation to integrate.
+\begin{boxproposition}{}{}
+    It doesn't exists a general test to check if a system is differentially flat, flat outputs are found by inspection, often
+    with a physical meaning.
+\end{boxproposition}
 \end{document}
-\todo{slide 15}
