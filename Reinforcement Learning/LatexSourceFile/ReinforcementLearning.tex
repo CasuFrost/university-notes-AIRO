@@ -130,7 +130,7 @@ This comes from a union bound over the $K$ arms, which is why $\nicefrac{2}{\del
     \caption{Hoeffding inequalities for multiple arms.}
     \label{img:Hoeffding_multi} 
 \end{figure}
-In Figure \ref{img:Hoeffding_multi} qualitatively shows an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
+Figure \ref{img:Hoeffding_multi} qualitatively shows an example of how the Explore \& Commit algorithm would fail: in this case we would choose the arm $a_2$ as the sample mean $\hat\mu_2$ is higher than the sample mean of the other arms, but we can clearly see how the true mean $\mu_3$ of arm $a_3$ is higher than the true mean $\mu_2$ of the arm $a_2$. If we choose the arm $a_2$, the loss of accumulated reward due to this suboptimal decision is called \textbf{regret} and is equal to:\begin{equation}
     \text{Regret}_{exploit}=(T-NK)(\mu_3-\mu_2)
 \end{equation} 
 where $T-NK$ is the number of remaining steps dedicated to exploitation (total steps $T$ minus those used to explore $NK$). The difference $(\mu_3-\mu_2)$ is small, less than the confidence ranges.
@@ -222,14 +222,14 @@ if $N_t$ is small, we have a high regret but we have to explore, if it's large, 
     \sum_{t=0}^{T-1}\sqrt{\frac{1}{n_t(I_t)}}=\sum_{i=1}^{K}\sum_{t=0}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}
 \end{equation}
 where $n_t(i)$ is the size of the specific group. \begin{equation}\label{specific}
-    \sum_{i=1}^{K}\sum_{t=1}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}=
-    \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}.
+    \sum_{i=1}^{K}\sum_{t=0}^{T-1}\mathbb{1}\{I_t=a_i\}\sqrt{\frac{1}{n_t(i)}}=
+    \sum_{i=1}^{K}\sum_{t=0}^{n_T(i)}\sqrt{\frac{1}{t}}.
 \end{equation}
 We use the following inequality:\begin{equation}
     \sum_{k=1}^{N}\frac{1}{\sqrt{k}}\le2\sqrt{N}
 \end{equation}
 hence from Equation \eqref{specific} we have:\begin{equation}
-     \sum_{i=1}^{K}\sum_{t=1}^{n_T(i)}\sqrt{\frac{1}{t}}\le  
+     \sum_{i=1}^{K}\sum_{t=0}^{n_T(i)}\sqrt{\frac{1}{t}}\le  
      2\sum_{i=1}^{K}\sqrt{n_T(i)}.
 \end{equation}
 Since all $n_T(i)$ sum to $T$, by the Jensen's inequality (concavity of $\sqrt\cdot$) we have:\begin{equation}
@@ -246,7 +246,7 @@ A \textbf{policy} $\pi$ is a mapping from \textit{all} the states to the actions
     \item Can be deterministic: $a=\pi(s)$,
     \item or stochastic $\pi( a \mid s)$.
 \end{itemize}
-Note how we denoted $s$ a state, this is a general notation. In the bandits context, we will use $x$ to denote the state. We define the \textbf{optimal policy} the one that maximizes the expected value for the reward:\begin{equation}
+Note how we denoted $s$ a state, this is a general notation. In the bandits context, we will use $x$ to denote the state. We define the \textbf{optimal policy} as the one that maximizes the expected value for the reward:\begin{equation}
     \pi^\star=\operatorname*{arg\,max}_{\pi}\underset{x\sim\mu}{\mathbb E} r(x,\pi(x)).
 \end{equation}
 If the set of states $X$ is discrete the expected value is\begin{equation}
@@ -264,9 +264,9 @@ Let $\{\pi^0,\pi^1,\dots,\pi^{T-1}\}$ be the sequence of policies that we learne
         r(x,\pi^t(x))
     \right]
 \end{equation}
-we recall that at every time step, the states are sampled by the distribution $\mu$ independently from the previous states.
+we recall that at every time step, the states are sampled from the distribution $\mu$ independently from the previous states.
 \subsection{Explore and Commit}
-Let's see how the explore \& commit algorithm works on the contextual bandit, the goal is to build a \textit{table} that assign to each pair of state and action, the estimated expected value of the reward.
+Let's see how the explore \& commit algorithm works on the contextual bandit, the goal is to build a \textit{table} that assigns to each pair of state and action, the estimated expected value of the reward.
 \begin{algorithm}[H]
 \caption{Explore \& Commit}\label{alg:explore_commit_context}
 \begin{algorithmic}[1]
@@ -280,7 +280,7 @@ Let's see how the explore \& commit algorithm works on the contextual bandit, th
         r_t\cdot |A|\text{ else }
     \end{cases}
 \end{equation}
-at each time step $t$ the estimator assigns zero to all the actions $\mathbf r_t$ except for the one used at time $t$, to which it assigns the reward multiplied by the number of actions.
+at each time step $t$ the estimator assigns zero to all the entries of $\mathbf r_t$ except for the one used at time $t$, to which it assigns the reward multiplied by the number of actions.
 \EndFor
 \State compute the policy as follows:\begin{equation}
     \hat\pi=\operatorname*{arg\,max}_{\pi}\sum_{i=0}^{N-1}\mathbf r_i[\pi(x_i)]
@@ -437,7 +437,7 @@ A basic example of a Markov decision process is a robotic manipulator with a han
     \item the cost (opposite of the reward) is the magnitude of the torque and the distance to the goal.
 \end{itemize}
 \subsection{MDP Horizon}
-In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1]$. This term weights the importance of immediate rewards with respect to future rewards:\begin{itemize}
+In Definition \ref{def:MDP} we introduced a discount factor $\gamma\in[0,1)$. This term weights the importance of immediate rewards with respect to future rewards:\begin{itemize}
     \item $\gamma=0$: Our agent only cares about immediate rewards.
     \item $\gamma=1$: Immediate and future rewards are equally important.
 \end{itemize}
@@ -640,27 +640,32 @@ This holds since $\gamma\in[0,1)$, hence $(1-\gamma)> 0$. By definition:\begin{a
 
 This formulation reduces the multi-step problem to a one-step greedy choice plus the continuation value $V(s')$. By uniqueness of the fixed point, any function $V$ satisfying this optimality equation coincides with $V^*$.
 \section{Value iteration}
-We have seen how the value function estimates the goodness of a state based on their value, by applying a given policy, hence it is also a measure to compare policies.\begin{equation}
+We have seen how the value function estimates the goodness of a state based on its value, by applying a given policy, hence it is also a measure to compare policies.\begin{equation}
     V^\pi(s_t)=\VA_\pi[r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}\dots\mid s_t]=\VA\left[
         \sum_{h=0}^{\infty}\gamma^hr_{h}\mid  
         s_0=s_t,\ a_h=\pi(s_h),\ s_{h+1}\sim p(\cdot\mid s_h,a_h)
     \right].
 \end{equation}
+\noindent About the notation: from now we will also use $p(\cdot\mid s_h,a_h)$ to denote the probability instead of the symbol $\Prob$.
 \subsection{Exact Policy Evaluation}
 In this section we will describe a method to \textit{compute exactly the value function} $V^\pi$ of a given policy $\pi$, by assuming that the reward function is deterministic, and the transition probabilities are known.
 For all the states, the Bellman expectation equation holds:\begin{equation}
-    V^\pi(s)=r(s,\pi(s))+\gamma\VA_{s'\sim p(\cdot\mid s,\pi(s))}[V^\pi(s')]=
+    V^\pi(s)=r(s,\pi(s))+\gamma\VA_{s'\sim p(\cdot\mid s,\pi(s))}[V^\pi(s')]
+\end{equation}
+with the explicit expression of the expected value being:
+\begin{equation}
+    V^\pi(s)=
     r(s,\pi(s))+\gamma\sum_{s'\in S}V^\pi(s')p(s'|s,\pi(s))
 \end{equation}
-this can be written as a system of $|S|$ equations (one for each state), we define some  vector quantities:\begin{equation}
+this can be written as a system of $|S|$ equations (one for each state), hence the value function $V^\pi$ and the rewards $\mathbf r^\pi$ can be seen as vectors in $\R^m$:\begin{equation}
     \mathbf V^\pi=\begin{pmatrix}
         V^\pi(s_1)\\\vdots\\ V^\pi(s_m)
     \end{pmatrix},\quad 
     \mathbf r^\pi=\begin{pmatrix}
-       r(s_1,(\pi(s_1)))\\\vdots\\ r(s_m,(\pi(s_m)))
+       r(s_1,\pi(s_1))\\\vdots\\ r(s_m,\pi(s_m))
     \end{pmatrix}
 \end{equation}
-by defining $m=|S|$. $\mathbf V^\pi,\mathbf r^\pi$ are vectors in $\R^m$, then we have the $m\times m$ matrix $P^\pi$ defined as follows:\begin{equation}
+by defining $m=|S|$. Then, for the transition probabilities we have the $m\times m$ matrix $P^\pi$ defined as follows:\begin{equation}
     P^\pi(i,j)=p(s_j\mid s_i,\pi(s_i))
 \end{equation} 
 The element at row $i$ and column $j$ represents the conditional probability $p(s_j \vert{} s_i, \pi(s_i))$ of moving from state $s_i$ to state $s_j$ (given by the transition function):
@@ -675,16 +680,16 @@ hence the Bellman expectation can be expressed in matrix form:\begin{equation}
     \mathbf V^\pi=\mathbf r^\pi+\gamma P^\pi \mathbf V^\pi
 \end{equation}
 if the rewards $\mathbf r^\pi$ and the transition probabilities $P^\pi$ are known, we can solve this system of equations for $\mathbf V^\pi$ by inverting the matrix:\begin{equation}
-     \mathbf V^\pi=(I-\gamma P^\pi)^{-1}\mathbf r^\pi 
+     \mathbf V^\pi=(I-\gamma P^\pi)^{-1}\mathbf r^\pi. 
 \end{equation}
-when $m=|S|$ is big (large number of states) this inversion becomes computationally expensive, since the number of operations are in $O(m^3)$.
+If $m=|S|$ is big (large number of states) this inversion becomes computationally expensive, since the number of operations is in $O(m^3)$.
 \subsection{Fixed Point Iteration}
-We will describe a computationally less expensive method to compute $V^\pi(s)$ for each $s$. Given a metric space $M$, consider a function $f:M \rightarrow M$. A point $\mathbf x\in M$ is called \textbf{fixed} if:\begin{equation}
+We will describe a computationally less expensive method to compute $V^\pi(s)$ for each $s$. Given a metric space $M$ and a function $f:M \rightarrow M$, a point $\mathbf x\in M$ is called \textbf{fixed} if:\begin{equation}
     f(\mathbf x)=\mathbf x.
 \end{equation}
 These points are related to a particular class of functions.
 \begin{boxdefinition}{Contraction Mapping}{}
-    A function $f:M \rightarrow M$ is a contraction mapping if, there exists a constant $k\in [0,1)$ such that, for every pair of point $\mathbf x,\mathbf y$ the following condition holds:\begin{equation}
+    A function $f:M \rightarrow M$ is a contraction mapping if  there exists a constant $k\in [0,1)$ such that, for every pair of points $\mathbf x,\mathbf y$ the following condition holds:\begin{equation}
         \|f(\mathbf x)-f(\mathbf y)\|\le k\|\mathbf x-\mathbf y\|
     \end{equation}
 \end{boxdefinition}
@@ -700,13 +705,13 @@ $$
 \begin{equation}
         \|O\mathbf x-O\mathbf y\|\le \gamma \|\mathbf x-\mathbf y\|
 \end{equation}
-instead of $k$ we are now using our discount factor $\gamma$. We will use the fact that the value function $\mathbf V^\pi$ \textbf{is a fixed point} of a given operator, and can be found by applying that operator (that is a contraction mapping) iteratively.\bigskip 
+instead of $k$ we are  using the discount factor $\gamma\in [0,1)$. We will use the fact that the value function $\mathbf V^\pi$ \textbf{is a fixed point} of a given operator, and can be found by applying that operator (that is a contraction mapping) iteratively.\bigskip 
 
 
 The metric space we work in, of which $\mathbf V^\pi$ is part, is $\R^m$. The contraction mapping $\mathcal B$ that we will use is the following:\begin{equation}
     \mathcal B(\mathbf x)=\mathbf r^\pi+\gamma P^\pi\mathbf x
 \end{equation}
-this is a linear operator, defined through the rewards $\mathbf r^\pi$ and the probabilities of the transitions $P^\pi$. The value function $V^\pi$ is \textbf{the fixed point of} $\mathcal B$. Hence we have an iterative algorithm.
+this is an affine operator, defined through the rewards $\mathbf r^\pi$ and the probabilities of the transitions $P^\pi$. The value function $V^\pi$ is \textbf{the fixed point of} $\mathcal B$. Hence we have an iterative algorithm.
 
 \begin{algorithm}[H]
 \caption{Fixed Point Iteration}\label{alg:fixed_point_iteration}
@@ -722,26 +727,32 @@ this is a linear operator, defined through the rewards $\mathbf r^\pi$ and the p
 \noindent We can stop the iterations when the difference between $\mathbf V_{t+1}$ and $\mathbf V_{t}$ is less than a defined threshold $\epsilon$:\begin{equation}
     \text{stop if }\|\mathbf V_{t+1}-\mathbf V_{t}\|\le\epsilon.
 \end{equation}
-We have to prove the fact that the Algorithm \ref{alg:fixed_point_iteration} converge to the value function $\mathbf V^\pi$.
+We have to prove the fact that the Algorithm \ref{alg:fixed_point_iteration} converges to the value function $\mathbf V^\pi$.
 \begin{boxtheorem}{Iterative Policy Evaluation}{}
     Let $\mathbf V_0$ be our starting guess for the value function $\mathbf V^\pi$, and\begin{equation}
         \mathbf V_{t+1}=\mathcal B ( \mathbf V_t).
     \end{equation}
     We denote $V_t(s)$ the component of $\mathbf V_t$ relative to the state $s$.
-    For each single state $s\in S$ we have:\begin{equation}
-        |\mathcal B(V_t(s))-\mathcal B(V^\pi(s))|=|V_{t+1}(s)-V^\pi(s)|\le\gamma^{t+1}\|
-        \mathbf V_0-\mathbf V^\pi\|.
+    For each single state $s\in S$ we have:\begin{equation}\label{iterative_policy_eval}
+        |[\mathcal BV_t](s)-\mathcal [BV^\pi](s)|=|V_{t+1}(s)-V^\pi(s)|\le\gamma^{t+1}\|
+        \mathbf V_0-\mathbf V^\pi\|_\infty.
     \end{equation}
 \end{boxtheorem}
-\noindent\textit{Proof}: The following reasoning holds for all the states $s\in S$. We have \begin{equation}
-    |V_{t+1}(s)-(s)V^\pi(s)|
+\noindent\textit{Proof}:
+If Equation \eqref{iterative_policy_eval} holds, by applying $\mathcal B$ for a large number of steps $(t\rightarrow\infty)$, we would have:\begin{align}
+    &\lim_{t\rightarrow\infty}|V_{t+1}(s)-V^\pi(s)|\le\lim_{t\rightarrow\infty}\gamma^{t+1}\|
+        \mathbf V_0-\mathbf V^\pi\|\implies \lim_{t\rightarrow\infty} |V_{t+1}(s)-V^\pi(s)|=0\\ 
+        &\implies  \lim_{t\rightarrow\infty}V_{t}(s)=V^\pi(s),\quad \forall s\in S
+\end{align} 
+Let's start with the proof, the following reasoning holds for all the states $s\in S$. We have \begin{equation}
+    |V_{t+1}(s)-V^\pi(s)|
 \end{equation}
 we expand $V_{t+1}(s)$ and $V^\pi(s)$:\begin{align}
     &V_{t+1}(s)=r(s,\pi(s))+\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))\\ 
     &V^\pi(s)=r(s,\pi(s))+\gamma\sum_{s'\in S}V^\pi(s')p(s'\mid s,\pi(s))
 \end{align}
 hence we have\begin{align}
-    &|V_{t+1}(s)-(s)V^\pi(s)|\\ 
+    &|V_{t+1}(s)-V^\pi(s)|\\ 
     =&\left|\sapText{r(s,\pi(s))}+\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
     \sapText{-r(s,\pi(s))}-\gamma\sum_{s'\in S}V^\pi(s')p(s'\mid s,\pi(s))\right|
 \end{align}
@@ -753,7 +764,7 @@ the two terms are summing over the same set hence:\begin{equation}
       \left|\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
    -V^\pi(s')p(s'\mid s,\pi(s))\right|
 \end{equation}
-we apply the Jensen's inequality:\begin{align}
+we apply the triangle inequality:\begin{align}
     & \left|\gamma\sum_{s'\in S}V_t(s')p(s'\mid s,\pi(s))
    -V^\pi(s')p(s'\mid s,\pi(s))\right|\\[1.5ex]
    \le & \gamma\sum_{s'\in S}\left|V_t(s')p(s'\mid s,\pi(s))
@@ -770,7 +781,7 @@ since $$|V_t(s')
    -V^\pi(s')\big)\right|\\ 
    \le&\gamma\sum_{s'\in S}p(s'\mid s,\pi(s))\|V_t-V^\pi\|_\infty
    \end{align}
-$\|V_t-V^\pi\|_\infty$ is constant hence we can move it out the sum and get:\begin{align}
+$\|V_t-V^\pi\|_\infty$ is constant hence we can move it out of the sum and get:\begin{align}
     &\gamma\sum_{s'\in S}p(s'\mid s,\pi(s))\|V_t-V^\pi\|_\infty\\[1.5ex] &=
     \gamma\|V_t-V^\pi\|_\infty\underbrace{\sum_{s'\in S}p(s'\mid s,\pi(s))}_{\text{sum up to 1}}=
     \gamma\|V_t-V^\pi\|_\infty.
@@ -784,7 +795,8 @@ since it holds for each $s$, we switch to the $L_\infty$ norm:\begin{equation}
 hence:\begin{equation}
      \|V_{t+1}-V^\pi\|_\infty\le  \gamma\|V_t-V^\pi\|_\infty\le\gamma^{t+1}\|V_0-V^\pi\|_\infty.
 \end{equation}
-\hfill$\blacksquare$
+\hfill$\blacksquare$\bigskip
+
 \noindent The computational cost of finding an $\epsilon$-accurate value function is in $O(m^2\ln\frac{1}{\epsilon})$.\bigskip
 
 Now that we know how to compute the value function of a given policy, we are interested in finding the optimal policy $\pi^*$. We can perform a brute force search, by listing all the possible policies and evaluating their value function, but this would be computationally unfeasible, in the order of $O(|A|^m\cdot m^3)$, where $m=|S|$.
@@ -794,28 +806,148 @@ We can use the Bellman optimality equation:\begin{equation}
 We define the operator $\mathcal B$ as the Bellman optimality equation:\begin{equation}
     [\mathcal BV](s)=\max_{a \in {A}} \left[ R(s,a) + \gamma \sum_{s' \in {S}} p(s' \mid s, a) V(s') \right].
 \end{equation}
-we call this operator the \textbf{Bellman backup}. We recall that the infinity norm of a value function is $\|V\|_{\infty}=\max_s|V(s)|$.
-\begin{boxtheorem}{Bellman Backup is a Contraction}{}
-    Given two value function $V_k,V_j$ (that can be seen as vector in $\R^m$), then:\begin{equation}
-        \|\mathcal BV_k-\mathcal BV_j\|\le\gamma\|V_k-V_j\|
+we call this operator the \textbf{Bellman optimality operator}, it acts on a ``value function'' $V$.
+\begin{boxobservation}{}{}
+   Note that for a fixed policy, there is a unique value function corresponding to it, rather than multiple ones. As we stated, the Bellman optimality operator acts on a ``value function'', meaning it maps a function that assigns a real number to each state (which can also be viewed as a vector in $\mathbb{R}^m$) to another function of the same type. Specifically, the Bellman optimality operator takes a value function $V$ and produces a new value function $\mathcal{B}V$. Hence, it can be seen as a mapping from $\mathbb{R}^m$ to $\mathbb{R}^m$, though in our context it is more accurate to think of it as an operator acting on the space of ``possible'' value functions.
+\end{boxobservation}
+\noindent We recall that the infinity norm of a value function is $\|V\|_{\infty}=\max_s|V(s)|$.
+\begin{boxtheorem}{Bellman Optimality Operator is a Contraction}{}
+    Given two value functions $V_k,V_j$ (that can be seen as vector in $\R^m$), then:\begin{equation}
+        \|\mathcal BV_k-\mathcal BV_j\|_\infty\le\gamma\|V_k-V_j\|_\infty
     \end{equation}
 \end{boxtheorem}
 \noindent\textit{Proof}:\begin{align}
-&\|\mathcal{B}V_k - \mathcal{B}V_j\|_\infty\\ &= \left\| \max_{a} \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s')\right) - \max_{a'} \left(r(s,a') + \gamma \sum_{s'\in S} p(s' \mid s, a')V_j(s')\right) \right\|_\infty \\[10pt]
-&\le \max_{a} \left\| \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s') - r(s,a) - \gamma \sum_{s'\in S} p(s' \mid s, a)V_j(s')\right) \right\|_\infty \\[10pt]
-&= \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)(V_k(s') - V_j(s')) \right\|_\infty \\[10pt]
-&\le \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)\|V_k - V_j\| \right\|_\infty \\[10pt]
-&= \max_{a} \left\| \gamma \|V_k - V_j\| \sum_{s'\in S} p(s' \mid s, a) \right\|_\infty \\[10pt]
-&= \gamma \|V_k - V_j\|_\infty
-\end{align}\hfill$\blacksquare$\bigskip
+&\|\mathcal{B}V_k - \mathcal{B}V_j\|_\infty\\ =& \left\| \max_{a} \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s')\right) - \max_{a'} \left(r(s,a') + \gamma \sum_{s'\in S} p(s' \mid s, a')V_j(s')\right) \right\|_\infty \\[10pt]
+\le& \max_{a} \left\| \left(r(s,a) + \gamma \sum_{s'\in S} p(s' \mid s, a)V_k(s') - r(s,a) - \gamma \sum_{s'\in S} p(s' \mid s, a)V_j(s')\right) \right\|_\infty \\[10pt]
+=& \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)(V_k(s') - V_j(s')) \right\|_\infty \\[10pt]
+\le& \max_{a} \left\| \gamma \sum_{s'\in S} p(s' \mid s, a)\|V_k - V_j\| \right\|_\infty \\[10pt]
+=& \max_{a} \left\| \gamma \|V_k - V_j\| \sum_{s'\in S} p(s' \mid s, a) \right\|_\infty \\[10pt]
+=& \gamma \|V_k - V_j\|_\infty
+\end{align}\hfill$\blacksquare$
 
-
-\noindent The backup operator is a $\gamma$-contraction, it makes value function closer by at least $\gamma$. Now we define the Bellman operator for the $Q$ function. We recall that $Q$ assigns a value to each pair state-action. The operator is defined as follows:\begin{equation}
+\noindent The optimality operator is a $\gamma$-contraction, it makes value functions closer by a factor of at least $\gamma$. Now we define the Bellman operator for the $Q$ function. We recall that $Q$ assigns a value to each pair state-action. The operator is defined as follows:\begin{equation}
     [\mathcal B Q](s,a)=r(s,a)+\gamma\VA_{s'\sim p(\cdot \mid s,a)}\left(\max_{a'}[Q(s',a')]\right).
 \end{equation}
 Since $Q:S\times A \rightarrow \R$, then also $\mathcal B Q:S\times A \rightarrow \R$.
 \begin{boxproposition}{}{}
-    The $Q$-function associated to the optimal policy, denoted $Q^*$, is a fixed point of the Bellman operator $\mathcal B Q$, that is a contraction mapping.
+    The $Q$-function associated to the optimal policy, denoted $Q^*$, is a fixed point of the Bellman operator $\mathcal B$, that is a contraction mapping.
 \end{boxproposition}
-\todo{continua da L04 pag 48}
+This is a crucial result, we can obtain the $Q$-function of the optimal policy just by applying the operator iteratively.
+\begin{algorithm}[H]
+\caption{Value Iteration}\label{alg:value_iteration}
+\begin{algorithmic}[1]
+\State initialize $Q_0$ as\begin{equation*}
+    Q_0(s,a)=0,\quad \begin{matrix}
+        \forall s\in S\\\forall a\in A
+    \end{matrix}
+\end{equation*} 
+\State let $t=0$ 
+\Do
+\State $Q_{t+1}=\mathcal BQ_t$
+\State $t\leftarrow t+1$
+\doWhile{convergence is not met}
+\end{algorithmic}
+\end{algorithm}
+\noindent The correctness is guaranteed by the fact that the operator is a contraction mapping:\begin{equation}
+    \|Q_{t+1}-Q^*\|_\infty=\|\mathcal BQ_{t}-Q^*\|_\infty\le  
+    \gamma\|Q_t-Q^*\|_\infty\le  \gamma^{t+1}\|Q_0-Q^*\|_\infty
+\end{equation}
+Now that we know how to find the $Q$-function of the optimal policy, we have to define the optimal policy, this is easy. Assume that we have executed Algorithm \ref{alg:value_iteration} for $i$ iterations, if $i$ is sufficiently large we have \begin{equation}
+    Q_i(s,a)\simeq Q^*(s,a),\quad \begin{matrix}
+        \forall s\in S\\\forall a\in A
+    \end{matrix}
+\end{equation}
+at this point we define the policy (relative to $i$ iterations) as\begin{equation}
+    \pi_i(s)=\operatorname*{arg\,max}_{a\in A}Q_i(s,a).
+\end{equation}
+the quality of this policy is described by the following result.
+\begin{boxproposition}{Value Iteration}{}
+Let $Q_i$ be the $Q$-function at the $i$-th iteration of Algorithm \ref{alg:value_iteration}, and let $\pi_i$ be its associated policy. The value function $V^{\pi_i}$ for policy $\pi_i$ is related to the optimal value function $V^*$ as follows:
+\begin{equation}
+    V^{\pi_i}(s)\ge V^*(s)-\frac{2\gamma^i}{1-\gamma}\|Q_0-Q^*\|_\infty,\quad \forall s\in S
+\end{equation}
+hence 
+\begin{equation}
+    \lim_{i\rightarrow\infty}V^{\pi_i}=V^*\implies  \lim_{i\rightarrow\infty}\pi_i=\pi^*.
+\end{equation}
+\end{boxproposition}
+\noindent\textit{Proof}: The following reasoning holds for each $s\in S$, we consider:\begin{equation}
+    V^{\pi_i}(s) - V^*(s)
+\end{equation}
+the value function can be rewritten in terms of the $Q$-function:
+\begin{align}
+    V^{\pi_i}(s) - V^*(s)&=Q^{\pi_i}(s,\pi_i(s))-Q^*(s,\pi^*(s))\\[1.5ex]
+    &=Q^{\pi_i}(s,\pi_i(s))
+    \underbrace{\blueText{-Q^*(s,\pi_i(s))+Q^*(s,\pi_i(s))}}_{\text{add and subtract}}
+    -Q^*(s,\pi^*(s))
+\end{align}
+now we take the first two terms $Q^{\pi_i}(s,\pi_i(s))-Q^*(s,\pi_i(s))$ and we expand them with the Bellman equation:\begin{align}
+    &\underbrace{Q^{\pi_i}(s,\pi_i(s))
+    -Q^*(s,\pi_i(s))}_{\text{expand}}+Q^*(s,\pi_i(s))
+    -Q^*(s,\pi^*(s))\\
+    =&\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]+Q^*(s,\pi_i(s))
+    -Q^*(s,\pi^*(s))\\ 
+\end{align}
+now we add $\blueText{-Q_i(s,\pi_i(s))+Q_i(s,\pi^*(s))}$:\begin{align}
+    &\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]+Q^*(s,\pi_i(s))
+    -Q^*(s,\pi^*(s))\\ 
+    \ge&\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]+Q^*(s,\pi_i(s))\blueText{-Q_i(s,\pi_i(s))+Q_i(s,\pi^*(s))}
+    -Q^*(s,\pi^*(s))
+    \end{align}
+we switched to the inequality $\ge$ since $\blueText{-Q_i(s,\pi_i(s))+Q_i(s,\pi^*(s))}$ is not positive:
+$$Q_i(s,\pi_i(s))\ge Q_i(s,\pi^*(s))$$
+now we use the $L_\infty$ norm:\begin{align}
+    &\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]+\underbrace{Q^*(s,\pi_i(s))-Q_i(s,\pi_i(s))}_{\ge \|Q_0-Q^*\|_\infty}+\underbrace{Q_i(s,\pi^*(s))
+    -Q^*(s,\pi^*(s))}_{\ge \|Q_0-Q^*\|_\infty}\\[1.5ex]
+    \ge&\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]-2\|Q_i-Q^*\|_\infty\end{align}
+    by exploiting $\|Q_i-Q^*\|_\infty\le\gamma^i\|Q_0-Q^*\|_\infty$:
+    \begin{align}
+        &\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]-2\|Q_i-Q^*\|_\infty\\[1.5ex]
+    \ge&\gamma\VA_{s'\sim p(\cdot\mid s,\pi_i(s))}\left[
+        V^{\pi_i}(s')-V^*(s')
+    \right]-2\gamma^i\|Q_0-Q^*\|_\infty
+    \end{align}
+    \todo{finire dimostrazione}\hfill$\blacksquare$\bigskip 
+
+We can characterize the quality of a policy obtained at the $i$-th iteration, if we want an $\epsilon$-error we have to solve:\begin{equation}
+    \frac{2\gamma^i}{1-\gamma}\|Q_0-Q^*\|_\infty\le\epsilon
+\end{equation}
+for $i$, to get the number of iterations that we need. Without entering in the details of the proof, the correct number of iterations should be\begin{equation}
+    i\ge\frac{1}{1-\gamma}\log\left(\frac{2}{\epsilon(1-\gamma)^2}\right).
+\end{equation}
+\section{Policy Iteration}
+In the previous section we have described an algorithm that iterates over the value functions (or the $Q$-functions) and provides in the end a $Q$-function that is approximately the optimal $Q$-function, from this we can define an approximation of the optimal policy $\pi^*$. In this section we describe an algorithm that generates a policy at each iteration: $\{\pi_0,\pi_1,\dots,\pi_T\}$. The logic of the algorithm is simple: \begin{itemize}
+    \item We start with an initial guess $\pi_0$.
+    \item We start iterating, at each iteration we evaluate the $Q$-function for our guess.
+    \item We use the $Q$-function to improve the guess for the next iteration.
+\end{itemize}
+\begin{algorithm}[H]
+\caption{Policy Iteration}\label{alg:policy_iteration}
+\begin{algorithmic}[1]
+\State initialize $\pi_0$ with a random guess
+\For{$t=0,1,\dots,T$}
+\State compute $Q^{\pi_t}$ for each pair $(s,a)$
+\State perform the \textit{policy improvement}:\begin{equation}
+    \pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}Q^{\pi_t}(s,a)
+\end{equation}
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+For this algorithm, the performance progress is monotonic:\begin{align}
+    &Q^{\pi_{t+1}}\ge Q^{\pi_t} \quad \forall s,a \\ 
+    &\|V^{\pi_t}-V^*\|_\infty\le\gamma^t\|V^{\pi_0}-V^*\|_\infty.
+\end{align}
+\todo{L05 pag 22}
 \end{document} 
