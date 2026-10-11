@@ -888,13 +888,13 @@ In order to reorganize the snap equation, we define the following matrix and vec
     \end{pmatrix},\quad 
     \mathbf n=\begin{pmatrix}
         (1+\frac{I_z-I_x}{I_y})Tpr+2\dot Tq\\ 
-        (1-\frac{I_y-I_z}{I_z})Tqr-2\dot Tp\\ 
+        (1-\frac{I_y-I_z}{I_x})Tqr-2\dot Tp\\ 
         -T(p^2+q^2)
     \end{pmatrix}
 \end{equation}
 Equation \eqref{snap_not_organized} becomes:\begin{equation}
     \mathbf p^{(4)}=
-    \underbrace{-\frac{1}{m}R\mathbf n}_{I_p(\bxi,\bzeta)} \quad
+    \underbrace{-\frac{1}{m}R\mathbf n}_{I_p(\bxi,\bzeta)}\quad + \quad
     \underbrace{-\frac{1}{m}RN}_{D_p(\bxi,\bzeta)}
     \begin{pmatrix}
         \ddot T\\\tau_\varphi\\\tau_\vartheta
@@ -929,7 +929,7 @@ with\begin{equation}
 hence  model have a singularity on $T=0$ and $\varphi=\pm\frac{\pi}{2}$. Now we want to linearize this model, our virtual input is:\begin{equation}
     \mathbf v=\begin{pmatrix}
         v_1&v_2&v_3&v_4 
-    \end{pmatrix}
+    \end{pmatrix}^T
 \end{equation}
 with $v_1,v_2,v_3$ being relative to the snap and $v_4$ to the yaw. In order to linearize the snap we define the following vector:\begin{equation}
         \bmu=\begin{pmatrix}
@@ -987,4 +987,45 @@ with arbitrary smooth curves $\mathbf y(t)$: there are no differential equation 
     It doesn't exists a general test to check if a system is differentially flat, flat outputs are found by inspection, often
     with a physical meaning.
 \end{boxproposition}
+\noindent The quadrotor model is one of the most known example of system with flat outputs, this is exactly:\begin{equation}
+    \y=\begin{pmatrix}
+        x&y&z&\psi
+    \end{pmatrix}^T
+\end{equation}
+by considering the inputs\begin{equation}
+    \mathbf u=\begin{pmatrix}
+        T&\tau_\varphi&\tau_\vartheta&\tau_\psi
+    \end{pmatrix}^T
+\end{equation}
+we want to derive the map $\Psi$ such that:\begin{equation}
+    \mathbf u = \Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(r)})
+\end{equation}
+first, we express $T$ in function of $\ddot{\mathbf p}$, by the dynamic model:\begin{align}
+    \ddot{\mathbf p}&=g\mathbf e_3-\frac{T}{m}R\mathbf e_3\implies \\
+    T&=m\|g\mathbf e_3-\ddot{\mathbf p}\|
+\end{align}
+the versor of the thrust direction is:\begin{equation}
+    \mathbf b = \frac{g\mathbf e_3-\ddot{\mathbf p}}{\|g\mathbf e_3-\ddot{\mathbf p}\|}
+\end{equation}
+from the jerk equation we can define a new vector:\begin{equation}
+    \mathbf w = -mR^T\mathbf p^{(3)}
+\end{equation}
+and get the following identities:\begin{align}
+    &q=\frac{w_1}{T}\\ 
+    &p=-\frac{w_2}{T}\\ 
+    &\dot T = w_3
+\end{align}
+and\begin{equation}
+    r=\frac{c_\vartheta\dot\psi-s_\varphi q}{c_\varphi}
+\end{equation}
+from the snap equation, we define:\begin{equation}
+    \bmu=-mR^T\mathbf p^{(4)}-\mathbf n
+\end{equation}
+and we can write:\begin{align}
+    &\ddot T = \mu_3\\ 
+    &\tau_\vartheta=\frac{I_y}{T}\mu_1\\ 
+    &\tau_\varphi = -\frac{I_x}{T}\mu_2\\ 
+    &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(\ddot\psi-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
+\end{align}
+now that we have defined the map $\mathbf u=\Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(4)})$, we can define any  trajectory  at least four times differentiable $\mathbf y(t)$  and get immediately through $\Psi$ the required inputs to execute $\mathbf y(t)$.
 \end{document}
