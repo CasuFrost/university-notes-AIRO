@@ -87,7 +87,7 @@ where $\mathbf M_j$ are the external moments acting on the center of mass, $\bol
 \noindent A more explicit expression of the forces in Equation \eqref{sum_forces} is the following:\begin{equation}
     m\dot {\mathbf V} =  -T R\mathbf z
     +\mathbf F_e(\mathbf V,\dot{\mathbf V},\boldsymbol{\Omega},\dot{\boldsymbol{\Omega}},\mathbf d(t))
-    +R\Sigma_R\btau
+    +R\Sigma_R\btau+mg\mathbf z
 \end{equation}
 where:\begin{itemize}
     \item $\mathbf d(t)$ are the external disturbances that do not depend on 
@@ -160,7 +160,7 @@ The linear velocity $\mathbf V$ of our quadrotor is expressed in $SR_i$ while th
 Let $\omega_1,\omega_2,\omega_3,\omega_4$  be our control inputs (the velocity of the rotors), $f_i$ and $\tau_{R,i}$ are derived from these quantities as in Equations \eqref{f_i} and \eqref{tau_R}. The total thrust will be:\begin{equation}
     T=f_1+f_2+f_3+f_4.
 \end{equation}
-We recall that on the quadrotor, a force $\vec{\mathbf T}=-T\mathbf z_b$ acts in the same direction as $\mathbf z_b$ but with the opposite sense. Intuitively, if the forces $f_i$ are identical, we can expect the quadrotor to accelerate towards $-\mathbf z_b$ without rotating on itself. If the forces are not identical, they will cause a rotation of the body. The torques generated on the axes $\mathbf x_b,\mathbf y_b,\mathbf z_b$ are the following:\begin{align}
+We recall that on the quadrotor, a force $\vec{\mathbf T}=-T\mathbf z_b$ acts in the same direction as $\mathbf z_b$ but with the opposite sense. Intuitively, if the forces $f_i$ are identical, we can expect the quadrotor to accelerate towards $-\mathbf z_b$ without rotating on itself. If the forces are not identical, they may cause a rotation of the body. The torques generated on the axes $\mathbf x_b,\mathbf y_b,\mathbf z_b$ are the following:\begin{align}
     &\tau_\varphi=l(f_2-f_4),\\ 
     &\tau_\vartheta=l(f_1-f_3),\\
     &\tau_\psi=-\tau_{R,1}+\tau_{R,2}-\tau_{R,3}+\tau_{R,4}.
@@ -210,7 +210,7 @@ $\btau_A$ is the resulting torque induced by the distributed aerodynamic forces 
 Given the previous premises, we define the state of a quadrotor as a vector in $\R^{12}$ defined as follows:\begin{equation}
     \boldsymbol{\xi}=(
         x,\quad y,\quad z,\quad v_x,\quad v_y,\quad v_z,\quad \varphi ,\quad  \vartheta ,\quad  \psi,\quad  p ,\quad q,\quad r
-    )^T
+    )^\top
 \end{equation}
 Here $x,y,z$ are the coordinates of the position of the center of mass of the quadrotor expressed in $SR_i$, $v_x,v_y,v_z$ its velocity, $\varphi ,  \vartheta ,  \psi$ the roll-pitch-yaw angles between $SR_i$ and $SR_b$, and $p,q,r$ the angular velocity of the quadrotor expressed in $SR_b$.
 \end{boxdefinition}
@@ -223,7 +223,11 @@ where $\mathbf u$ are the inputs of the system defined as follows:\begin{equatio
 \end{equation}
 these quantities depend on $f_i,\tau_{R,i}$, which in turn depend on the angular velocity of the rotors $\omega_i$, which we assume we can control perfectly. 
 \begin{boxdefinition}{Time Evolution of the Quadrotor}{time_ev}
-Let $\Omega_r$ be the average rotation velocity of the blades, and $I_r$ the inertia of the blades; the explicit expression of the system in Equation \eqref{quadrotorSystem} is the following:
+Let $\Omega_r$ be the the signed residual speed of the blades
+$$
+\Omega_r=-\omega_1+\omega_2-\omega_3+\omega_4
+$$
+and $I_r$ the inertia of the blades; the explicit expression of the system in Equation \eqref{quadrotorSystem} is the following:
 \begin{align}
 & \dot{x} = v_x \\
 & \dot{y} = v_y \\
@@ -235,7 +239,7 @@ Let $\Omega_r$ be the average rotation velocity of the blades, and $I_r$ the ine
 & \dot{\vartheta} = \cos(\varphi) q - \sin(\varphi) r \\
 & \dot{\psi} = \sin(\varphi) \sec(\vartheta) q + \cos(\varphi) \sec(\vartheta) r \\
 & \dot{p} = \tau_{A,x} + \frac{I_r}{I_x} q \Omega_r + \frac{I_y - I_z}{I_x} q r + \frac{\tau_\varphi}{I_x} \\
-& \dot{q} = \tau_{A,y} + \frac{I_r}{I_y} p \Omega_r + \frac{I_z - I_x}{I_y} p r + \frac{\tau_\vartheta}{I_y} \\
+& \dot{q} = \tau_{A,y} - \frac{I_r}{I_y} p \Omega_r + \frac{I_z - I_x}{I_y} p r + \frac{\tau_\vartheta}{I_y} \\
 & \dot{r} = \tau_{A,z} + \frac{I_x - I_y}{I_z} p q + \frac{\tau_\psi}{I_z}.
 \end{align}
 \end{boxdefinition}
@@ -243,9 +247,9 @@ Let $\Omega_r$ be the average rotation velocity of the blades, and $I_r$ the ine
 The model in Definition \ref{def:time_ev} is too complex for control purposes. We neglect aerodynamics and gyroscopic effects, and we assume small variations of $\varphi$ and $\vartheta$ such that\begin{equation}
     \begin{pmatrix}
         \dot\varphi&\dot\vartheta&\dot\psi
-    \end{pmatrix}^T\simeq \begin{pmatrix}
+    \end{pmatrix}^\top\simeq \begin{pmatrix}
         p&q&r
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{equation}
 we assume that the shape is symmetric, and we neglect the disturbances.
 \begin{boxdefinition}{Simplified Time Evolution of the Quadrotor}{}
@@ -272,8 +276,8 @@ Let's denote\begin{equation}
 \end{equation}
 we rewrite the state as\begin{equation}
      \boldsymbol{\xi}=\begin{pmatrix}
-        \mathbf p^T&\dot {\mathbf p}^T& \boldsymbol{\Theta}^T&\dot{ \boldsymbol{\Theta}}^T
-     \end{pmatrix}^T
+        \mathbf p^\top&\dot {\mathbf p}^\top& \boldsymbol{\Theta}^\top&\dot{ \boldsymbol{\Theta}}^\top
+     \end{pmatrix}^\top
 \end{equation}
 with our input vector:\begin{equation}
     \mathbf u = \begin{pmatrix}
@@ -284,6 +288,7 @@ Let's separate the translational and rotational dynamics:\begin{align}
     \ddot{\mathbf p}=&g\mathbf e_3-{}^iR_b(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3\label{traslational_dynamic}\\ 
 \ddot{\boldsymbol{\Theta}}=&J^{-1}\boldsymbol{\Gamma}. 
 \end{align}
+$\mathbf e_3=(0, \ 0, \ 1)^\top$ is the unit vector pointing downward, previously denoted $\mathbf z$.
 Managing the nonlinear dynamics is hard for the real-time controller. We apply linearization around an equilibrium point, in particular in a hovering condition.
 Let \begin{equation}
     \mathbf p_e=\begin{pmatrix}
@@ -305,13 +310,10 @@ The full \textit{hovering equilibrium} condition is expressed as follows:\begin{
     \dot{\boldsymbol{\Theta}}_e=\mathbf 0.
 \end{equation}
 We denote $\ddot{\mathbf p}=\mathbf F(\bTheta,T)$ the translational part in Equation \eqref{traslational_dynamic}.
-We approximate a small variation of $\ddot{\mathbf p}$ with its first order expansion around the equilibrium point:\begin{equation}
-    \delta\ddot{\mathbf p}\simeq \mathbf F(\bTheta_e,T_e)+\frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta+\frac{\partial\mathbf F}{\partial T}\Big|_e\delta T
+We approximate a small variation of $\ddot{\mathbf p}$ with its first order expansion around the equilibrium point:\begin{equation}\label{delta_ddp}
+    \delta\ddot{\mathbf p}\simeq \frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta+\frac{\partial\mathbf F}{\partial T}\Big|_e\delta T
 \end{equation}
-with $\delta T$ and $\delta\bTheta$ being small variations. Note how $\mathbf F(\bTheta_e,T_e)=\mathbf 0$, hence:
-\begin{equation}\label{delta_ddp}
-    \delta\ddot{\mathbf p}\simeq\frac{\partial\mathbf F}{\partial\bTheta}\Big|_e\delta\bTheta+\frac{\partial\mathbf F}{\partial T}\Big|_e\delta T.
-\end{equation}
+with $\delta T$ and $\delta\bTheta$ being small variations. 
 To compute the expansion, we need to compute the variation of the rotation matrix ${}^iR_b(\bTheta)$, given by the small variation $\delta\bTheta$ of the angles around $\bTheta_e=\mathbf 0$. We have\begin{equation}
     \delta\ {}^iR_b=\frac{\partial {}^iR_b}{\partial\varphi}\Big|_{\mathbf 0}\delta\varphi+
     \frac{\partial {}^iR_b}{\partial\vartheta}\Big|_{\mathbf 0}\delta\vartheta+
@@ -335,7 +337,7 @@ this is exactly the skew-symmetric matrix $S(\delta\bTheta)$. Now we can make ex
 Now we drop the notation with the $\delta$ (small variations), the quadrotor system linearized around an equilibrium point is governed by the following equations:\begin{align}
     &\ddot x=-g\vartheta,&\ddot\vartheta=\frac{\tau_\vartheta}{I_y},\\
     &\ddot y=g\varphi,&\ddot\varphi=\frac{\tau_\varphi}{I_x},\\
-    &\ddot z=-\frac{T}{m},&\ddot\psi=\frac{\tau_\psi}{I_z}.
+    &\ddot z=-\frac{(T-mg)}{m},&\ddot\psi=\frac{\tau_\psi}{I_z}.
 \end{align} 
 This system is linear and decoupled:\begin{itemize}
     \item In order to control $x$, we can control $\vartheta$ through $\tau_\vartheta$, hence $x$ is controllable with a chain of four integrators.
@@ -420,7 +422,7 @@ we recall that a Lyapunov function is a scalar function that depends on $\mathbf
     &V(\mathbf x)>0,\quad \forall \mathbf x\ne\mathbf 0\\
     &V(\mathbf 0)=0.
 \end{align}
-If $\dot V=\frac{\partial V}{\partial \mathbf x}f(\mathbf x)$ is negative definite, then the system is asymptotically stable at the equilibrium $\mathbf x=\mathbf 0$. We also know that:\begin{itemize}
+If $\dot V=\frac{\partial V}{\partial \mathbf x}f(\mathbf x)$ is negative definite, then the equilibrium $\mathbf x=\mathbf 0$ is asymptotically stable. We also know that:\begin{itemize}
     \item If $V$ is radially unbounded, the system is globally asymptotically stable.
     \item If $\exists c_1>0,c_2>0,c_3>0$ with $c_1\le c_2$ such that \begin{align}
         &c_1\|\mathbf x\|^2\le V\le c_2\|\mathbf x\|^2,\\
@@ -563,9 +565,40 @@ Now we consider the roll dynamics:\begin{equation}
     \ddot\varphi=\frac{\tau_\varphi}{I_x}+h_\varphi
 \end{equation}
 $h_\varphi$ represents the nonlinear terms, for example the gyroscopic effects.
-We define the integral action of the error:
+We define the integral action of the error:\begin{align}
+    &e_1=\varphi_d-\varphi,\\
+    &\chi =\int_0^t e_1ds
+\end{align}
+then we define the desired (or virtual) roll velocity as:\begin{equation}
+    \omega_d=c_1e_1+\dot \varphi_d+\lambda\chi
+\end{equation}
+with $c_1$ and $\lambda$ being control gains. We define a second error on the desired velocity:\begin{equation}
+    e_2=\omega_d-\dot\varphi
+\end{equation}
+by deriving with respect to time the error equations we get:\begin{align}
+    \dot e_1&=-c_1e_1-\lambda\chi+e_2       \\ 
+    \dot e_2&=c_1\dot e_1+\ddot\varphi_d+\lambda e_1-\ddot\varphi
+\end{align}
+to guarantee the asymptotic stability of the system we want to impose the following behavior for the error:\begin{equation}
+    \dot e_2 = -c_2 e_2 - e_1
+\end{equation}
+hence we choose the following control law:\begin{equation}
+    \tau_\varphi = I_x \left[ (1 - c_1^2 + \lambda)e_1 + (c_1 + c_2)e_2 - c_1 \lambda \chi + \ddot{\varphi}_d - h_\varphi\right]
+\end{equation}
+the same construction can be done for the altitude and the position. The stability of the system with this control law can be proved by defining the following Lyapunov candidate:\begin{align}
+    V&=\frac{1}{2}\lambda\chi^2+\frac{1}{2}e_1^2+\frac{1}{2}e_2^2\\ 
+    \dot V&=-c_1e_1^2-c_2e_2^2
+\end{align}
+on the equilibrium $e_1=e_2=0$ the system becomes:\begin{equation}
+    \dot e_1=-\lambda\chi 
+\end{equation}
+that is zero when $\chi=0$ (GAS proved by LaSalle).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/backstepping.png}
+    \caption{Performance comparison between backstepping and integral backstepping controllers, demonstrating that the integral action successfully eliminates steady-state errors under unmodeled payload (left) and constant disturbance torque (right).}
+\end{figure}
 
-\todo{finire pacco di slide 02}
 \section{Dynamic Feedback Linearization}
 One of the most important and effective ways to control a nonlinear dynamical system is to make it linear through feedback.
 \begin{boxdefinition}{Feedback Linearization}{}
@@ -592,13 +625,13 @@ where we defined:\begin{align}
    &\mathbf  b(\boldsymbol{\Theta})={}^iR_b(\boldsymbol{\Theta})\mathbf e_3\\ 
    & \mathbf p = \begin{pmatrix}
     x&y&z
-   \end{pmatrix}^T\\ 
+   \end{pmatrix}^\top\\ 
    &\boldsymbol{\Theta}=\begin{pmatrix}
    \varphi&\vartheta&\psi
-   \end{pmatrix}^T\\
+   \end{pmatrix}^\top\\
    &\boldsymbol{\Gamma}=\begin{pmatrix}
    \tau_\varphi&\tau_\vartheta&\tau_\psi
-   \end{pmatrix}^T\\
+   \end{pmatrix}^\top\\
    &J=\text{diag}(I_x,I_y,I_z).
 \end{align}
 \subsection{Static Linearization}
@@ -684,7 +717,7 @@ we obtain $m$ \textbf{decoupled chains of integrators} from $v_i$ to $\eta_i$.
 From the quadrotor model in Equation \eqref{compact_form} we consider as natural outputs the position and the yaw angle:\begin{equation}
     \boldsymbol{\eta}=\begin{pmatrix}
         x&y&z&\psi
-    \end{pmatrix}^T 
+    \end{pmatrix}^\top 
 \end{equation}
 the model relative only to these variables is:\begin{equation}\label{compact_model_2}
     \ddot{\boldsymbol{\eta}}=\begin{pmatrix}
@@ -726,7 +759,7 @@ Let's see the \textbf{algorithm of dynamic extension}: the construction procedur
 The linearizing quadrotor output that we choose is the position together with the yaw angle:\begin{equation}
     \boldsymbol{\eta}=\begin{pmatrix}
         x&y&z&\psi 
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{equation}
 The model is the one in Equation \eqref{compact_model_2}. The inputs appear in a non-singular way only after differentiating $\eta_1,\eta_2,\eta_3$ four times and $\eta_4$ twice. The explicit expression of the vector $\mathbf b$ in the model is\begin{equation}
     \mathbf  b(\boldsymbol{\Theta})={}^iR_b(\boldsymbol{\Theta})\mathbf e_3
@@ -746,7 +779,7 @@ we will need its Jacobian, denoted $B$:\begin{equation}
 By differentiating $\eta_1,\eta_2,\eta_3$ twice we get the translational part of the model:\begin{equation}
     \begin{pmatrix}
         \ddot\eta_1&\ddot\eta_2&\ddot\eta_3
-    \end{pmatrix}^T=\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\mathbf b(\boldsymbol{\Theta})
+    \end{pmatrix}^\top=\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\mathbf b(\boldsymbol{\Theta})
 \end{equation}
 we keep differentiating until the inputs $T,\boldsymbol{\Gamma}$ appear:\begin{equation}
     \mathbf p^{(3)}=-\frac{1}{m}(\dot T\mathbf b+TB\dot{\boldsymbol{\Theta}})
@@ -792,7 +825,7 @@ the model becomes:\begin{equation}
 In order to have the inputs appear in a non-singular way, $D$ must be non-singular. Its determinant is\begin{equation}
     \det D=-\frac{T^2\cos\varphi}{m^3I_xI_yI_z}
 \end{equation}
-hence $D$ is non-singular if and only if $T\ne0$ (free fall) and $\varphi\ne \pm\frac{\pi}{2}$. Away from the singularities, the sum of the relative degrees is\begin{equation}
+hence $D$ is non-singular if and only if $T\ne0$ ($T=0$ corresponds to free fall) and $\varphi\ne \pm\frac{\pi}{2}$. Away from the singularities, the sum of the relative degrees is\begin{equation}
     \sum_ir_i = 4+4+4+2=14=n+\nu  
 \end{equation}
 hence \textit{full state linearization} with no zero dynamics is achieved. 
@@ -803,7 +836,7 @@ The new state $\mathbf z$ that we choose through a diffeomorphism $\phi$ is give
         \ddot{\mathbf p}&
         \dddot{\mathbf p}&
         \psi&\dot\psi
-    \end{pmatrix}^T\in\R^{14}
+    \end{pmatrix}^\top\in\R^{14}
 \end{equation}
 we can act on $\mathbf p^{(4)}$ hence its derivatives of lower orders become part of the state, with:\begin{align}
     \ddot{\mathbf p}&=g\mathbf e_3-\frac{\zeta_1}{m}\mathbf b(\bTheta)\\
@@ -824,7 +857,7 @@ To track a trajectory $\boldsymbol{\eta}_d$ we define the error $e_i=\eta_{id}-\
     &v_i = \eta^{(4)}_{id}+\sum_{j=1}^{4}c_{i,j-1}e_i^{(j-1)}\quad\quad i=1,2,3\\
     & v_4=\ddot\eta_{4d}+c_{4,0}e_4+c_{4,1}\dot e_4.
 \end{align}
-The system is stable and converges exponentially to the equilibrium (zero error) with an appropriate choice of the gains $c_{i,j}$. The reference $\boldsymbol{\eta}_d$ must be differentiable four times at least for the first three components (position) and at least two times for the yaw $\psi$. The dynamic compensator has the following time evolution:\begin{align}
+The system is stable and the tracking error, with an appropriate choice of the gains $c_{i,j}$, converges exponentially. The reference $\boldsymbol{\eta}_d$ must be differentiable four times at least for the first three components (position) and at least two times for the yaw $\psi$. The dynamic compensator has the following time evolution:\begin{align}
     &\dot\zeta_1=\zeta_2\\ 
     &\dot\zeta_2=D_1^{-1}(\bxi,\bzeta)(-I(\bxi,\bzeta)+\mathbf v)\\ 
     &T=\zeta_1\\ 
@@ -850,7 +883,7 @@ In this section we discuss the dynamic feedback linearization for the quadrotor 
 & \dot{v}_z =  g - c_\vartheta c_\varphi\frac{T}{m} 
 & & \dot{r} = \frac{I_x - I_y}{I_z} p q + \frac{\tau_\psi}{I_z}
 \end{align}
-we are using the short notation for $\sin$ and $\cos$. We denote $\Bomega=(p,q,r)^T$ the angular velocity, the model in compact form can be rewritten as:\begin{align}
+we are using the short notation for $\sin$ and $\cos$. We denote $\Bomega=(p,q,r)^\top$ the angular velocity, the model in compact form can be rewritten as:\begin{align}
     &\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}R\mathbf e_3\\ 
     &\dot R=RS(\Bomega)\\ 
     &J\dot{\Bomega}=-\Bomega\times J\Bomega+\boldsymbol{\Gamma}.
@@ -858,10 +891,10 @@ we are using the short notation for $\sin$ and $\cos$. We denote $\Bomega=(p,q,r
 We compute the dynamic feedback linearization (DFL) by setting the same output and extension:\begin{align}
     \boldsymbol{\eta}=\begin{pmatrix}
         x&y&z&\psi
-    \end{pmatrix}^T\\ 
+    \end{pmatrix}^\top\\ 
     \bzeta=\begin{pmatrix}
         T&\dot T 
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{align}
 let's write out $\mathbf p^{(4)}$:\begin{align}
     \mathbf p^{(3)}&=\frac{d}{dt}\left(g\mathbf e_3-\frac{T}{m}R\mathbf e_3\right)\\
@@ -929,12 +962,12 @@ with\begin{equation}
 hence the model has a singularity on $T=0$ and $\varphi=\pm\frac{\pi}{2}$. Now we want to linearize this model, our virtual input is:\begin{equation}
     \mathbf v=\begin{pmatrix}
         v_1&v_2&v_3&v_4 
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{equation}
 with $v_1,v_2,v_3$ being relative to the snap and $v_4$ to the yaw. In order to linearize the snap we define the following vector:\begin{equation}
         \bmu=\begin{pmatrix}
             \mu_1\\\mu_2\\\mu_3 
-        \end{pmatrix}=-mR^T\begin{pmatrix}
+        \end{pmatrix}=-mR^\top\begin{pmatrix}
         v_1\\ v_2\\ v_3
     \end{pmatrix}-\mathbf n
     \end{equation}
@@ -945,7 +978,7 @@ The linearizing control law is\begin{align}
     &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(v_4-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
 \end{align}
 the system becomes:\begin{align}
-        p^{(4)}_1&=v_1\\  p^{(4)}_2&=v_2\\  p^{(4)}_3&=v_3\\
+        x^{(4)}&=v_1\\  y^{(4)}&=v_2\\  z^{(4)}&=v_3\\
         \ddot\psi &=v_4.
 \end{align}
 \noindent The following table compares the simplified model with the complete one:
@@ -958,7 +991,7 @@ the system becomes:\begin{align}
         \midrule
         rotational kinematics & $\dot{\boldsymbol{\Theta}} \simeq \boldsymbol{\Omega}$ & $\dot{\boldsymbol{\Theta}} = M(\boldsymbol{\Theta})^{-1}\boldsymbol{\Omega}$ \\
         rotational dynamics   & $\ddot{\boldsymbol{\Theta}} = J^{-1}\boldsymbol{\Gamma}$ & $J\dot{\boldsymbol{\Omega}} = -\boldsymbol{\Omega} \times J\boldsymbol{\Omega} + \boldsymbol{\Gamma}$ \\
-        jerk $\mathbf{p}^{(3)}$   & $-\frac{1}{m}(\dot{T}\mathbf{b} + TB\dot{\boldsymbol{\Theta}})$ & $-\frac{1}{m}R(Tq, -Tp, \dot{T})^T$ \\
+        jerk $\mathbf{p}^{(3)}$   & $-\frac{1}{m}(\dot{T}\mathbf{b} + TB\dot{\boldsymbol{\Theta}})$ & $-\frac{1}{m}R(Tq, -Tp, \dot{T})^\top$ \\
         position block of $D$ & $-\frac{1}{m}(\mathbf{b} \quad TBJ^{-1})$ & $-\frac{1}{m}RN(T)$ \\
         yaw row of $D$        & $(0, 0, 0, \frac{1}{I_z})$ & $\left(0, 0, \frac{s_\varphi}{c_\vartheta I_y}, \frac{c_\varphi}{c_\vartheta I_z}\right)$ \\
         det $D$               & $-\dfrac{T^2 c_\varphi}{m^3 I_x I_y I_z}$ & $-\dfrac{T^2 c_\varphi}{m^3 I_x I_y I_z c_\vartheta}$ \\
@@ -983,19 +1016,19 @@ the system becomes:\begin{align}
 \end{boxdefinition}
 If a system is differentially flat, the trajectories of the system are in one-to-one correspondence
 with arbitrary smooth curves $\mathbf y(t)$: there are no differential equations to integrate.
-\begin{boxproposition}{}{}
+\begin{boxobservation}{}{}
     There does not exist a general test to check if a system is differentially flat, flat outputs are found by inspection, often
     with a physical meaning.
-\end{boxproposition}
+\end{boxobservation}
 \noindent The quadrotor model is one of the best-known examples of a system with flat outputs, which are exactly:\begin{equation}
     \y=\begin{pmatrix}
         x&y&z&\psi
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{equation}
 by considering the inputs\begin{equation}
     \mathbf u=\begin{pmatrix}
         T&\tau_\varphi&\tau_\vartheta&\tau_\psi
-    \end{pmatrix}^T
+    \end{pmatrix}^\top
 \end{equation}
 we want to derive the map $\Psi$ such that:\begin{equation}
     \mathbf u = \Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(r)})
@@ -1008,7 +1041,7 @@ the versor of the thrust direction is:\begin{equation}
     \mathbf b = \frac{g\mathbf e_3-\ddot{\mathbf p}}{\|g\mathbf e_3-\ddot{\mathbf p}\|}
 \end{equation}
 from the jerk equation we can define a new vector:\begin{equation}
-    \mathbf w = -mR^T\mathbf p^{(3)}
+    \mathbf w = -mR^\top\mathbf p^{(3)}
 \end{equation}
 and get the following identities:\begin{align}
     &q=\frac{w_1}{T}\\ 
@@ -1019,7 +1052,7 @@ and\begin{equation}
     r=\frac{c_\vartheta\dot\psi-s_\varphi q}{c_\varphi}
 \end{equation}
 from the snap equation, we define:\begin{equation}
-    \bmu=-mR^T\mathbf p^{(4)}-\mathbf n
+    \bmu=-mR^\top\mathbf p^{(4)}-\mathbf n
 \end{equation}
 and we can write:\begin{align}
     &\ddot T = \mu_3\\ 
