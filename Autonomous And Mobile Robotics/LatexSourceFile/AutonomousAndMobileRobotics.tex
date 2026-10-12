@@ -606,7 +606,17 @@ The robot in $\q_s$ (left) can start tracking the circular trajectory until it i
     \centering
     \includegraphics[width=0.5\textwidth]{images/bicycle_manuver_2.eps}
 \end{figure}
-There, it will steer by making $\phi=0$ and it will track the common tangent in order to reach the  circular path of $\q_g$. There, it will steer again and reach the goal configuration.
+There, it will steer by making $\phi=0$ and it will track the common tangent in order to reach the  circular path of $\q_g$. There, it will steer again and reach the goal configuration.\bigskip
+
+Which robots are mechanically equivalent to a bicycle? One example is the tricycle. A tricycle with two rear wheels and one steerable front wheel can be modeled as a bicycle by defining the midpoint between the two rear wheels as $(x,y)$. A car-like robot can also be represented by the bicycle model, but it presents a kinematic challenge: because it has two steerable front wheels, their respective zero-motion lines might intersect the zero-motion line of the rear axle at different points. When this happens, a single Instantaneous Center of Rotation (ICR) cannot be identified. This situation is illustrated in Figure \ref{no_single_icr}.
+
+To overcome this problem, we use a mechanism called \textbf{Ackermann steering}, which, during a circular path, automatically orients the front wheels so that their zero-motion lines intersect at a single ICR.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/no_single_icr.eps}
+    \caption{The intersections identifies two ICR.}
+    \label{no_single_icr}
+\end{figure}
 \section{Nonlinear Controllability}
 Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
     \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 
@@ -776,4 +786,73 @@ It can be verified that:\begin{equation}
     \end{pmatrix}=4
 \end{equation}
 hence the model is controllable.
+\subsection{Chained-Form}
+\begin{boxdefinition}{System in Chained-Form}{}
+    Consider a nonlinear system with an $n$-dimensional state vector $\mathbf z\in\R^n$ and $2$ inputs $\mathbf w\in \R^2$. The system is in chained-form if has the following structure:\begin{align}
+        \dot z_1&=w_1\\ 
+        \dot z_2&=w_2\\
+        \dot z_3&=z_2w_1\\ 
+        \dot z_4&=z_3w_1\\ \vdots \\ 
+        \dot z_n&=z_{n-1}w_1.
+    \end{align}
+\end{boxdefinition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth ]{images/chained_form.eps}
+    \caption{Block diagram of a chained-form system.}
+\end{figure}
+We can observe how, if the inputs $\mathbf w$ are constant, the system becomes linear, hence in digital control, where the inputs are piece-wise constants, the system is piece-wise linear. 
+\begin{boxproposition}{}{}
+    Any chained-form system is controllable.
+\end{boxproposition}
+All the controllable driftless systems (that are the systems of our interest for the kinematic model of the mobile robots) can be rewritten in chained-form under a coordinate and inputs transformation:\begin{align}
+    \mathbf z=&\alpha(\q)\\ 
+    \mathbf w=&\beta(\q)\mathbf u.
+\end{align}
+Now we will show how to transform the unicycle model in chained-form. The original model is:\begin{align}
+    \dot x&=v\cos\theta\\ 
+    \dot y &= v\sin\theta\\ 
+    \dot\theta&=\omega
+\end{align}
+we define the following transformation for the coordinates:\begin{equation}\label{coord_transform}
+   \mathbf z=\alpha(\q)=\begin{cases}
+   z_1=\theta\\
+   z_2=x\cos\theta+y\sin\theta\\ 
+   z_3=x\sin\theta-y\cos\theta
+   \end{cases} 
+\end{equation}
+and the following transformation for the inputs:\begin{equation}
+    \mathbf w=\beta(\q)\begin{pmatrix}
+    v\\\omega
+    \end{pmatrix}=\begin{cases}
+   w_1=\omega\\ w_2=v-z_3\omega
+   \end{cases}.
+\end{equation}
+Now we rewrite the model and see if it is in chained-form. From Equation \eqref{coord_transform} we get:\begin{align}
+    \dot z_1=\dot\theta=\omega=w_1 
+\end{align} 
+then:\begin{align}
+    \dot z_2&=\underbrace{\dot x\cos\theta+\dot y\sin\theta}_{v}-x\sin\theta\dot\theta+y\cos\theta\dot \theta\\
+    &=v-\underbrace{\dot\theta}_{\omega}\underbrace{(x\sin\theta-y\cos\theta)}_{z_3}
+    =\underbrace{v-\omega z_3=w_2}_{\text{input transformation}}
+\end{align}
+ultimately:\begin{align}
+    \dot z_3&=\dot x\sin\theta-\dot y\cos\theta-x\cos\theta\dot\theta+y\sin\theta\dot\theta\\
+    &= \underbrace{(\dot{x} \sin\theta - \dot{y} \cos\theta)}_{0\text{ due to the constraint}} + \dot{\theta}(x \cos\theta + y \sin\theta)\\[1.5ex]
+    &=\underbrace{\dot{\theta}}_{\omega=w_1}\underbrace{(x \cos\theta + y \sin\theta)}_{z_2}=z_2w_1
+\end{align}
+so the model after the transformations is:\begin{align}
+    \dot z_1&=w_1\\ 
+    \dot z_2&=w_2\\ 
+    \dot z_3&=z_2w_1
+\end{align}
+and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the coordinates of the unicycle in the reference frame with its horizontal axis rotated by $\theta$ with respect to the base frame, as shown in Figure \ref{z2z3}.\bigskip
+
+Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained form.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/z2z3.eps}
+    \caption{Interpretation of $z_2$ and $z_3$.}
+    \label{z2z3}
+\end{figure}
 \end{document}
