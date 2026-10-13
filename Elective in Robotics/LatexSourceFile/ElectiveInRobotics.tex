@@ -1061,4 +1061,101 @@ and we can write:\begin{align}
     &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(\ddot\psi-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
 \end{align}
 now that we have defined the map $\mathbf u=\Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(4)})$, we can define any trajectory at least four times differentiable $\mathbf y(t)$ and get immediately through $\Psi$ the required inputs to execute $\mathbf y(t)$.
+\section{Control on $SE(3)$}
+The state space of the rotational dynamics is the special Euclidean group $SE(3)=\R^3\times SO(3)$, this is a \textbf{topological obstruction}: due to this, it is impossible with a continuous feedback law to make an equilibrium point \textit{globally asymptotically stable}. The best thing that we can do is to use the information about the geometry of the state space and define an error on that. By doing so, the best achievable result with a continuous feedback law is \textbf{almost global convergence} (a desired equilibrium attracts trajectories starting from almost all initial conditions, except a zero-measure set). The \textbf{geometric controller} is designed by using directly $SO(3)$ to represent the desired attitude of the UAV.\bigskip
+
+\noindent We recall the quadrotor dynamics:\begin{align}
+    &\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}R\mathbf e_3\\
+    &\dot R= RS(\Bomega)\\
+    &J\dot{\Bomega}+\Bomega\times J\Bomega=\boldsymbol{\Gamma}
+\end{align}
+with $\boldsymbol{\Gamma},T$ being the control inputs. We define a new operator $^\vee$: this is the inverse of the operator that assigns to a vector its associated skew-symmetric matrix:\begin{align}
+    &A=S(\mathbf a)\\
+    &A^\vee=(S(\mathbf a))^\vee=\mathbf a
+\end{align}
+The controller is divided in two loops, the outer loop for the position, the inner loop for the attitude. We denote $\mathbf b_1,\mathbf b_2,\mathbf b_3$ the unit vector columns of $R$ (these vectors are the one denoted $\mathbf x_b,\mathbf y_b,\mathbf z_b$ in Figure \ref{bodyframe}). To impose a desired attitude, we define a desired rotation matrix $R_d$, with column vectors $\mathbf b_{1d},\mathbf b_{2d},\mathbf b_{3d}$. The two loops work as follows:\begin{itemize}
+    \item The trajectory tracking controller takes in input a desired Cartesian position $\mathbf p_d$, and produces in output the required thrust intensity $T$ and thrust direction $\mathbf b_{3d}$.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth ]{images/required_thrust.eps}
+    \end{figure}
+    \item $\mathbf b_{3d}$, and $\mathbf b_{1d}$ (desired yaw) are used to define $R_d$, that will be used by the attitude tracking controller to compute the required torques $\boldsymbol{\Gamma}$.
+    \item $\boldsymbol{\Gamma}$ and $T$ are the computed control inputs for the quadrotor dynamics.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/SE3_blockDiagram.eps}
+    \caption{Block diagram of the geometric controller.}
+\end{figure}
+First of all we define the Cartesian error for the position:\begin{align}
+    &\mathbf e_p=\mathbf p-\mathbf p_d\\
+    &{\mathbf e}_v=\dot{\mathbf p}-\dot{\mathbf p}_d
+\end{align}
+the resulting positional control action $\mathbf a$ is built with a PD law + gravity compensation + feedforward:\begin{equation}
+    \mathbf a=-k_p\mathbf e_p-k_d\mathbf e_v-mg\mathbf e_3+m\ddot{\mathbf p}_d.
+\end{equation}
+The thrust force that we can impose is $-TR\mathbf e_3$, and we would like to make this equal to the positional control action:\begin{equation}
+    -TR\mathbf e_3=\mathbf a
+\end{equation}
+we cannot assign directly $-TR\mathbf e_3$, but we can assign $T$ and the control torques to control $R$. The thrust direction desired is the following:\begin{equation}
+    \mathbf b_{3d}=-\frac{\mathbf a}{\|\mathbf a\|}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth ]{images/required_thrust2.eps}
+    \end{figure}
+\noindent This requires $\mathbf a\ne\mathbf 0$ (no free fall). The thrust intensity is:\begin{equation}
+    T=\|\mathbf a\|\mathbf b_{3d}^\top\mathbf b_3
+\end{equation}
+so $T$ is the thrust intensity to actuate, now we have to describe how the inner attitude controller will achieve the desired attitude $R_d$ defined by the desired thrust direction $\mathbf b_{3d}$. The attitude is constructed as follows:\begin{itemize}
+    \item Let $\mathbf b_{1d}$ be the desired yaw. We build the vector:\begin{equation}
+        \mathbf b_{2d}=\frac{\mathbf b_{3d}\times\mathbf b_{1d}}{\|\mathbf b_{3d}\times\mathbf b_{1d}\|}
+    \end{equation}
+    \item $\mathbf b_{2d}$ and $\mathbf b_{3d}$ will be completed to an orthonormal basis by their cross product:\begin{equation}
+        \mathbf b_{2d}\times \mathbf b_{3d}
+    \end{equation}
+    by this construction, $\mathbf b_{2d}\times \mathbf b_{3d}$ will be the projection of $\mathbf b_{1d}$ on the plane orthogonal to $\mathbf b_{3d}$. Ultimately:\begin{equation}
+        R_d=\begin{pmatrix}
+            &&\\ 
+            \mathbf b_{2d}\times \mathbf b_{3d}&\mathbf b_{2d}&\mathbf b_{3d}\\
+            &&
+        \end{pmatrix}.
+    \end{equation}
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/R_d.eps}
+\end{figure}
+This construction is well defined if $\mathbf b_{1d}$ is not parallel to $\mathbf b_{3d}$. Now we have to define an error between matrices in $SO(3)$, so we define the error function $\Psi:SO(3)\times SO(3)\rightarrow [0,2]$ as follows:\begin{equation}
+    \Psi(R,R_d)=\frac{1}{2}\text{tr}\left[I-R_d^\top R\right]
+\end{equation}
+this function has some important properties:\begin{itemize}
+    \item $R_d^\top R$ is the relative rotation between the current and desired attitude.
+    \item Let  $R_d^\top R$ be the rotation about $\mathbf r$ of $\theta$ radians (axis-angle representation). Then:\begin{equation}
+        \text{tr}\left[R_d^\top R\right]=1+2\cos\theta
+    \end{equation}
+    hence:\begin{equation}
+        \Psi(R,R_d)=1-\cos\theta\in [0,2].
+    \end{equation}
+    \item The error is zero if the matrices are identical:\begin{equation}
+        \Psi(R,R_d)=0\iff R=R_d.
+    \end{equation}
+    \item The error is less than 1 if and only if the angle $\theta$ is less than $\frac{\pi}{2}$:\begin{equation}
+         \Psi(R,R_d)<1\iff \theta<\frac{\pi}{2}.
+    \end{equation}
+    \item The error is maximum when the angle $\theta$ is exactly $\pi$:\begin{equation}
+        \Psi(R,R_d)=2\iff \theta=\pi.
+    \end{equation}
+\end{itemize}
+\begin{boxproposition}{Almost Global Convergence}{}
+At the beginning of this section we have said that the geometric controller achieves almost global convergence. This means that asymptotic convergence is \textbf{guaranteed} if the error defined by $\Psi$ between the current attitude $R$ and desired attitude $R_d$ is less than 2.
+\end{boxproposition}
+At each attitude $R$, asymptotic convergence is guaranteed on the subset:\begin{equation}
+    L_2=\{R_d\in SO(3) \ \text{ such that } \ \Psi(R,R_d)<2\}\subset S(3).
+\end{equation}
+$L_2$  almost covers $SO(3)$, meaning that the set $SO(3)\setminus L_2$ has zero measure.\bigskip
+
+\noindent Now that we defined a desired attitude $R_d$ and an error $\Psi(R,R_d)$ that is a measure of how distant we are from the desired configuration, we have to define how we choose the control torques $\boldsymbol\Gamma$.
+
+\todo{slide 04 pag 16}
 \end{document}
