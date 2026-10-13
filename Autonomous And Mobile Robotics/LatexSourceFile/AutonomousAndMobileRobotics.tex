@@ -51,7 +51,7 @@ We can define a robot as a collection of $n_b$ bodies moving in an operative spa
 To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, which requires a total of 12 parameters for the whole system, despite that, we know that 2 variables are enough to describe the whole configuration of the system.
 \begin{boxdefinition}{Configuration}{}
 The configuration of a robot is a \textbf{minimum} set of parameters that allows one to specify the posture\footnote{
-    with posture, we indicate the position of all the points of the robot.
+    bt posture we mean the position of all the points of the robot.
 } of the robot in the workspace.
 \end{boxdefinition}
 The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique, however, each robot always has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
@@ -67,10 +67,10 @@ Let's see an example: consider a disk robot that moves on a plane, that can also
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth ]{images/disc_tick.eps}
-    \caption{Disc robot with a tick in $\R^2$.}
+    \caption{Disk robot with a tick in $\R^2$.}
     \label{disc_tick}
 \end{figure}
-Its configuration is given by two Cartesian coordinates $(x,y)$ and a value $\varphi\in SO(2)$ representing the angle between the tick and the horizontal axis. Hence, its configuration space is:\begin{equation}
+Its configuration is given by two Cartesian coordinates $(x,y)$ and a value $\varphi\in S^1$ representing the angle between the tick and the horizontal axis. Hence, its configuration space is:\begin{equation}
     \mathcal C = \R^2\times SO(2)=SE(2)
 \end{equation}
 and it's not Euclidean, despite being called \textit{special Euclidean group}. A polyhedral robot that can freely move in space is described by three Cartesian coordinates $(x,y,z)$ and three roll-pitch-yaw angles $(\alpha,\beta,\gamma)$ describing its orientation, hence the configuration space is $SE(3)$:
@@ -79,7 +79,7 @@ and it's not Euclidean, despite being called \textit{special Euclidean group}. A
 \end{equation}
 We have seen in previous courses of robotics that the number of generalized coordinates of an  $n$-link serial manipulator is exactly $n$.
 \subsection{Topology of a Space}
-We are interested in describing the configuration space of a given manipulator, since it's not Euclidean (in most cases), we would like to have an idea of how to navigate this space. Before defining formally what a \textit{topology} is, we give some examples.\bigskip 
+We are interested in describing the configuration space of a given manipulator, since it's not Euclidean (in most cases), we would like to have an idea of how to navigate this space. Before defining what a \textit{manifold} is, we give some examples.\bigskip 
 
 A 2R planar manipulator can be described by two angles, hence two values in $SO(2)$, so its configuration space is\begin{equation}
     \mathcal C = SO(2)\times SO(2)=SO(2)^2
@@ -126,7 +126,7 @@ As we should know from previous robotics courses, the configuration space of a 2
         &d(\q_a,\q_b)\le d(\q_a,\q_c)+d(\q_c,\q_b).
     \end{align}
 \end{boxdefinition}
-\noindent We know how the distance between two vectors $\mathbf u,\mathbf v$ in $\R^n$ is given by $\|\mathbf u - \mathbf v\|$. The distance between two points is the \textit{shortest path} between them, for a general manifold, this path is not always a straight line as for the Euclidean space.
+\noindent We know that the distance between two vectors $\mathbf u,\mathbf v$ in $\R^n$ is given by $\|\mathbf u - \mathbf v\|$. The distance between two points is the length of the \textit{shortest path} between them, for a general manifold, this path is not always a straight line as for the Euclidean space.
 \begin{boxdefinition}{Geodesic}{}
     For a general manifold, the shortest path between two points is called \textbf{geodesic}, and the distance between the points is the length of their geodesic.
 \end{boxdefinition}
@@ -147,13 +147,13 @@ For example, we might let $\mathbf p$ be the center of mass of the manipulator, 
     d(\q_a,\q_b)=\max_{\mathbf p\in \text{robot}}\|\mathbf p(\q_a)-\mathbf p(\q_b)\|
 \end{equation}
 This distance is called \textbf{displacement metric}. Notice how in the definition we are writing $\mathbf p \in \text{robot}$, by letting robot be the set of all the points in the structure of the manipulator, which clearly depend on the current configuration. This kind of metric works under the assumption that, if the region occupied by the robot is similar in two different postures, then the distance between their respective configurations is small:\begin{equation}
-    B(\q_a)\simeq B(\q_b)\implies d(\q_a,\q_b)\simeq 0.
+    d(\q_a,\q_b)\simeq 0\implies B(\q_a)\simeq B(\q_b).
 \end{equation}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth ]{images/displacement_metric.eps}
 \end{figure}
-To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an uncountably infinite set. If the links are polygonal shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
+To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an uncountably infinite set. If the links are polyhedral shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
 
 A more computationally feasible approach is to check only for a finite set of points in the robot structure, called \textbf{control points}. Let \begin{equation}
     P=\{\mathbf p_1,\mathbf p_2,\dots, \mathbf p_c\}
@@ -163,17 +163,17 @@ be a set of $c$ points of the robot (in general, they all depend on the configur
 \end{equation}
 Not all the points of a robot are feasible control points, for example, the base of a manipulator usually doesn't change with the configuration. $P$ is a set of \textit{proper control points} if the function $d$ as defined in Equation \eqref{cp_metric} satisfies the properties of a distance given in Definition \ref{def:distance}.
 \begin{boxobservation}{Approximation for Local Motion}{}
-Since a manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold (assuming it is smooth) with the Euclidean distance.
+Since a smooth manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold (assuming it is smooth) with the Euclidean distance.
 \end{boxobservation}
 \begin{boxobservation}{Prismatic Joints}{}
 The configuration space of a robot with \textit{only} prismatic joints is Euclidean.
 \end{boxobservation}
 \section{Mechanics of Mobile Robots}
 The main sources of movement for a mobile robot are:\begin{itemize}
-    \item Wheels: wheeled robots usually consist of one single rigid body, with the wheels in contact with ground.
+    \item Wheels: wheeled robots usually consist of one single rigid body, with the wheels in contact with the ground.
     \item Feet: legged robots, several rigid bodies articulated through joints.
 \end{itemize}
-The wheels are in contact with the ground, and this introduces some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact points. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass, falls inside the support polygon. Of course a robot must be balanced in order to not fall to the ground.
+The wheels are in contact with the ground, and this introduces some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact points. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass falls inside the support polygon. Of course a robot must be balanced in order not to fall to the ground.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/balance.pdf}
@@ -181,7 +181,7 @@ The wheels are in contact with the ground, and this introduces some constraints.
 The convex hull of two points is a line segment, hence a robot with only two wheels can't be easily balanced in a static fashion.\bigskip
 
 \noindent There are three main types of wheels:\begin{itemize}
-    \item \textbf{Fixed Wheels}: They have a fixed orientation: Can roll but can't steer on their $z$-axis (see Figure \ref{fixed_wheel}). They are usually actuated, if passive, are used for balance and offer a contact point.
+    \item \textbf{Fixed Wheels}: They have a fixed orientation: Can roll but can't steer about their vertical axis (see Figure \ref{fixed_wheel}). They are usually actuated, if passive, they are used for balance and offer a contact point.
     \item \textbf{Steerable Wheels}: They can steer and are used for orientation, hence they are typically active (e.g. the front wheels of a car).
     \item \textbf{Caster Wheels}: They have a variable orientation but they are typically not actuated. Their axis of orientation are not aligned, this property makes the wheels align automatically with the direction of motion, hence they are ``invisible'' kinematically, but offer a contact point.
 \end{itemize}
@@ -244,9 +244,9 @@ For example, consider a 2 degrees of freedom robot with the following constraint
 the configuration space is limited to the unit circle in $\R^2$ (1-manifold), we solve the constraint for $q_2$:\begin{equation}
     q_2=\pm\sqrt{1-q_1^2}.
 \end{equation}
-Actually this is not a good way to choose a coordinate, since the $\pm$ term prevents us from assigning a single value of $q_2$ to each value of $q_1$, requiring a local resolution. For this example of the circle it is better to use the arc length $s\in[0,2\pi)$ as the single coordinate.
+Actually this is not a good way to choose a coordinate, since the $\pm$ term prevents us from assigning a single value of $q_2$ to each value of $q_1$, requiring a local resolution. For this example of the circle it is better to use the arc length $s\in S^1$ as the single coordinate.
 \begin{boxobservation}{Sub-Manifold}{}
-    If the configuration space $\mathcal C$ is an $n$-manifold, the $k$ constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
+    If the configuration space $\mathcal C$ is an $n$-manifold, the $k$ independent constraints define a $(n-k)$-manifold embedded in $\mathcal C$, that we also call sub-manifold.
 \end{boxobservation}
 \subsection{Kinematic Constraints}
 A kinematic constraint is local, it prevents the configuration from moving towards some directions. A general constraint of this kind is in the form:\begin{equation}
@@ -260,7 +260,7 @@ with $\mathbf a$ being an $n$ dimensional vector that depends on the configurati
         \mathbf a_1^T(\q)\\
         \mathbf a_2^T(\q)\\ \vdots\\ 
         \mathbf a_k^T(\q)
-    \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\implies \dq\in\mathcal N(A).
+    \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\iff \dq\in\mathcal N(A).
 \end{equation}
 The admissible velocities are the ones that lie in the null space of $A$\footnote{
     Sometimes, we let the dependencies of a term implicit.
@@ -280,7 +280,7 @@ by applying the chain rule:\begin{equation}
 $\frac{\partial h}{\partial \q}$ is a row vector, the transpose of the gradient of $h$:\begin{equation}
     (\nabla_\q h)^T\dq=0
 \end{equation}
-this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the vector orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out of the sub-manifold defined by the geometric constraints.
+this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the normal vector, i.e. orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out of the sub-manifold defined by the geometric constraints.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth ]{images/tangent_plane.eps}
@@ -368,14 +368,14 @@ There are no global mobility limitations. We can also observe this trajectory in
     \centering
     \includegraphics[width=0.6\textwidth ]{images/manuvre_C_space.eps}
 \end{figure}
-Note how for simplicity we have drawn the configuration space as Euclidean. Of course it is not Euclidean because $\theta\in SO(2)$.
+Note how for simplicity we have drawn the configuration space as Euclidean. Of course it is not Euclidean because $\theta\in S^1$.
 \section{Kinematic Models}
 We have seen how  the kinematic constraints are defined in Pfaffian form as $A(\q)\dq=\mathbf 0$, with $A$ being a $k\times n$ matrix. We are interested in finding a basis for the null space of $A(\q)$:\begin{equation}
     \mathcal N(A(\q))=\text{span}\left\{ 
         \mathbf g_1(\q),\mathbf g_2(\q),\dots,\mathbf g_m(\q)
     \right\}
 \end{equation}
-$\mathcal N(A(\q))$ has dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the base is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
+$\mathcal N(A(\q))$ has dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the basis is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
     \dq=\sum_{i=1}^m u_i\mathbf g_i(\q)
 \end{equation}
 we can write any admissible velocity in compact form by using an $m$ dimensional vector $\mathbf u$:\begin{equation}
@@ -396,17 +396,17 @@ This system satisfies the \textbf{driftless property}:\begin{equation}
 \end{equation}
 it does not have a free evolution. The kinematic model is not unique, since we can select a different choice for the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, all the bases are equivalent for the description of the system, but the interpretation of the vector $\mathbf u$ depends on the choice of the basis. We can interpret $\mathbf u$ as the ``virtual'' velocities in the kinematically constrained configuration space.\bigskip
 
-Now we want to observe the differences between a kinematically constrained robot and an unconstrained robot. Consider an open-chain manipulator with revolute joints, with $\q$ being the DH frames. This choice of coordinates makes the manipulator free from any constraint, the configuration can ``fly'' in the configuration space, any joint velocity $\dq$ is always admissible, hence its kinematic model is\begin{equation}
+Now we want to observe the differences between a kinematically constrained robot and an unconstrained robot. Consider an open-chain manipulator with revolute joints, with $\q$ being the joint variables (DH coordinates). This choice of coordinates makes the manipulator free from any constraint, the configuration can ``fly'' in the configuration space, any joint velocity $\dq$ is always admissible, hence its kinematic model is\begin{equation}
     \dq=\mathbf u.
 \end{equation}
-This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this does not hold. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represent directly the joint velocity, but is called \textbf{pseudo velocity}.
+This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this does not hold. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represent directly the joint velocity, but is called \textbf{pseudo-velocity}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth ]{images/constrained_vs_unconstrained.eps}
 \end{figure}
 \noindent Let's discuss about controllability of the constrained model. The controllability of a system can be proved formally through nonlinear control theory, or constructively, by the definition of a universal maneuver (as we did in the previous section).
 \begin{boxdefinition}{Controllability}{}
-    The kinematic model of a manipulator is controllable if any desired state $\q$ of the configuration space can be reached.
+    The kinematic model of a manipulator is controllable if any configuration can be reached from any initial configuration in finite time.
 \end{boxdefinition}
 A holonomic constraint defines a geometric constraint that prevents the robot from accessing a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the presence of holonomic constraints.
 \begin{boxobservation}{}{}
@@ -423,7 +423,7 @@ It says that the velocity of the contact point must be aligned with the \textit{
         \dot x\\ \dot y\\ \dot\theta 
     \end{pmatrix}=0.
 \end{equation}
-The dimension of $\mathcal N(A)$ is 2, hence we will have a 2-dimensional vector of the pseudo velocity.
+The dimension of $\mathcal N(A)$ is 2, hence we will have a 2-dimensional vector of the pseudo-velocity.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/unicycle.eps}
@@ -549,7 +549,7 @@ We want to find $\mathbf g_1(\q)$, a vector similar to the one used for the unic
     \cos\theta\\\sin\theta\\\alpha\\0
 \end{pmatrix}
 \end{equation}
-with $\alpha$ a term that has yet to be chosen. We see how:\begin{equation}
+with $\alpha$ a term that has yet to be chosen. We see that:\begin{equation}
     \begin{pmatrix}
         \sin\theta&-\cos\theta&0&0\\ 
         \sin(\theta+\phi)&-\cos(\theta+\phi)&-l\cos\phi&0
@@ -576,7 +576,7 @@ we have found our basis, now we can write out the kinematic model:\begin{equatio
 \end{equation}
 $u_1=\pm\sqrt{\dot x^2+\dot y^2}$ is the magnitude of the velocity of the rear wheel contact point. If the robot is driven by the front wheel this model isn't appropriate, since $u_1$ is the velocity of the rear wheel.\bigskip
 
-This model has a singularity, since $\tan\phi$ isn't defined at $\phi=\frac{\pi}{2}$, hence $\mathbf g_1$ can't be evaluated, this is due to the fact that the model assumes only pure rolling for the wheels, and if $\phi=\frac{\pi}{2}$ any non zero $u_1$ will make the front wheel slide.
+This model has a singularity, since $\tan\phi$ isn't defined at $\phi=\pm\frac{\pi}{2}$, hence $\mathbf g_1$ can't be evaluated, this is due to the fact that the model assumes only pure rolling for the wheels, and if $\phi=\frac{\pi}{2}$ any non zero $u_1$ will make the front wheel slide.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth ]{images/phi_singularity.eps}
@@ -686,7 +686,7 @@ This result affirms that the displacement will be in the direction of the Lie br
         \Delta : \mathbf x \mapsto \Delta(\mathbf x)\subset T_\mathbf x\mathcal C.
     \end{equation}
 \end{boxdefinition}
-The tangent space in each point of a $n$-manifold have at most dimension $n$, hence the dimension of the subspace $\Delta (\mathbf x)$ can be at most $n$ (depending on the point on where we are evaluating $\Delta$). For a system in the form \eqref{driftless_system}, the \textit{input distribution} is defined as follows:\begin{equation}
+The tangent space in each point of a $n$-manifold has dimension $n$, hence the dimension of the subspace $\Delta (\mathbf x)$ can be at most $n$ (depending on the point on where we are evaluating $\Delta$). For a system in the form \eqref{driftless_system}, the \textit{input distribution} is defined as follows:\begin{equation}
     \Delta(\mathbf x)=\text{span}\{\mathbf g_1(\mathbf x),\mathbf g_2(\mathbf x),\dots,\mathbf g_m(\mathbf x)\}.
 \end{equation}
 The controllability problem for nonlinear systems is strictly correlated to a particular distribution, called the \textbf{accessibility distribution} $\Delta_{\mathcal A}$, defined as follows:\begin{equation}
@@ -699,7 +699,7 @@ Let's break it down:\begin{itemize}
     \item This nested definition can continue, for example the third order Lie brackets are in the form  $[\mathbf g_i,[\mathbf g_j,[\mathbf g_k,\mathbf g_h]]]$.
     \item The definition of $\Delta_{\mathcal A}$ consider all the possible combination of Lie brackets, for each possible order, up to infinity.
 \end{itemize}
-Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension depending on $\mathbf x$, for a nonlinear system, to assert controllability, is \textit{mandatory} that $\Delta_{\mathcal A}(\mathbf x)$ have the same dimension on every single $\mathbf x\in\mathcal C$.
+Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension depending on $\mathbf x$, for a nonlinear system, to assert controllability, is \textit{mandatory} that $\Delta_{\mathcal A}(\mathbf x)$ have dimension $n$ on every single $\mathbf x\in\mathcal C$.
 \begin{boxdefinition}{Dimension of a Distribution}{}
     The distribution $\Delta_{\mathcal A}$ have dimension $k$ if $\dim\Delta_{\mathcal A}(\mathbf x)=k$ for every $\mathbf x\in\mathcal C$. In that case we write $\dim\Delta_{\mathcal A}=k$.
 \end{boxdefinition}
@@ -723,30 +723,30 @@ In computational practice (for example using symbolic calculation software such 
 \subsection{The Unicycle Case}
 The unicycle model is:\begin{equation}
     \dq=\underbrace{\begin{pmatrix}
-        \cos\vartheta\\\sin\vartheta\\0 
+        \cos\theta\\\sin\theta\\0 
     \end{pmatrix}}_{\mathbf g_1}v+\underbrace{\begin{pmatrix}
         0\\0\\1  
     \end{pmatrix}}_{\mathbf g_2}\omega
 \end{equation}
 we compute the first order Lie bracket:\begin{equation}
     \mathbf g_3(\q):=[\mathbf g_1,\mathbf g_2](\q)=-\begin{pmatrix}
-        0&0&-\sin\vartheta\\ 
-        0&0&\cos\vartheta \\ 
+        0&0&-\sin\theta\\ 
+        0&0&\cos\theta \\ 
         0&0&0
     \end{pmatrix}\begin{pmatrix}
         0\\0\\1 
     \end{pmatrix}=\begin{pmatrix}
-       \sin\vartheta\\-\cos\vartheta\\ 0
+       \sin\theta\\-\cos\theta\\ 0
     \end{pmatrix}
 \end{equation}
 we denote $\mathbf g_3$ the Lie bracket, notice how is the unit vector orthogonal to the sagittal axis, called the \textbf{slide vector field}. Let's check the matrix given by $\mathbf g_1,\mathbf g_2,\mathbf g_3$:\begin{equation}
     \text{rank}\begin{pmatrix}
-        \cos\vartheta&0&\sin\vartheta\\ 
-        \sin\vartheta&0&-\cos\vartheta\\ 
+        \cos\theta&0&\sin\theta\\ 
+        \sin\theta&0&-\cos\theta\\ 
         0&1&0
     \end{pmatrix}= \text{rank}\begin{pmatrix}
-        \cos\vartheta&\sin\vartheta&0\\ 
-        \sin\vartheta&-\cos\vartheta&0\\ 
+        \cos\theta&\sin\theta&0\\ 
+        \sin\theta&-\cos\theta&0\\ 
         0&0&1
     \end{pmatrix}=3
 \end{equation}
@@ -760,7 +760,7 @@ In this case the Lie bracket defines a velocity that is immediately unrealizable
 The model of the bicycle is:\begin{equation}
     \dq=
 \underbrace{\begin{pmatrix}
-        \cos\vartheta\\\sin\vartheta\\\frac{1}{l}\tan\phi\\0 
+        \cos\theta\\\sin\theta\\\frac{1}{l}\tan\phi\\0 
     \end{pmatrix}}_{\mathbf g_1}u_1+\underbrace{\begin{pmatrix}
         0\\0\\0\\1  
     \end{pmatrix}}_{\mathbf g_2}u_2
@@ -772,22 +772,22 @@ the first Lie bracket (we don't show the computation) is:\begin{equation}
 \end{equation}
 this vector is called \textbf{wriggle} and is clearly linearly independent from the others, hence the rank is at least 3. Let's compute the second order Lie bracket:\begin{equation}
     \mathbf g_4:=[\mathbf g_1,\mathbf g_3](\q)=\begin{pmatrix}
-        -\frac{\sin\vartheta}{l\cos^2\phi} 
-        \\\frac{\cos\vartheta}{l\cos^2\phi} \\0\\0
+        -\frac{\sin\theta}{l\cos^2\phi} 
+        \\\frac{\cos\theta}{l\cos^2\phi} \\0\\0
     \end{pmatrix}
 \end{equation}
 $\mathbf g_4$ is parallel to the slide vector field.
 It can be verified that:\begin{equation}
     \text{rank}\begin{pmatrix}
-        \cos\vartheta&0&0& -\frac{\sin\vartheta}{l\cos^2\phi} \\
-        \sin\vartheta&0&0&\frac{\cos\vartheta}{l\cos^2\phi}\\
+        \cos\theta&0&0& -\frac{\sin\theta}{l\cos^2\phi} \\
+        \sin\theta&0&0&\frac{\cos\theta}{l\cos^2\phi}\\
         \frac{1}{l}\tan\phi&0&-\frac{1}{l\cos^2\phi}&0\\
         0&1&0&0
     \end{pmatrix}=4
 \end{equation}
 hence the model is controllable.
 \subsection{Chained-Form}
-\begin{boxdefinition}{System in Chained-Form}{}
+\begin{boxdefinition}{Chained-Form Systems}{}
     Consider a nonlinear system with an $n$-dimensional state vector $\mathbf z\in\R^n$ and $2$ inputs $\mathbf w\in \R^2$. The system is in chained-form if has the following structure:\begin{align}
         \dot z_1&=w_1\\ 
         \dot z_2&=w_2\\
@@ -846,13 +846,14 @@ so the model after the transformations is:\begin{align}
     \dot z_2&=w_2\\ 
     \dot z_3&=z_2w_1
 \end{align}
-and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the coordinates of the unicycle in the reference frame with its horizontal axis rotated by $\theta$ with respect to the base frame, as shown in Figure \ref{z2z3}.\bigskip
+and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the coordinates of the unicycle in the reference frame with its horizontal axis rotated by $\theta$ with respect to the base frame, as shown in Figure \ref{z2z3}.
 
-Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained form.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/z2z3.eps}
     \caption{Interpretation of $z_2$ and $z_3$.}
     \label{z2z3}
 \end{figure}
+
+Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained form.
 \end{document}
