@@ -1061,13 +1061,13 @@ and we can write:\begin{align}
     &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(\ddot\psi-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
 \end{align}
 now that we have defined the map $\mathbf u=\Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(4)})$, we can define any trajectory at least four times differentiable $\mathbf y(t)$ and get immediately through $\Psi$ the required inputs to execute $\mathbf y(t)$.
-\section{Control on $SE(3)$}
-The state space of the rotational dynamics is the special Euclidean group $SE(3)=\R^3\times SO(3)$, this is a \textbf{topological obstruction}: due to this, it is impossible with a continuous feedback law to make an equilibrium point \textit{globally asymptotically stable}. The best thing that we can do is to use the information about the geometry of the state space and define an error on that. By doing so, the best achievable result with a continuous feedback law is \textbf{almost global convergence} (a desired equilibrium attracts trajectories starting from almost all initial conditions, except a zero-measure set). The \textbf{geometric controller} is designed by using directly $SO(3)$ to represent the desired attitude of the UAV.\bigskip
+\section{Geometric Control on $SO(3)$}
+The state space of the rotational dynamics is $\R^3\times SO(3)$, this is a \textbf{topological obstruction}: due to this, it is impossible with a continuous feedback law to make an equilibrium point \textit{globally asymptotically stable}. The best thing that we can do is to use the information about the geometry of the state space and define an error on that. By doing so, the best achievable result with a continuous feedback law is \textbf{almost global convergence} (a desired equilibrium attracts trajectories starting from almost all initial conditions, except a zero-measure set). The \textbf{geometric controller} is designed by using directly $SO(3)$ to represent the desired attitude of the UAV.\bigskip
 
 \noindent We recall the quadrotor dynamics:\begin{align}
     &\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}R\mathbf e_3\\
     &\dot R= RS(\Bomega)\\
-    &J\dot{\Bomega}+\Bomega\times J\Bomega=\boldsymbol{\Gamma}
+    &\label{JOmegadot}J\dot{\Bomega}+\Bomega\times J\Bomega=\boldsymbol{\Gamma}
 \end{align}
 with $\boldsymbol{\Gamma},T$ being the control inputs. We define a new operator $^\vee$: this is the inverse of the operator that assigns to a vector its associated skew-symmetric matrix:\begin{align}
     &A=S(\mathbf a)\\
@@ -1151,14 +1151,14 @@ this function has some important properties:\begin{itemize}
 At the beginning of this section we have said that the geometric controller achieves almost global convergence. This means that asymptotic convergence is \textbf{guaranteed} if the error defined by $\Psi$ between the current attitude $R$ and desired attitude $R_d$ is less than 2.
 \end{boxproposition}
 At each attitude $R$, asymptotic convergence is guaranteed on the subset:\begin{equation}
-    L_2=\{R_d\in SO(3) \ \text{ such that } \ \Psi(R,R_d)<2\}\subset S(3).
+    L_2=\{R_d\in SO(3) \ \text{ such that } \ \Psi(R,R_d)<2\}\subset SO(3).
 \end{equation}
 $L_2$  almost covers $SO(3)$, meaning that the set $SO(3)\setminus L_2$ has zero measure.\bigskip
 
 \noindent Now that we defined a desired attitude $R_d$ and an error $\Psi(R,R_d)$ that is a measure of how distant we are from the desired configuration, we have to define how we choose the control torques $\boldsymbol\Gamma$. First of all we consider a \textit{small perturbation} on $R$, let $\boldsymbol{\eta}$ be a vector of infinitesimal rotation, the perturbation is:\begin{equation}
     \delta R= R S(\boldsymbol{\eta})
 \end{equation}
-now we compute how $\Psi$ change when $R$ change (and $R_d$ is constant). Since the trace operator is linear, the variation is pushed inside the operator:\begin{align}
+now we compute how $\Psi$ changes when $R$ changes (and $R_d$ is constant). Since the trace operator is linear, the variation is pushed inside the operator:\begin{align}
     \delta\Psi&=\delta\frac{1}{2}\text{tr}\left[I-R_d^\top R\right]\\ 
     &=\frac{1}{2}\text{tr}\left[\delta I-\delta(R_d^\top R)\right]\\
     &=\frac{1}{2}\text{tr}\left[\delta I-(R_d^\top\delta R)\right]
@@ -1166,7 +1166,7 @@ now we compute how $\Psi$ change when $R$ change (and $R_d$ is constant). Since 
 $I$ is constant hence $\delta I$ is the zero matrix, then:\begin{equation}
      \delta\Psi=-\frac{1}{2}\text{tr}\left[R_d^\top R S(\boldsymbol{\eta})\right]
 \end{equation}
-from a series of algebraic step (that we omit), the variation can be rewritten as follows:
+from a series of algebraic steps (that we omit), the variation can be rewritten as follows:
 \begin{align}
      \delta\Psi&=\underbrace{\frac{1}{2}\cdot \left(
         R_d^\top R-R^\top R_d
@@ -1177,15 +1177,80 @@ we have found the vector $\mathbf e_R$ that is the \textbf{gradient} of $\Psi$, 
     \mathbf e_R=\sin\theta\mathbf r
 \end{equation}
 furthermore its squared magnitude is:\begin{equation}
-    \|\mathbf e_R\|^2=\underbrace{\sin\theta^2\mathbf r^\top \mathbf r=\sin^2\theta}_{\mathbf r \text{ is a unit vector}}=\Psi(2-\Psi).
+    \|\mathbf e_R\|^2=\underbrace{\sin^2\theta\mathbf r^\top \mathbf r=\sin^2\theta}_{\mathbf r \text{ is a unit vector}}=\Psi(2-\Psi).
 \end{equation}
 Let $\psi_2< 2$ be a constant value decided a priori by design, it holds that, for any attitude $R$ such that $\Psi(R,R_d)\le \psi_2$, the following bounds hold:\begin{equation}\label{bounds}
     \frac{1}{2}\|\mathbf e_R\|^2\le\Psi\le\frac{1}{2-\psi_2}\|\mathbf e_R\|^2.
 \end{equation}\begin{itemize}
     \item From the lower bound ($\frac{1}{2}\Vert{}\mathbf e_R\Vert{}^2 \le \Psi$) we deduce that if the configuration error $\Psi$ tends to zero, then the error vector $\mathbf e_R$ must also tend to zero ($\Psi \to 0 \implies \Vert{}\mathbf e_R\Vert{} \to 0$).
-    \item From the upper bound ($\Psi \le \frac{1}{2-\psi_2}\Vert{}e_R\Vert{}^2$) we deduce the vice versa: within the safe region $\Psi \le \psi_2 < 2$, if the error vector $\mathbf e_R$ vanishes, then $\Psi$ ($\Vert{}\mathbf e_R\Vert{} = 0 \implies \Psi = 0$ must also vanish, i.e. $R = R_d$).
+    \item From the upper bound ($\Psi \le \frac{1}{2-\psi_2}\Vert{}\mathbf e_R\Vert{}^2$) we deduce the vice versa: within the safe region $\Psi \le \psi_2 < 2$, if the error vector $\mathbf e_R$ vanishes, then $\Psi$  must also vanish, i.e. $R = R_d$.
 \end{itemize}
 \begin{boxobservation}{}{}
-    The bounds on Equation \eqref{bounds} shows that $\Psi$ is bounded between two quadratic forms of the attitude error vector $\mathbf{e}_R$; therefore, within this sublevel set, $\Psi(R, R_d)$ is positive definite with respect to $\mathbf{e}_R$ (i.e., $\Psi = 0 \iff \mathbf{e}_R = \mathbf{0}$).
+    The bounds on Equation \eqref{bounds} show that $\Psi$ is bounded between two quadratic forms of the attitude error vector $\mathbf{e}_R$; therefore, within this sublevel set, $\Psi(R, R_d)$ is positive definite with respect to $\mathbf{e}_R$ (i.e., $\Psi = 0 \iff \mathbf{e}_R = \mathbf{0}$).
 \end{boxobservation}
+After defining the attitude error, we define the error on angular velocity; let $\Bomega_d=(p_d,q_d,r_d)$ be the desired angular velocity, the error $\mathbf e_\Omega$ is:\begin{equation}
+    \mathbf e_\Omega=\Bomega-R^\top R_d\Bomega_d.
+\end{equation}
+$\Bomega$ is expressed in the current body frame defined by $R$ while $\Bomega_d$ is expressed in the desired body frame defined by $R_d$, hence $R_d\Bomega_d$ is the desired angular velocity in the base frame (also called inertial frame). $\mathbf e_\Omega$ is exactly the angular velocity vector that governs the time derivative of the relative rotation matrix $R_d^\top R$:\begin{align}
+    \frac{d}{dt}(R_d^\top R)&=\dot R_d^\top R+R_d^\top\dot R\\ 
+    &=-S(\Bomega_d)R_d^\top R+R_d^\top RS(\Bomega)\\
+    &=R_d^\top R(S(\Bomega)-R^\top R_d S(\Bomega_d)R_d^\top R)\\
+    &=R_d^\top R\,S(\Bomega-R^\top R_d\Bomega_d)\\
+    &=R_d^\top R\,S(\mathbf e_\Omega).
+\end{align}
+It can be proved that the derivative of the attitude error function is the dot product between the gradient and the angular velocity error:\begin{equation}
+    \dot\Psi=-\frac{1}{2}\text{tr}\left[\frac{d}{dt}(R_d^\top R)\right]=
+    -\frac{1}{2}\text{tr}\left[R_d^\top R S(\mathbf e_\Omega)\right]=
+    \frac{1}{2}\mathbf e_\Omega^\top (R_d^\top R -R^\top R_d)^\vee=\mathbf e_R^\top\mathbf e_\Omega.
+\end{equation}
+Let's recap what we have done until now:\begin{enumerate}
+    \item We defined the inner-outer loop structure of the geometric controller.
+    \item We have seen how the outer loop (trajectory) generates the desired thrust direction for the inner loop, defined by $\mathbf b_{3d}$. 
+    \item The inner loop constructs the matrix $R_d$, and defines an error $\Psi$ between the current attitude $R$ and the desired one $R_d$.
+    \item We have defined the errors $\mathbf e_R=\nabla\Psi$ and $\mathbf e_\Omega$, and we have seen how $\dot\Psi=\mathbf e_R^\top\mathbf e_\Omega$.
+\end{enumerate}
+\textbf{What we have to do now?}: We derive the dynamics of the errors, and choose the control torques $\boldsymbol{\Gamma}$ in order to achieve a closed loop system that asymptotically nullifies the errors. \bigskip 
+
+\noindent The dynamics of the attitude error is the following:\begin{align}
+    \dot{\mathbf e}_R&=\frac{1}{2}\left(
+        R_d^\top RS(\mathbf e_\Omega)+S(\mathbf e_\Omega)R^\top R_d 
+    \right)^\vee\\
+    &=\underbrace{\frac{1}{2}\left(
+        \text{tr}\left[R^\top R_d\right]I-R^\top R_d
+    \right)}_{C(R_d^\top R)}\mathbf e_\Omega
+\end{align}
+The matrix $\frac{1}{2}\left(
+        \text{tr}\left[R^\top R_d\right]I-R^\top R_d
+    \right)$ can be rewritten as $C(R_d^\top R)$ with $C$ being a matrix with norm less or equal than 1:\begin{align}
+        &\dot{\mathbf e}_R=C(R_d^\top R)\mathbf e_\Omega,\quad\quad\|C\|\le 1.
+    \end{align} 
+So the velocity of the attitude error depends on the angular velocity error, its dynamics is:\begin{align}
+    \dot{\mathbf e}_\Omega&=\dot\Bomega-\frac{d}{dt}(R^\top R_d\Bomega_d)\\
+    &=\dot\Bomega+S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d \underbrace{S(\Bomega_d)\Bomega_d}_{\mathbf 0}-R^\top R_d\dot\Bomega_d\\ 
+    &=\dot\Bomega+S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot\Bomega_d
+\end{align}
+Let's multiply both sides by the quadrotor inertia matrix $J$:\begin{equation}
+    J\dot{\mathbf e}_\Omega=
+    J\dot\Bomega+J\left(S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot\Bomega_d\right)
+\end{equation}
+we substitute $J\dot\Bomega$ with the dynamics in Equation \eqref{JOmegadot}:
+\begin{equation} J\dot{\mathbf e}_\Omega=
+\boldsymbol{\Gamma}-\Bomega\times J\Bomega+J\left(S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot\Bomega_d\right).
+\end{equation}
+The control input that we choose to stabilize the system is the following:\begin{equation}
+    \boldsymbol{\Gamma}=
+    \blueText{-k_R\mathbf e_R-k_\Omega\mathbf e_\Omega}+\sapText{\Bomega\times J\Bomega} - 
+    \greenText{J(S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot{\Bomega}_d)}
+\end{equation}
+let's break it down:\begin{itemize}
+    \item $\blueText{-k_R\mathbf e_R-k_\Omega\mathbf e_\Omega}$ is a PD action on the errors in $SO(3)$,
+    \item $\sapText{\Bomega\times J\Bomega}$ to cancel the gyroscopic terms,
+    \item $\greenText{J(S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot{\Bomega}_d)}$ is a feedforward action of the desired angular acceleration.
+\end{itemize}
+The closed loop dynamics achieved with this choice of $\boldsymbol{\Gamma}$ is the following:\begin{align}
+    &J\dot{\mathbf e}_\Omega=-k_R\mathbf e_R-k_\Omega\mathbf e_\Omega\\ 
+    &\dot{\mathbf e}_R=C(R_d^\top R)\mathbf e_\Omega\\
+    &\frac{d}{dt}(R_d^\top R)=R_d^\top RS(\mathbf e_\Omega)
+\end{align}
+\todo{slide 04 pag 19}
 \end{document}
