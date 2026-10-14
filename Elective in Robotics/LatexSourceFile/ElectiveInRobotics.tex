@@ -1155,7 +1155,37 @@ At each attitude $R$, asymptotic convergence is guaranteed on the subset:\begin{
 \end{equation}
 $L_2$  almost covers $SO(3)$, meaning that the set $SO(3)\setminus L_2$ has zero measure.\bigskip
 
-\noindent Now that we defined a desired attitude $R_d$ and an error $\Psi(R,R_d)$ that is a measure of how distant we are from the desired configuration, we have to define how we choose the control torques $\boldsymbol\Gamma$.
-
-\todo{slide 04 pag 16}
+\noindent Now that we defined a desired attitude $R_d$ and an error $\Psi(R,R_d)$ that is a measure of how distant we are from the desired configuration, we have to define how we choose the control torques $\boldsymbol\Gamma$. First of all we consider a \textit{small perturbation} on $R$, let $\boldsymbol{\eta}$ be a vector of infinitesimal rotation, the perturbation is:\begin{equation}
+    \delta R= R S(\boldsymbol{\eta})
+\end{equation}
+now we compute how $\Psi$ change when $R$ change (and $R_d$ is constant). Since the trace operator is linear, the variation is pushed inside the operator:\begin{align}
+    \delta\Psi&=\delta\frac{1}{2}\text{tr}\left[I-R_d^\top R\right]\\ 
+    &=\frac{1}{2}\text{tr}\left[\delta I-\delta(R_d^\top R)\right]\\
+    &=\frac{1}{2}\text{tr}\left[\delta I-(R_d^\top\delta R)\right]
+\end{align}
+$I$ is constant hence $\delta I$ is the zero matrix, then:\begin{equation}
+     \delta\Psi=-\frac{1}{2}\text{tr}\left[R_d^\top R S(\boldsymbol{\eta})\right]
+\end{equation}
+from a series of algebraic step (that we omit), the variation can be rewritten as follows:
+\begin{align}
+     \delta\Psi&=\underbrace{\frac{1}{2}\cdot \left(
+        R_d^\top R-R^\top R_d
+     \right)^\vee}_{\mathbf e_R}\cdot\boldsymbol{\eta}\\
+     &=\mathbf e_R^\top \boldsymbol{\eta}
+\end{align}
+we have found the vector $\mathbf e_R$ that is the \textbf{gradient} of $\Psi$, represents the direction (expressed in the body frame) along which the error function $\Psi$ grows most rapidly. It can be proved that, if $\mathbf r,\theta$ is the axis-angle representation of the relative rotation $R_d^\top R$, then the gradient can be written as:\begin{equation}
+    \mathbf e_R=\sin\theta\mathbf r
+\end{equation}
+furthermore its squared magnitude is:\begin{equation}
+    \|\mathbf e_R\|^2=\underbrace{\sin\theta^2\mathbf r^\top \mathbf r=\sin^2\theta}_{\mathbf r \text{ is a unit vector}}=\Psi(2-\Psi).
+\end{equation}
+Let $\psi_2< 2$ be a constant value decided a priori by design, it holds that, for any attitude $R$ such that $\Psi(R,R_d)\le \psi_2$, the following bounds hold:\begin{equation}\label{bounds}
+    \frac{1}{2}\|\mathbf e_R\|^2\le\Psi\le\frac{1}{2-\psi_2}\|\mathbf e_R\|^2.
+\end{equation}\begin{itemize}
+    \item From the lower bound ($\frac{1}{2}\Vert{}\mathbf e_R\Vert{}^2 \le \Psi$) we deduce that if the configuration error $\Psi$ tends to zero, then the error vector $\mathbf e_R$ must also tend to zero ($\Psi \to 0 \implies \Vert{}\mathbf e_R\Vert{} \to 0$).
+    \item From the upper bound ($\Psi \le \frac{1}{2-\psi_2}\Vert{}e_R\Vert{}^2$) we deduce the vice versa: within the safe region $\Psi \le \psi_2 < 2$, if the error vector $\mathbf e_R$ vanishes, then $\Psi$ ($\Vert{}\mathbf e_R\Vert{} = 0 \implies \Psi = 0$ must also vanish, i.e. $R = R_d$).
+\end{itemize}
+\begin{boxobservation}{}{}
+    The bounds on Equation \eqref{bounds} shows that $\Psi$ is bounded between two quadratic forms of the attitude error vector $\mathbf{e}_R$; therefore, within this sublevel set, $\Psi(R, R_d)$ is positive definite with respect to $\mathbf{e}_R$ (i.e., $\Psi = 0 \iff \mathbf{e}_R = \mathbf{0}$).
+\end{boxobservation}
 \end{document}
