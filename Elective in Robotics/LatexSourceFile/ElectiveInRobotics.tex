@@ -1252,5 +1252,225 @@ The closed loop dynamics achieved with this choice of $\boldsymbol{\Gamma}$ is t
     &\dot{\mathbf e}_R=C(R_d^\top R)\mathbf e_\Omega\\
     &\frac{d}{dt}(R_d^\top R)=R_d^\top RS(\mathbf e_\Omega)
 \end{align}
-\todo{slide 04 pag 19}
+%================ CONTINUATION: replaces \todo{slide 04 pag 19} ================%
+\begin{boxobservation}{}{}
+The closed loop attitude dynamics is \textbf{autonomous} in the variables $(R_d^\top R,\mathbf e_\Omega)$: it does not depend on the translational motion of the vehicle, nor on the thrust $T$. This is what allows us to analyze the complete system as a \textit{cascade}: the attitude error subsystem is studied first, and then it is seen as an input for the position error subsystem.
+\end{boxobservation}
+\noindent Note that the hierarchical structure (outer loop for the position, inner loop for the attitude) is the same of the previous controllers, but here \textbf{no time-scale separation is assumed}: the stability will be proved for the complete closed loop.
+\subsection{Stability of the Attitude Dynamics}
+We study the stability of the attitude error dynamics with the following Lyapunov candidate, that combines the kinetic energy of the angular velocity error and the attitude error function:\begin{equation}
+    V=\frac{1}{2}\mathbf e_\Omega^\top J\mathbf e_\Omega+k_R\Psi(R,R_d).
+\end{equation}
+By using the closed loop dynamics and $\dot\Psi=\mathbf e_R^\top\mathbf e_\Omega$ we get:\begin{align}
+    \dot V&=\mathbf e_\Omega^\top J\dot{\mathbf e}_\Omega+k_R\dot\Psi\\
+    &=\mathbf e_\Omega^\top(-k_R\mathbf e_R-k_\Omega\mathbf e_\Omega)+k_R\mathbf e_R^\top\mathbf e_\Omega\\
+    &=-k_\Omega\|\mathbf e_\Omega\|^2\le0.
+\end{align}
+$\dot V$ is only negative semidefinite, but it is sufficient to prove an important property: $V$ is non-increasing along the trajectories, hence \begin{equation}
+    k_R\Psi(t)\le V(t)\le V(0).
+\end{equation}
+If the initial condition is such that $V(0)<2k_R$, then $\Psi(t)<2$ for all $t\ge0$: \textbf{the attitude error never reaches the maximum value $2$}, i.e. the $180^\circ$ error (the undesired equilibria, where $\mathbf e_R=\mathbf 0$ but $R\ne R_d$). We can write the condition on $V(0)$ as a condition on the initial angular velocity error. Since $V(0)\le\frac{1}{2}\lambda_{\max}(J)\|\mathbf e_\Omega(0)\|^2+k_R\Psi(0)$, the condition $V(0)<2k_R$ holds if\begin{equation}\label{initial_condition_omega}
+    \|\mathbf e_\Omega(0)\|^2<\frac{2k_R}{\lambda_{\max}(J)}\left(2-\Psi(0)\right)
+\end{equation}
+where $\lambda_{\max}(J)$ is the maximum eigenvalue of $J$ (and $\lambda_{\min}(J)$ will be the minimum one).\bigskip
+
+\noindent To prove \textit{exponential} stability we need a strict Lyapunov function, that we obtain by adding a cross term to $V$, with $c_2>0$ a constant to be chosen:\begin{equation}
+    V_2=\frac{1}{2}\mathbf e_\Omega^\top J\mathbf e_\Omega+k_R\Psi+c_2\mathbf e_R^\top\mathbf e_\Omega.
+\end{equation}
+The derivative of the cross term is\begin{align}
+    \frac{d}{dt}\left(\mathbf e_R^\top\mathbf e_\Omega\right)&=\dot{\mathbf e}_R^\top\mathbf e_\Omega+\mathbf e_R^\top\dot{\mathbf e}_\Omega\\
+    &=(C(R_d^\top R)\mathbf e_\Omega)^\top\mathbf e_\Omega-\mathbf e_R^\top J^{-1}(k_R\mathbf e_R+k_\Omega\mathbf e_\Omega)\\
+    &\le\|\mathbf e_\Omega\|^2-\frac{k_R}{\lambda_{\max}(J)}\|\mathbf e_R\|^2+\frac{k_\Omega}{\lambda_{\min}(J)}\|\mathbf e_R\|\|\mathbf e_\Omega\|
+\end{align}
+where we used $\|C\|\le1$. By summing it (multiplied by $c_2$) to $\dot V$ we obtain:\begin{equation}
+    \dot V_2\le-(k_\Omega-c_2)\|\mathbf e_\Omega\|^2-\frac{c_2k_R}{\lambda_{\max}(J)}\|\mathbf e_R\|^2+\frac{c_2k_\Omega}{\lambda_{\min}(J)}\|\mathbf e_R\|\|\mathbf e_\Omega\|=-\mathbf z_2^\top W_2\mathbf z_2
+\end{equation}
+with\begin{equation}
+    \mathbf z_2=\begin{pmatrix}
+        \|\mathbf e_R\|\\ \|\mathbf e_\Omega\|
+    \end{pmatrix},\quad W_2=\begin{pmatrix}
+        \frac{c_2k_R}{\lambda_{\max}(J)}&-\frac{c_2k_\Omega}{2\lambda_{\min}(J)}\\[1ex]
+        -\frac{c_2k_\Omega}{2\lambda_{\min}(J)}&k_\Omega-c_2
+    \end{pmatrix}.
+\end{equation}
+$W_2$ is positive definite if $c_2$ is small enough. Furthermore, on the sublevel set $\{\Psi\le\psi_2<2\}$ the bounds in Equation \eqref{bounds} hold, hence $V_2$ is bounded between two quadratic forms of $\mathbf z_2$ (if $c_2$ is small enough), and $\dot V_2\le-\lambda_{\min}(W_2)\|\mathbf z_2\|^2$. This proves the following result.
+\begin{boxproposition}{Exponential Stability of the Attitude Dynamics}{att_stability}
+Consider the attitude tracking controller $\boldsymbol\Gamma$ defined above. If the initial errors satisfy\begin{align}
+    &\Psi(R(0),R_d(0))<2\\
+    &\|\mathbf e_\Omega(0)\|^2<\frac{2k_R}{\lambda_{\max}(J)}\left(2-\Psi(R(0),R_d(0))\right)
+\end{align}
+then the zero equilibrium of the attitude tracking errors $(\mathbf e_R,\mathbf e_\Omega)$ is \textbf{exponentially stable}: $\mathbf e_R,\mathbf e_\Omega\to\mathbf 0$ exponentially.
+\end{boxproposition}
+\noindent In words: the attitude error converges exponentially to zero for any initial attitude error smaller than $180^\circ$ ($\Psi<2$), provided that the initial angular velocity error is not too large.
+\subsection{Position Error Dynamics}
+We now study the translational dynamics. Recall that $\mathbf e_p=\mathbf p-\mathbf p_d$ and $\mathbf e_v=\dot{\mathbf p}-\dot{\mathbf p}_d$, hence\begin{equation}
+    m\dot{\mathbf e}_v=mg\mathbf e_3-TR\mathbf e_3-m\ddot{\mathbf p}_d.
+\end{equation}
+If the thrust force $-TR\mathbf e_3$ were exactly equal to the positional control action $\mathbf a$, we would get $m\dot{\mathbf e}_v=-k_p\mathbf e_p-k_d\mathbf e_v$, i.e. a stable linear error dynamics. Since this is not the case when $\mathbf b_3\ne\mathbf b_{3d}$, we add and subtract the force along the desired direction $\mathbf b_{3d}$:\begin{equation}
+    -TR\mathbf e_3=-\frac{T}{\mathbf b_{3d}^\top\mathbf b_3}\mathbf b_{3d}-\mathbf X,\quad\quad
+    \mathbf X:=\frac{T}{\mathbf b_{3d}^\top\mathbf b_3}\left((\mathbf b_{3d}^\top\mathbf b_3)\mathbf b_3-\mathbf b_{3d}\right).
+\end{equation}
+Since $T=\|\mathbf a\|(\mathbf b_{3d}^\top\mathbf b_3)$ and $-\|\mathbf a\|\mathbf b_{3d}=\mathbf a$, the first term is exactly $\mathbf a$, and the position error dynamics becomes:\begin{equation}\label{position_error_dynamics}
+    m\dot{\mathbf e}_v=-k_p\mathbf e_p-k_d\mathbf e_v-\mathbf X.
+\end{equation}
+The vector $\mathbf X$ is the effect of the attitude error on the translational dynamics. Some properties:\begin{itemize}
+    \item $\mathbf X=\mathbf 0$ when $\mathbf b_3=\mathbf b_{3d}$: \textbf{if there is no attitude error, the position error converges} (linear dynamics in Equation \eqref{position_error_dynamics}).
+    \item Let $\alpha$ be the angle between $\mathbf b_3$ and $\mathbf b_{3d}$. Then $\|(\mathbf b_{3d}^\top\mathbf b_3)\mathbf b_3-\mathbf b_{3d}\|=\sin\alpha$ and, since the thrust axes are the third columns of $R$ and $R_d$, $\alpha\le\theta$ where $\theta$ is the angle of the relative rotation $R_d^\top R$. 
+    \item For $\Psi<1$ ($\theta<\frac{\pi}{2}$) it holds $\sin\alpha\le\sin\theta=\|\mathbf e_R\|$, and $\|\mathbf a\|\le k_p\|\mathbf e_p\|+k_d\|\mathbf e_v\|+\mathcal B$, hence\begin{equation}\label{bound_X}
+        \|\mathbf X\|=\|\mathbf a\|\sin\alpha\le\left(k_p\|\mathbf e_p\|+k_d\|\mathbf e_v\|+\mathcal B\right)\|\mathbf e_R\|.
+    \end{equation}
+    where $\mathcal B$ is the bound on the reference, $\|-mg\mathbf e_3+m\ddot{\mathbf p}_d\|\le\mathcal B$ (we use $\mathcal B$ in order to avoid confusion with the matrix $B$ of the DFL).  Moreover $\|\mathbf e_R\|\le\sqrt{\psi_1(2-\psi_1)}<1$ on the set $\{\Psi\le\psi_1<1\}$.
+    \item For $\Psi<1$ we have also $\alpha<\frac{\pi}{2}$, hence $T=\|\mathbf a\|\cos\alpha>0$: the dot product in the definition of $T$ \textbf{reduces the thrust when the two axes separate}, and keeps it positive in the region where the analysis of the complete system holds.
+\end{itemize}
+The assumptions are $\|\mathbf a\|\ne0$ (no free fall, the analogue of $T\ne0$ in the DFL) and a bounded reference $\|-mg\mathbf e_3+m\ddot{\mathbf p}_d\|\le\mathcal B$.
+\subsection{Stability of the Complete System}
+The structure of the complete error dynamics is a cascade: the attitude error subsystem $(\mathbf e_R,\mathbf e_\Omega)$ is autonomous, and it drives the position error subsystem $(\mathbf e_p,\mathbf e_v)$ through the term $\mathbf X$. For the position part we choose the following Lyapunov function, with $c_1>0$ a constant to be chosen:\begin{equation}
+    V_1=\frac{1}{2}k_p\|\mathbf e_p\|^2+\frac{1}{2}m\|\mathbf e_v\|^2+c_1\mathbf e_p^\top\mathbf e_v
+\end{equation}
+and for the complete system $V=V_1+V_2$. By deriving $V_1$ along Equation \eqref{position_error_dynamics} we get:\begin{equation}
+    \dot V_1\le-\frac{c_1k_p}{m}\|\mathbf e_p\|^2-(k_d-c_1)\|\mathbf e_v\|^2+\frac{c_1k_d}{m}\|\mathbf e_p\|\|\mathbf e_v\|+\|\mathbf X\|\left(\|\mathbf e_v\|+\frac{c_1}{m}\|\mathbf e_p\|\right).
+\end{equation}
+The first three terms are the ones of the nominal system (without attitude error). The last term is bounded with Equation \eqref{bound_X}, and it is a term of the form $\|\mathbf e_R\|\cdot(\dots)$. On the domain $\|\mathbf e_p\|<e_{p,\max}$ the bound is a quadratic form, and we obtain:\begin{equation}
+    \dot V\le-\mathbf z_1^\top W_1\mathbf z_1+\mathbf z_1^\top W_{12}\mathbf z_2-\mathbf z_2^\top W_2\mathbf z_2,\quad\quad \mathbf z_1=\begin{pmatrix}
+        \|\mathbf e_p\|\\ \|\mathbf e_v\|
+    \end{pmatrix}
+\end{equation}
+with\begin{equation}
+    W_1=\begin{pmatrix}
+        \frac{c_1k_p}{m}&-\frac{c_1k_d}{2m}\\[1ex]
+        -\frac{c_1k_d}{2m}&k_d-c_1
+    \end{pmatrix}
+\end{equation}
+and $W_{12}$ collects the bound on $\mathbf X$ (it depends on $\mathcal B$, $e_{p,\max}$, $k_p,k_d$ and $c_1$). We have\begin{equation}
+    \dot V\le-\lambda_{\min}(W_1)\|\mathbf z_1\|^2+\|W_{12}\|\|\mathbf z_1\|\|\mathbf z_2\|-\lambda_{\min}(W_2)\|\mathbf z_2\|^2
+\end{equation}
+that is negative definite if and only if (discriminant of the quadratic form):\begin{equation}
+    4\lambda_{\min}(W_1)\lambda_{\min}(W_2)>\|W_{12}\|^2.
+\end{equation}
+This is a condition on the attitude gains $k_R,k_\Omega$ (that appear in $W_2$) with respect to the position gains: \textbf{the attitude gains must be large enough with respect to the position loop}. It is a provable version of the rule ``the inner loop must be faster than the outer loop'' that we mentioned for the hierarchical control scheme.
+\begin{boxproposition}{Exponential Stability of the Complete System}{complete_stability}
+For any positive $k_p,k_d$ there exist $c_1,c_2,k_R,k_\Omega$ such that, if \begin{align}
+    &\Psi(R(0),R_d(0))<\psi_1<1\\
+    &\|\mathbf e_p(0)\|<e_{p,\max}\\
+    &\|\mathbf e_\Omega(0)\|\ \text{is small enough}
+\end{align}
+the zero equilibrium of the tracking errors $(\mathbf e_p,\mathbf e_v,\mathbf e_R,\mathbf e_\Omega)$ of the complete system is \textbf{exponentially stable}. This requires an initial attitude error smaller than $90^\circ$.
+\end{boxproposition}
+\noindent The region of Proposition \ref{def:complete_stability} is smaller than the one of Proposition \ref{def:att_stability}. Let's see how we can extend the result to initial attitude errors up to $180^\circ$.
+\begin{boxproposition}{Almost Global Exponential Attractiveness}{almost_global}
+If $\Psi(R(0),R_d(0))<2$ and \begin{equation}
+    \|\mathbf e_\Omega(0)\|^2<\frac{2k_R}{\lambda_{\max}(J)}\left(2-\Psi(R(0),R_d(0))\right)
+\end{equation}
+then the zero equilibrium of the tracking errors of the complete system is \textbf{exponentially attractive}.
+\end{boxproposition}
+\noindent The idea of the proof is the following:\begin{enumerate}
+    \item Since the attitude subsystem is autonomous, from any $\Psi(0)<2$ (with the bound on $\mathbf e_\Omega(0)$) the attitude error decreases exponentially and enters the set $\{\Psi\le\psi_1\}$ at a finite time $t^*$.
+    \item On the interval $[0,t^*]$ the position errors remain bounded: $\|\mathbf X\|$ grows at most linearly with $\|\mathbf e_p\|,\|\mathbf e_v\|$ (by Equation \eqref{bound_X} with $\sin\alpha\le1$), hence the system of Equation \eqref{position_error_dynamics} is a linear system with a bounded-gain input, and there is \textbf{no finite escape time}.
+    \item After $t^*$, Proposition \ref{def:complete_stability} applies.
+\end{enumerate}
+$L_2$ almost covers $SO(3)$, hence this is an \textbf{almost global exponential attractiveness}, that is the best result achievable with a continuous feedback law, because of the topological obstruction. The following table summarizes the stability properties of the controller:
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.6}
+    \begin{tabular}{lll}
+        \toprule
+        \textsf{\textbf{initial attitude error}} & \textsf{\textbf{subsystem}} & \textsf{\textbf{property}} \\
+        \midrule
+        $\Psi<2$ ($\theta<180^\circ$) & attitude & exponential stability \\
+        $\Psi\le\psi_1<1$ ($\theta<90^\circ$) & complete & exponential stability \\
+        $\Psi<2$ ($\theta<180^\circ$) & complete & exponential attractiveness \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\begin{boxobservation}{}{}
+Almost global convergence is a statement about the \textit{basin of attraction}, not about the \textit{performance}. Near the $180^\circ$ error we have $\|\mathbf e_R\|=\sin\theta\simeq0$, hence the torque $-k_R\mathbf e_R$ is very small and the error leaves this region very slowly.
+\end{boxobservation}
+\subsection{Computation of the Desired Angular Velocity and Acceleration}
+The attitude controller requires $\Bomega_d$ and $\dot\Bomega_d$, that are defined through the desired attitude $R_d(t)$:\begin{align}
+    S(\Bomega_d)&=R_d^\top\dot R_d\\
+    S(\dot\Bomega_d)&=R_d^\top\ddot R_d-S(\Bomega_d)^2.
+\end{align}
+The second equation follows from the derivative of the first one: $\frac{d}{dt}(R_d^\top\dot R_d)=\dot R_d^\top\dot R_d+R_d^\top\ddot R_d$, and $\dot R_d^\top\dot R_d=S(\Bomega_d)^\top R_d^\top R_dS(\Bomega_d)=-S(\Bomega_d)^2$.\bigskip
+
+\noindent $R_d$ depends on $\mathbf b_{1d}(t)$ and on $\mathbf a(\mathbf e_p,\mathbf e_v,\ddot{\mathbf p}_d)$, hence we have to compute the derivatives of $\mathbf a$. We want to avoid the numerical differentiation of the measurements, so we use the model:\begin{align}
+    \dot{\mathbf e}_v&=g\mathbf e_3-\frac{T}{m}R\mathbf e_3-\ddot{\mathbf p}_d\\
+    \dot{\mathbf a}&=-k_p\mathbf e_v-k_d\dot{\mathbf e}_v+m\mathbf p_d^{(3)}\\
+    \dot T&=-\dot{\mathbf a}^\top R\mathbf e_3-\mathbf a^\top RS(\Bomega)\mathbf e_3\\
+    \ddot{\mathbf e}_v&=-\frac{\dot T}{m}R\mathbf e_3-\frac{T}{m}RS(\Bomega)\mathbf e_3-\mathbf p_d^{(3)}\\
+    \ddot{\mathbf a}&=-k_p\dot{\mathbf e}_v-k_d\ddot{\mathbf e}_v+m\mathbf p_d^{(4)}.
+\end{align}
+where $\dot T$ comes from the derivative of $T=-\mathbf a^\top R\mathbf e_3$. Now we need the derivatives of $\mathbf b_{3d}$, $\mathbf b_{2d}$ and then of $R_d$. Both are obtained by normalizing a vector. For a generic vector $\mathbf h$ and the unit vector $\mathbf s=\frac{\mathbf h}{\|\mathbf h\|}$:\begin{align}
+    \dot{\mathbf s}&=\frac{\dot{\mathbf h}-\mathbf s(\mathbf s^\top\dot{\mathbf h})}{\|\mathbf h\|}\\
+    \ddot{\mathbf s}&=\frac{\ddot{\mathbf h}-2\dot{\mathbf s}(\mathbf s^\top\dot{\mathbf h})-\mathbf s(\dot{\mathbf s}^\top\dot{\mathbf h}+\mathbf s^\top\ddot{\mathbf h})}{\|\mathbf h\|}.
+\end{align}
+We apply these formulas first to $\mathbf b_{3d}$ (with $\mathbf h=-\mathbf a$), then to $\mathbf b_{2d}$ (with $\mathbf h=\mathbf b_{3d}\times\mathbf b_{1d}$), and the product rule on $\mathbf b_{2d}\times\mathbf b_{3d}$, which gives $\dot R_d$ and $\ddot R_d$.
+\begin{itemize}
+    \item This requires $\mathbf p_d\in C^4$ (up to the snap) and $\mathbf b_{1d}\in C^2$: the same smoothness required for the flat outputs in the DFL.
+    \item $\ddot{\mathbf a}$ depends on the state (through $\Bomega$) but not on the control torque $\boldsymbol\Gamma$: there is no algebraic loop.
+    \item In many implementations $\dot\Bomega_d$ is neglected or obtained through a filtered differentiation: in this case the exact cancellation of the feedforward term, and hence the proof, hold only approximately.
+\end{itemize}
+\noindent Let's discuss about some \textit{implementation remarks}:
+\begin{itemize}
+    \item \textbf{Sign of the thrust}: $T=\|\mathbf a\|\cos\alpha<0$ when the thrust axis is more than $90^\circ$ away from $\mathbf b_{3d}$, hence the control law assumes a \textit{reversible} thrust. With real propellers $T$ is saturated in $[0,T_{\max}]$; in the region $\{\Psi<1\}$ we have $T>0$ anyway. Since the attitude error dynamics do not depend on $T$, the attitude still converges, and the position recovers afterwards.
+    \item \textbf{Singular situations} appear only in the reference generation:\begin{itemize}
+        \item $\|\mathbf a\|=0$: commanded free fall, $\mathbf b_{3d}$ is undefined (the analogue of $T=0$ in the DFL);
+        \item $\mathbf b_{3d}\parallel\mathbf b_{1d}$: the desired heading is undefined, it can be avoided by changing $\mathbf b_{1d}$.
+    \end{itemize}
+    \item The controller is a \textbf{static} feedback: there is no compensator state to initialize (in the DFL we have $\bzeta=(T,\dot T)$).
+    \item Numerical example: $m=4.34\,\text{kg}$, $J=\text{diag}(0.082,0.0845,0.1377)\,\text{kg}\,\text{m}^2$, $k_p=16m$, $k_d=5.6m$, $k_R=8.81$, $k_\Omega=2.54$.
+\end{itemize}
+\subsection{Comparison Between DFL and Geometric Control}
+We compare the complete DFL controller with the geometric controller on $SE(3)$ in simulation, by using the same trajectories and initial conditions.\bigskip
+
+\noindent \textbf{Simulation 1}: tracking of an 8-shaped trajectory while spinning, i.e. far from the singularities:\begin{equation}
+    \mathbf p_d=\begin{pmatrix}
+        2\sin\frac{2\pi}{T}t&\sin2\frac{2\pi}{T}t&0.6\sin\frac{2\pi}{T}t+\sin2\frac{2\pi}{T}t
+    \end{pmatrix}^\top,\quad\quad\psi_d=\pi\sin\frac{2\pi}{T}t
+\end{equation}
+(here $T$ is the period of the trajectory, not the thrust). The attitude error function of the $SE(3)$ controller is $\Psi(R,R_d)=\frac{1}{2}\text{tr}\left[I-R_d^\top R\right]$, and it converges to zero in about one second.\begin{itemize}
+    \item The two controllers show different transients in position tracking, then both converge to the reference.
+    \item The DFL has a faster convergence for a comparable control effort.
+    \item The $SE(3)$ controller tracks only the \textit{projection} of $\mathbf b_{1d}$ on the plane orthogonal to $\mathbf b_{3d}$: its RPY yaw angle differs from $\psi_d$ when the vehicle is tilted. The DFL tracks exactly the yaw angle $\psi_d$.
+\end{itemize}
+\noindent \textbf{Simulation 2}: tracking of a helix with a constant yaw angle:\begin{equation}
+    \mathbf p_d=\begin{pmatrix}
+        0.2t&\sin\frac{2\pi}{T}t&\cos\frac{2\pi}{T}t
+    \end{pmatrix}^\top,\quad\quad\psi_d=0.
+\end{equation}
+\begin{itemize}
+    \item The complete DFL \textbf{runs into the singularity} $\vartheta=-\frac{\pi}{2}$ at $t\simeq0.72$ s.
+    \item Here $\det M(\bTheta)=\cos\vartheta\to0$: this is the gimbal lock of the RPY angles. The yaw row of the matrix $D$ contains $\frac{1}{c_\vartheta}$, hence the control law is not defined and the angular rates diverge.
+    \item With the same trajectory and the same initial conditions, the $SE(3)$ controller converges: $\Psi\to0$ in about $1$ s, and the position error converges after the transient.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/SE3_vs_DFL_sim2.png} % export from slides 31-33
+    \caption{Simulation 2: complete DFL (singularity at $t\simeq0.72$ s) and $SE(3)$ controller.}
+\end{figure}
+\noindent The following table compares the two controllers:
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.6}
+    \begin{tabular}{lll}
+        \toprule
+        & \textsf{\textbf{complete DFL}} & \textsf{\textbf{geometric control on $SE(3)$}} \\
+        \midrule
+        attitude & RPY angles (local) & rotation matrix (global) \\
+        feedback & dynamic, $\bzeta=(T,\dot T)$ & static \\
+        outputs & $(x,y,z,\psi)$ & $\mathbf p$ and heading $\mathbf b_{1d}$ (projection) \\
+        closed loop & linear, decoupled & nonlinear, Lyapunov-based \\
+        convergence & \begin{tabular}[c]{@{}l@{}}exponential, away from\\ the singularities\end{tabular} & \begin{tabular}[c]{@{}l@{}}exponential for $\Psi<1$,\\ almost global attractiveness\end{tabular} \\
+        singularities & $T=0$, $\varphi=\pm\frac{\pi}{2}$, $\vartheta=\pm\frac{\pi}{2}$ & \begin{tabular}[c]{@{}l@{}}$\|\mathbf a\|=0$, $\mathbf b_{3d}\parallel\mathbf b_{1d}$\\ (reference only)\end{tabular} \\
+        reference & $C^4$ position, $C^2$ yaw & $C^4$ position, $C^2$ heading \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\noindent To summarize:\begin{itemize}
+    \item Due to the occurrence of singularities in the DFL, the $SE(3)$ controller is more \textbf{reliable}, in particular for large attitude excursions.
+    \item When no singularity occurs, no significant difference can be appreciated between the two controllers.
+    \item The control effort of the DFL becomes huge when the determinant of the decoupling matrix $D$ approaches $0$ (or diverges, at $\vartheta=\pm\frac{\pi}{2}$).
+    \item The complete DFL is a linear controller for a fully linearized system: far from the singularities the convergence is exponential. The convergence of the complete dynamics of the $SE(3)$ controller becomes exponential only when the attitude error is below $90^\circ$.
+    \item Both controllers need the reference up to the snap and an accurate model of the vehicle.
+\end{itemize}
+\chapter{State Estimation}
 \end{document}

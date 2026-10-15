@@ -855,10 +855,10 @@ and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the 
     \label{z2z3}
 \end{figure}
 
-Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained form.
+Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained-form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained-form.
 \section{Path and Trajectory Planning}
 It is in our interest to define a method to \textit{plan} a motion that transfers a mobile robot from an initial configuration $\q_i$ to a final configuration $\q_f$, hence, we should define a trajectory:\begin{equation}
-    \q(s),\quad s\in[t_i,t_f]
+    \q(s),\quad s\in[s_i,s_f]
 \end{equation}
 such that $\q(t_i)=\q_i$ and $\q(t_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
     \q(s),\quad &s\in [s_i,s_f]\\
@@ -879,7 +879,7 @@ we denote $\q'$ the derivative of $\q$ with respect to $s$, this represents the 
         \sin s 
     \end{cases}
 \end{equation}
-with $s\in\frac{\pi}{2}$. This is exactly the arc length, indeed:\begin{equation}
+with $s\in\left[0,\frac{\pi}{2}\right]$. This is exactly the arc length, indeed:\begin{equation}
     \q'(s)=\begin{cases}
         -\sin s\\ 
         \cos s 
@@ -901,7 +901,7 @@ Now we take in account the kinematic constraints, we know that:\begin{equation}
     A(\q)\dq=\mathbf 0 
 \end{equation}
 $\dq$ is the time derivative of the planned trajectory $\q(s(t))$:\begin{equation}
-     A(\q)\dq=A(\q)\q'\dot s\mathbf 0\implies A(\q)\q'=\mathbf 0  
+     A(\q)\dq=A(\q)\q'\dot s=\mathbf 0\implies A(\q)\q'=\mathbf 0  
 \end{equation}
 we have assumed $\dot s\ne 0$, the result is that the tangent vector $\q'$ must lie in the null space of $A$:\begin{equation}
     \q'\in \mathcal N(A )
@@ -926,7 +926,153 @@ this means that the tangent vector $\q'$ must be always aligned with the sagitta
     \caption{Geometric path with tangent vector non-aligned with the sagittal axis.}
     \label{non_admissible_path}
 \end{figure}
-\noindent This condition is equivalent to a discontinuity of the first two components (cartesian velocity) of $\q'$.
 \subsection{Flat Outputs}
+\begin{boxdefinition}{Differential Flatness}{flatness}
+    Consider a general nonlinear system \begin{equation}
+        \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x)\mathbf u.
+    \end{equation}
+    The system is \textbf{differentially flat} if there exists a vector $\y=\Psi(\mathbf x)$ called \textbf{flat outputs}, such that the
+state and the control inputs can be expressed
+algebraically as a function of $\mathbf y$ and its time derivatives up to a finite order:\begin{align}
+    \mathbf x &= \Phi_x(\y,\dy,\ddy,\dots,\mathbf y^{(r_x)})\\
+    \mathbf u &= \Phi_u(\y,\dy,\ddy,\dots,\mathbf y^{(r_u)})
+\end{align}
+\end{boxdefinition}
+In Definition \ref{def:flatness} we talk about time derivatives (since is the domain of dynamical systems), but of course it holds also if all the derivations are done with respect the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$ order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
 
+\noindent We immediately show this property with the unicycle model.\begin{align}
+x'&=\tilde v\cos\theta\\
+y'&=\tilde v\sin\theta\\
+\theta'&=\tilde\omega
+\end{align} The intuition behind flatness is the following: If i know perfectly the path of the cartesian position of the unicycle $(x,y)$, i can infer what are the path of the orientation $\theta$ and the input profile that executes that path. For example, by knowing $(x(s),y(s))$, i can conclude that, at a given $s=s^*$, the orientation must be aligned with the direction of motion, i.e. the vector $(x'(s^*),y'(s^*))$.\begin{equation}
+    \theta(s)=\Phi_x(x',y')=\text{atan2}(y'(s),x'(s))+k\pi.
+\end{equation}
+$k\in \{0,1\}$ is a constant that defines the direction of motion.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/flat_output_1.eps}
+\end{figure}
+Also the input $\tilde v$ can be reconstructed from the path of $x,y$, since it is exactly the norm of the cartesian velocity:\begin{equation}\label{tildev}
+    \begin{cases}
+       x'=\tilde v\cos\theta\\
+y'=\tilde v\sin\theta
+    \end{cases}\implies \tilde v = \pm\sqrt{(x')^2+(y')^2}
+\end{equation}
+the same can be done for the angular velocity (we skip the proof):\begin{equation}\label{tildeOmega}
+    \tilde{\omega} = \frac{y'' x' - x'' y'}{(x')^2 + (y')^2}.
+\end{equation}
+Equations \eqref{tildev},\eqref{tildeOmega} are the reconstruction map for the input $\tilde{\mathbf u}=\Phi_u(x',y',x'',y'')$. These reconstruction have a problem, that arises if $x'=y'=0$, since atan2 is not defined, and $\tilde\omega$ would have a zero on the denominator, this singularity have an intuitive meaning, if the robot stops, and its cartesian velocity its zero, we can't know if is steering in place or not, hence we can't infer the evolution of $\theta(s)$ when is not moving.
+\begin{boxproposition}{}{flat_chained}
+    A driftless dynamic system is differentially flat if and only if can be transformed in chained-form.
+\end{boxproposition}
+\begin{boxproposition}{}{}
+    A general dynamic system is differentially flat if and only if can be linearized via dynamic feedback.
+\end{boxproposition}
+The wheeled robots in our interest can be put in chained-form, hence, they admit flat outputs, this is a great simplification from a control point of view, since we can directly execute a desired trajectory through the reconstruction maps. Let's see the flat outputs for the bicycle, the model is:\begin{align}
+    x'&=\tilde v\cos\theta\\
+y'&=\tilde v\sin\theta\\
+\theta'&=\frac{\tilde v}{l}\tan\phi\\
+\phi'&=\tilde\omega
+\end{align}
+$x,y,\theta$ can be reconstructed in the same way as for the unicycle case, to reconstruct $\phi$ we use $\theta'$:\begin{align}
+    \theta(s)&=\text{atan2}(y',x')+k\pi\\ 
+    \implies \theta'(s) = \frac{x' y'' - y' x''}{(x')^2 + (y')^2}
+\end{align}
+hence\begin{align}
+    \theta'&=\frac{\tilde v}{l}\tan\phi\\
+    \implies\phi(s)&=\arctan\left(\frac{l\theta'}{\tilde v}\right)\\[1.5ex]
+    &=\arctan\left(\frac{l\frac{x' y'' - y' x''}{(x')^2 + (y')^2}}{\pm\sqrt{(x')^2+(y')^2}}\right)\\ &=
+    \arctan\left(\pm \frac{l(x' y'' - y' x'')}{\left((x')^2 + (y')^2\right)^{3/2}}\right).
+\end{align}
+Now we use Proposition \ref{def:flat_chained} and show how a 2-input/3-state chained-form system admits flat outputs. The system is the following:\begin{align}
+    z_1'&=\tilde w_1\\ 
+    z_2'&=\tilde w_2\\ 
+    z_3'&=z_2\tilde w_1
+\end{align}
+for a chained-form system the flat outputs \textbf{are always the first and the last variables}:\begin{equation}
+    \y=\begin{pmatrix}
+        z_1\\ z_3
+    \end{pmatrix}
+\end{equation}
+the reconstruction maps are the following:\begin{align}
+    \Phi_x(z'_1,z'_3)&=\frac{z'_3}{z'_1}\\
+    \Phi_u(z'_1,z''_1,z'_3,z''_3)&=\begin{cases}
+        \tilde w_1=z_1'\\
+        \tilde w_2=\dfrac{z_1'z_3''-z_1''z_3'}{(z'_1)^2}
+    \end{cases}.
+\end{align}
+\subsection{Path Planning for the Unicycle}
+Any flat outputs profile is automatically reconstructed in an admissible path, an algorithm for path planning exploiting differential flatness is the following:\begin{enumerate}
+    \item Compute the initial and final values $\y_i,\y_f$ for the flat outputs from $\q_i,\q_f$.
+    \item Define $\y(s)$ by interpolating $\y_i,\y_f$ with the appropriate boundary conditions for $\q$.
+    \item Use the reconstruction formulas to find $\q(s)$ and $\tilde{\mathbf u}(s)$.
+\end{enumerate}
+The same algorithm is valid for trajectory planning by interpolating over $t$ instead of $s$. Let's apply this algorithm for the unicycle. We use a parametrization with $s\in[0,1]$, from \begin{equation}
+    \q_i=\begin{pmatrix}
+        x_i\\y_i\\\theta_i
+    \end{pmatrix},\quad
+    \q_f=\begin{pmatrix}
+        x_f\\y_f\\\theta_f
+    \end{pmatrix}
+\end{equation}
+we extrapolate\begin{equation}
+    \y_i=\begin{pmatrix}
+        x_i\\y_i
+    \end{pmatrix},\quad
+    \y_f=\begin{pmatrix}
+        x_f\\y_f
+    \end{pmatrix}
+\end{equation}
+and perform an interpolation between these two points with a cubic polynomial function:\begin{align}
+    &x(s)=s^3x_f-(s-1)^3x_i+\alpha_xs^2(s-1)+\beta_xs(s-1)^2\\ 
+    &y(s)=s^3y_f-(s-1)^3y_i+\alpha_ys^2(s-1)+\beta_ys(s-1)^2
+\end{align}
+this polynomial already satisfies the boundary conditions:\begin{align}
+    x(0)=x_i,\quad x(1)=x_f\\ 
+    y(0)=y_i,\quad y(1)=y_f
+\end{align}
+then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that comes from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions:\begin{align}
+    \text{atan2}(y'(0),x'(0))&=\theta_i\\\text{atan2}(y'(1),x'(1))&=\theta_i.
+\end{align}
+The initial and final cartesian velocities must be:\begin{align}
+    x'(0)&=k_i\cos\theta_i,\quad x'(1)=k_f\cos\theta_f\\ 
+    y'(0)&=k_i\sin\theta_i,\quad y'(1)=k_f\sin\theta_f
+\end{align}
+with $k_i,k_f$ being two arbitrary non-zero constants, for simplicity we set $k_i=k_f=k$. To impose these conditions, we can solve algebraically for $\alpha_x,\beta_x,\alpha_y,\beta_y$ and obtain:\begin{align}
+    \alpha_x&=k\cos\theta_f-3x_f,\quad \beta_x=k\cos\theta_i+3x_i\\
+    \alpha_y&=k\sin\theta_f-3y_f,\quad \beta_y=k\sin\theta_i+3y_i.
+\end{align}
+It will be $\tilde v(0)=\tilde v(1)=k$, hence $k$ can be chosen to shape the trajectory, by affecting the length of the first and last ``linear'' segments of the path, as shown in Figure \ref{k_shape}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/k_shape.eps}
+    \caption{Difference between two paths with the same interpolating points but different choice of $k$.}
+    \label{k_shape}
+\end{figure}
+\subsection{Path Planning for a Chained-Form System}
+Consider a 2-input/3-state chained-form system, we apply the path planning algorithm to this case. We recall that the flat outputs are $z_1,z_3$, hence we have to interpolate $(z_{1i},z_{3i})$ with $(z_{1f},z_{3f})$. We interpolate linearly $z_1$ and with a cubic polynomial $z_3$:\begin{align}
+    z_1(s)&=z_{1i}+s(z_{1f}-z_{1i})\\
+    z_3(s)&=s^3z_{3f}-(s-1)^3z_{3i}+\alpha_3s^2(s-1)+\beta_3s(s-1)^2
+\end{align}
+that already satisfies the boundary conditions on $z_1,z_3$. We must impose the additional boundary conditions for $z_2$:\begin{equation}
+    z_{2i}=\frac{z_3'(0)}{z_1'(0)},\quad 
+    z_{2f}=\frac{z_3'(1)}{z_1'(1)}
+\end{equation}
+we solve for $\alpha_3,\beta_3$:\begin{align}
+    \alpha_3&=z_{2f}(z_{1f}-z_{1i})-3z_{3f}
+    \\
+    \beta_3&=z_{2i}(z_{1f}-z_{1i})+3z_{3i}
+\end{align}
+After having $z_1(s),z_3(s)$ we can reconstruct $z_2(s),\tilde w_1(s),\tilde w_2(s)$ through the reconstruction maps, then $\q(s),\tilde v(s),\tilde\omega(s)$ are computed by inverting
+the chained form coordinate and input transformation. 
+
+By recalling that $z_1=\theta$: one problem arises when the initial and final orientations are identical $z_{1i}=z_{1f}$, since we would have:\begin{equation}
+    z_1'(s)=z_{1f}-z_{1i}=0
+\end{equation}
+and then $z_{2i},z_{2f}$ can't be inferred since we would have a division by zero, in that case is sufficient to set:\begin{equation}
+    z_{1f}=z_{1i}+2\pi
+\end{equation}
+or add a mid-point $\q_m=\begin{pmatrix}
+    x_m&y_m&\theta_m
+\end{pmatrix}$ in the trajectory with $\theta_m\ne\theta_i$.
 \end{document}
