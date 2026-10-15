@@ -860,7 +860,7 @@ Setting aside the unicycle model: an interesting property of \textbf{trailed veh
 It is in our interest to define a method to \textit{plan} a motion that transfers a mobile robot from an initial configuration $\q_i$ to a final configuration $\q_f$, hence, we should define a trajectory:\begin{equation}
     \q(s),\quad s\in[s_i,s_f]
 \end{equation}
-such that $\q(t_i)=\q_i$ and $\q(t_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
+such that $\q(t_i)=\q_i$ and $\q(t_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we have already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
     \q(s),\quad &s\in [s_i,s_f]\\
     s(t),\quad &t \in [t_i,t_f].
 \end{align}
@@ -868,7 +868,7 @@ The path parameter $s$ is usually chosen as the arc length.\begin{itemize}
     \item By \textbf{path planning} we mean the plan of a geometric path $\q(s)$ in the configuration space.
     \item By \textbf{trajectory planning} instead, we also include the time, i.e. we mean the plan of a time evolution of the configuration: $\q(t)$. This is usually done indirectly: first plan a path, then add a timing law.
 \end{itemize}
-We already specified that a trajectory $\q(s(t))$ must satisfies the constraints:\begin{equation}
+We already specified that a trajectory $\q(s(t))$ must satisfy the constraints:\begin{equation}
     \dq=\frac{d\q}{dt}=\frac{d\q}{ds}\dot s = \q'\dot s
 \end{equation}
 we denote $\q'$ the derivative of $\q$ with respect to $s$, this represents the \textit{tangent vector} of the geometric path in the configuration space. If $s$ is the arc length, then $\| \q'\|=1$.\bigskip
@@ -885,7 +885,7 @@ with $s\in\left[0,\frac{\pi}{2}\right]$. This is exactly the arc length, indeed:
         \cos s 
     \end{cases}\implies \| \q'(s)\|=\sqrt{(-\sin s)^2+\cos^2 s }=1.
 \end{equation}
-One different choice of parametrization is\begin{equation}
+Another choice of parametrization is\begin{equation}
     \q(s)=\begin{cases}
         \sqrt{1-s^2}\\
         s
@@ -897,7 +897,7 @@ with $s\in [0,1]$, here it's not the arc length:\begin{equation}
         \\ 1
     \end{cases}\implies \| \q'(s)\|= \frac{1}{\sqrt{1 - s^2}}.
 \end{equation}
-Now we take in account the kinematic constraints, we know that:\begin{equation}
+Now we take into account the kinematic constraints, we know that:\begin{equation}
     A(\q)\dq=\mathbf 0 
 \end{equation}
 $\dq$ is the time derivative of the planned trajectory $\q(s(t))$:\begin{equation}
@@ -906,7 +906,7 @@ $\dq$ is the time derivative of the planned trajectory $\q(s(t))$:\begin{equatio
 we have assumed $\dot s\ne 0$, the result is that the tangent vector $\q'$ must lie in the null space of $A$:\begin{equation}
     \q'\in \mathcal N(A )
 \end{equation}
-hence $\q'$ can be expressed as a linear combination of the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, exactly as the kinematic model, hence we can write the so called \textbf{geometric model}:\begin{equation}
+hence $\q'$ can be expressed as a linear combination of the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, exactly as the kinematic model, hence we can write the so-called \textbf{geometric model}:\begin{equation}
     \q'=G(\q)\tilde{\mathbf u}
 \end{equation}
 this model describes explicitly the admissible tangent vectors. $\tilde{\mathbf u}$ is the vector of the \textbf{geometric inputs}, by multiplying both sides by $\dot s$ we can conclude that:\begin{equation}
@@ -919,7 +919,7 @@ After we have decided a profile for the geometric inputs $\tilde{\mathbf u}(s)$,
         \sin\theta&-\cos\theta&0
     \end{pmatrix}\q'=0
 \end{equation}
-this means that the tangent vector $\q'$ must be always aligned with the sagittal axis of the unicycle, path as the one in Figure \ref{non_admissible_path} are not admissible.
+this means that the tangent vector $\q'$ must always be aligned with the sagittal axis of the unicycle: paths such as the one in Figure \ref{non_admissible_path} are not admissible.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth ]{images/inadmissible.eps}
@@ -931,20 +931,20 @@ this means that the tangent vector $\q'$ must be always aligned with the sagitta
     Consider a general nonlinear system \begin{equation}
         \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x)\mathbf u.
     \end{equation}
-    The system is \textbf{differentially flat} if there exists a vector $\y=\Psi(\mathbf x)$ called \textbf{flat outputs}, such that the
+    The system is \textbf{differentially flat} if there exists a vector $\y=\Psi(\mathbf x)$, called the \textbf{flat outputs}, such that the
 state and the control inputs can be expressed
 algebraically as a function of $\mathbf y$ and its time derivatives up to a finite order:\begin{align}
     \mathbf x &= \Phi_x(\y,\dy,\ddy,\dots,\mathbf y^{(r_x)})\\
     \mathbf u &= \Phi_u(\y,\dy,\ddy,\dots,\mathbf y^{(r_u)})
 \end{align}
 \end{boxdefinition}
-In Definition \ref{def:flatness} we talk about time derivatives (since is the domain of dynamical systems), but of course it holds also if all the derivations are done with respect the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$ order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
+In Definition \ref{def:flatness} we talk about time derivatives (since that is the domain of dynamical systems), but of course it also holds if all the derivatives are taken with respect to the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$ order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
 
 \noindent We immediately show this property with the unicycle model.\begin{align}
 x'&=\tilde v\cos\theta\\
 y'&=\tilde v\sin\theta\\
 \theta'&=\tilde\omega
-\end{align} The intuition behind flatness is the following: If i know perfectly the path of the cartesian position of the unicycle $(x,y)$, i can infer what are the path of the orientation $\theta$ and the input profile that executes that path. For example, by knowing $(x(s),y(s))$, i can conclude that, at a given $s=s^*$, the orientation must be aligned with the direction of motion, i.e. the vector $(x'(s^*),y'(s^*))$.\begin{equation}
+\end{align} The intuition behind flatness is the following: If I know perfectly the path of the Cartesian position of the unicycle $(x,y)$, I can infer what the path of the orientation $\theta$ is, together with the input profile that executes that path. For example, by knowing $(x(s),y(s))$, I can conclude that, at a given $s=s^*$, the orientation must be aligned with the direction of motion, i.e. the vector $(x'(s^*),y'(s^*))$.\begin{equation}
     \theta(s)=\Phi_x(x',y')=\text{atan2}(y'(s),x'(s))+k\pi.
 \end{equation}
 $k\in \{0,1\}$ is a constant that defines the direction of motion.
@@ -952,7 +952,7 @@ $k\in \{0,1\}$ is a constant that defines the direction of motion.
     \centering
     \includegraphics[width=0.6\textwidth ]{images/flat_output_1.eps}
 \end{figure}
-Also the input $\tilde v$ can be reconstructed from the path of $x,y$, since it is exactly the norm of the cartesian velocity:\begin{equation}\label{tildev}
+Also the input $\tilde v$ can be reconstructed from the path of $x,y$, since it is exactly the norm of the Cartesian velocity:\begin{equation}\label{tildev}
     \begin{cases}
        x'=\tilde v\cos\theta\\
 y'=\tilde v\sin\theta
@@ -961,12 +961,12 @@ y'=\tilde v\sin\theta
 the same can be done for the angular velocity (we skip the proof):\begin{equation}\label{tildeOmega}
     \tilde{\omega} = \frac{y'' x' - x'' y'}{(x')^2 + (y')^2}.
 \end{equation}
-Equations \eqref{tildev},\eqref{tildeOmega} are the reconstruction map for the input $\tilde{\mathbf u}=\Phi_u(x',y',x'',y'')$. These reconstruction have a problem, that arises if $x'=y'=0$, since atan2 is not defined, and $\tilde\omega$ would have a zero on the denominator, this singularity have an intuitive meaning, if the robot stops, and its cartesian velocity its zero, we can't know if is steering in place or not, hence we can't infer the evolution of $\theta(s)$ when is not moving.
+Equations \eqref{tildev},\eqref{tildeOmega} are the reconstruction map for the input $\tilde{\mathbf u}=\Phi_u(x',y',x'',y'')$. These reconstructions have a problem that arises if $x'=y'=0$: atan2 is not defined and $\tilde\omega$ would have a zero in the denominator. This singularity has an intuitive meaning: if the robot stops and its Cartesian velocity is zero, we cannot know whether it is steering in place or not, hence we cannot infer the evolution of $\theta(s)$ when it is not moving.
 \begin{boxproposition}{}{flat_chained}
-    A driftless dynamic system is differentially flat if and only if can be transformed in chained-form.
+    A driftless dynamic system is differentially flat if and only if it can be transformed into chained-form.
 \end{boxproposition}
 \begin{boxproposition}{}{}
-    A general dynamic system is differentially flat if and only if can be linearized via dynamic feedback.
+    A general dynamic system is differentially flat if and only if it can be linearized via dynamic feedback.
 \end{boxproposition}
 The wheeled robots in our interest can be put in chained-form, hence, they admit flat outputs, this is a great simplification from a control point of view, since we can directly execute a desired trajectory through the reconstruction maps. Let's see the flat outputs for the bicycle, the model is:\begin{align}
     x'&=\tilde v\cos\theta\\
@@ -1002,12 +1002,12 @@ the reconstruction maps are the following:\begin{align}
     \end{cases}.
 \end{align}
 \subsection{Path Planning for the Unicycle}
-Any flat outputs profile is automatically reconstructed in an admissible path, an algorithm for path planning exploiting differential flatness is the following:\begin{enumerate}
+Any flat-output profile is automatically mapped to an admissible path. An algorithm for path planning exploiting differential flatness is the following:\begin{enumerate}
     \item Compute the initial and final values $\y_i,\y_f$ for the flat outputs from $\q_i,\q_f$.
     \item Define $\y(s)$ by interpolating $\y_i,\y_f$ with the appropriate boundary conditions for $\q$.
     \item Use the reconstruction formulas to find $\q(s)$ and $\tilde{\mathbf u}(s)$.
 \end{enumerate}
-The same algorithm is valid for trajectory planning by interpolating over $t$ instead of $s$. Let's apply this algorithm for the unicycle. We use a parametrization with $s\in[0,1]$, from \begin{equation}
+The same algorithm is valid for trajectory planning by interpolating over $t$ instead of $s$. Let's apply this algorithm to the unicycle. We use a parametrization with $s\in[0,1]$, from \begin{equation}
     \q_i=\begin{pmatrix}
         x_i\\y_i\\\theta_i
     \end{pmatrix},\quad
@@ -1015,7 +1015,7 @@ The same algorithm is valid for trajectory planning by interpolating over $t$ in
         x_f\\y_f\\\theta_f
     \end{pmatrix}
 \end{equation}
-we extrapolate\begin{equation}
+we extract\begin{equation}
     \y_i=\begin{pmatrix}
         x_i\\y_i
     \end{pmatrix},\quad
@@ -1031,10 +1031,11 @@ this polynomial already satisfies the boundary conditions:\begin{align}
     x(0)=x_i,\quad x(1)=x_f\\ 
     y(0)=y_i,\quad y(1)=y_f
 \end{align}
-then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that comes from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions:\begin{align}
-    \text{atan2}(y'(0),x'(0))&=\theta_i\\\text{atan2}(y'(1),x'(1))&=\theta_i.
+then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that come from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions:\begin{align}
+    \text{atan2}(y'(0),x'(0))&=\theta_i\\\text{atan2}(y'(1),x'(1))&=\theta_f.
 \end{align}
-The initial and final cartesian velocities must be:\begin{align}
+
+The initial and final Cartesian velocities must be:\begin{align}
     x'(0)&=k_i\cos\theta_i,\quad x'(1)=k_f\cos\theta_f\\ 
     y'(0)&=k_i\sin\theta_i,\quad y'(1)=k_f\sin\theta_f
 \end{align}
@@ -1069,7 +1070,7 @@ the chained form coordinate and input transformation.
 By recalling that $z_1=\theta$: one problem arises when the initial and final orientations are identical $z_{1i}=z_{1f}$, since we would have:\begin{equation}
     z_1'(s)=z_{1f}-z_{1i}=0
 \end{equation}
-and then $z_{2i},z_{2f}$ can't be inferred since we would have a division by zero, in that case is sufficient to set:\begin{equation}
+and then $z_{2i},z_{2f}$ can't be inferred since we would have a division by zero, in that case it is sufficient to set:\begin{equation}
     z_{1f}=z_{1i}+2\pi
 \end{equation}
 or add a mid-point $\q_m=\begin{pmatrix}
