@@ -856,4 +856,77 @@ and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the 
 \end{figure}
 
 Setting aside the unicycle model: an interesting property of \textbf{trailed vehicles} emerges when considering a car-like robot: if the trailer is hitched exactly at the midpoint between the two rear wheels (denoted by the point $(x,y)$), the resulting kinematic model can still be converted into chained form. This property holds recursively if the trailer itself has two rear wheels and an additional trailer is hitched at their midpoint, the overall kinematic model can still be expressed in chained form.
+\section{Path and Trajectory Planning}
+It is in our interest to define a method to \textit{plan} a motion that transfers a mobile robot from an initial configuration $\q_i$ to a final configuration $\q_f$, hence, we should define a trajectory:\begin{equation}
+    \q(s),\quad s\in[t_i,t_f]
+\end{equation}
+such that $\q(t_i)=\q_i$ and $\q(t_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
+    \q(s),\quad &s\in [s_i,s_f]\\
+    s(t),\quad &t \in [t_i,t_f].
+\end{align}
+The path parameter $s$ is usually chosen as the arc length.\begin{itemize}
+    \item By \textbf{path planning} we mean the plan of a geometric path $\q(s)$ in the configuration space.
+    \item By \textbf{trajectory planning} instead, we also include the time, i.e. we mean the plan of a time evolution of the configuration: $\q(t)$. This is usually done indirectly: first plan a path, then add a timing law.
+\end{itemize}
+We already specified that a trajectory $\q(s(t))$ must satisfies the constraints:\begin{equation}
+    \dq=\frac{d\q}{dt}=\frac{d\q}{ds}\dot s = \q'\dot s
+\end{equation}
+we denote $\q'$ the derivative of $\q$ with respect to $s$, this represents the \textit{tangent vector} of the geometric path in the configuration space. If $s$ is the arc length, then $\| \q'\|=1$.\bigskip
+
+\noindent\textbf{Example}: Consider a robot with $\q=(x,y)$, we want to go from $(1,0)$ to $(0,1)$, one possible choice for the geometric path is:\begin{equation}
+    \q(s)=\begin{cases}
+        \cos s\\ 
+        \sin s 
+    \end{cases}
+\end{equation}
+with $s\in\frac{\pi}{2}$. This is exactly the arc length, indeed:\begin{equation}
+    \q'(s)=\begin{cases}
+        -\sin s\\ 
+        \cos s 
+    \end{cases}\implies \| \q'(s)\|=\sqrt{(-\sin s)^2+\cos^2 s }=1.
+\end{equation}
+One different choice of parametrization is\begin{equation}
+    \q(s)=\begin{cases}
+        \sqrt{1-s^2}\\
+        s
+    \end{cases}
+\end{equation}
+with $s\in [0,1]$, here it's not the arc length:\begin{equation}
+    \q'(s)=\begin{cases}
+        -\frac{s}{\sqrt{1 - s^2}}
+        \\ 1
+    \end{cases}\implies \| \q'(s)\|= \frac{1}{\sqrt{1 - s^2}}.
+\end{equation}
+Now we take in account the kinematic constraints, we know that:\begin{equation}
+    A(\q)\dq=\mathbf 0 
+\end{equation}
+$\dq$ is the time derivative of the planned trajectory $\q(s(t))$:\begin{equation}
+     A(\q)\dq=A(\q)\q'\dot s\mathbf 0\implies A(\q)\q'=\mathbf 0  
+\end{equation}
+we have assumed $\dot s\ne 0$, the result is that the tangent vector $\q'$ must lie in the null space of $A$:\begin{equation}
+    \q'\in \mathcal N(A )
+\end{equation}
+hence $\q'$ can be expressed as a linear combination of the basis vectors $\mathbf g_1,\dots, \mathbf g_m$, exactly as the kinematic model, hence we can write the so called \textbf{geometric model}:\begin{equation}
+    \q'=G(\q)\tilde{\mathbf u}
+\end{equation}
+this model describes explicitly the admissible tangent vectors. $\tilde{\mathbf u}$ is the vector of the \textbf{geometric inputs}, by multiplying both sides by $\dot s$ we can conclude that:\begin{equation}
+   \underbrace{\mathbf u(t)}_{\text{pseudo velocity}} = \tilde{\mathbf u}(s)\dot s(t).
+\end{equation}
+After we have decided a profile for the geometric inputs $\tilde{\mathbf u}(s)$, we have determined a geometric path in the configuration space, only after having defined also $s(t)$ this will identify a particular trajectory.\bigskip
+
+\noindent\textbf{Example}: Let's apply this reasoning to the unicycle model, the pure rolling constraint for the tangent vector is:\begin{equation}
+    \begin{pmatrix}
+        \sin\theta&-\cos\theta&0
+    \end{pmatrix}\q'=0
+\end{equation}
+this means that the tangent vector $\q'$ must be always aligned with the sagittal axis of the unicycle, path as the one in Figure \ref{non_admissible_path} are not admissible.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/inadmissible.eps}
+    \caption{Geometric path with tangent vector non-aligned with the sagittal axis.}
+    \label{non_admissible_path}
+\end{figure}
+\noindent This condition is equivalent to a discontinuity of the first two components (cartesian velocity) of $\q'$.
+\subsection{Flat Outputs}
+
 \end{document}
