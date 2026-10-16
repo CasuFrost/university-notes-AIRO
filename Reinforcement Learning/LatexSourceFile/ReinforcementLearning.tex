@@ -356,7 +356,7 @@ where\begin{itemize}
     \item $c$ is an exploration parameter.
     \item $N_t(i)$ is the total number of times that the $i$-th action has been selected.
 \end{itemize}
-\chapter{Markovian Processes}
+\chapter{Planning in MDPs}
 \section{Markov Decision Processes}
 First of all we introduce a \textit{sequential} decision making approach. We see the agent that has to learn the policy as an entity that can interact with the world/environment through actions $a_t$, and can receive from the environment an observation $o_t$ and a reward $r_t$ after each action. The agent interacts at discrete time steps; such discrete interaction generates a \textbf{trajectory} (or history) of tuples (observation-action-reward):\begin{equation}
     \underbrace{h_t}_{\text{history at time $t$}} = (o_0,a_0,r_1,o_1,a_1,r_2,\dots, r_t,o_t,a_t).
@@ -995,4 +995,299 @@ Since the discount factor is strictly less than 1 and the rewards (and therefore
 \hfill$\blacksquare$\bigskip
 
 \noindent Usually we apply policy iteration until two consecutive policies are identical for any state.
-\end{document} 
+\subsection{Performance Difference}
+\todo{L05}
+\section{Finite-Horizon MDPs}
+We consider finite-horizon MDPs, by setting $H\ge 0$ as the horizon: every trajectory of the system will be at most long $H$, an MDP of that kind is a 6-tuple:\begin{equation}
+    (S,A,r,T,H,\mu_0)
+\end{equation}
+with $\mu_0$ being the initial state distribution ($s_0\sim \mu_0$). Theoretically we don't need to include a discount factor, we can compute the expected value by summing over all the next states up to a finite number, practically, a discount factor is considered also for these MDPs.
+
+We will consider time-dependent policies:\begin{equation}
+    \pi=\{\pi_0,\pi_1,\pi_2,\dots,\pi_{H-1}\}
+\end{equation}
+hence, a policy $\pi$ assign at each pair state-time step an action:\begin{equation}
+    \pi(s,t)=\pi_t(s).
+\end{equation}
+For example, for the initial time steps $\pi$ might explore, then with $t$ growing, it might start to exploit (this kind of strategy is very common in control). Let's discuss about policy iteration for a finite-horizon MDP with time varying policy. In one execution, the first state is sampled $s_0\sim\mu_0$, and the first action is\begin{equation}
+    a_0=\pi_0(s_0)
+\end{equation}
+the transition function is stochastic, hence $s_1$ is given by:\begin{equation}
+    s_1\sim p(\cdot\mid s_0,a_0)
+\end{equation}
+with $p$ being the transition distribution. Then we select:\begin{equation}
+    a_1=\pi_1(s_1)
+\end{equation}
+the first elements of the trajectory are:\begin{equation}
+    (s_0,a_0,s_1,a_1)
+\end{equation}
+the trajectory goes on up to $H-1$:\begin{equation}
+     (s_0,a_0,s_1,a_1,s_2,a_2,\dots,s_{H-1},a_{H-1}).
+\end{equation}
+The finite-horizon value function is defined as\begin{equation}
+    V_h^\pi(s)=\VA_\pi\left[
+        r(s,\pi(s))+
+        \sum_{\tau=h+1}^{H-1}r(s_\tau,\pi(s_\tau))
+    \right]
+\end{equation}
+where  $s_{\tau+1}\sim p(\cdot\mid s_\tau,\pi(s_\tau))$. The state-action function is\begin{equation}\label{Q_h_pi}
+    Q_h^\pi(s,a)=\VA_\pi\left[
+        r(s,a)+
+        \sum_{\tau=h+1}^{H-1}r(s_\tau,\pi(s_\tau))
+    \right]
+\end{equation}
+where  $s_{\tau+1}\sim p(\cdot\mid s_\tau,\pi(s_\tau))$. We want to find an optimal policy for each time step:
+\begin{equation}
+    \pi^*=\{\pi^*_0,\pi^*_1,\pi^*_2,\dots,\pi^*_{H-1}\}
+\end{equation}
+\begin{boxobservation}
+    Before the final step, the action-value function is equal to the reward, since there will be no other states (the horizon is $H$).\begin{equation}
+        Q_{H-1}^*(s,a)=r(s,a).
+    \end{equation}
+\end{boxobservation}
+This implies that we can easily infer what is the best action on $s$ at the time step $H-1$:\begin{equation}
+    \pi^*_{H-1}(s)=\operatorname*{arg\,max}_a r(s,a)
+\end{equation}
+so we can infer the value:\begin{equation}
+    V_{H-1}^*(s)=Q^*_{H-1}(s,\pi^*_{H-1}(s)).
+\end{equation}
+Thanks to the Bellman equation we can compute the state-action value for $H-2$:\begin{equation}
+    Q_{H-2}^*(s,a)=r(s,a)+V^*_{H+1}(s)
+\end{equation}
+by reasoning backwards in this way we can compute the optimal policy for all the time steps $h=H-1,H-2,\dots , 1,0$.
+
+\chapter{Control Theory and Reinforcement Learning}
+In this chapter we briefly discuss the bridge between optimal control and reinforcement learning. In control theory we denote by $\mathbf x\in \R^d$ the state and by $\mathbf u\in\R^k$ the input (action) that we can perform. The goal is to find a control policy $\pi$, which selects the input $\mathbf u$ at each time step, that minimizes the integral over time (the sum, in discrete time) of a given cost function $c(\mathbf x,\mathbf u)$.
+
+In our domain the state $\mathbf x$ is denoted $s$, while the control input $\mathbf u$ is denoted $a$. In this chapter we keep the notation of control theory, and we remark that, differently from the previous chapters, state and input are \textbf{continuous} vectors and not elements of a discrete set. In RL we want to maximize the reward, which is equivalent to minimizing a cost function (the cost is the opposite of the reward). In our context, we formalize an optimal control problem as follows\begin{align}
+    \min_\pi&\quad c_H(\mathbf x_H)+\sum_{h=0}^{H-1}c_h(\mathbf x_h,\pi_h(\mathbf x_h))\\ 
+    \text{where }&\mathbf x_0\sim\mu_0
+\end{align}
+the state trajectory that is implicit here is\begin{equation}
+    (\mathbf x_0,\mathbf u_0,\dots,\mathbf x_h,\underbrace{\mathbf u_h}_{\pi_h(\mathbf x_h)},\dots,\mathbf x_{H-1},\mathbf u_{H-1},\mathbf x_H)
+\end{equation}
+that is defined by the transition dynamics\begin{equation}
+    \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h)
+\end{equation}
+furthermore: \begin{itemize}
+    \item $c_h$ is the cost function at the time step $h$, hence we are assuming that the cost might depend not only on the pair state-action, but also on the time.
+    \item $c_H$ is the cost function at the final step, it does not depend on the input since the execution ends here.
+\end{itemize}
+\noindent We take into account that the transition dynamics $f$, the cost function or the policy might be stochastic, so we consider the expected value:
+\begin{align}
+    \min_\pi&\quad\VA \left[ c_H(\mathbf x_H)+\sum_{h=0}^{H-1}c_h(\mathbf x_h,\pi_h(\mathbf x_h)) \right] \\ 
+    \text{where }&\mathbf x_0\sim\mu_0.
+\end{align}
+
+\section{Linear Quadratic Regulator}
+We will show how the problem of finding an optimal policy can be solved with LQR. We will give a general discussion about linear systems with quadratic cost, and then show how it fits the optimal policy search. A discrete-time linear system is defined as follows:\begin{equation}\label{dynamics}
+    \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t
+\end{equation}
+with $F_x$ being a $d\times d$ matrix and $F_u$ a $d\times k$ matrix. The dynamics is linear both in the state and in the control input, this is our transition function. We will consider only \textbf{quadratic} cost functions:\begin{equation}
+    c(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u
+\end{equation}
+with $C_x$ being a positive semidefinite matrix and $C_u$ a positive definite matrix. Let $V^*_h$ be the value function, with $h<H$ the current time step, i.e. the minimum cost that can be obtained from the state $\mathbf x$ at time $h$ onwards (the \textbf{cost-to-go}). We define the state-action value by using the cost instead of the reward:\begin{equation}
+    Q_h^*(\mathbf x,\mathbf u)=c(\mathbf x,\mathbf u)+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]
+\end{equation}
+by expanding the cost we get:\begin{equation}
+     Q_h^*(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]
+\end{equation}
+we have the assumption (for now) that the dynamics is deterministic, defined in Equation \eqref{dynamics}, so:\begin{align}
+     Q_h^*(\mathbf x,\mathbf u)&=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u+V_{h+1}^*(\blueText{\mathbf x'})\\
+    &=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u+V_{h+1}^*(\blueText{F_x\mathbf x+F_u\mathbf u}).
+\end{align}
+Now we make a strong assumption: \begin{center}
+    The value function $V^*_h$ is a \textbf{quadratic form}.
+\end{center}
+So, we can write $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$, with $P_h$ being a symmetric positive semidefinite matrix. We rewrite the action-value function as:
+\begin{align}
+     Q_h^*(\mathbf x,\mathbf u)&=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u+\blueText{V_{h+1}^*(F_x\mathbf x+F_u\mathbf u)}\\
+ &=\mathbf x^\top C_x\mathbf x+
+    \mathbf u^\top C_u\mathbf u+\blueText{(F_x\mathbf x+F_u\mathbf u)^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)}\label{Q_h_star}
+\end{align}
+we don't know yet how $P_h$ is constructed, we are just assuming that the value is a quadratic form. Now that we have an analytic formulation of $Q_h^*(\mathbf x,\mathbf u)$, we know that we can express the best policy (at the time step $h$) as:\begin{equation}
+    \pi_h^*(\mathbf x)=\operatorname*{arg\,min}_{\mathbf u}Q_h^*(\mathbf x,\mathbf u)
+\end{equation}
+notice how we are minimizing and not maximizing since we have a cost instead of a reward (but the two formulations are equivalent). Since $C_u+F_u^\top P_{h+1}F_u$ is positive definite, $Q_h^*(\mathbf x,\cdot)$ is strictly convex in $\mathbf u$, hence to find its minimum we can set the gradient to zero:\begin{equation}\label{grad}
+    \nabla_u Q_h^*(\mathbf x,\mathbf u)=\mathbf 0.
+\end{equation}
+The gradient is:
+\begin{equation}
+     \nabla_u Q_h^*(\mathbf x,\mathbf u)=
+     2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)
+\end{equation}
+now we solve Equation \eqref{grad} for $\mathbf u$:
+\begin{align}
+    & 2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)=\mathbf 0 \\ 
+     \implies&\mathbf u = -(C_u+F_u^\top P_{h+1}F_u)^{-1}F_u^\top P_{h+1}F_x\mathbf x=K_h^* \mathbf x
+\end{align}
+we have denoted $K_h^* $ that matrix, in this way we have found the optimal policy at time $h$:\begin{equation}
+    \pi_h^*(\mathbf x)=K_h^* \mathbf x
+\end{equation}
+Now we can replace $\mathbf u =K_h^* \mathbf x $ in Equation \eqref{Q_h_star}, by definition, this is exactly the value function:\begin{align} Q_h^*(\mathbf x,\pi_h^*(\mathbf x))=V^*_h(\mathbf x)=&
+    \mathbf x^\top C_x\mathbf x+
+    (K_h^* \mathbf x)^\top C_u(K_h^* \mathbf x)+\blueText{(F_x\mathbf x+F_uK_h^* \mathbf x)^\top P_{h+1}(F_x\mathbf x+F_uK_h^* \mathbf x)}\\
+&=\mathbf x^\top(
+    C_x+(K_h^*)^\top C_u K_h^* + 
+    (F_x+F_uK_h^*)^\top  P_{h+1} (F_x+F_uK_h^*)
+)\mathbf x\\ &=\mathbf x^\top P_h\mathbf x
+\end{align}
+and is exactly a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumption made at the beginning was correct. Notice how $P_h$ can be computed when $P_{h+1}$ is known: due to the finite horizon, we are able to compute in closed form the cost at the final step, hence $P_H$ can be initialized according to the final cost $c_H$ (for instance $P_H=C_x$ if $c_H(\mathbf x)=\mathbf x^\top C_x\mathbf x$, or $P_H=0$ if there is no final cost), then we can reconstruct $P_h$ for all $h$ backwards.
+\begin{algorithm}[H]
+\caption{Value Iteration as LQR}\label{alg:value_iteration_LQR}
+\begin{algorithmic}[1]
+    \State initialize $P_H$
+    \For{$h=H-1,H-2,\dots, 0$ (backwards)}
+    \State Set $K_h^*=-(C_u+F_u^\top P_{h+1}F_u)^{-1}F_u^\top P_{h+1}F_x$
+    \State Compute the best action $\mathbf u=\pi_h^*(\mathbf x)=K_h^*\mathbf x$
+    \State Set $P_h=C_x+(K_h^*)^\top C_u K_h^* + 
+    (F_x+F_uK_h^*)^\top  P_{h+1} (F_x+F_uK_h^*)$
+    \State Compute the value $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+Notice how the best action at a given state is a term proportional to that state, in fact this is a \textit{proportional regulator}. Here $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$ is known as the \textbf{cost-to-go}.
+\subsection{Extensions}
+The first assumption that we drop is that the system is time invariant: consider dynamics that depend also on the time $t$:\begin{equation}
+     \mathbf x_{t+1}=F_{x,t}\mathbf x_t+F_{u,t}\mathbf u_t
+\end{equation}
+with a cost that also depends on $t$:\begin{equation}
+    c_t(\mathbf x_t,\mathbf u_t)=\mathbf x_t^\top C_{x,t}\mathbf x_t+
+    \mathbf u_t^\top C_{u,t}\mathbf u_t.
+\end{equation}
+Algorithm \ref{alg:value_iteration_LQR} can be performed in the same way; the matrices simply depend on the time.\bigskip
+
+\noindent Let us switch back to time invariant systems, and consider a system that is not linear but \textit{affine}:\begin{equation}
+    \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf c
+\end{equation}
+with $\mathbf c$ being a constant vector. We can still apply Algorithm \ref{alg:value_iteration_LQR} by transforming the system into a linear system through the change of coordinates $\mathbf z = \begin{pmatrix}
+        \mathbf x^\top & 1 
+    \end{pmatrix}^\top$:
+\begin{align}
+    \mathbf z_{t+1} = \begin{pmatrix}
+        \mathbf x_{t+1} \\ 1 
+    \end{pmatrix}&=\begin{pmatrix}
+        F_x&\mathbf c\\ 
+        \mathbf 0^\top & 1
+    \end{pmatrix}\begin{pmatrix}
+        \mathbf x_t \\ 1 
+    \end{pmatrix}+\begin{pmatrix}
+        F_u \\ \mathbf 0^\top
+    \end{pmatrix}\mathbf u_t \\[1.5ex]  &= F_x'\mathbf z_t+F_u'\mathbf u_t.
+\end{align}
+The cost is still quadratic in the new coordinates, since $\mathbf x^\top C_x\mathbf x=\mathbf z^\top\begin{pmatrix}
+        C_x&\mathbf 0\\ 
+        \mathbf 0^\top & 0
+    \end{pmatrix}\mathbf z$.
+
+\noindent Now we take into account \textit{stochastic systems}; in particular, we consider noisy dynamics that are perturbed by a zero-mean Gaussian noise:\begin{align}
+    &\mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf w_t\\ 
+    &\mathbf w_t\sim \mathcal N(\mathbf 0,\sigma^2 I).
+\end{align}
+In this case, the optimal policy is the same, but the cost-to-go has an additional term that depends on the variance of
+the noise and that cannot be controlled: \begin{equation}
+    V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x+p_h 
+\end{equation}
+where \begin{align}
+    &p_h=\text{tr}\left(\sigma^2P_{h+1}\right)+p_{h+1}\\
+    &p_{H}=0.
+\end{align}
+There is also a formulation that is more suitable for some cases, where we apply a coordinate and input transformation in order to have a cost function that describes the cost of a certain control input and also the cost of \textit{changing} that control input. Starting from a standard system:\begin{equation}
+    \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t,
+\end{equation}
+we consider the following equivalent system:\begin{equation}
+    \begin{pmatrix}
+    \mathbf{x}_{t+1} \\
+    \mathbf{u}_t
+\end{pmatrix}
+=
+\begin{pmatrix}
+    F_x & F_u \\
+    \mathcal O   & I
+\end{pmatrix}
+\begin{pmatrix}
+    \mathbf{x}_t \\
+    \mathbf{u}_{t-1}
+\end{pmatrix}
++
+\begin{pmatrix}
+    F_u \\
+    I
+\end{pmatrix}
+\Delta\mathbf{u}_t
+\end{equation}
+where $\mathcal O$ is the zero matrix and $\Delta\mathbf u_t=\mathbf u_t-\mathbf u_{t-1}$.
+We rewrite the system as\begin{equation}
+    \mathbf x_{t+1}'=F_x'\mathbf x_t'+F_u'\Delta\mathbf u_t.
+\end{equation}
+$\Delta\mathbf{u}_t$ is the new input, and is the change in controls. The new cost is\begin{equation}
+    (\mathbf x')^\top \begin{pmatrix}
+        C_x& \mathcal O \\ 
+        \mathcal O & C_u
+    \end{pmatrix}\mathbf x'+\Delta\mathbf u^\top C'_u\Delta\mathbf u,
+\end{equation}
+where $C'_u$ is the matrix that penalizes the change in controls.
+\section{LQR for Non-Linear Systems}
+Now we consider a general non-linear system with the dynamics expressed through a non-linear function $f$:\begin{equation}
+    \mathbf x_{t+1}=f(\mathbf x_t,\mathbf u_t).
+\end{equation}
+Let $\mathbf x^*$ be a forced equilibrium:\begin{equation}
+    f(\mathbf x^*,\mathbf u^*)=\mathbf x^*
+\end{equation}
+with $\mathbf u^*$ being the required input. We linearize the system around that equilibrium using a first order Taylor expansion:\begin{equation}
+    \mathbf x_{t+1}\approx f(\mathbf x^*,\mathbf u^*)+\nabla_x f(\mathbf x_t-\mathbf x^* )+\nabla_u f(\mathbf u_t-\mathbf u^* )
+\end{equation}
+with $\nabla_x f$ and $\nabla_u f$ being the Jacobian matrices (with respect to $\mathbf x$ and $\mathbf u$) evaluated at the equilibrium $(\mathbf x^*,\mathbf u^*)$. We denote by $A$ and $B$ the Jacobian matrices, by $\mathbf z_t=\mathbf x_t-\mathbf x^*$ the variation in the state with respect to the equilibrium and by $\mathbf v_t=\mathbf u_t-\mathbf u^*$ the variation in the input:
+\begin{align}
+    &\mathbf x_{t+1}\approx \underbrace {f(\mathbf x^*,\mathbf u^*)}_{\mathbf x^*}+A(\mathbf x_t-\mathbf x^* )+B(\mathbf u_t-\mathbf u^* )\implies \\ 
+    &\mathbf x_{t+1}-\mathbf x^*\approx 
+    A(\mathbf x_t-\mathbf x^* )+B(\mathbf u_t-\mathbf u^* )\implies \\
+    &\mathbf z_{t+1}\approx A\mathbf z_t+B\mathbf v_t.
+\end{align}
+We have a linear system; clearly, to reach the equilibrium we should bring the new state $\mathbf z$ to zero.
+The usual way to define the control action is with a proportional controller:\begin{equation}
+    \mathbf v_t=K\mathbf z_t\implies \mathbf u_t=\mathbf u^*+K(\mathbf x_t-\mathbf x^*).
+\end{equation}
+If the cost is quadratic, we can apply the procedure shown in Algorithm \ref{alg:value_iteration_LQR}; if not, it can be approximated with a quadratic function through a second order Taylor expansion.
+\subsection{Trajectory Tracking}
+Now we want to define a controller that performs trajectory tracking while minimizing the cost function. The desired trajectory is \begin{equation}
+    \mathbf x_0^*,\mathbf x_1^*,\dots, \mathbf x_H^*.
+\end{equation}
+Each single transition of the trajectory is a forced equilibrium\begin{equation}
+    f( \mathbf x_t^*,\mathbf u_t^*)= \mathbf x_{t+1}^*.
+\end{equation}
+In other words, we are trying to find a control input for each time step\begin{equation}
+    \mathbf u_0,\mathbf u_1,\dots,\mathbf u_{H-1}
+\end{equation}
+that minimizes the overall cost:\begin{align}
+    &\operatorname*{\min}_{ \mathbf u_0,\mathbf u_1,\dots,\mathbf u_{H-1}}\quad\sum_{t=0}^{H-1}(\mathbf x_t-\mathbf x_t^*)^\top C_x (\mathbf x_t-\mathbf x_t^*)+(\mathbf u_t-\mathbf u_t^*)^\top C_u (\mathbf u_t-\mathbf u_t^*)\\ 
+    &\text{s.t.}\quad \mathbf x_{t+1}=f(\mathbf x_t,\mathbf u_t).
+\end{align}
+The solution is simple: at each time step we linearize the system around the desired trajectory, and we treat it as a linear time-varying system:\begin{align}
+    &\mathbf x_{t+1}-\mathbf x_{t+1}^*\approx A_t(\mathbf x_t-\mathbf x_t^*)+ B_t(\mathbf u_t-\mathbf u_t^*)\\
+    &\mathbf u_t-\mathbf u_t^*=K_t(\mathbf x_t-\mathbf x_t^*).
+\end{align}
+\section{Iterative LQR}
+Now we try to solve the most general case of a discrete-time optimal control problem:\begin{align}
+    &\operatorname*{\min}_{ \mathbf u_0,\dots,\mathbf u_{H-1}}\quad g_H(\mathbf x_H)+\sum_{h=0}^{H-1}g_h(\mathbf x_h,\mathbf u_h)\\ 
+    &\text{s.t.}\quad \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h).
+\end{align}
+\noindent A problem of this kind can be solved with Algorithm \ref{alg:iLQR}.
+
+\begin{algorithm}[H]
+\caption{Iterative  LQR}\label{alg:iLQR}
+\begin{algorithmic}[1]
+    \State Initialize a control policy $\pi^{(0)}$.
+    \For{$i=0,1,\dots, I$}
+    \State Execute $\pi^{(i)}$ and collect the state-input trajectory $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ for $t=0,\dots, H$.
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\todo{L06}
+\end{document}
