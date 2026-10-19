@@ -1285,9 +1285,9 @@ Now we try to solve the most general case of a discrete-time optimal control pro
     \State Initialize a control policy $\pi^{(0)}$.
     \For{$i=0,1,\dots, I$}
     \State Execute $\pi^{(i)}$ and collect the state-input trajectory $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ for $t=0,\dots, H$.
+    \State Obtain an LQ approximation of this problem by linearizing around $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ with first order Taylor expansion for the dynamics and second order Taylor expansion for the cost.
+    \State Compute $\pi^{(i+1)}$ with the LQR formulation for linear time variant systems.
     \EndFor
 \end{algorithmic}
 \end{algorithm}
-
-\todo{L06}
 \end{document}

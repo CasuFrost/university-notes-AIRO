@@ -1079,20 +1079,78 @@ or add a mid-point $\q_m=\begin{pmatrix}
 \subsection{Path Planning via Parametrized Inputs}
 A different approach, not directly based on flatness,
 consists of writing the inputs in parametrized form and
-then imposing that the robot goes from $\q_i$ to $\q_f$. We assume that the $n$-DoF robot model can be rewritten in chained form:\begin{equation}\label{chained_form}\begin{cases}
+then imposing that the robot goes from $\q_i$ to $\q_f$. We assume that the $n$-state robot model can be rewritten in chained form:\begin{equation}\label{chained_form}\begin{cases}
     z_1'=\tilde w_1\\
     z_2'=\tilde w_2\\
     z_3'=z_2\tilde w_1\\\vdots\\
     z_n'=z_{n-1}\tilde w_1
 \end{cases}\end{equation}
-that is linear if $\tilde w_1$ is constant. Let $\mathbf z_i,\mathbf z_f$ be the initial and final configurations in the chained-form system coordinates, we define $\Delta$ as the difference between the final and initial values for $z_1$:\begin{equation}
+which is linear in $\mathbf z$ when $\tilde w_1$ is constant. Let $\mathbf z_i,\mathbf z_f$ be the initial and final configurations in the chained-form system coordinates, we define $\Delta$ as the difference between the final and initial values for $z_1$:\begin{equation}
     \Delta=z_{1f}-z_{1i}
 \end{equation}
 and we choose the following profiles for the geometric inputs:\begin{equation}
     \begin{cases}
         \tilde w_1=\text{sign}(\Delta)\\ 
-        \displaystyle\tilde w_2=\sum_{i=0}^{n-2}c_is^i 
+        \displaystyle\tilde w_2=\sum_{j=0}^{n-2}c_js^j 
     \end{cases}\quad s\in[0,|\Delta|]
 \end{equation}
-by doing so, we can integrate $z_2'=\tilde w_2$ analytically to get the time profiles of $z_2,z_3,\dots,z_n$.
+by doing so, we can integrate $z_2'=\tilde w_2$ analytically to get the profiles (as functions of $s$) of $z_2,z_3,\dots,z_n$, and impose $z_j(|\Delta|)=z_{jf}$ for each $j$. This leads to a linear system of the following form:\begin{equation}
+    D(\Delta)\begin{pmatrix}
+        c_0\\c_1\\\vdots\\ c_{n-2}
+    \end{pmatrix}=\mathbf d(\mathbf z_i,\mathbf z_f,\Delta)
+\end{equation}
+if $D(\Delta)$ is invertible we can find the values for the coefficients. For example, with a system of 2 inputs and 3 states:\begin{equation}
+    D=\begin{pmatrix}
+        |\Delta|&\nicefrac{\Delta^2}{2}\\ 
+        \text{sign}(\Delta)\nicefrac{\Delta^2}{2}&\nicefrac{\Delta^3}{6}
+    \end{pmatrix},\quad
+    \mathbf d=\begin{pmatrix}
+        z_{2f}-z_{2i}\\
+        z_{3f}-z_{3i}-z_{2i}\Delta
+    \end{pmatrix}
+\end{equation}
+\subsection{Choice of the Timing Law}
+We have separated the timing law $s(t)$ from the geometric path $\q(s)$, now we have to assign a timing law that interpolates $s_i$ to $s_f$:\begin{equation}
+    s(t_i)=s_i,\quad s(t_f)=s_f.
+\end{equation}
+We will select a timing law that is monotonic increasing, since it does not have any meaning for the trajectory to go backwards (in that case, this has to be defined geometrically), hence:\begin{equation}
+    \dot s >0.
+\end{equation}
+The simplest timing law is given by linear interpolation:\begin{equation}
+    s(t)=s_i+\frac{s_f-s_i}{t_f-t_i}(t-t_i)
+\end{equation}
+usually we use $t\in[0,T]$:
+\begin{equation}
+    s(t)=s_i+(s_f-s_i)\frac{t}{T}.
+\end{equation}
+One of the most used timing laws is the bang-coast-bang acceleration profile (\textbf{trapezoidal timing law}), since it starts and ends with zero velocity.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/trapezoidal_timing_law.eps}
+\end{figure}\begin{equation}
+    \ddot s(t)= \begin{cases}
+        a_{max}&\text{ if }t\in[t_i,t_i+t_m]\\
+        0&\text{ if }t\in(t_i+t_m,t_f-t_m]\\
+        -a_{max}&\text{ if }t\in(t_f-t_m,t_f]
+    \end{cases}.
+\end{equation}
+Now let's take into account the bounds on velocity, for example, consider a unicycle subject to the following bounds for the linear and angular velocities:\begin{equation}
+    |v|\le v_{max},\quad |\omega|\le \omega_{max}
+\end{equation}
+assume that a path $\q(s)$ has already been generated, with geometric inputs $\tilde v(s)$ and $\tilde\omega(s)$, we choose a linear timing law parametrized by a positive real number $k$:\begin{equation}
+    s(t)=s_i+\frac{t}{k},\quad t\in [0,k(s_f-s_i)].
+\end{equation}
+We assume that $\q(s)$ is defined such that $s$ is the arc length. The timing law derivative is $\dot s = \frac{1}{k}$, with\begin{equation}
+    v(t)=\frac{\tilde v(s(t))}{k},\quad \omega(t)=\frac{\tilde\omega(s(t))}{k}
+\end{equation}
+in order to respect the bounds we have to choose $k$ as follows:\begin{equation}
+    k=\max\left\{
+        \frac{\tilde v_{peak}}{v_{max}},
+         \frac{\tilde \omega_{peak}}{\omega_{max}}
+    \right\}
+\end{equation}
+where\begin{align}
+    \tilde v_{peak}&=\max_{s\in[s_i,s_f]}|\tilde v(s)|\\
+    \tilde \omega_{peak}&=\max_{s\in[s_i,s_f]}|\tilde \omega(s)|.
+\end{align}
 \end{document}
