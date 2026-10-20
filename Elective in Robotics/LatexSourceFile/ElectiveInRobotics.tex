@@ -410,7 +410,7 @@ To recap the whole control scheme:\begin{itemize}
     \caption{Structure of the control system.}
     \label{hierarchical_control_system}
 \end{figure}
-\chapter{Control Methods}
+\chapter{Control Methods}\label{controlMethods}
 \section{Backstepping}
 For a dynamical system:\begin{equation}
     \begin{cases}
@@ -1473,4 +1473,75 @@ We compare the complete DFL controller with the geometric controller on $SE(3)$ 
     \item Both controllers need the reference up to the snap and an accurate model of the vehicle.
 \end{itemize}
 \chapter{State Estimation}
+\section{Sensors}
+The controllers that we have seen in Chapter \ref{controlMethods} use the state $\mathbf p,\dot{\mathbf p}, R,\Bomega$ to compute the control inputs, none of them is measured directly and exactly by the onboard
+sensors. Sensors measures other quantities (subject to bias and noise), that are used to reconstruct the state. Some of the most known sensors are the following:\begin{itemize}
+    \item \textbf{Barometer}: measures the height and its variation from the air pressure.
+    \item \textbf{Three-axis magnetic compass}: measures the Earth magnetic field and provides
+the orientation with respect to the (magnetic) north.
+    \item \textbf{Inertial Measurement Unit (IMU)}:  an electronic device that measures and transmits linear acceleration and orientation (roll, pitch, yaw).
+    \item \textbf{Sonar, Laser, Infrared}: to measure the distance from obstacles, including the ground.
+    \item \textbf{Monocular camera}: for vision-based navigation.
+    \item \textbf{GPS}: absolute position outdoors.
+\end{itemize}
+\begin{table}[htbp]
+  \centering
+  \renewcommand{\arraystretch}{1.35}
+  \begin{tabular}{lllll}
+    \toprule
+    \textbf{sensor} & \textbf{measures} & \textbf{frame} & \textbf{typical rate} & \textbf{main issues} \\
+    \midrule
+    rate gyro      & angular velocity $\Omega$       & ${SR}_B$ & 0.1--1 kHz   & bias, drift if integrated \\
+    accelerometer  & specific force                  & ${SR}_B$ & 0.1--1 kHz   & bias, vibrations \\
+    magnetometer   & magnetic field                  & ${SR}_B$ & 10--100 Hz   & motors, metal nearby \\
+    barometer      & pressure $\rightarrow$ height   & ${SR}_I$ & 10--100 Hz   & drift, propeller wash \\
+    GPS            & position (velocity)             & ${SR}_I$ & 1--10 Hz     & meters, outdoors only \\
+    camera         & features, rel. pose             & ${SR}_B$ & 20--60 Hz    & computation, scale \\
+    sonar / laser  & distance                        & ${SR}_B$ & 10--50 Hz    & limited range \\
+    motion capture & pose                            & ${SR}_I$ & 0.1--0.5 kHz & indoor lab only \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+We recall that with $SR_I$ we denote the inertial frame,with its $z$-axis pointing downward (also denoted $\mathbf e_3$), and $SR_B$ the body frame, specified by the rotation matrix $R$. In this chapter, in the translational dynamics we will include the \blueText{ drag force}:\begin{equation}
+    m\ddot{\mathbf p}=mg\mathbf e_3-TR\mathbf e_3\blueText{-TRDR^\top\dot{\mathbf p}}
+\end{equation}
+with $D$ being a diagonal matrix:\begin{equation}
+    D=\begin{pmatrix}
+        d_x&0&0\\
+        0&d_y&0\\
+        0&0&0
+    \end{pmatrix}
+\end{equation}
+the drag is proportional to the thrust and the velocity of the body. It is small, often neglected in control design, but it is what makes the
+accelerometer informative.\bigskip
+
+\noindent The \textbf{barometer} measures the air pressure, it provides a measurement of the height and its variation. We model the quantity provided by the barometer as follows:\begin{equation}
+    \tilde h = h +d+\eta 
+\end{equation}
+$h$ is the real height of the body, expressed in $SR_I$, $d$ is a disturbance, that is usually slow varying, and $\eta$ is the measurements noise.\bigskip
+
+\noindent The \textbf{magnetometer} provides a measure of the Earth magnetic field:\begin{equation}
+    \mathbf m_{IMU} = R^T\,{}^I\mathbf m+\mathbf B_m+\boldsymbol{\eta}_m 
+\end{equation}
+where\begin{itemize}
+    \item ${}^I\mathbf m$ is the real Earth magnetic field in the inertial frame (the provided quantity is in the body frame).
+    \item $\mathbf B_m$ is the local magnetic disturbance due to ferromagnetic components and motor currents.
+    \item $\boldsymbol\eta_m$ is the measurements noise.
+\end{itemize}
+
+\noindent The \textbf{rate gyro} measures the angular velocity of the body with respect to the inertial frame, expressed in the body frame:\begin{equation}
+    \Bomega_{IMU}=\Bomega+\mathbf b_\Omega+\boldsymbol{\eta}
+\end{equation}where\begin{itemize}
+    \item $\mathbf b_\Omega$ is a constant or slowly time-varying bias.
+    \item $\boldsymbol\eta$ is the measurements noise.
+\end{itemize}
+
+\noindent The \textbf{accelerometer} measures the instantaneous linear acceleration of the body frame due to exogenous forces, excluding gravity:\begin{equation}
+    \mathbf a_{IMU}=R^T(\ddot{\mathbf p}-g\mathbf e_3)+\mathbf b_a+\boldsymbol{\eta}_a
+\end{equation}
+where $\mathbf b_a$ is a constant or slowly time-varying bias and $\boldsymbol{\eta}_a$ the measurements noise. The measured acceleration can be approximated as\begin{equation}
+    \mathbf a_{IMU}=-\frac{T}{m}\mathbf e_3-\frac{T}{m}DR^T\dot{\mathbf p}
+\end{equation}
+where $-\frac{T}{m}DR^T\dot{\mathbf p}$ is the acceleration due to the blade flapping and induced drag.
+\section{Attitude Estimation}
 \end{document}
