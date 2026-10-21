@@ -1252,7 +1252,6 @@ The closed loop dynamics achieved with this choice of $\boldsymbol{\Gamma}$ is t
     &\dot{\mathbf e}_R=C(R_d^\top R)\mathbf e_\Omega\\
     &\frac{d}{dt}(R_d^\top R)=R_d^\top RS(\mathbf e_\Omega)
 \end{align}
-%================ CONTINUATION: replaces \todo{slide 04 pag 19} ================%
 \begin{boxobservation}{}{}
 The closed loop attitude dynamics is \textbf{autonomous} in the variables $(R_d^\top R,\mathbf e_\Omega)$: it does not depend on the translational motion of the vehicle, nor on the thrust $T$. This is what allows us to analyze the complete system as a \textit{cascade}: the attitude error subsystem is studied first, and then it is seen as an input for the position error subsystem.
 \end{boxobservation}
@@ -1521,7 +1520,7 @@ accelerometer informative.\bigskip
 $h$ is the real height of the body, expressed in $SR_I$, $d$ is a disturbance, that is usually slow varying, and $\eta$ is the measurements noise.\bigskip
 
 \noindent The \textbf{magnetometer} provides a measure of the Earth magnetic field:\begin{equation}
-    \mathbf m_{IMU} = R^T\,{}^I\mathbf m+\mathbf B_m+\boldsymbol{\eta}_m 
+    \mathbf m_{IMU} = R^\top\,{}^I\mathbf m+\mathbf B_m+\boldsymbol{\eta}_m 
 \end{equation}
 where\begin{itemize}
     \item ${}^I\mathbf m$ is the real Earth magnetic field in the inertial frame (the provided quantity is in the body frame).
@@ -1537,11 +1536,139 @@ where\begin{itemize}
 \end{itemize}
 
 \noindent The \textbf{accelerometer} measures the instantaneous linear acceleration of the body frame due to exogenous forces, excluding gravity:\begin{equation}
-    \mathbf a_{IMU}=R^T(\ddot{\mathbf p}-g\mathbf e_3)+\mathbf b_a+\boldsymbol{\eta}_a
+    \mathbf a_{IMU}=R^\top(\ddot{\mathbf p}-g\mathbf e_3)+\mathbf b_a+\boldsymbol{\eta}_a
 \end{equation}
 where $\mathbf b_a$ is a constant or slowly time-varying bias and $\boldsymbol{\eta}_a$ the measurements noise. The measured acceleration can be approximated as\begin{equation}
-    \mathbf a_{IMU}=-\frac{T}{m}\mathbf e_3-\frac{T}{m}DR^T\dot{\mathbf p}
+    \mathbf a_{IMU}=-\frac{T}{m}\mathbf e_3-\frac{T}{m}DR^\top\dot{\mathbf p}
 \end{equation}
-where $-\frac{T}{m}DR^T\dot{\mathbf p}$ is the acceleration due to the blade flapping and induced drag.
+where $-\frac{T}{m}DR^\top\dot{\mathbf p}$ is the acceleration due to the blade flapping and induced drag.
 \section{Attitude Estimation}
+We describe the process of estimating the attitude for one axis, consider the pitch $\vartheta$ (the same reasoning applies for the roll and yaw too), let $\omega_g$ be the angular velocity measured by the gyroscope:\begin{equation}
+    \omega_g=\dot\vartheta+b+\eta 
+\end{equation}
+with $b$ being the bias and $\eta$ the measurement noise. Let $a_y,a_z$ being the components of the \textit{measured acceleration} expressed in the body frame, we denote $\vartheta_a$ the angle estimated directly from the accelerometer\begin{equation}
+    \vartheta_a=\text{atan2}(-a_y,-a_z)
+\end{equation}.
+It is based on the hypothesis that at rest the accelerometer only measures the reaction to gravity. We denote the \textbf{estimation of the pitch} $\hat\vartheta$ and we define its dynamic as follows:\begin{equation}
+    \dot{\hat\vartheta}=\omega_g-\hat b+k_P(\vartheta_a-\hat\vartheta).
+\end{equation}
+The derivative of the estimated angle is obtained by integrating the bias-corrected gyroscope reading $(\omega_g - \hat{b})$, to which is added a correction term proportional to the error between the accelerometer measurement and the current estimate $(\vartheta - \hat{\vartheta})$.
+$\hat b$ is the estimation of the bias, with the following dynamics:\begin{equation}
+    \dot{\hat b}=-k_I(\vartheta_a-\hat\vartheta)
+\end{equation}
+if a constant error persists between the accelerometer and the estimate, this is attributed to the gyroscope bias and integrated over time to zero the steady-state error. $k_P,k_I$ are positive gains.
+
+Bringing the equations into the Laplace domain and eliminating the intermediate variable $\hat{b}(s)$, we obtain:\begin{equation}
+    \hat{\vartheta}(s) = \underbrace{\frac{k_P s + k_I}{s^2 + k_P s + k_I}}_{G_{\text{low}}(s)} \vartheta(s) + \underbrace{\frac{s^2}{s^2 + k_P s + k_I}}_{G_{\text{high}}(s)} \frac{\omega_g(s)}{s}
+\end{equation}
+Noting that integrating the angular velocity corresponds to $\frac{\omega_g(s)}{s}$:
+\begin{itemize}
+\item Low-pass filter ($G_{\text{low}}$): acts on the accelerometer measurement $\theta_a(s)$, cutting out vibrations and high-frequency dynamic accelerations.
+\item High-pass filter ($G_{\text{high}}$): acts on the angle integrated by the gyroscope $\frac{\omega_g(s)}{s}$, blocking the zero/very low frequency component responsible for the drift.
+\end{itemize}
+The two filters are complementary because their algebraic sum is exactly 1:\begin{equation}
+    G_{\text{low}}(s) + G_{\text{high}}(s) = \frac{k_P s + k_I + s^2}{s^2 + k_P s + k_I} = 1.
+\end{equation}
+\noindent About the choice of the gains:\begin{itemize}
+    \item Crossover frequency: determined by the values of $k_p$ and $\sqrt{k_I}$. It establishes the border point: below this frequency we rely on the accelerometer, above it we rely on the gyroscope.
+    \item If $k_I = 0$ (without bias estimate), a constant gyroscope bias $b$ generates a steady state error equal to $\frac{b}{k_P}$.
+    \item With $k_I > 0$, the integral action fully compensates for the steady-state bias, bringing the static error to zero.
+\end{itemize}
+Now let's see how to define an observer that tries to estimate the full attitude matrix $R\in SO(3)$, we denote $\hat R$ the estimated rotation matrix. To estimate the full 3D orientation (including yaw), the accelerometer alone is no longer enough (which only identifies the axis of gravity, leaving an undetermined degree of freedom around the vertical). We need at least two known non-parallel directions in inertial space:\begin{itemize}
+    \item The gravity vector $\mathbf e_3$.
+    \item The Earth magnetic field ${}^I\mathbf m$, known and fixed in the inertial frame, we use the normalized vector $\bar{\mathbf m}=\frac{{}^I\mathbf m}{\|{}^I\mathbf m\|}$.
+\end{itemize}
+\noindent For each of the two vectors we compare:\begin{itemize}
+    \item The direction measured in the body:\begin{itemize}
+        \item $\mathbf v_a=-\frac{\mathbf a_{IMU}}{g}\simeq R^\top\mathbf e_3$ (measured by normalized accelerometer, at rest).
+        \item $\mathbf v_m=\nicefrac{\mathbf m_{IMU}}{\|{}^I\mathbf m\|}\simeq R^\top\bar{\mathbf m}$ (measured by normalized magnetometer).
+    \end{itemize}
+    \item The direction predicted by the current attitude estimate $\hat{R}$:\begin{itemize}
+        \item  $\hat{\mathbf v}_a = \hat{R}^\top\mathbf e_3$ (where we should see the gravity according to the current estimate).
+        \item $\hat{\mathbf v}_m = \hat{R}^\top \bar{\mathbf m}$ (where we should see magnetic north according to the current estimate).
+    \end{itemize}
+\end{itemize}
+We define the orientation reconstruction error $\boldsymbol{\alpha}$ as follows:\begin{equation}
+    \boldsymbol{\alpha}=k_a (\hat{\mathbf v}_a \times\mathbf  v_a) + k_m (\hat{\mathbf v}_m \times\mathbf  v_m).
+\end{equation}
+$k_a$ and $k_m$ are the gains that weight the reliability of the accelerometer and magnetometer. If desired, further known directions provided by other sensors (e.g. cameras, star sensors) can be added. The dynamics of the observer is defined as follows:\begin{equation}
+    \dot{\hat R}=\hat R\, S(\Bomega_{IMU}-\hat{\mathbf b}-\boldsymbol{\alpha})
+\end{equation}
+we are using the skew-symmetric matrix, and $\hat{\mathbf b}$ is the estimation on the bias with the following dynamics:\begin{equation}
+    \dot{\hat{\mathbf b}}=k_b\boldsymbol{\alpha}
+\end{equation} 
+acting as an integral action. The logic exactly reflects the scalar filter (one axis attitude), but extended geometrically to $SO(3)$.
+\section{Velocity Estimation}
+Normally to calculate the velocity one would have to integrate the acceleration over time (accumulating drift), but in some cases the velocity is obtained algebraically instant by instant. We work in the \textit{hypothesis} of \textit{horizontal flight}: $T\simeq mg$ (the total thrust balances gravity). The measurement of the accelerometer considering the drag of the rotors is:\begin{equation}
+    \mathbf a_{IMU}=-\frac{T}{m}\mathbf e_3-\frac{T}{m}DR^\top\dot{\mathbf p}=-\frac{T}{m}\begin{pmatrix}
+        d_x\dot{ p}_{B,x}\\
+        d_y\dot{ p}_{B,y}\\
+        1
+    \end{pmatrix}
+\end{equation}
+where $R^\top\dot{\mathbf p} = \begin{pmatrix}
+    \dot{ p}_{B,x}& \dot{ p}_{B,y}& \dot{ p}_{B,z}
+\end{pmatrix}^\top$ is the linear velocity expressed in the drone's coordinate system (body frame).
+Bringing the accelerometer measurement into the inertial frame via the estimated rotation matrix $\hat{R} \simeq R$:\begin{equation}
+    {}^I\mathbf a_{IMU}=R\mathbf a_{IMU}\simeq\hat Ra_{IMU}\simeq 
+     -g \hat{R} \mathbf e_3 - g \hat{R} D \hat{R}^\top \dot{\mathbf p}
+\end{equation}
+given the assumption, $\frac{T}{m}$ was replaced with $g$. Going back to working directly in body frame:\begin{equation}
+    \mathbf a_{\text{IMU}} \simeq -g \mathbf e_3 - g D R^\top \dot{\mathbf p} \implies\mathbf  a_{\text{IMU}} + g\mathbf  e_3 \simeq -g D R^\top \dot{\mathbf p}.
+\end{equation}
+Expliciting the three rows of this vector:\begin{itemize}
+    \item First row ($x$): $a_x = -g \, d_x \dot{p}_{B,x}$
+    \item Second row ($y$): $a_y = -g \, d_y \dot{p}_{B,y}$ 
+    \item Third row ($z$): $a_z + g \simeq 0 \implies a_z \simeq -g$ (confirms that along $z$ the accelerometer only measures the reaction to the hover weight).
+\end{itemize}
+By isolating $\dot p_{B,x}$ and $\dot p_{B,y}$ from the first two components gives the following:\begin{equation}
+    \dot p_{B,x} \simeq -\frac{a_x}{g\, d_x}, \qquad \dot p_{B,y} \simeq -\frac{a_y}{g\, d_y}.
+\end{equation}
+When a quadrotor moves forward or sideways, the rotating rotors generate an aerodynamic drag force in the $xy$ plane of the body proportional to the translational velocity ($\dot{\mathbf p}_B$). The accelerometer senses this specific force on the $a_x$ and $a_y$ components. Knowing the aerodynamic parameters $d_x, d_y$, the readings $a_x$ and $a_y$ instantly provide the speed of the drone.
+
+If the drone is not hovering and accelerating vertically ($T \neq mg$), the approximation $a_z \simeq -g$ no longer holds. However, from the third component of the general model we have:
+$$a_z = -\frac{T}{m}.$$ By directly substituting this relation, the thrust hypothesis is completely eliminated without even having to know the orientation/attitude:
+$$ \dot p_{B,x} = \frac{a_x}{d_x a_z}, \qquad  \dot p_{B,y} = \frac{a_y}{d_y a_z}.$$
+The linear velocity observer estimates the inertial velocity $\dot{\mathbf p}$ by combining the multirotor dynamic model prediction with a correction term based on the rotor-plane velocity measurement:
+\begin{equation}
+\ddot{\hat{\mathbf p}} = g \mathbf e_3 - g \left(\hat R \mathbf e_3 + \hat R D \hat R^\top \dot{\hat{\mathbf p}}\right) - k_w \hat R P \left(\hat R^\top \dot{\hat{\mathbf p}} - \mathbf v_{B,m}\right)
+\end{equation}
+where $g \mathbf e_3$ denotes the gravitational acceleration, $-g \hat R \mathbf e_3$ represents the thrust vector under the near-hover horizontal flight assumption ($T \simeq mg$), and $-g \hat R D \hat R^\top \dot{\hat{\mathbf p}}$ accounts for the rotor drag deceleration. The corrective term acts on the estimation error relative to $\mathbf v_{B,m}$, which is the velocity directly inferred from the accelerometer measurements in the rotor plane. The projection matrix $P = \text{diag}(1, 1, 0)$ confines the correction exclusively to the measured body $x$ and $y$ axes. This formulation requires an identified drag matrix $D$ as well as an accurate attitude estimate $\hat R$, mirroring the predictor-corrector structure commonly employed in the prediction stage of an Extended Kalman Filter (EKF).
+\section{Height Estimation}
+The vertical position (height) observer fuses barometric pressure altitude with inertial vertical acceleration via a complementary filter:
+\begin{align}
+\dot{\hat h} &= \hat v_h + k_1 (\tilde h - \hat h), \\
+\dot{\hat v}_h &= a_h + k_2 (\tilde h - \hat h)
+\end{align}
+where $\tilde h = h + d + \eta$ is the barometric measurement (corrupted by a slowly varying disturbance $d$ and noise $\eta$), and $a_h = -\left(\mathbf e_3^\top \hat R \mathbf a_{\text{IMU}} + g\right)$ denotes the vertical acceleration obtained by projecting the accelerometer reading $\mathbf a_{\text{IMU}}$ via the estimated attitude $\hat R$ and subtracting gravity. In the Laplace domain, the estimated height combines a low-pass filtering of the barometer reading with a high-pass filtering of the doubly integrated vertical acceleration:
+\begin{equation}
+\hat h(s) = \frac{k_1 s + k_2}{s^2 + k_1 s + k_2} \tilde h(s) + \frac{s^2}{s^2 + k_1 s + k_2} \frac{a_h(s)}{s^2}
+\end{equation}
+Because the slow disturbance $d$ passes through the low-pass filter, barometric estimation remains relative, while an additional state $\hat b$ can be included to estimate accelerometer bias.
+\section{Sensor Fusion: Extended Kalman Filter}
+
+The Extended Kalman Filter (EKF) is a fundamental algorithm for sensor fusion, allowing for the handling of non-linear system dynamics and measurement models. The system is described by the following equations:
+\begin{align}
+\mathbf{x}_{k+1} &= \mathbf{f}(\mathbf{x}_k, \mathbf{u}_k) + \mathbf{w}_k, \quad \mathbf{w} \sim \mathcal{N}(0, Q) \\
+\mathbf{y}_k &= \mathbf{h}(\mathbf{x}_k) + \boldsymbol{\nu}_k, \quad \boldsymbol{\nu} \sim \mathcal{N}(0, S)
+\end{align}
+The filter operates iteratively through two distinct phases: prediction and update.
+\subsection{Prediction Phase}
+This phase runs at a high frequency, typically synchronous with the IMU sampling rate (IMU rate). It propagates the state estimate $\hat{\mathbf{x}}^-$ and the error covariance matrix $P^-$ forward in time using the non-linear model $\mathbf{f}(\hat{\mathbf{x}}, \mathbf{u})$ and its Jacobian $F = \frac{\partial \mathbf{f}}{\partial \mathbf{x}}$. In this architecture, the IMU measurements act as the control input $\mathbf{u}$ of the prediction model rather than as standard measurements:
+\begin{align}
+\hat{\mathbf{x}}^- &= \mathbf{f}(\hat{\mathbf{x}}, \mathbf{u}) \\
+P^- &= F P F^\top + Q
+\end{align}
+\subsection{Update Phase}
+When external measurements $\mathbf{y}$ arrive at a lower frequency (such as data from GPS or vision systems), the filter performs the correction. The Kalman gain $K$ is computed using the Jacobian of the measurement model $H = \frac{\partial \mathbf{h}}{\partial \mathbf{x}}$ and the measurement noise covariance matrix $S$. This gain optimally weights the measurement residual to correct the state estimate and update the covariance $P$:
+\begin{align}
+K &= P^- H^\top \left(H P^- H^\top + S\right)^{-1} \\
+\hat{\mathbf{x}} &= \hat{\mathbf{x}}^- + K \left(\mathbf{y} - \mathbf{h}(\hat{\mathbf{x}}^-)\right) \\
+P &= (I - K H) P^-
+\end{align}
+\subsection{State Structure and Attitude Handling}
+A typical state vector tracks position $\mathbf{p}$, velocity $\mathbf{v}$, attitude, and biases for both the gyroscope and accelerometer (along with a scale parameter if monocular vision is used). 
+To avoid Euler-angle singularities, the attitude is handled via a 3-parameter error state around the current rotation matrix estimate $\hat{R}$. This approach is known as a Multiplicative Extended Kalman Filter (MEKF). 
+Structurally, the EKF prediction-correction sequence shares the same architecture as non-linear state observers, with the key difference being that the correction gains are computed dynamically from the covariances.
+\chapter{Motion Planning}
 \end{document}
