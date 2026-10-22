@@ -1153,4 +1153,46 @@ where\begin{align}
     \tilde v_{peak}&=\max_{s\in[s_i,s_f]}|\tilde v(s)|\\
     \tilde \omega_{peak}&=\max_{s\in[s_i,s_f]}|\tilde \omega(s)|.
 \end{align}
+\chapter{Motion Control}
+In order to follow a desired trajectory, or to regulate the robot into a desired configuration, we can't simply proceed by applying the necessary inputs computed from the flat outputs, in order to reject the disturbances and the errors we must add a feedback action. In previous robotics courses, we have considered the dynamic model of the manipulators, controlled by the torques on the joints, for wheeled mobile robotics we can consider only the kinematic model, since the dynamic model is simpler, can be canceled via feedback and the wheels are always equipped with low-level control loops that can regulate velocities in a very reliable way.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/motion_control_scheme.png}
+    \caption{Actual control scheme.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth ]{images/motion_control_scheme2.png}
+    \caption{Simplified control scheme (for design).}
+\end{figure}
+We cover two type of control tasks, \textit{trajectory tracking} and \textit{regulation}, we will provide a full description of this problem for the unicycle model.
+\section{Trajectory Tracking}
+Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, there exists control inputs $v_d,\omega_d$ such that:\begin{equation}
+    \begin{cases}
+        \dot x_d=v_d\cos\theta_d\\
+        \dot y_d=v_d\sin\theta_d\\
+        \dot\theta_d=\omega_d
+    \end{cases}.
+\end{equation}
+Thanks to the flatness property, from the desired trajectory $(x_d(t),y_d(t))$ we can compute the evolution of the full state and the required inputs:\begin{align}
+    \theta_d(t)&=\text{atan2}(\dot y_d(t),\dot x_d(t))+k\pi\quad k\in\{0,1\}\\
+    v_d(t)&=\pm\sqrt{\dot x_d^2(t)+\dot y_d^2(t)}\\
+    \omega_d(t)&=\frac{\ddot y_d(t)\dot x_d(t)-\ddot x_d(t)\dot y_d(t)}{\dot x^2_d(t)+y^2_d(t)}.
+\end{align}
+We recall that an admissible trajectory requires $(\dot x_d(t),\dot y_d(t))$ to be continuous over time, the desired state trajectory $\q_d(t)$ that comes from the flat outputs will be used to compute the state error, then used in the controller. The resulting block diagram will be:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/motion_control_scheme3.png}
+\end{figure}
+The objective is to drive the state error to zero, we will express the error in a coordinate frame rotated by $\theta$, with its $x$-axis parallel to the sagittal axis of the robot:\begin{equation}
+    \mathbf e = \begin{pmatrix}
+        e_1\\e_2\\ e_3
+    \end{pmatrix}=\begin{pmatrix}
+        \cos\theta&\sin\theta&0\\
+        -\sin\theta&\cos\theta&0\\
+        0&0&1
+    \end{pmatrix}\begin{pmatrix}
+        x_d-x\\ y_d-y\\ \theta_d-\theta 
+    \end{pmatrix}.
+\end{equation}
 \end{document}
