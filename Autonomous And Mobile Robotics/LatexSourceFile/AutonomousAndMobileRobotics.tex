@@ -253,13 +253,13 @@ A kinematic constraint is local, it prevents the configuration from moving towar
     a(\q,\dq)=0
 \end{equation}
 it depends on the state of the robot. In every given configuration $\q^*$, we can immediately infer from $a(\q^*,\dq)=0$ which velocities are allowed. All the relevant kinematic constraints in the robotic domain are in \textbf{Pfaffian form}:\begin{equation}
-   \mathbf a^T(\q)\dq=0
+   \mathbf a^\top(\q)\dq=0
 \end{equation}
 with $\mathbf a$ being an $n$ dimensional vector that depends on the configuration. The Pfaffian form expresses a condition of orthogonality: in a given configuration the velocity must be orthogonal to the vector $\mathbf a$. More kinematic constraints can be arranged in matrix form:\begin{equation}
     \begin{pmatrix}
-        \mathbf a_1^T(\q)\\
-        \mathbf a_2^T(\q)\\ \vdots\\ 
-        \mathbf a_k^T(\q)
+        \mathbf a_1^\top(\q)\\
+        \mathbf a_2^\top(\q)\\ \vdots\\ 
+        \mathbf a_k^\top(\q)
     \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\iff \dq\in\mathcal N(A).
 \end{equation}
 The admissible velocities are the ones that lie in the null space of $A$\footnote{
@@ -278,7 +278,7 @@ by applying the chain rule:\begin{equation}
     \dot h(\q)=\frac{\partial h}{\partial \q}\dq =0
 \end{equation}
 $\frac{\partial h}{\partial \q}$ is a row vector, the transpose of the gradient of $h$:\begin{equation}
-    (\nabla_\q h)^T\dq=0
+    (\nabla_\q h)^\top\dq=0
 \end{equation}
 this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ evaluated on a point is the normal vector, i.e. orthogonal to the manifold on which the configuration is constrained to move, hence the resulting kinematic constraint is preventing the robot from going out of the sub-manifold defined by the geometric constraints.
 \begin{figure}[H]
@@ -287,7 +287,7 @@ this is exactly a kinematic constraint in Pfaffian form. The gradient of $h$ eva
     \caption{The admissible velocities are the ones that lie on the tangent space of the sub-manifold in the given configuration.}
 \end{figure}
 We have seen how a geometric constraint always implies a kinematic one. The opposite is not generally true, consider a generic kinematic constraint:\begin{equation}
-    \mathbf a^T(\q)\dq=0
+    \mathbf a^\top(\q)\dq=0
 \end{equation}
 this implies a geometric constraint if there exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
     \nabla_\q h=\mathbf a
@@ -306,7 +306,7 @@ is this integrable? The answer is yes. The resulting geometric constraint is\beg
 \end{equation}
 In general, in Equation \eqref{holonomic} we can add a scalar integrating factor that depend on the configuration:
 \begin{equation}
-    \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^T(\q)
+    \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^\top(\q)
 \end{equation}
 since the right-hand side is zero, $\gamma$ can be dropped.
 \subsection{Non-Holonomic Constraints}\label{sec:nonhol}
@@ -317,7 +317,7 @@ A non-holonomic constraint defines a local limitation, it stops the robot from m
 \end{figure}
 The configuration is given by the vector $\begin{pmatrix}
     x&y&\theta
-\end{pmatrix}^T$, $\theta$ is its orientation with respect to the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
+\end{pmatrix}^\top$, $\theta$ is its orientation with respect to the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
     \sin\theta\dot x-\cos\theta \dot y = 0
 \end{equation}
 or in vector form:\begin{equation}
@@ -327,7 +327,7 @@ or in vector form:\begin{equation}
    \dot x\\\dot y\\\dot \theta
 \end{pmatrix}=0
 \end{equation}
-$\mathbf{n}^T=\begin{pmatrix}
+$\mathbf{n}^\top=\begin{pmatrix}
         \sin\theta& -\cos\theta 
 \end{pmatrix}$
 is the vector \textit{normal} to the direction. Any velocity that has a component on the line spanned by $\mathbf{n}$ is not allowed.
@@ -352,9 +352,9 @@ This constraint does not imply any global limitation, any configuration is still
     \end{equation}
     \item Then, we can move on the direction $\begin{pmatrix}
     x_g-x_s&y_g-y_s
-\end{pmatrix}^T$, in this way we can reach the desired position $\begin{pmatrix}
+\end{pmatrix}^\top$, in this way we can reach the desired position $\begin{pmatrix}
     x_g&y_g
-\end{pmatrix}^T$.
+\end{pmatrix}^\top$.
     \item At the end, we move the orientation from $\theta^*$ to $\theta_g$.
 \end{enumerate}
 This is called \textbf{universal maneuver}.
@@ -492,7 +492,7 @@ As described in Figure \ref{bicycle}, the configuration space of the bicycle is 
 the configuration vector is\begin{equation}
     \q=\begin{pmatrix}
         x&y&\theta&\phi 
-    \end{pmatrix}^T.
+    \end{pmatrix}^\top.
 \end{equation}
 Since there are two wheels, we will have two constraints, that imposes the pure rolling condition both wheels. For the rear wheel and the front wheel, respectively::\begin{align}
     &\sin\theta\dot x-\cos\theta \dot y=0\\ 
@@ -501,12 +501,12 @@ Since there are two wheels, we will have two constraints, that imposes the pure 
 in vector form:\begin{align}
     &\underbrace{\begin{pmatrix}
     \sin\theta&-\cos\theta
-    \end{pmatrix}}_{\mathbf a^T_1}\begin{pmatrix}
+    \end{pmatrix}}_{\mathbf a^\top_1}\begin{pmatrix}
         \dot x\\ \dot y  
     \end{pmatrix}=0\\[1.5ex] 
     &\underbrace{\begin{pmatrix}
     \sin(\theta+\phi)&-\cos(\theta+\phi)
-    \end{pmatrix}}_{\mathbf a^T_2}\begin{pmatrix}
+    \end{pmatrix}}_{\mathbf a^\top_2}\begin{pmatrix}
         \dot x_f\\ \dot y_f
     \end{pmatrix}=0
 \end{align}
@@ -1166,6 +1166,7 @@ In order to follow a desired trajectory, or to regulate the robot into a desired
     \caption{Simplified control scheme (for design).}
 \end{figure}
 We cover two type of control tasks, \textit{trajectory tracking} and \textit{regulation}, we will provide a full description of this problem for the unicycle model.
+In \textbf{trajectory tracking} the robot must converge to a desired Cartesian trajectory $(x_d(t),y_d(t))$, while in \textbf{posture regulation} the robot must converge to a desired configuration $\q_d$. Trajectory tracking is more relevant in practice, since moving along planned trajectories reduces the risk of collision, however, posture regulation does not require any planning.
 \section{Trajectory Tracking}
 Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, there exists control inputs $v_d,\omega_d$ such that:\begin{equation}
     \begin{cases}
@@ -1177,7 +1178,7 @@ Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, ther
 Thanks to the flatness property, from the desired trajectory $(x_d(t),y_d(t))$ we can compute the evolution of the full state and the required inputs:\begin{align}
     \theta_d(t)&=\text{atan2}(\dot y_d(t),\dot x_d(t))+k\pi\quad k\in\{0,1\}\\
     v_d(t)&=\pm\sqrt{\dot x_d^2(t)+\dot y_d^2(t)}\\
-    \omega_d(t)&=\frac{\ddot y_d(t)\dot x_d(t)-\ddot x_d(t)\dot y_d(t)}{\dot x^2_d(t)+y^2_d(t)}.
+    \omega_d(t)&=\frac{\ddot y_d(t)\dot x_d(t)-\ddot x_d(t)\dot y_d(t)}{\dot x^2_d(t)+\dot y^2_d(t)}.
 \end{align}
 We recall that an admissible trajectory requires $(\dot x_d(t),\dot y_d(t))$ to be continuous over time, the desired state trajectory $\q_d(t)$ that comes from the flat outputs will be used to compute the state error, then used in the controller. The resulting block diagram will be:
 \begin{figure}[H]
@@ -1195,4 +1196,207 @@ The objective is to drive the state error to zero, we will express the error in 
         x_d-x\\ y_d-y\\ \theta_d-\theta 
     \end{pmatrix}.
 \end{equation}
+$(e_1,e_2)$ is the Cartesian error $\mathbf e_p=(x_d-x,\;y_d-y)^\top$ expressed in a frame rotated by $\theta$. Differentiating $\mathbf e$ and using the unicycle kinematic model together with the desired one, we obtain the \textbf{error dynamics}:\begin{align}
+    \dot e_1&=v_d\cos e_3-v+e_2\,\omega\\
+    \dot e_2&=v_d\sin e_3-e_1\,\omega\\
+    \dot e_3&=\omega_d-\omega
+\end{align}
+which is \textbf{nonlinear} and \textbf{time-varying}, since it depends on the reference inputs $v_d(t),\omega_d(t)$.
+\subsection{Approximate Linearization}
+Before applying it to the unicycle, let us recall the idea of stabilization via approximate linearization: to stabilize a nonlinear system at an equilibrium, we stabilize its approximate linearization around it. Consider a generic nonlinear system\begin{equation}
+    \dot{\mathbf x}=\boldsymbol\eta(\mathbf x,\mathbf u)=f(\mathbf x)+G(\mathbf x)\mathbf u\qquad \mathbf x\in\R^n,\ \mathbf u\in\R^m
+\end{equation}
+and assume, without loss of generality, that the origin is the desired \textbf{unforced equilibrium}, i.e. $\boldsymbol\eta(\mathbf 0,\mathbf 0)=\mathbf 0$, or equivalently $f(\mathbf 0)=\mathbf 0$. The first-order Taylor expansion of $\boldsymbol\eta$ around $\mathbf x=\mathbf 0,\mathbf u=\mathbf 0$ gives\begin{equation}
+    \boldsymbol\eta(\mathbf x,\mathbf u)\approx\underbrace{\boldsymbol\eta(\mathbf 0,\mathbf 0)}_{=\,\mathbf 0}+\left.\frac{\partial\boldsymbol\eta}{\partial\mathbf x}\right|_{\substack{\mathbf x=\mathbf 0\\\mathbf u=\mathbf 0}}\mathbf x+\left.\frac{\partial\boldsymbol\eta}{\partial\mathbf u}\right|_{\substack{\mathbf x=\mathbf 0\\\mathbf u=\mathbf 0}}\mathbf u
+\end{equation}
+and the \textbf{approximate linearization} of the system at the origin is\begin{equation}
+    \dot{\mathbf x}=A\mathbf x+B\mathbf u
+\end{equation}
+where $A$ and $B$ are the two Jacobian matrices evaluated at the origin. Let now $\mathbf u=K\mathbf x$, so that\begin{equation}
+    \dot{\mathbf x}=A\mathbf x+BK\mathbf x=(A+BK)\mathbf x.
+\end{equation}
+If $K$ is chosen in such a way that $A+BK$ is \textbf{Hurwitz}\footnote{Its eigenvalues have strictly negative real part.} (certainly possible if $(A,B)$ is controllable), then the approximate linearization is asymptotically stable.
+\begin{boxtheorem}{Lyapunov Indirect Method}{}
+    If the approximate linearization of a nonlinear system at an equilibrium is asymptotically stable, then the equilibrium is \textbf{locally} asymptotically stable for the nonlinear system.
+\end{boxtheorem}
+Let us apply this approach to the error dynamics of the unicycle. In the form we derived, the origin is \textbf{not} an unforced equilibrium: for $\mathbf e=\mathbf 0$ the terms $v_d-v$ and $\omega_d-\omega$ must vanish to have $\dot{\mathbf e}=\mathbf 0$. This is easily rectified by the following (invertible) input transformation:\begin{align}
+    w_1&=v_d\cos e_3-v\\
+    w_2&=\omega_d-\omega
+\end{align}
+and, by substituting $\omega=\omega_d-w_2$, the error dynamics $\dot{\mathbf e}=\boldsymbol\eta(\mathbf e,\mathbf w)$ takes the form\begin{equation}
+    \dot{\mathbf e}=\underbrace{\begin{pmatrix}
+        \omega_d e_2\\ -\omega_d e_1+v_d\sin e_3\\ 0
+    \end{pmatrix}}_{f(\mathbf e)}+\underbrace{\begin{pmatrix}
+        1&-e_2\\ 0&e_1\\ 0&1
+    \end{pmatrix}}_{G(\mathbf e)}\begin{pmatrix}
+        w_1\\ w_2
+    \end{pmatrix}
+\end{equation}
+which is at rest when $\mathbf e=\mathbf 0,\mathbf w=\mathbf 0$, i.e. $\boldsymbol\eta(\mathbf 0,\mathbf 0)=\mathbf 0$. Both the drift and the input term are nonlinear, and in general the drift is also time-varying. The Jacobian matrices are\begin{equation}
+    \frac{\partial\boldsymbol\eta}{\partial\mathbf e}=\begin{pmatrix}
+        0&\omega_d-w_2&0\\
+        -\omega_d+w_2&0&v_d\cos e_3\\
+        0&0&0
+    \end{pmatrix}\qquad
+    \frac{\partial\boldsymbol\eta}{\partial\mathbf w}=\begin{pmatrix}
+        1&-e_2\\0&e_1\\0&1
+    \end{pmatrix}
+\end{equation}
+and by letting $\mathbf e=\mathbf 0,\mathbf w=\mathbf 0$ we obtain\begin{equation}
+    A(t)=\begin{pmatrix}
+        0&\omega_d&0\\-\omega_d&0&v_d\\0&0&0
+    \end{pmatrix}\qquad B=\begin{pmatrix}
+        1&0\\0&0\\0&1
+    \end{pmatrix}.
+\end{equation}
+Note that $A$ is actually $A(t)$, due to the dependence of the reference inputs $v_d$ and $\omega_d$ on time, hence the linear approximation is still a \textbf{time-varying} system. Let us define the linear feedback\begin{equation}
+    \mathbf w=\begin{pmatrix}
+        w_1\\w_2
+    \end{pmatrix}=\underbrace{\begin{pmatrix}
+        -k_1&0&0\\0&-k_2&-k_3
+    \end{pmatrix}}_{K}\begin{pmatrix}
+        e_1\\e_2\\e_3
+    \end{pmatrix}=K\mathbf e
+\end{equation}
+the closed-loop error dynamics is\begin{equation}
+    \dot{\mathbf e}=(A(t)+BK)\mathbf e=A_{cl}(t)\mathbf e=\begin{pmatrix}
+        -k_1&\omega_d&0\\-\omega_d&0&v_d\\0&-k_2&-k_3
+    \end{pmatrix}\mathbf e
+\end{equation}
+which is still time-varying. Letting\begin{equation}
+    k_1=k_3=2\zeta a\qquad k_2=\frac{a^2-\omega_d^2}{v_d}
+\end{equation}
+with $a>0$ and $\zeta\in(0,1)$, the characteristic polynomial of $A_{cl}(t)$ becomes time-invariant and Hurwitz:\begin{equation}
+    p(\lambda)=(\lambda+2\zeta a)(\lambda^2+2\zeta a\lambda+a^2)
+\end{equation}
+it has one real negative eigenvalue and two complex eigenvalues with damping $\zeta$ and natural frequency $a$.
+\begin{boxobservation}{Caveats}{}
+    Having the eigenvalues of $A_{cl}(t)$ fixed at every instant \textbf{does not guarantee} asymptotic stability of a time-varying system, unless $v_d$ and $\omega_d$ are constant (rectilinear and circular trajectories). Even in this case, the asymptotic stability is only \textbf{local} (not global), since it comes from the indirect Lyapunov method. Moreover, $k_2\to\infty$ as $v_d\to 0$, hence this controller can only be used with \textbf{persistent} Cartesian trajectories (stops are not allowed).
+\end{boxobservation}
+The \textbf{actual} velocity inputs $v,\omega$ are obtained by plugging the feedback controls $w_1,w_2$ in the input transformation:\begin{align}
+    v&=v_d\cos e_3-w_1=v_d\cos e_3+k_1e_1\\
+    \omega&=\omega_d-w_2=\omega_d+k_2e_2+k_3e_3.
+\end{align}
+Note that $(v,\omega)\to(v_d,\omega_d)$ as $\mathbf e\to\mathbf 0$, i.e. the control action reduces to the pure feedforward term. The controller is \textbf{static} and based on the state error, it needs $v_d,\omega_d$ (computed via flatness) and it needs $\theta$ both for the error rotation and for the input transformation.
+\textbf{Global stability} can be guaranteed by a nonlinear version of the feedback:\begin{align}
+    w_1&=-k_1(v_d,\omega_d)\,e_1\\
+    w_2&=-k_2\,v_d\frac{\sin e_3}{e_3}\,e_2-k_3(v_d,\omega_d)\,e_3
+\end{align}
+with $k_2>0$ constant and $k_1,k_3$ bounded, positive and with bounded derivatives. The actual inputs are then recovered from the same input transformation.
+\subsection{Output Error Feedback}
+Another approach is to develop the feedback action from the \textbf{output (Cartesian) error} only, without computing a desired state trajectory $\q_d(t)$, using as \textbf{feedforward term} the velocity $\dot{\mathbf p}_d$ along the reference trajectory, where $\mathbf p=(x,y)^\top$ is the Cartesian position of the unicycle and $\mathbf p_d$ the desired one.
+We will design this controller through the technique of \textbf{exact input-output linearization}.
+\subsubsection*{Exact Input-Output Linearization}
+Consider a driftless nonlinear system with the same number of inputs and outputs:\begin{align}
+    \dot{\mathbf x}&=G(\mathbf x)\mathbf u\qquad \mathbf x\in\R^n,\ \mathbf u\in\R^m,\ \y\in\R^m\\
+    \y&=h(\mathbf x)
+\end{align}
+differentiating the output we obtain\begin{equation}
+    \dy=\frac{\partial h}{\partial\mathbf x}\dot{\mathbf x}=\underbrace{\frac{\partial h}{\partial\mathbf x}G(\mathbf x)}_{T(\mathbf x)}\mathbf u=T(\mathbf x)\mathbf u
+\end{equation}
+where $T$ is an $m\times m$ matrix called the \textbf{decoupling matrix}. If $T$ is invertible, we can set the \textbf{linearizing feedback}\begin{equation}
+    \mathbf u=T^{-1}(\mathbf x)\mathbf w\implies\dy=T(\mathbf x)T^{-1}(\mathbf x)\mathbf w=\mathbf w
+\end{equation}
+i.e. an \textbf{exactly linear} map between the new linearizing inputs $\mathbf w$ and (the time derivative of) the outputs: under the action of the linearizing feedback the system behaves as a simple (vector) integrator from $\mathbf w$ to $\y$.
+
+Given a reference output $\y_d(t)$, the dynamics of the output error $\mathbf e=\y_d-\y$ is\begin{equation}
+    \dot{\mathbf e}=\dy_d-\dy=\dy_d-\mathbf w.
+\end{equation}
+Let $\mathbf w=\dy_d+K\mathbf e$ (feedforward plus proportional feedback), to obtain\begin{equation}
+    \dot{\mathbf e}=-K\mathbf e
+\end{equation}
+which is \textbf{globally exponentially stable} provided that the eigenvalues of $K$ lie in the right half-plane. The final control law is\begin{equation}
+    \mathbf u=T^{-1}(\mathbf x)(\dy_d+K\mathbf e).
+\end{equation}
+\subsection{Static Feedback}
+Let us apply the exact input-output linearization to the unicycle, with output $\mathbf p=(x,y)^\top$. However, the decoupling matrix associated to the Cartesian position turns out to be \textbf{singular}:\begin{equation}
+    \begin{pmatrix}
+        \dot x\\ \dot y
+    \end{pmatrix}=\begin{pmatrix}
+        \cos\theta&0\\\sin\theta&0
+    \end{pmatrix}\begin{pmatrix}
+        v\\ \omega
+    \end{pmatrix}
+\end{equation}
+hence exact input-output linearization is \textbf{not possible} for the output $(x,y)$. The solution is to change slightly the output so that the new input-output map is invertible: we displace the output from the contact point of the wheel to a point $B$ along the sagittal axis, at distance $b$:\begin{equation}
+    \begin{pmatrix}
+        x_B\\ y_B
+    \end{pmatrix}=\begin{pmatrix}
+        x+b\cos\theta\\ y+b\sin\theta
+    \end{pmatrix}.
+\end{equation}
+Differentiating with respect to time:\begin{equation}
+    \begin{pmatrix}
+        \dot x_B\\ \dot y_B
+    \end{pmatrix}=\underbrace{\begin{pmatrix}
+        \cos\theta&-b\sin\theta\\\sin\theta&b\cos\theta
+    \end{pmatrix}}_{T(\theta),\ \det T=b}\begin{pmatrix}
+        v\\ \omega
+    \end{pmatrix}=T(\theta)\begin{pmatrix}
+        v\\ \omega
+    \end{pmatrix}.
+\end{equation}
+If $b\neq 0$ we may set\begin{equation}
+    \begin{pmatrix}
+        v\\ \omega
+    \end{pmatrix}=T^{-1}(\theta)\begin{pmatrix}
+        w_1\\ w_2
+    \end{pmatrix}=\begin{pmatrix}
+        \cos\theta&\sin\theta\\-\dfrac{\sin\theta}{b}&\dfrac{\cos\theta}{b}
+    \end{pmatrix}\begin{pmatrix}
+        w_1\\ w_2
+    \end{pmatrix}
+\end{equation}
+obtaining an input-output linearized system:\begin{align}
+    \dot x_B&=w_1\\
+    \dot y_B&=w_2\\
+    \dot\theta&=\frac{w_2\cos\theta-w_1\sin\theta}{b}.
+\end{align}
+We achieve \textbf{global exponential convergence} of $x_B,y_B$ to the desired trajectory by letting\begin{align}
+    w_1&=\dot x_d+k_x(x_d-x_B)\\
+    w_2&=\dot y_d+k_y(y_d-y_B)
+\end{align}
+with $k_x,k_y>0$. The orientation $\theta$ is \textbf{not} controlled by this scheme, which is based on output error feedback: there is a \textbf{zero dynamics} (the last equation above). Still, $\theta$ must evolve as dictated by flatness. An advantage of this approach is that the desired trajectory for $B$ can be \textbf{arbitrary}, in particular square corners may be included. The controller is \textbf{static}, based on the output error, it needs $\dot{\mathbf p}_d$, and it needs $x,y,\theta$ for the output reconstruction and $\theta$ also for the input transformation.
+\subsection{Dynamic Feedback}
+Rather than displacing the controlled output to $B$, we can keep the (flat) output $(x,y)$ and achieve exact linearization by using a \textbf{dynamic compensator}. To do this, we perform a \textbf{dynamic extension} on the driving velocity channel (we ``slow down'' the input), by considering the velocity $v$ as a state of the system and its acceleration $a$ as a new input:\begin{equation}
+    \dot v=a.
+\end{equation}
+We can now differentiate further the output:\begin{align}
+    \ddot x&=a\cos\theta-v\sin\theta\,\omega\\
+    \ddot y&=a\sin\theta+v\cos\theta\,\omega
+\end{align}
+the new decoupling matrix is\begin{equation}
+    \begin{pmatrix}
+        \ddot x\\ \ddot y
+    \end{pmatrix}=\underbrace{\begin{pmatrix}
+        \cos\theta&-v\sin\theta\\\sin\theta&v\cos\theta
+    \end{pmatrix}}_{T(v,\theta),\ \det T=v}\begin{pmatrix}
+        a\\ \omega
+    \end{pmatrix}=T(v,\theta)\begin{pmatrix}
+        a\\ \omega
+    \end{pmatrix}
+\end{equation}
+which is nonsingular if $v\neq 0$. Under this assumption we may set\begin{equation}
+    \begin{pmatrix}
+        a\\ \omega
+    \end{pmatrix}=T^{-1}(v,\theta)\begin{pmatrix}
+        w_1\\ w_2
+    \end{pmatrix}=\begin{pmatrix}
+        \cos\theta&\sin\theta\\-\dfrac{\sin\theta}{v}&\dfrac{\cos\theta}{v}
+    \end{pmatrix}\begin{pmatrix}
+        w_1\\ w_2
+    \end{pmatrix}
+\end{equation}
+obtaining a fully linearized system $\ddot x=w_1$, $\ddot y=w_2$. We achieve \textbf{global exponential convergence} of $x,y$ to the desired trajectory by letting\begin{align}
+    w_1&=\ddot x_d+k_{p,x}(x_d-x)+k_{d,x}(\dot x_d-\dot x)\\
+    w_2&=\ddot y_d+k_{p,y}(y_d-y)+k_{d,y}(\dot y_d-\dot y)
+\end{align}
+with $k_{p,x},k_{p,y},k_{d,x},k_{d,y}>0$. Since we are controlling the original flat output, there is \textbf{no zero dynamics} with this approach. The desired trajectory must be twice differentiable and \textbf{persistent}, i.e. it must be $v_d\neq 0$ always (this singularity is structural in nonholonomic systems). The controller is \textbf{dynamic} (the velocity $v$ is the state of the compensator, obtained by integrating $a$), based on the output error, it needs $\dot{\mathbf p}_d$ and $\ddot{\mathbf p}_d$, and it needs $x,y$ for the error computation and $\theta$ for the input transformation.
+\subsection{Comparison of the Controllers}
+The three controllers have been compared in simulation while tracking a circle, a square and a figure 8, with the following outcomes.
+\begin{itemize}
+    \item \textbf{Approximate linearization}: only \textbf{local} stability is guaranteed (and only for constant $v_d,\omega_d$). When tracking a circle it converges to zero error; when tracking a square a new transient appears at each corner; for the figure 8 local stability is not guaranteed, but the observed performance is good.
+    \item \textbf{Static input-output linearization}: the steady-state error norm is equal to $b$, since it is the point $B$ that converges to the desired trajectory, while the contact point of the wheel stays at distance $b$ from it. The displaced output provides a \textbf{lookahead} behavior when tracking a square. Reducing $b$ reduces the steady-state error, but the steering velocity increases (the term $1/b$ appears in $T^{-1}$).
+    \item \textbf{Dynamic input-output linearization}: zero steady-state error, reasonable velocities and faster transients (e.g. at the corners of the square).
+\end{itemize}
 \end{document}

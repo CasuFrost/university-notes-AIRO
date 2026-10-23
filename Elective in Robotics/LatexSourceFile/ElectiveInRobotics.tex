@@ -352,7 +352,7 @@ The basic control objectives for a quadrotor are the following:\begin{itemize}
     \item position control,
     \item hovering-to-hovering motion,
     \item waypoint navigation, 
-    \item trajectory planning and tracking,
+    \item trajectory planning and tracking (see Chapter \ref{ch:motion_planning} for the planning),
     \item obstacle avoidance. 
 \end{itemize}
 With \textbf{attitude control}, we mean the process of determining the torques $\tau_\varphi,\tau_\vartheta,\tau_\psi$ needed to obtain a stable desired attitude $\varphi_d,\vartheta_d,\psi_d$. A simple solution is a proportional-derivative (PD) action on the error.
@@ -393,7 +393,7 @@ Given the underactuated nature of the quadrotor, while we are controlling the al
     \end{align}
     in this way we get the desired value for $T_x$ and $T_y$ in order to achieve $u_x$ and $u_y$.
     \item At this point we have to solve \eqref{T_x} and \eqref{T_y} for the roll and the pitch to get the desired values $\varphi_d$ and $\vartheta_d$:\begin{align}
-        &\varphi_d=\arcsin\left(T_y\cos\psi-T_x\sin\psi\right)\\ 
+        &\varphi_d=\arcsin\left(T_y\cos\psi-T_x\sin\psi\right)\\
         &\vartheta_d=-\arcsin\left(\frac{T_x\cos\psi+T_y\sin\psi}{\cos\varphi_d}\right).
     \end{align}
     \item Finally, the inner loop will generate the desired values for $(\tau_\varphi, \tau_\vartheta, \tau_\psi)$ to achieve $\varphi_d$ and $\vartheta_d$.
@@ -998,7 +998,7 @@ the system becomes:\begin{align}
         \bottomrule
     \end{tabular}
 \end{table}
-\subsection{Flatness}
+\subsection{Flatness}\label{sec:flatness}
 \begin{boxdefinition}{Differentially Independent}{}
     Let $\mathbf y$ be a vector of quantities that changes over time. The components of  $\mathbf y$ are \textbf{differentially independent} if there is no differential equation that links the individual components of $\mathbf y$ together, i.e. it is not possible to find an equation of the form:\begin{equation}
         \Phi(\mathbf y,\dy,\ddy,\dots)=\mathbf 0.
@@ -1060,7 +1060,7 @@ and we can write:\begin{align}
     &\tau_\varphi = -\frac{I_x}{T}\mu_2\\ 
     &\tau_\psi=\frac{I_zc_\vartheta}{c_\varphi}(\ddot\psi-I_\psi)-\frac{I_z}{I_y}\tan\varphi\tau_\vartheta
 \end{align}
-now that we have defined the map $\mathbf u=\Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(4)})$, we can define any trajectory at least four times differentiable $\mathbf y(t)$ and get immediately through $\Psi$ the required inputs to execute $\mathbf y(t)$.
+now that we have defined the map $\mathbf u=\Psi(\mathbf y,\dot{\mathbf y},\dots, \mathbf y^{(4)})$, we can define any trajectory at least four times differentiable $\mathbf y(t)$ and get immediately through $\Psi$ the required inputs to execute $\mathbf y(t)$. The explicit expressions of the roll and pitch angles and of their derivatives in terms of the flat outputs, and their use for motion planning, are given in Chapter \ref{ch:motion_planning}.
 \section{Geometric Control on $SO(3)$}
 The state space of the rotational dynamics is $\R^3\times SO(3)$, this is a \textbf{topological obstruction}: due to this, it is impossible with a continuous feedback law to make an equilibrium point \textit{globally asymptotically stable}. The best thing that we can do is to use the information about the geometry of the state space and define an error on that. By doing so, the best achievable result with a continuous feedback law is \textbf{almost global convergence} (a desired equilibrium attracts trajectories starting from almost all initial conditions, except a zero-measure set). The \textbf{geometric controller} is designed by using directly $SO(3)$ to represent the desired attitude of the UAV.\bigskip
 
@@ -1670,5 +1670,441 @@ P &= (I - K H) P^-
 A typical state vector tracks position $\mathbf{p}$, velocity $\mathbf{v}$, attitude, and biases for both the gyroscope and accelerometer (along with a scale parameter if monocular vision is used). 
 To avoid Euler-angle singularities, the attitude is handled via a 3-parameter error state around the current rotation matrix estimate $\hat{R}$. This approach is known as a Multiplicative Extended Kalman Filter (MEKF). 
 Structurally, the EKF prediction-correction sequence shares the same architecture as non-linear state observers, with the key difference being that the correction gains are computed dynamically from the covariances.
-\chapter{Motion Planning}
+\chapter{Motion Planning}\label{ch:motion_planning}
+In the previous chapters we have studied how to \textit{track} a given reference trajectory. In this chapter we study how to \textit{generate} it: given a starting state, a goal, and a known static environment with obstacles, we want to compute a trajectory that is collision-free and that can actually be flown by the quadrotor, i.e. one that satisfies its dynamics and its actuation limits.
+\section{The Motion Planning Problem}
+Let $\mathcal C$ be the \textbf{configuration space} of the robot, the set of all the configurations $\q$ that completely describe the position of the robot in the workspace. Let $\mathcal C_{\text{free}}\subset\mathcal C$ be the set of the \textbf{free configurations}, i.e. those in which the robot does not intersect any obstacle.
+\begin{boxdefinition}{Geometric Motion Planning Problem}{geometric_planning}
+    Given a start configuration $\q_s\in\mathcal C_{\text{free}}$ and a goal configuration $\q_g\in\mathcal C_{\text{free}}$, find a continuous path\begin{equation}
+        \q:[0,1]\to\mathcal C_{\text{free}},\quad\q(0)=\q_s,\ \q(1)=\q_g
+    \end{equation}
+    or report failure if such a path does not exist.
+\end{boxdefinition}
+\noindent If the environment is static and known, many planning algorithms can solve this \textit{geometric} problem, the well known \textbf{piano movers' problem}. The problem is \textbf{purely geometric}: the robot is assumed to be able to move along \textit{any} path of $\mathcal C_{\text{free}}$, without any constraint coming from its dynamics.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/slide_03_piano_movers.png}
+    \caption{The piano movers' problem: the geometric planning problem in a known static environment.}
+    \label{fig:piano_movers}
+\end{figure}
+\noindent For a flying robot the workspace is three-dimensional, with obstacles, and the planned path must be flown by a vehicle with its own dynamics.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/slide_04_flying_robot.png}
+    \caption{Motion planning for a flying robot: the planned path (in red) must be flown by a vehicle with its own dynamics.}
+    \label{fig:flying_robot}
+\end{figure}
+\section{What Is Special With Quadrotors}
+The quadrotor has two features that make the geometric formulation of Definition \ref{def:geometric_planning} insufficient.
+\subsection{Second Order Dynamics}
+The quadrotor is a \textbf{second order} dynamic system: the input acts at the acceleration level (the thrust $T$ determines $\ddot{\mathbf p}$ and the torques determine $\ddot{\boldsymbol{\Theta}}$, see Equation \eqref{compact_form}). Consequences:\begin{itemize}
+    \item A geometric path is \textbf{not} a motion: the feasibility of a path depends on the \textbf{time law} along it, i.e. on how fast the path is traveled (the accelerations, hence thrust and torques, depend on the time law).
+    \item At a \textbf{corner} of the path (a point where the tangent is discontinuous) the velocity must vanish: flying through the corner at nonzero speed would require an instantaneous change of velocity, i.e. an infinite acceleration.
+    \item Hence a corner is either followed by \textbf{stopping} there, or it is \textbf{smoothed}: but a smoothed path is a different path, that may collide with the obstacles.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/slide_05_corner.png}
+    \caption{A path with a corner (in green): the vehicle must stop at the corner or follow a smoothed path (dashed), which can deviate from the original path and collide with the obstacles (in gray).}
+    \label{fig:corner}
+\end{figure}
+\subsection{Underactuation}
+The quadrotor is \textbf{underactuated}: it has four inputs $\mathbf u=(T,\tau_\varphi,\tau_\vartheta,\tau_\psi)^\top$ and six degrees of freedom. Consequences:\begin{itemize}
+    \item Not all the paths in the configuration space are feasible.
+    \item The thrust is directed along the body axis $\mathbf z_b$, hence to accelerate horizontally the vehicle must \textbf{tilt}.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/slide_06_corridor.png}
+    \caption{Top: a level translation along a corridor is a path in $\mathcal C$ but not a feasible motion. Bottom: a feasible motion tilts the vehicle to accelerate and to brake, and needs more room.}
+    \label{fig:corridor}
+\end{figure}
+\noindent A level translation along a corridor (the vehicle keeps $\varphi=\vartheta=0$) is a perfectly valid path in $\mathcal C$, but it is not a feasible motion, since it would require a horizontal acceleration with a vertical thrust. A feasible motion tilts the vehicle to accelerate and, symmetrically, to brake, hence it needs more room than the geometric path suggests.
+\subsection{Two Solution Approaches}
+There are two main ways to deal with these issues:\begin{enumerate}
+    \item \textbf{Decoupled approach}: plan a collision-free geometric path, then optimize/approximate it locally to obtain a dynamically feasible, time-parametrized trajectory. It relies on \textbf{differential flatness}: a path of the flat outputs, made smooth enough and suitably timed, is a feasible trajectory.
+    \item \textbf{Kinodynamic planning}: explore directly the space of the feasible trajectories, by simulating the dynamics. Every branch of the search is feasible by construction.
+\end{enumerate}
+\noindent We will study the first approach with a \textit{visibility-based} roadmap planner, and the second one with the \textit{RRT} (Rapidly-exploring Random Tree) algorithm, in both a random-input and a control-based version.
+\section{Flatness-Based Trajectory Generation}
+We have seen in Section \ref{sec:flatness} that the quadrotor is differentially flat, with flat outputs $\y=(x,\ y,\ z,\ \psi)^\top$. The consequence for planning is that \textbf{every sufficiently smooth curve $\y(t)$ is the output of a feasible trajectory}: the state and the inputs follow algebraically from $\y(t)$ and its derivatives, without integrating any differential equation. Planning is then reduced to choosing a curve in $\R^4$ that satisfies the boundary conditions, the collision avoidance and the input bounds.\bigskip
+
+\noindent In Section \ref{sec:flatness} we derived the map $\Psi$ from the flat outputs to the inputs by using the angular velocity $\boldsymbol{\Omega}$. Here we derive the same map in terms of the roll-pitch-yaw angles, for the simplified model (Definition of the \textit{Simplified Time Evolution of the Quadrotor}), in which $\ddot{\boldsymbol{\Theta}}=J^{-1}\boldsymbol{\Gamma}$. This form is the one used to evaluate a planned trajectory.
+\subsection{Attitude and Thrust From the Flat Outputs}
+Let $R_x(\varphi),R_y(\vartheta),R_z(\psi)$ be the elementary rotations about the axes $\mathbf x,\mathbf y,\mathbf z$, so that ${}^iR_b=R_z(\psi)R_y(\vartheta)R_x(\varphi)$. From the translational dynamics $\ddot{\mathbf p}=g\mathbf e_3-\frac{T}{m}\,{}^iR_b\mathbf e_3$ we get, by rotating the acceleration in the \textit{heading frame} (the frame obtained by rotating $SR_i$ about $\mathbf z$ by the yaw $\psi$):\begin{equation}\label{heading_frame_acc}
+    R_z(\psi)^\top\left(\ddot{\mathbf p}-g\mathbf e_3\right)=-\frac{T}{m}R_y(\vartheta)R_x(\varphi)\mathbf e_3=-\frac{T}{m}\begin{pmatrix}
+        \sin\vartheta\cos\varphi\\-\sin\varphi\\\cos\vartheta\cos\varphi
+    \end{pmatrix}.
+\end{equation}
+Let us define the following three scalar quantities, that depend only on the flat outputs:\begin{align}
+    \nu_1&=\ddot x\cos\psi+\ddot y\sin\psi\\
+    \nu_2&=\ddot x\sin\psi-\ddot y\cos\psi\\
+    \gamma&=\ddot z-g
+\end{align}
+so that the left-hand side of Equation \eqref{heading_frame_acc} is $(\nu_1,\,-\nu_2,\,\gamma)^\top$. Solving for the attitude and the thrust:\begin{align}
+    &\vartheta=\arctan\left(\frac{\nu_1}{\gamma}\right),\quad\quad\varphi=\arctan\left(\frac{\nu_2}{\gamma}\cos\vartheta\right)\label{angles_from_flat}\\
+    &T=m\sqrt{\ddot x^2+\ddot y^2+(\ddot z-g)^2}=m\|\ddot{\mathbf p}-g\mathbf e_3\|
+\end{align}
+(the expression of $T$ is the one already found in Section \ref{sec:flatness}). These expressions are valid for $T>0$ and $|\varphi|,|\vartheta|<\frac{\pi}{2}$: in this region the third component of Equation \eqref{heading_frame_acc} gives $\gamma=-\frac{T}{m}\cos\vartheta\cos\varphi<0$, hence the denominator never vanishes. The values $\dot x,\dot y,\dot z,\dot\psi$ of the state are directly the derivatives of the flat outputs, while $\dot\varphi$ and $\dot\vartheta$ are obtained by differentiation.
+\subsection{Derivatives of the Angles}
+Both the angles in Equation \eqref{angles_from_flat} have the form $\alpha=\arctan\left(\frac{N}{\gamma}\right)$, with $\alpha=\vartheta$, $N=\nu_1$ for the pitch, and $\alpha=\varphi$, $N=\nu_2\cos\vartheta$ for the roll. Note that $\dot\gamma=z^{(3)}$ and $\ddot\gamma=z^{(4)}$. Differentiating $\tan\alpha=\frac{N}{\gamma}$ once and twice we obtain:\begin{align}
+    \dot\alpha&=\cos^2\alpha\,\frac{\dot N-\tan\alpha\,\dot\gamma}{\gamma}\label{alpha_dot}\\
+    \ddot\alpha&=-2\tan\alpha\,\dot\alpha^2-2\dot\alpha\frac{\dot\gamma}{\gamma}+\cos^2\alpha\,\frac{\ddot N-\tan\alpha\,\ddot\gamma}{\gamma}.\label{alpha_ddot}
+\end{align}
+\textbf{Pitch}: $N=\nu_1$, and by differentiating (using $\dot\nu_1$, $\ddot\nu_1$ as defined below):\begin{align}
+    \dot\nu_1&=\left(x^{(3)}+\ddot y\dot\psi\right)\cos\psi+\left(y^{(3)}-\ddot x\dot\psi\right)\sin\psi\\
+    \ddot\nu_1&=\left(x^{(4)}+2y^{(3)}\dot\psi+\ddot y\ddot\psi-\ddot x\dot\psi^2\right)\cos\psi+\left(y^{(4)}-2x^{(3)}\dot\psi-\ddot x\ddot\psi-\ddot y\dot\psi^2\right)\sin\psi.
+\end{align}
+For example, by using $\cos^2\vartheta=\frac{1}{1+\tan^2\vartheta}$ in Equation \eqref{alpha_dot}:\begin{equation}
+    \dot\vartheta=\frac{1}{1+\tan^2\vartheta}\frac{1}{\ddot z-g}\left[\left(x^{(3)}+\ddot y\dot\psi\right)\cos\psi+\left(y^{(3)}-\ddot x\dot\psi\right)\sin\psi-z^{(3)}\tan\vartheta\right].
+\end{equation}
+\textbf{Roll}: $N=\nu_2\cos\vartheta$, with:\begin{align}
+    \dot\nu_2&=\left(x^{(3)}+\ddot y\dot\psi\right)\sin\psi-\left(y^{(3)}-\ddot x\dot\psi\right)\cos\psi\\
+    \ddot\nu_2&=\left(x^{(4)}+2y^{(3)}\dot\psi+\ddot y\ddot\psi-\ddot x\dot\psi^2\right)\sin\psi-\left(y^{(4)}-2x^{(3)}\dot\psi-\ddot x\ddot\psi-\ddot y\dot\psi^2\right)\cos\psi
+\end{align}
+and, by the product rule:\begin{align}
+    \dot N&=\cos\vartheta\,\dot\nu_2-\sin\vartheta\,\dot\vartheta\,\nu_2\\
+    \ddot N&=\cos\vartheta\,\ddot\nu_2-2\sin\vartheta\,\dot\vartheta\,\dot\nu_2-\left(\cos\vartheta\,\dot\vartheta^2+\sin\vartheta\,\ddot\vartheta\right)\nu_2.
+\end{align}
+For example:\begin{equation}
+    \dot\varphi=\frac{\cos^2\varphi}{\ddot z-g}\left[\cos\vartheta\,\dot\nu_2-\sin\vartheta\,\dot\vartheta\,\nu_2-z^{(3)}\tan\varphi\right].
+\end{equation}
+The pitch must be computed first (angle, first and second derivative), since the roll depends on $\vartheta,\dot\vartheta,\ddot\vartheta$. Note that $\dot\varphi,\dot\vartheta$ need the jerk $\mathbf p^{(3)}$ (and $\dot\psi$), while $\ddot\varphi,\ddot\vartheta$ need the snap $\mathbf p^{(4)}$ (and $\ddot\psi$).
+\subsection{Inputs From the Flat Outputs}
+The inputs are finally given by:\begin{equation}
+    T=m\|\ddot{\mathbf p}-g\mathbf e_3\|,\quad\quad\tau_\varphi=I_x\ddot\varphi,\quad\tau_\vartheta=I_y\ddot\vartheta,\quad\tau_\psi=I_z\ddot\psi.
+\end{equation}
+The flat outputs derivatives needed to compute each quantity are:\begin{itemize}
+    \item $T,\varphi,\vartheta$: the acceleration $\ddot{\mathbf p}$ (and $\psi$);
+    \item $\dot\varphi,\dot\vartheta$: the jerk $\mathbf p^{(3)}$ (and $\dot\psi$);
+    \item the torques $\tau_\varphi,\tau_\vartheta,\tau_\psi$: the snap $\mathbf p^{(4)}$ (and $\ddot\psi$).
+\end{itemize}
+These are the same flat outputs, and the same derivatives, of the dynamic feedback linearization, in which the relative degrees of $(x,y,z,\psi)$ are $(4,4,4,2)$ after the extension of the thrust with $T,\dot T$: the DFL controller tracks exactly the trajectories generated in this way.
+\begin{boxobservation}{}{}
+    For the \textit{complete} model, the torques are given by $\boldsymbol{\Gamma}=J\dot{\boldsymbol{\Omega}}+\boldsymbol{\Omega}\times J\boldsymbol{\Omega}$, with $\boldsymbol{\Omega}=M(\boldsymbol{\Theta})\dot{\boldsymbol{\Theta}}$ (the matrix relating the angular velocity to the Euler angles rates, see the table of the DFL), $\dot{\boldsymbol{\Omega}}=M(\boldsymbol{\Theta})\ddot{\boldsymbol{\Theta}}+\dot M(\boldsymbol{\Theta})\dot{\boldsymbol{\Theta}}$. Since $\boldsymbol{\Theta},\dot{\boldsymbol{\Theta}},\ddot{\boldsymbol{\Theta}}$ are functions of the flat outputs (and their derivatives up to the snap), the torques are still a function of the flat outputs: the complete model is flat as well, with the same flat outputs.
+\end{boxobservation}
+\subsection{Feasibility of 3D Trajectories}
+We can summarize the conditions under which a trajectory $\y(t)$ is feasible for the quadrotor:\begin{itemize}
+    \item The robot is able to track any given trajectory of the 3D position and of the yaw angle, provided that it is ``smooth enough''.
+    \item To guarantee the \textbf{continuity of the inputs}, the position trajectory must be continuous up to the fourth derivative ($\mathbf p\in C^4$, since the torques depend on the snap) and the yaw trajectory up to the second derivative ($\psi\in C^2$).
+    \item To satisfy the \textbf{actuation constraints}, the total duration of the trajectory has to be ``large enough'': this is achieved with the time scaling, discussed later.
+    \item The near-hovering model also requires moderate roll and pitch angles.
+\end{itemize}
+\subsection{Paths With Corners}
+A piecewise-linear path $\mathbf p_1,\mathbf p_2,\dots,\mathbf p_n$ (with $\mathbf p_i\in\R^3$ the \textit{nodes} of the path) is feasible if the robot \textbf{stops at every node}. On the segment from $\mathbf p_i$ to $\mathbf p_{i+1}$, traveled in the time interval $[t_i,t_i+\Delta t_i]$ (with $\Delta t_i>0$ the duration of the segment):\begin{equation}
+    \mathbf p(t)=\mathbf p_i+\sigma\left(\frac{t-t_i}{\Delta t_i}\right)(\mathbf p_{i+1}-\mathbf p_i),\quad t\in[t_i,t_i+\Delta t_i]
+\end{equation}
+where $\sigma:[0,1]\to[0,1]$ is the polynomial of degree 9\begin{equation}
+    \sigma(s)=126s^5-420s^6+540s^7-315s^8+70s^9.
+\end{equation}
+It holds $\sigma(0)=0$, $\sigma(1)=1$ and\begin{equation}
+    \sigma'(s)=630\,s^4(1-s)^4
+\end{equation}
+(the prime is the derivative with respect to $s$), hence the velocity, the acceleration, the jerk and the snap vanish at both the ends of each segment, so that $\mathbf p\in C^4$ also at the corners. During the motion, the thrust stays in the vertical plane containing the segment: the vehicle tilts forward to accelerate and backward to brake.\bigskip
+
+\noindent This solution is feasible, but \textbf{slow}, since the robot stops at every node. A smooth curve that goes through (or near) the nodes avoids the stops: this is the motivation of the spline interpolation seen below.
+\section{Visibility-Based Motion Planning}
+The first approach is a \textit{decoupled} one, based on flatness. It is composed of four steps:\begin{enumerate}
+    \item creation of a \textbf{visibility-based probabilistic roadmap} in the space of the flat outputs;
+    \item \textbf{search} of a piecewise-linear collision-free path by using the roadmap;
+    \item approximation of the computed path through a smooth \textbf{spline};
+    \item \textbf{time scaling}: choice of the duration of the trajectory such that the input bounds are satisfied.
+\end{enumerate}
+\subsection{Visibility Roadmap Construction}
+The goal is to build a roadmap with \textit{few nodes} but sufficient for solving the global planning problem. Let $L(\q,\q')$ be a \textbf{local method}, a procedure that connects two configurations with a path (for example the straight line segment). The set of the configurations that can be reached from $\q$ through $L$ is its visibility domain.
+\begin{boxdefinition}{Visibility Domain, Guard, Coverage}{visibility_domain}
+    Given a local method $L$, the \textbf{visibility domain} of $\q$ is\begin{equation}
+        \mathcal V_L(\q)=\left\{\q'\in\mathcal C_{\text{free}}\ \text{ such that }\ L(\q,\q')\subset\mathcal C_{\text{free}}\right\}.
+    \end{equation}
+    The configuration $\q$ is called the \textbf{guard} of $\mathcal V_L(\q)$. A set of guards is a \textbf{coverage} of $\mathcal C_{\text{free}}$ if the union of their visibility domains is $\mathcal C_{\text{free}}$.
+\end{boxdefinition}
+\noindent Note that a finite coverage may not always exist: it depends on both the shape of $\mathcal C_{\text{free}}$ and on the local method $L$. The roadmap is a graph, whose nodes are collision-free configurations and whose edges are the paths computed by $L$. At each iteration a random collision-free sample $\q$ is generated, and it is added to the roadmap if and only if one of the following conditions is satisfied:\begin{itemize}
+    \item $\q$ does not belong to the visibility domain of any guard of the current roadmap. In this case $\q$ becomes a new \textbf{guard}: it enlarges the coverage of $\mathcal C_{\text{free}}$ (and it starts a new connected component of the roadmap).
+    \item $\q$ lies in the intersection of the visibility domains of at least two guards belonging to \textit{different connected components} of the current roadmap. In this case $\q$ becomes a \textbf{connector}, and it is connected to those guards: it enhances the connectivity of the roadmap.
+\end{itemize}
+Otherwise the sample is \textbf{discarded}, so that the roadmap stays small.
+\begin{algorithm}[H]
+\caption{Visibility Roadmap Construction}\label{alg:visibility_roadmap}
+\begin{algorithmic}[1]
+\State $\mathcal G\gets$ empty graph (nodes are guards and connectors)
+\Repeat
+\State $\q\gets$ random sample of $\mathcal C_{\text{free}}$
+\State $\mathcal S\gets$ set of the guards $\q_g$ of $\mathcal G$ such that $\q\in\mathcal V_L(\q_g)$
+\If{$\mathcal S=\emptyset$}
+\State add $\q$ to $\mathcal G$ as a guard
+\ElsIf{$\mathcal S$ contains guards of at least two different connected components of $\mathcal G$}
+\State add $\q$ to $\mathcal G$ as a connector, with an edge to one guard of $\mathcal S$ for each of those components
+\Else
+\State discard $\q$
+\EndIf
+\Until{the stopping criterion is met}
+\end{algorithmic}
+\end{algorithm}
+\noindent The stopping criterion is chosen by the designer, for example a maximum number of samples or a number of consecutive rejected samples. The connections are used to enhance the connectivity, but they are also useful to increase the coverage.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/slide_20_visibility_roadmap.png}
+    \caption{Visibility roadmap construction: guards (red), connector (green) and a sample (blue) that is not visible from any guard. In the original algorithm it would become a new guard; if the visibility domains of the connectors are counted too, it is discarded.}
+    \label{fig:visibility_roadmap}
+\end{figure}
+\noindent The blue sample in Figure \ref{fig:visibility_roadmap} is not visible from any guard, hence with the rule above it would become a new guard; if the visibility domains of the connectors are counted too in the coverage, it is discarded.
+\subsubsection{Roadmap for Quadrotors}
+For the quadrotor:\begin{itemize}
+    \item \textbf{Planning space}: the space of the flat outputs $\y=(x,y,z,\psi)^\top$.
+    \item \textbf{Collision checking by obstacle expansion}: the obstacles are grown by the radius $r_v$ of a sphere, centered at the center of mass, that contains the vehicle ($r_v$ is the arm length $l$ plus the propeller radius; in the example below $l=0.25$ m). Then only the position of the center of mass has to be checked against the grown obstacles, and this is valid for \textit{any} attitude of the vehicle.
+    \item The yaw $\psi$ is actuated independently and does not change the sphere containing the vehicle: it can be neglected, and the roadmap is built in $\R^3$.
+    \item \textbf{Local method}: straight lines.
+\end{itemize}
+\subsection{Search for a Safe Path}
+The goal of this step is to compute a collision-free piecewise-linear path from the starting position to the goal, or to return failure if such a path does not exist. The search is made iteratively:\begin{enumerate}
+    \item try to connect, by using straight lines, the start $\q_s$ and the goal $\q_g$ to two roadmap nodes $\q_a,\q_b$ that belong to the \textit{same} connected component of the roadmap;
+    \item if this succeeds, a solution exists and a graph search (A$^*$) on the roadmap gives the path, with the length of the segments as cost;
+    \item if not, the roadmap is expanded (more samples are generated) and the connection is tried again.
+\end{enumerate}
+The obtained piecewise-linear path is collision-free, but it is \textbf{not dynamically feasible}, since it has corners.
+\subsection{Spline Interpolation}
+The next step computes a smooth solution that approximates the piecewise-linear path, by using a spline that interpolates its nodes. This spline may diverge significantly from the safe piecewise-linear path and, consequently, become unsafe. The solution is to introduce a \textbf{via point} in the middle of any unsafe stretch of the path: it pulls the spline back toward the segment. The procedure is repeated until the whole spline is collision-free.\bigskip
+
+\noindent The geometric aspect and the temporal one are separated. Let $\lambda\in[0,1]$ be a \textbf{non-dimensional time} (we do not use $\tau$, that denotes the torques), and let\begin{equation}
+    \y_i=(x_i,\ y_i,\ z_i,\ \psi_i)^\top,\quad i=1,\dots,n
+\end{equation}
+be the nodes of the path (the via points). We look for the splines\begin{align}
+    &s_x(\lambda),\ s_y(\lambda),\ s_z(\lambda)\in C^4([0,1];\R)\quad\text{of order 6 (degree 5)}\\
+    &s_\psi(\lambda)\in C^2([0,1];\R)\quad\text{of order 4 (cubic)}
+\end{align}
+(the order of a polynomial spline is its degree plus one) such that\begin{equation}
+    s_x(\lambda_i)=x_i,\quad s_y(\lambda_i)=y_i,\quad s_z(\lambda_i)=z_i,\quad s_\psi(\lambda_i)=\psi_i,\quad i=1,\dots,n
+\end{equation}
+where $0=\lambda_1<\lambda_2<\dots<\lambda_n=1$ are the \textbf{knots}. We define $\mathbf s_{\mathbf p}(\lambda)=(s_x,s_y,s_z)^\top$ and $\mathbf s=(\mathbf s_{\mathbf p}^\top,s_\psi)^\top$. The orders are chosen according to the smoothness required for the flat outputs: order 6 for the position gives a continuous snap, order 4 for the yaw gives a continuous yaw acceleration.
+\begin{boxnotation}{}{}
+    For the splines, the superscript in round brackets denotes the derivative with respect to the non-dimensional time $\lambda$, e.g. $\mathbf s_{\mathbf p}^{(4)}=\frac{d^4\mathbf s_{\mathbf p}}{d\lambda^4}$, while the dot denotes, as usual, the derivative with respect to the real time $t$.
+\end{boxnotation}
+\noindent The interpolation conditions are not sufficient to determine the splines: a piecewise polynomial of degree 5 on $n-1$ intervals has $6(n-1)$ coefficients, while the $C^4$ continuity at the $n-2$ internal knots gives $5(n-2)$ conditions and the interpolation of the $n$ values gives $n$ conditions, so that $4$ conditions are missing (2 at each end); analogously, 2 conditions are missing for the cubic yaw spline (1 at each end). They are the \textbf{end conditions}, for example rest at the start and at the goal: $\mathbf s_{\mathbf p}^{(1)}=\mathbf s_{\mathbf p}^{(2)}=\mathbf 0$ at $\lambda=0$ and $\lambda=1$ (and $s_\psi^{(1)}=0$ for the yaw).
+\subsubsection{Choice of the Knots}
+The knots $(\lambda_1,\dots,\lambda_n)$ determine how the (non-dimensional) time is distributed among the stretches of the path, and they are chosen by solving an optimization problem. Let\begin{equation}
+    \Delta\lambda_i=\lambda_{i+1}-\lambda_i,\quad i=1,\dots,n-1
+\end{equation}
+be the optimization variables, subject to the constraints\begin{equation}
+    0<\Delta\lambda_i<1,\quad i=1,\dots,n-1,\quad\quad\sum_{i=1}^{n-1}\Delta\lambda_i=1.
+\end{equation}
+The objective function is\begin{equation}
+    \int_0^1\left[a\left\|\mathbf s_{\mathbf p}^{(4)}(\lambda)\right\|^2+b\left(s_\psi^{(2)}(\lambda)\right)^2\right]d\lambda
+\end{equation}
+with $a,b>0$ weights on the translational and on the yaw part. This is the \textbf{minimum snap} criterion: the knots minimize the (weighted) integral of the squared snap and yaw acceleration, since the snap is the quantity from which the torques are computed. A simple alternative, used for comparison below, is the \textbf{chordal} choice of the knots, in which $\Delta\lambda_i$ is proportional to the length $\|\mathbf p_{i+1}-\mathbf p_i\|$ of the $i$-th segment.
+\subsection{Time Scaling}
+The splines give a path $\mathbf s(\lambda)$, with no real time yet. We now choose the time needed to complete the trajectory, in order to satisfy the input bounds. If the time to navigate through the nodes is changed by a factor $k>0$, i.e. $t_i=k\lambda_i$, the result is simply a \textbf{time-scaled version} of the non-dimensional solution:\begin{equation}
+    \mathbf p(t)=\mathbf s_{\mathbf p}\left(\frac{t}{k}\right),\quad\psi(t)=s_\psi\left(\frac{t}{k}\right),\quad t\in[0,k].
+\end{equation}
+The geometric path is unchanged (hence it is still collision-free), and the derivatives scale as follows:\begin{equation}
+    \dot{\mathbf p}=\frac{\mathbf s_{\mathbf p}^{(1)}}{k},\quad\ddot{\mathbf p}=\frac{\mathbf s_{\mathbf p}^{(2)}}{k^2},\quad\mathbf p^{(3)}=\frac{\mathbf s_{\mathbf p}^{(3)}}{k^3},\quad\mathbf p^{(4)}=\frac{\mathbf s_{\mathbf p}^{(4)}}{k^4},\quad\ddot\psi=\frac{s_\psi^{(2)}}{k^2}
+\end{equation}
+where the derivatives of $\mathbf s_{\mathbf p}$ and $s_\psi$ are evaluated at $\lambda=t/k$. The total duration of the trajectory is $k$. The factor $k$ is chosen by solving an optimization problem:\begin{itemize}
+    \item \textbf{variable}: $k$;
+    \item \textbf{constraints}: along the whole trajectory, $T\le T_M$, $|\tau_\varphi|\le\tau_{\varphi,M}$, $|\tau_\vartheta|\le\tau_{\vartheta,M}$, $|\tau_\psi|\le\tau_{\psi,M}$, where $T_M$ is the maximum thrust and $\tau_{\varphi,M},\tau_{\vartheta,M},\tau_{\psi,M}$ are the maximum torques that the actuators can produce;
+    \item \textbf{objective function}: $\min k$ (the total time).
+\end{itemize}
+The inputs along the trajectory are computed from the flat outputs as seen in the previous section. As $k\to\infty$ all the derivatives of the position vanish, hence $T=m\|\ddot{\mathbf p}-g\mathbf e_3\|\to mg$ and the torques tend to zero. Therefore a feasible $k$ exists if $mg<T_M$ (the vehicle must be able to hover). The minimum feasible $k$ can be found with a one-dimensional search, e.g. a bisection, under the assumption (verified in the example below) that the peak values of the inputs decrease as $k$ grows.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth ]{images/slide_27_time_scaling.png}
+    \caption{Time scaling for the via points of the example below (horizontal projection, constant height, $\psi=0$). Left: the splines through the via points, with min-snap knots (blue) and chordal knots (dashed gray). Right: peak values of the thrust, normalized with $T_M$, and of the torques, normalized with $\tau_M$, as functions of the time scale $k$; the dashed curves are relative to the chordal knots. With the min-snap knots the optimum is $k^*=5.7$ s, where the thrust bound is active.}
+    \label{fig:time_scaling}
+\end{figure}
+\noindent \textbf{Illustration}: for the via points of the example of the next section, with constant height, $\psi=0$, $m=0.5$ kg, $I_x=I_y=4.9\cdot10^{-3}$ kg m$^2$, $T_M=1.5\,mg$ and $\tau_M=0.05$ N m (the bound on each torque), we get:\begin{itemize}
+    \item with the min-snap knots, the integral of the squared snap is about 20 times smaller than with the chordal knots, and the optimal time scale is $k^*=5.7$ s instead of $8.9$ s;
+    \item at $k^*$ the thrust bound is active, while the torques are at 52\% of their bound, with a tilt up to $40^\circ$.
+\end{itemize}
+\subsection{Choice of the Yaw}
+Since $\psi$ is actuated independently, it can be neglected during the roadmap construction. An alternative to a given yaw is to choose\begin{equation}
+    \psi=\text{atan2}(\dot y,\dot x)
+\end{equation}
+so that the robot \textbf{points in the direction of motion}. With $\rho=\dot x^2+\dot y^2$ the squared horizontal speed, the yaw rate and acceleration are:\begin{align}
+    \dot\psi&=\frac{\dot x\ddot y-\dot y\ddot x}{\rho}\\
+    \ddot\psi&=\frac{\dot x\,y^{(3)}-\dot y\,x^{(3)}}{\rho}-2\dot\psi\frac{\dot x\ddot x+\dot y\ddot y}{\rho}.
+\end{align}
+This choice is defined only when the horizontal speed is nonzero: it cannot be used at rest (start and goal) nor in vertical flight. Moreover, $\psi\in C^2$ requires $x,y\in C^3$, which is already guaranteed by the position spline ($C^4$).
+\subsection{Example}
+We consider an environment of $7\times7\times3$ m with walls: the long walls have openings, where the path can cross them.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/slide_29_environment.png}
+    \caption{Example environment, $7\times7\times3$ m, with walls; the long walls have openings where the path can cross them.}
+    \label{fig:vis_environment}
+\end{figure}
+\noindent The roadmap, in the horizontal projection, is shown in Figure \ref{fig:vis_roadmap}: the obstacles (in black) are grown by the arm length (in cyan). The roadmap has few nodes (guards and connectors), and the start and the goal are connected to it.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth ]{images/slide_30_start_goal_roadmap.png}
+    \caption{Start, goal and visibility roadmap in the horizontal projection: obstacles in black, obstacles grown by the arm length in cyan, guards in red and connectors in green.}
+    \label{fig:vis_roadmap}
+\end{figure}
+\noindent The path computed by A$^*$ on the roadmap is piecewise linear. The spline through its nodes leaves the safe path in the circled stretch of Figure \ref{fig:vis_spline}, hence a via point is introduced in the middle of the unsafe stretch, pulling the spline back toward the segment; the procedure is repeated until the whole spline is collision-free. Then the knots are optimized and the time is scaled.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth ]{images/slide_31_astar_spline.png}
+    \caption{Path computed by A$^*$ (left) and spline interpolation of its nodes (right): the spline leaves the safe piecewise-linear path in the circled stretch.}
+    \label{fig:vis_spline}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/slide_32_additional_via_points.png}
+    \caption{Introduction of an additional via point in the middle of the unsafe stretch: the spline is pulled back toward the segment.}
+    \label{fig:vis_via_point}
+\end{figure}
+\noindent Since the spatial shape of the spline depends on the knots, it is prudent to check again the collision-freeness of the spline after the optimization of the knots, and to insert further via points if needed.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/slide_33_control_inputs.png}
+    \caption{Control inputs $T,\tau_\varphi,\tau_\vartheta,\tau_\psi$ along the trajectory after time scaling.}
+    \label{fig:vis_inputs}
+\end{figure}
+\noindent Figure \ref{fig:vis_inputs} shows the control inputs after the time scaling: the thrust $T$ is close to $mg$ and the torques are very small, i.e. the trajectory is smooth and slow. The inputs are continuous, as guaranteed by $\mathbf p\in C^4$ and $\psi\in C^2$.
+\subsection{Remarks on the Visibility-Based Approach}
+\begin{itemize}
+    \item The visibility algorithm is suitable for finding a roadmap with \textbf{few nodes}, easy to handle but possibly not containing the shortest path. A \textbf{smart cutting} of the path can reduce its length: it replaces a portion of the path with a shortcut between two points of the path that see each other.
+    \item The trajectory would be even smoother if the spline passed \textit{near} the nodes of the roadmap instead of interpolating them: the optimizer would have more freedom.
+    \item The prior geometric path restricts the generated trajectory to a given \textbf{homotopy class}, which may not contain a globally optimal (or even feasible) trajectory.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/slide_43_smart_cutting.png}
+    \caption{Smart cutting: the roadmap may not contain the shortest path (solid), a shortcut (dashed) between two points of the path that see each other makes it shorter.}
+    \label{fig:smart_cutting}
+\end{figure}
+\section{RRT-Based Motion Planning}
+The second approach is the \textbf{kinodynamic} one: a search tree is incrementally grown in the \textit{state space} by applying control inputs over short time intervals, in order to reach new nodes. The main features of the RRT are:\begin{itemize}
+    \item the exploration is biased toward the unexplored portions of the space (\textit{rapidly-exploring});
+    \item it is suitable for high-dimensional spaces;
+    \item it takes into account both kinematic and dynamic constraints;
+    \item it generates a trajectory directly in the state space, and provides the control inputs needed to execute it.
+\end{itemize}
+Here the planning space is the state space of the quadrotor, with state $\bxi\in\R^{12}$ and dynamics $\dot{\bxi}=f(\bxi)+g(\bxi)\mathbf u$ as in Equation \eqref{quadrotorSystem}.
+\subsection{The Algorithm}
+Let $\rho(\bxi,\bxi')$ be a \textbf{metric} on the state space (for example the Euclidean distance), and $\Delta t>0$ a fixed integration time. At each iteration:\begin{enumerate}
+    \item extract a random state $\bxi_{\text{rand}}$;
+    \item select the node $\bxi_{\text{near}}$ of the tree that is the closest to $\bxi_{\text{rand}}$ according to the metric $\rho$;
+    \item compute an input $\mathbf u$ that steers the robot toward $\bxi_{\text{rand}}$;
+    \item apply $\mathbf u$ for a time $\Delta t$ starting from $\bxi_{\text{near}}$, reaching the state $\bxi_{\text{new}}$;
+    \item if the path from $\bxi_{\text{near}}$ to $\bxi_{\text{new}}$ is \textbf{safe} (collision-free, with the obstacles grown as seen above), add $\bxi_{\text{new}}$ to the tree and save $\mathbf u$; otherwise discard it.
+\end{enumerate}
+\begin{algorithm}[H]
+\caption{Kinodynamic RRT}\label{alg:rrt}
+\begin{algorithmic}[1]
+\Require $\bxi_{\text{start}}$, $\bxi_{\text{goal}}$, $\Delta t$, tolerance $\varepsilon_g>0$, maximum number of iterations $N_{\max}$
+\State $\mathcal T\gets$ tree with the only node $\bxi_{\text{start}}$
+\For{$j=1,\dots,N_{\max}$}
+\State $\bxi_{\text{rand}}\gets$ \textsc{RandomState}$(j)$
+\State $\bxi_{\text{near}}\gets$ node of $\mathcal T$ minimizing $\rho(\bxi,\bxi_{\text{rand}})$
+\State $(\mathbf u,\bxi_{\text{new}})\gets$ \textsc{Steer}$(\bxi_{\text{near}},\bxi_{\text{rand}},\Delta t)$
+\If{the path from $\bxi_{\text{near}}$ to $\bxi_{\text{new}}$ is safe}
+\State add $\bxi_{\text{new}}$ to $\mathcal T$ as a child of $\bxi_{\text{near}}$, saving $\mathbf u$
+\If{$\|\bxi_{\text{new}}-\bxi_{\text{goal}}\|<\varepsilon_g$}
+\State \Return the path from $\bxi_{\text{start}}$ to $\bxi_{\text{new}}$ in $\mathcal T$, with the saved inputs
+\EndIf
+\EndIf
+\EndFor
+\State \Return failure
+\end{algorithmic}
+\end{algorithm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth ]{images/slide_35_rrt_iteration.png}
+    \caption{One iteration of the RRT: from $\bxi_{\text{near}}$ the input $\mathbf u$ steers the robot toward $\bxi_{\text{rand}}$, reaching $\bxi_{\text{new}}$.}
+    \label{fig:rrt_iteration}
+\end{figure}
+\subsubsection{Trajectory Reconstruction}
+Once $\|\bxi_{\text{last}}-\bxi_{\text{goal}}\|<\varepsilon_g$, where $\bxi_{\text{last}}$ is the last node added, the algorithm stops. The solution trajectory is found by traversing the tree backwards from $\bxi_{\text{last}}$ to $\bxi_{\text{start}}$, together with the saved inputs. The last stretch, from $\bxi_{\text{last}}$ to $\bxi_{\text{goal}}$, might be computed (if necessary) by using any local planner.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/slide_36_rrt_reconstruction.png}
+    \caption{Trajectory reconstruction: the path is found by traversing the tree backwards from $\bxi_{\text{last}}$ to $\bxi_{\text{start}}$; the last stretch (dashed) to $\bxi_{\text{goal}}$ is computed with a local planner.}
+    \label{fig:rrt_reconstruction}
+\end{figure}
+\subsection{Exploration vs. Exploitation}
+The tree will eventually cover the connected component of $\mathcal C_{\text{free}}$ that contains the start, coming arbitrarily close to any goal belonging to the same component: this property is called \textbf{probabilistic completeness} (the probability of finding a solution, if it exists, tends to 1 as the number of iterations tends to infinity). However, the convergence is often slow. A common remedy is to switch between two phases:\begin{itemize}
+    \item \textbf{exploration}: the tree is expanded toward a random state;
+    \item \textbf{exploitation}: the tree is expanded toward the goal, i.e. $\bxi_{\text{rand}}=\bxi_{\text{goal}}$.
+\end{itemize}
+The choice is made with an $\epsilon$-greedy strategy: at the iteration $j$, let $c\in[0,1]$ be a random number (uniformly distributed) and let\begin{equation}
+    \epsilon_j=\frac{\epsilon_0}{1+\gamma_\epsilon\, j}
+\end{equation}
+with $\epsilon_0\in(0,1]$ the initial exploration threshold and $\gamma_\epsilon>0$ a decay rate. Then\begin{equation}
+    \begin{cases}
+        c<\epsilon_j&\implies\text{exploration}\\
+        c\ge\epsilon_j&\implies\text{exploitation}.
+    \end{cases}
+\end{equation}
+Exploration dominates at the beginning, exploitation as the tree grows. Note that $\epsilon_j$ is a threshold on the random number $c$, not to be confused with the goal tolerance $\varepsilon_g$.
+\subsection{Steering With Random Inputs}
+In the simplest version of the \textsc{Steer} function the input is chosen among random candidates. At each iteration:\begin{enumerate}
+    \item extract $10$ random input vectors: the angular velocities $\omega_1,\dots,\omega_4$ of the four motors are random values between $0$ and $1000$ rad/s;
+    \item compute the corresponding thrust and torques by using the transformation seen in the modeling section, with $f_i=b\omega_i^2$ and $\tau_{R,i}=d\omega_i^2$:\begin{align}
+        &T=b\left(\omega_1^2+\omega_2^2+\omega_3^2+\omega_4^2\right)\\
+        &\tau_\varphi=lb\left(\omega_2^2-\omega_4^2\right),\quad\tau_\vartheta=lb\left(\omega_1^2-\omega_3^2\right)\\
+        &\tau_\psi=d\left(-\omega_1^2+\omega_2^2-\omega_3^2+\omega_4^2\right);
+    \end{align}
+    \item integrate the equations of motion (with a numerical integrator, e.g. \texttt{ode45} in MATLAB) for the constant time $\Delta t=0.1$ s;
+    \item choose the input vector that brings the robot \textit{safely} closer to $\bxi_{\text{rand}}$.
+\end{enumerate}
+The simulation results are poor: the tree spreads slowly and erratically, and after hours of computation the goal is still not reached.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/slide_39_rrt_random_inputs.png}
+    \caption{RRT with random inputs in the example environment: after 6 hours the tree has spread slowly and erratically, and the goal (square) is still not reached.}
+    \label{fig:rrt_random}
+\end{figure}
+\subsection{Control-Based Steering}
+A better solution is to combine the RRT with a \textbf{controller} that ensures that the quadrotor moves toward $\bxi_{\text{rand}}$. For example, a \textbf{variable LQR} controller is obtained by linearizing the dynamics around the current node $\bxi_{\text{near}}$ and the hovering input $\mathbf u_h=(mg,\ 0,\ 0,\ 0)^\top$:\begin{equation}
+    A=\frac{\partial\dot{\bxi}}{\partial\bxi}\Big|_{\substack{\mathbf u=\mathbf u_h\\\bxi=\bxi_{\text{near}}}},\quad\quad
+    B=\frac{\partial\dot{\bxi}}{\partial\mathbf u}\Big|_{\substack{\mathbf u=\mathbf u_h\\\bxi=\bxi_{\text{near}}}}
+\end{equation}
+where $\dot{\bxi}=f(\bxi)+g(\bxi)\mathbf u$. The gain matrix $K$ is computed (e.g. with the \texttt{lqr} function of MATLAB) as the one minimizing the cost\begin{equation}
+    \int_0^\infty\left(\mathbf e^\top Q_c\,\mathbf e+\tilde{\mathbf u}^\top R_c\,\tilde{\mathbf u}\right)dt
+\end{equation}
+for the linear system $\dot{\mathbf e}=A\mathbf e+B\tilde{\mathbf u}$, where $\mathbf e$ is the state error and $\tilde{\mathbf u}$ the deviation of the input from $\mathbf u_h$, with $Q_c\succeq0$ and $R_c\succ0$ weighting matrices: a weighted sum of state error and control effort (we write $Q_c,R_c$ in order to avoid confusion with the rotation matrix $R$). The input applied during $\Delta t$ is\begin{equation}
+    \mathbf u=\mathbf u_h-K(\bxi-\bxi_{\text{rand}}).
+\end{equation}
+\begin{boxobservation}{}{}
+    In general, neither $\bxi_{\text{near}}$ nor $\bxi_{\text{rand}}$ is an equilibrium of the system, hence the linear model is only \textbf{local}, and the controller only steers the robot toward $\bxi_{\text{rand}}$ during the time $\Delta t$ (it does not stabilize it there).
+\end{boxobservation}
+\noindent With this steering the tree grows along feasible, controlled motions and reaches the goal region. Each branch is a trajectory of the model, together with its inputs.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/slide_41_rrt_control_based.png}
+    \caption{Control-based RRT in the same environment: the tree grows along feasible, controlled motions and reaches the goal region; the final trajectory is in red.}
+    \label{fig:rrt_control}
+\end{figure}
+\subsection{Remarks on the Kinodynamic RRT}
+\begin{itemize}
+    \item \textbf{Metric}: the Euclidean distance in the state space is a poor estimate of how hard it is to reach a state from another one. A better choice is an estimate of the \textit{cost-to-go}, for example the one given by the LQR of the linearized model (see Glassman and Tedrake).
+    \item \textbf{Completeness}: the extension with a fixed time step and with the best of a set of inputs is \textbf{not} probabilistically complete in general (Kunz and Stilman). Probabilistic completeness is recovered by choosing random inputs and random durations (Kleinbort et al.).
+    \item \textbf{Optimality}: the RRT returns the first trajectory found. Asymptotically optimal variants (kinodynamic RRT$^*$, Webb and van den Berg) rewire the tree.
+\end{itemize}
+\section{Comparison and Conclusions}
+The two approaches can be compared as follows.
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.6}
+    \begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.36\textwidth}}
+        \toprule
+        & \textsf{\textbf{visibility + flatness}} & \textsf{\textbf{kinodynamic RRT}} \\
+        \midrule
+        planning space & flat outputs ($\R^3$ for the roadmap) & state space $\bxi\in\R^{12}$ \\
+        dynamics & through flatness, smoothing and time scaling & simulated at each step \\
+        feasibility & from $\mathbf p\in C^4$, $\psi\in C^2$ and time scaling & by construction \\
+        output & smooth trajectory and inputs from $\Psi$ & trajectory and saved inputs \\
+        main drawback & fixed homotopy class of the geometric path & slow without good steering and metric \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\noindent Further remarks:\begin{itemize}
+    \item The prior geometric path of the visibility-based approach restricts the trajectory to a given homotopy class, which may not contain a globally optimal (or even feasible) trajectory.
+    \item A naive implementation of the RRT performs worse. Enhancements may be achieved by tuning $\Delta t$, $\epsilon_0$ and the number of random inputs, by using a control-based approach, and by tuning the weights $Q_c,R_c$ of the LQR or by using any other controller (even a nonlinear one).
+\end{itemize}
+\noindent \textbf{Take-home messages}:\begin{itemize}
+    \item Quadrotors are second order and underactuated: geometric paths might not be tracked exactly.
+    \item Flatness: we plan $(x,y,z,\psi)$, and the state and the inputs follow algebraically; $\mathbf p\in C^4$ and $\psi\in C^2$ give continuous inputs.
+    \item Decoupled approach: geometric roadmap (few nodes) $\to$ path $\to$ minimum-snap spline $\to$ time scaling for the input bounds.
+    \item Kinodynamic RRT: feasible by construction, but slow without a good steering method and a good metric.
+\end{itemize}
 \end{document}
