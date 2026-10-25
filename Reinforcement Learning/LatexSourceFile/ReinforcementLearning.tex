@@ -594,10 +594,10 @@ this holds for each $s$ hence:
 \end{align}
 \hfill$\blacksquare$
 \begin{boxtheorem}{Bellman Optimality (Uniqueness)}{}
-    Let $\gamma\in[0,1)$. For any value function $V$, if\begin{equation}
+    Let $\gamma\in[0,1)$. If a value function $V$ satisfies the Bellman equation:\begin{equation}
        V(s) = \max_{a \in A} \left[ R(s,a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V(s') \right] \quad \forall s \in {S}
     \end{equation}
-    then $V(s)=V^*(s)$ for all $s\in S$.
+    then $V(s)=V^*(s)$ for all $s\in S$ ($V$ is the value function of the optimal policy).
 \end{boxtheorem}
 \noindent\textit{Proof}: Let $V$  be any value function satisfying the Bellman optimality equation for all $s \in S$. Since $V^*$ is also a solution, we can write (for any state $s$):\begin{align}
     &\vert{}V(s) - V^*(s)\vert{}\\ =&\left\vert{} \max_{a \in {A}} \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V(s') \right) - \max_{a \in {A}} \left( R(s, a) + \gamma \sum_{s' \in {S}} \Prob(s' \mid s, a) V^*(s') \right) \right\vert{}. 
@@ -1056,6 +1056,10 @@ Thanks to the Bellman equation we can compute the state-action value for $H-2$:\
 \end{equation}
 by reasoning backwards in this way we can compute the optimal policy for all the time steps $h=H-1,H-2,\dots , 1,0$.
 
+% =====================================================================
+%  CHAPTER: Control Theory and Reinforcement Learning
+%  (to be pasted in place of the existing chapter, or \input{} from the main file)
+% =====================================================================
 \chapter{Control Theory and Reinforcement Learning}
 In this chapter we briefly discuss the bridge between optimal control and reinforcement learning. In control theory we denote by $\mathbf x\in \R^d$ the state and by $\mathbf u\in\R^k$ the input (action) that we can perform. The goal is to find a control policy $\pi$, which selects the input $\mathbf u$ at each time step, that minimizes the integral over time (the sum, in discrete time) of a given cost function $c(\mathbf x,\mathbf u)$.
 
@@ -1079,6 +1083,25 @@ furthermore: \begin{itemize}
     \text{where }&\mathbf x_0\sim\mu_0.
 \end{align}
 
+\section{Optimal Control as a Finite-Horizon MDP}
+In the previous chapter state and action spaces were finite, hence the functions $V_h^*$ and $Q_h^*$ could be stored in a table. A typical control problem is instead the \textbf{cartpole}: a pole is hinged on a cart that can slide along a rail, and we can push the cart left or right. The state collects the linear position and velocity of the cart and the angular position and velocity of the pole:\begin{equation}
+    \mathbf x=(\xi,\dot\xi,\theta,\dot\theta)^\top\in\R^4
+\end{equation}
+where $\xi$ is the position of the cart along the rail and $\theta$ is the angle of the pole with respect to the vertical. The control input is the force applied on the cart, $u\in\R$ (so $k=1$). The goal is to find the control policy which minimizes the long-term cost $c$ (for instance, a cost that is small when the pole is upright and the cart is close to the center of the rail).
+
+An optimal control problem is exactly a finite-horizon MDP: the state is $\mathbf x$, the action is $\mathbf u$, and the reward is $-c$. Since we minimize a cost, the Bellman optimality equation of the finite-horizon MDP is written with a $\min$ instead of a $\max$:\begin{align}
+    V_H^*(\mathbf x)&=c_H(\mathbf x)\\
+    V_h^*(\mathbf x)&=\min_{\mathbf u}\left\{c_h(\mathbf x,\mathbf u)+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]\right\}\quad h=H-1,\dots,0
+\end{align}
+where, for deterministic dynamics, the expectation is simply $V_{h+1}^*(f(\mathbf x,\mathbf u))$. A natural question is: can we treat the problem as a finite-horizon MDP and apply the backward dynamic programming (value iteration) of the previous chapter? The issue is that $\mathbf x$ and $\mathbf u$ are continuous.
+
+\paragraph{Approach 1: discretization.} We can discretize both spaces with a grid of resolution $\epsilon$. Assume for simplicity that every coordinate of the state and of the input has been rescaled to the interval $[0,1]$: then the grid contains $(1/\epsilon)^d$ states and $(1/\epsilon)^k$ inputs, so the number of state-input pairs to be handled at each time step is\begin{equation}
+    \left(\frac{1}{\epsilon}\right)^d\cdot\left(\frac{1}{\epsilon}\right)^k=\left(\frac{1}{\epsilon}\right)^{d+k}.
+\end{equation}
+For the cartpole with $\epsilon=0.1$ ($d=4$, $k=1$) we already have $10^5$ pairs per time step, and each additional dimension multiplies this number by $1/\epsilon$. This is known as \textbf{Bellman's curse of dimensionality}: the number of (discrete) states grows exponentially in the dimension $d$ of the state space. In practice, discretization is useful, but it is computationally feasible only up to state spaces of dimension $5$ or $6$.
+
+\paragraph{Approach 2: continuous space.} The alternative is to work directly in the continuous space, starting from simplified problems for which the dynamic programming recursion can be solved analytically: linear dynamics and quadratic cost. This is the Linear Quadratic Regulator, and then we will see how to bring the other problems back to this one.
+
 \section{Linear Quadratic Regulator}
 We will show how the problem of finding an optimal policy can be solved with LQR. We will give a general discussion about linear systems with quadratic cost, and then show how it fits the optimal policy search. A discrete-time linear system is defined as follows:\begin{equation}\label{dynamics}
     \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t
@@ -1087,8 +1110,13 @@ with $F_x$ being a $d\times d$ matrix and $F_u$ a $d\times k$ matrix. The dynami
     c(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u
 \end{equation}
-with $C_x$ being a positive semidefinite matrix and $C_u$ a positive definite matrix. Let $V^*_h$ be the value function, with $h<H$ the current time step, i.e. the minimum cost that can be obtained from the state $\mathbf x$ at time $h$ onwards (the \textbf{cost-to-go}). We define the state-action value by using the cost instead of the reward:\begin{equation}
-    Q_h^*(\mathbf x,\mathbf u)=c(\mathbf x,\mathbf u)+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]
+with $C_x$ being a positive semidefinite matrix and $C_u$ a positive definite matrix (both symmetric, of size $d\times d$ and $k\times k$ respectively). The cost is a ``bowl'' with its minimum in the origin: if $C_x$ is positive definite, any non-zero state has a strictly positive cost even with an all-zero control input, hence the policy has to drive the state towards the origin, which plays the role of the goal. (If $C_x$ is only semidefinite, some directions of the state are not penalized.)
+
+Let $V^*_h$ be the value function, with $h<H$ the current time step, i.e. the minimum cost that can be obtained from the state $\mathbf x$ at time $h$ onwards (the \textbf{cost-to-go}). We define the state-action value by using the cost instead of the reward:\begin{equation}
+    Q_h^*(\mathbf x,\mathbf u)=c(\mathbf x,\mathbf u)+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]=
+    c(\mathbf x,\mathbf u)+\sum_{\mathbf x'}V_{h+1}^*(\mathbf x')p(
+        \mathbf x'\mid\mathbf x,\mathbf u
+    )
 \end{equation}
 by expanding the cost we get:\begin{equation}
      Q_h^*(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
@@ -1100,17 +1128,17 @@ we have the assumption (for now) that the dynamics is deterministic, defined in 
     &=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u+V_{h+1}^*(\blueText{F_x\mathbf x+F_u\mathbf u}).
 \end{align}
-Now we make a strong assumption: \begin{center}
-    The value function $V^*_h$ is a \textbf{quadratic form}.
+We will show by \textbf{backward induction} on $h$ that the value function is a quadratic form. The base case is $h=H$: the value is the final cost, $V_H^*(\mathbf x)=c_H(\mathbf x)$, which is a quadratic form (or zero). For the inductive step we make the following assumption:\begin{center}
+    The value function $V^*_{h+1}$ is a \textbf{quadratic form}.
 \end{center}
-So, we can write $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$, with $P_h$ being a symmetric positive semidefinite matrix. We rewrite the action-value function as:
+So, we can write $V_{h+1}^*(\mathbf x)=\mathbf x^\top P_{h+1}\mathbf x$, with $P_{h+1}$ being a symmetric positive semidefinite $d\times d$ matrix, and we want to prove that the same holds for $V_h^*$. We rewrite the action-value function as:
 \begin{align}
      Q_h^*(\mathbf x,\mathbf u)&=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u+\blueText{V_{h+1}^*(F_x\mathbf x+F_u\mathbf u)}\\
  &=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u+\blueText{(F_x\mathbf x+F_u\mathbf u)^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)}\label{Q_h_star}
 \end{align}
-we don't know yet how $P_h$ is constructed, we are just assuming that the value is a quadratic form. Now that we have an analytic formulation of $Q_h^*(\mathbf x,\mathbf u)$, we know that we can express the best policy (at the time step $h$) as:\begin{equation}
+we don't know yet how $P_h$ is constructed, we are just assuming that the value at the next step is a quadratic form. Now that we have an analytic formulation of $Q_h^*(\mathbf x,\mathbf u)$, we know that we can express the best policy (at the time step $h$) as:\begin{equation}
     \pi_h^*(\mathbf x)=\operatorname*{arg\,min}_{\mathbf u}Q_h^*(\mathbf x,\mathbf u)
 \end{equation}
 notice how we are minimizing and not maximizing since we have a cost instead of a reward (but the two formulations are equivalent). Since $C_u+F_u^\top P_{h+1}F_u$ is positive definite, $Q_h^*(\mathbf x,\cdot)$ is strictly convex in $\mathbf u$, hence to find its minimum we can set the gradient to zero:\begin{equation}\label{grad}
@@ -1126,10 +1154,10 @@ now we solve Equation \eqref{grad} for $\mathbf u$:
     & 2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)=\mathbf 0 \\ 
      \implies&\mathbf u = -(C_u+F_u^\top P_{h+1}F_u)^{-1}F_u^\top P_{h+1}F_x\mathbf x=K_h^* \mathbf x
 \end{align}
-we have denoted $K_h^* $ that matrix, in this way we have found the optimal policy at time $h$:\begin{equation}
+we have denoted $K_h^* $ that $k\times d$ matrix, in this way we have found the optimal policy at time $h$:\begin{equation}
     \pi_h^*(\mathbf x)=K_h^* \mathbf x
 \end{equation}
-Now we can replace $\mathbf u =K_h^* \mathbf x $ in Equation \eqref{Q_h_star}, by definition, this is exactly the value function:\begin{align} Q_h^*(\mathbf x,\pi_h^*(\mathbf x))=V^*_h(\mathbf x)=&
+Now we can replace $\mathbf u =K_h^* \mathbf x $ in Equation \eqref{Q_h_star}, by definition, this is exactly the value function:\begin{align} Q_h^*(\mathbf x,\pi_h^*(\mathbf x))=V^*_h(\mathbf x)=&\,
     \mathbf x^\top C_x\mathbf x+
     (K_h^* \mathbf x)^\top C_u(K_h^* \mathbf x)+\blueText{(F_x\mathbf x+F_uK_h^* \mathbf x)^\top P_{h+1}(F_x\mathbf x+F_uK_h^* \mathbf x)}\\
 &=\mathbf x^\top(
@@ -1137,7 +1165,7 @@ Now we can replace $\mathbf u =K_h^* \mathbf x $ in Equation \eqref{Q_h_star}, b
     (F_x+F_uK_h^*)^\top  P_{h+1} (F_x+F_uK_h^*)
 )\mathbf x\\ &=\mathbf x^\top P_h\mathbf x
 \end{align}
-and is exactly a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumption made at the beginning was correct. Notice how $P_h$ can be computed when $P_{h+1}$ is known: due to the finite horizon, we are able to compute in closed form the cost at the final step, hence $P_H$ can be initialized according to the final cost $c_H$ (for instance $P_H=C_x$ if $c_H(\mathbf x)=\mathbf x^\top C_x\mathbf x$, or $P_H=0$ if there is no final cost), then we can reconstruct $P_h$ for all $h$ backwards.
+and is exactly a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumption made at the beginning was correct and the inductive step is complete. Notice how $P_h$ can be computed when $P_{h+1}$ is known: due to the finite horizon, we are able to compute in closed form the cost at the final step, hence $P_H$ can be initialized according to the final cost $c_H$ (for instance $P_H=C_x$ if $c_H(\mathbf x)=\mathbf x^\top C_x\mathbf x$, or $P_H=\mathcal O$ if there is no final cost), then we can reconstruct $P_h$ for all $h$ backwards.
 \begin{algorithm}[H]
 \caption{Value Iteration as LQR}\label{alg:value_iteration_LQR}
 \begin{algorithmic}[1]
@@ -1152,6 +1180,13 @@ and is exactly a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumpti
 \end{algorithmic}
 \end{algorithm}
 Notice how the best action at a given state is a term proportional to that state, in fact this is a \textit{proportional regulator}. Here $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$ is known as the \textbf{cost-to-go}.
+\begin{boxobservation}
+    The update of $P_h$ in Algorithm \ref{alg:value_iteration_LQR} is the discrete-time \textbf{Riccati equation}. By substituting $K_h^*$ and expanding, it can be equivalently written as\begin{equation}
+        P_h=C_x+F_x^\top P_{h+1}F_x-F_x^\top P_{h+1}F_u\left(C_u+F_u^\top P_{h+1}F_u\right)^{-1}F_u^\top P_{h+1}F_x.
+    \end{equation}
+    Algorithm \ref{alg:value_iteration_LQR} is exactly the backward value iteration of the finite-horizon MDP, performed \textbf{in closed form}: it is always the same update, it requires no discretization of the state space, and it solves exactly this particular continuous-state system with quadratic cost. The matrices $K_h^*$ and $P_h$ do not depend on the state, so they can be computed once offline; the policy is then executed online with a single matrix-vector product.
+\end{boxobservation}
+
 \subsection{Extensions}
 The first assumption that we drop is that the system is time invariant: consider dynamics that depend also on the time $t$:\begin{equation}
      \mathbf x_{t+1}=F_{x,t}\mathbf x_t+F_{u,t}\mathbf u_t
@@ -1160,12 +1195,16 @@ with a cost that also depends on $t$:\begin{equation}
     c_t(\mathbf x_t,\mathbf u_t)=\mathbf x_t^\top C_{x,t}\mathbf x_t+
     \mathbf u_t^\top C_{u,t}\mathbf u_t.
 \end{equation}
-Algorithm \ref{alg:value_iteration_LQR} can be performed in the same way; the matrices simply depend on the time.\bigskip
+This is a \textbf{linear time-varying} (LTV) system. Algorithm \ref{alg:value_iteration_LQR} can be performed in the same way; the matrices simply depend on the time. Explicitly, after initializing $P_H$, for $h=H-1,\dots,0$:\begin{align}
+    K_h^*&=-(C_{u,h}+F_{u,h}^\top P_{h+1}F_{u,h})^{-1}F_{u,h}^\top P_{h+1}F_{x,h}\\
+    P_h&=C_{x,h}+(K_h^*)^\top C_{u,h}K_h^*+(F_{x,h}+F_{u,h}K_h^*)^\top P_{h+1}(F_{x,h}+F_{u,h}K_h^*)
+\end{align}
+and the optimal policy is $\pi_h^*(\mathbf x)=K_h^*\mathbf x$, with $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$.\bigskip
 
 \noindent Let us switch back to time invariant systems, and consider a system that is not linear but \textit{affine}:\begin{equation}
     \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf c
 \end{equation}
-with $\mathbf c$ being a constant vector. We can still apply Algorithm \ref{alg:value_iteration_LQR} by transforming the system into a linear system through the change of coordinates $\mathbf z = \begin{pmatrix}
+with $\mathbf c\in\R^d$ being a constant vector. We can still apply Algorithm \ref{alg:value_iteration_LQR} by transforming the system into a linear system through the change of coordinates $\mathbf z = \begin{pmatrix}
         \mathbf x^\top & 1 
     \end{pmatrix}^\top$:
 \begin{align}
@@ -1181,15 +1220,18 @@ with $\mathbf c$ being a constant vector. We can still apply Algorithm \ref{alg:
     \end{pmatrix}\mathbf u_t \\[1.5ex]  &= F_x'\mathbf z_t+F_u'\mathbf u_t.
 \end{align}
 The cost is still quadratic in the new coordinates, since $\mathbf x^\top C_x\mathbf x=\mathbf z^\top\begin{pmatrix}
-        C_x&\mathbf 0\\ 
-        \mathbf 0^\top & 0
-    \end{pmatrix}\mathbf z$.
+        C_x&\mathcal O\\ 
+        \mathcal O & 0
+    \end{pmatrix}\mathbf z$ (the new cost matrix is only positive semidefinite, which is allowed). The last coordinate is constantly equal to $1$, hence it is not affected by the control.
 
 \noindent Now we take into account \textit{stochastic systems}; in particular, we consider noisy dynamics that are perturbed by a zero-mean Gaussian noise:\begin{align}
     &\mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf w_t\\ 
-    &\mathbf w_t\sim \mathcal N(\mathbf 0,\sigma^2 I).
+    &\mathbf w_t\sim \mathcal N(\mathbf 0,\sigma^2 I)
 \end{align}
-In this case, the optimal policy is the same, but the cost-to-go has an additional term that depends on the variance of
+where $I$ is the $d\times d$ identity matrix, $\sigma^2>0$ is the variance of the noise, and $\mathbf w_t$ is independent of the state, of the input and of the noise at the other time steps. Assume $V_{h+1}^*(\mathbf x)=\mathbf x^\top P_{h+1}\mathbf x+p_{h+1}$ with $p_{h+1}$ a scalar; then the expectation in the Bellman equation becomes (the cross term vanishes since $\VA[\mathbf w_t]=\mathbf 0$, and $\VA[\mathbf w_t^\top P_{h+1}\mathbf w_t]=\text{tr}(P_{h+1}\VA[\mathbf w_t\mathbf w_t^\top])=\sigma^2\text{tr}(P_{h+1})$):\begin{align}
+    \VA_{\mathbf w_t}\left[V_{h+1}^*(F_x\mathbf x+F_u\mathbf u+\mathbf w_t)\right]=(F_x\mathbf x+F_u\mathbf u)^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)+\sigma^2\,\text{tr}(P_{h+1})+p_{h+1}.
+\end{align}
+The additional term does not depend on $\mathbf u$, so the minimization over $\mathbf u$ is unchanged: the optimal policy is the same as in the deterministic case, but the cost-to-go has an additional term that depends on the variance of
 the noise and that cannot be controlled: \begin{equation}
     V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x+p_h 
 \end{equation}
@@ -1221,7 +1263,7 @@ we consider the following equivalent system:\begin{equation}
 \end{pmatrix}
 \Delta\mathbf{u}_t
 \end{equation}
-where $\mathcal O$ is the zero matrix and $\Delta\mathbf u_t=\mathbf u_t-\mathbf u_{t-1}$.
+where $\mathcal O$ is the zero matrix and $\Delta\mathbf u_t=\mathbf u_t-\mathbf u_{t-1}$. The system is equivalent because, writing $\mathbf u_t=\mathbf u_{t-1}+\Delta\mathbf u_t$, we have $\mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_{t-1}+F_u\Delta\mathbf u_t$. The new state is $\mathbf x_t'=(\mathbf x_t^\top,\mathbf u_{t-1}^\top)^\top$ (the state together with the previous input).
 We rewrite the system as\begin{equation}
     \mathbf x_{t+1}'=F_x'\mathbf x_t'+F_u'\Delta\mathbf u_t.
 \end{equation}
@@ -1231,7 +1273,8 @@ $\Delta\mathbf{u}_t$ is the new input, and is the change in controls. The new co
         \mathcal O & C_u
     \end{pmatrix}\mathbf x'+\Delta\mathbf u^\top C'_u\Delta\mathbf u,
 \end{equation}
-where $C'_u$ is the matrix that penalizes the change in controls.
+where the first term penalizes the state and the magnitude of the input, and $C'_u$ is the (positive definite) matrix that penalizes the change in controls. If $C_u'=\mathcal O$ the change in controls is not penalized and the cost reduces to the standard one (the problem is then equivalent to the standard LQR, provided that the matrix inverted in the recursion remains invertible).
+
 \section{LQR for Non-Linear Systems}
 Now we consider a general non-linear system with the dynamics expressed through a non-linear function $f$:\begin{equation}
     \mathbf x_{t+1}=f(\mathbf x_t,\mathbf u_t).
@@ -1239,50 +1282,70 @@ Now we consider a general non-linear system with the dynamics expressed through 
 Let $\mathbf x^*$ be a forced equilibrium:\begin{equation}
     f(\mathbf x^*,\mathbf u^*)=\mathbf x^*
 \end{equation}
-with $\mathbf u^*$ being the required input. We linearize the system around that equilibrium using a first order Taylor expansion:\begin{equation}
-    \mathbf x_{t+1}\approx f(\mathbf x^*,\mathbf u^*)+\nabla_x f(\mathbf x_t-\mathbf x^* )+\nabla_u f(\mathbf u_t-\mathbf u^* )
+with $\mathbf u^*$ being the required input: this is the goal, and we want to stabilize the system around it. For instance, in the cartpole the configuration with the pole upright, the cart at rest and zero applied force ($\mathbf u^*=0$) is an equilibrium (an unstable one, so feedback is needed to keep the system there). We linearize the system around that equilibrium using a first order Taylor expansion:\begin{equation}
+    \mathbf x_{t+1}\approx f(\mathbf x^*,\mathbf u^*)+\nabla_x f(\mathbf x^*,\mathbf u^*)(\mathbf x_t-\mathbf x^* )+\nabla_u f(\mathbf x^*,\mathbf u^*)(\mathbf u_t-\mathbf u^* )
 \end{equation}
-with $\nabla_x f$ and $\nabla_u f$ being the Jacobian matrices (with respect to $\mathbf x$ and $\mathbf u$) evaluated at the equilibrium $(\mathbf x^*,\mathbf u^*)$. We denote by $A$ and $B$ the Jacobian matrices, by $\mathbf z_t=\mathbf x_t-\mathbf x^*$ the variation in the state with respect to the equilibrium and by $\mathbf v_t=\mathbf u_t-\mathbf u^*$ the variation in the input:
+with $\nabla_x f(\mathbf x^*,\mathbf u^*)\in\R^{d\times d}$ and $\nabla_u f(\mathbf x^*,\mathbf u^*)\in\R^{d\times k}$ being the Jacobian matrices (with respect to $\mathbf x$ and $\mathbf u$, i.e. the entries are the partial derivatives $\partial f_i/\partial x_j$ and $\partial f_i/\partial u_j$ of the components of $f$) evaluated at the equilibrium. We denote by $A$ and $B$ the Jacobian matrices, by $\mathbf z_t=\mathbf x_t-\mathbf x^*$ the variation in the state with respect to the equilibrium and by $\mathbf v_t=\mathbf u_t-\mathbf u^*$ the variation in the input:
 \begin{align}
     &\mathbf x_{t+1}\approx \underbrace {f(\mathbf x^*,\mathbf u^*)}_{\mathbf x^*}+A(\mathbf x_t-\mathbf x^* )+B(\mathbf u_t-\mathbf u^* )\implies \\ 
     &\mathbf x_{t+1}-\mathbf x^*\approx 
     A(\mathbf x_t-\mathbf x^* )+B(\mathbf u_t-\mathbf u^* )\implies \\
     &\mathbf z_{t+1}\approx A\mathbf z_t+B\mathbf v_t.
 \end{align}
-We have a linear system; clearly, to reach the equilibrium we should bring the new state $\mathbf z$ to zero.
+We have a linear system; clearly, to reach the equilibrium we should bring the new state $\mathbf z$ to zero. We assume that the cost penalizes the deviations from the equilibrium, $\mathbf z_t^\top C_x\mathbf z_t+\mathbf v_t^\top C_u\mathbf v_t$ (when $\mathbf x^*=\mathbf 0$ and $\mathbf u^*=\mathbf 0$ this is the usual quadratic cost). 
 The usual way to define the control action is with a proportional controller:\begin{equation}
-    \mathbf v_t=K\mathbf z_t\implies \mathbf u_t=\mathbf u^*+K(\mathbf x_t-\mathbf x^*).
+    \mathbf v_t=K\mathbf z_t\implies \mathbf u_t=\mathbf u^*+K(\mathbf x_t-\mathbf x^*)
 \end{equation}
-If the cost is quadratic, we can apply the procedure shown in Algorithm \ref{alg:value_iteration_LQR}; if not, it can be approximated with a quadratic function through a second order Taylor expansion.
+where $K$ is computed with Algorithm \ref{alg:value_iteration_LQR} applied to the pair $(A,B)$. If the cost is not quadratic, it can be approximated with a quadratic function through a second order Taylor expansion, as shown below.
+
+\subsection{Quadratic Approximation of the Cost}
+Let $g(\mathbf x,\mathbf u)$ be a general (twice differentiable) cost. We expand it with a second order Taylor expansion around $(\mathbf x^*,\mathbf u^*)$, in terms of the deviations $\mathbf z=\mathbf x-\mathbf x^*$ and $\mathbf v=\mathbf u-\mathbf u^*$ (all the derivatives are evaluated at $(\mathbf x^*,\mathbf u^*)$):\begin{align}
+    g(\mathbf x^*+\mathbf z,\mathbf u^*+\mathbf v)\approx\;& g(\mathbf x^*,\mathbf u^*)+(\nabla_x g)^\top\mathbf z+(\nabla_u g)^\top\mathbf v\nonumber\\
+    &+\tfrac12\mathbf z^\top\nabla_{xx}^2 g\,\mathbf z+\tfrac12\mathbf v^\top\nabla_{uu}^2 g\,\mathbf v+\mathbf v^\top\nabla_{ux}^2 g\,\mathbf z
+\end{align}
+where $\nabla_{xx}^2g\in\R^{d\times d}$ and $\nabla_{uu}^2g\in\R^{k\times k}$ are the Hessians, and $\nabla_{ux}^2g\in\R^{k\times d}$ is the matrix of the mixed second derivatives ($\nabla_{xu}^2g=(\nabla_{ux}^2g)^\top$). Hence the cost becomes something like:\begin{equation}\label{LQ_cost}
+    \mathbf z^\top C_x\mathbf z+\mathbf v^\top C_u\mathbf v+\mathbf v^\top M\mathbf z+\mathbf z^\top\mathbf q+\mathbf v^\top\mathbf r+g_0
+\end{equation}
+with $C_x=\frac12\nabla^2_{xx}g$, $C_u=\frac12\nabla^2_{uu}g$, $M=\nabla^2_{ux}g$, $\mathbf q=\nabla_xg$, $\mathbf r=\nabla_ug$ and $g_0=g(\mathbf x^*,\mathbf u^*)$. This is not exactly the LQR cost, because of the cross term $\mathbf v^\top M\mathbf z$, the linear terms and the constant. We handle them in two steps.\begin{itemize}
+    \item \textbf{Linear terms and constant}: as in the affine case, we append a constant $1$ to the state, $\mathbf z'=(\mathbf z^\top,1)^\top$; then $\mathbf z^\top\mathbf q$ and $g_0$ become part of a quadratic form in $\mathbf z'$, while $\mathbf v^\top\mathbf r$ becomes a cross term between $\mathbf z'$ and $\mathbf v$ (the explicit matrices are given in Section \ref{sec:iLQR}).
+    \item \textbf{Cross term}: we write it as $\mathbf v^\top M\mathbf z=2\mathbf z^\top N\mathbf v$ with $N=\frac12M^\top$, and we use the LQR recursion for the cost $\mathbf z^\top C_x\mathbf z+\mathbf v^\top C_u\mathbf v+2\mathbf z^\top N\mathbf v$. The derivation is identical to the previous one: setting to zero the gradient with respect to $\mathbf v$ of $\mathbf z^\top C_x\mathbf z+\mathbf v^\top C_u\mathbf v+2\mathbf z^\top N\mathbf v+(A\mathbf z+B\mathbf v)^\top P_{h+1}(A\mathbf z+B\mathbf v)$ gives $\mathbf v=K_h\mathbf z$ with\begin{align}
+        K_h&=-W_h^{-1}\left(B^\top P_{h+1}A+N^\top\right), \quad W_h=C_u+B^\top P_{h+1}B\\
+        P_h&=C_x+A^\top P_{h+1}A-\left(A^\top P_{h+1}B+N\right)W_h^{-1}\left(B^\top P_{h+1}A+N^\top\right)
+    \end{align}
+    which reduces to Algorithm \ref{alg:value_iteration_LQR} when $N=\mathcal O$. For time-varying systems all the matrices carry the index $h$.
+\end{itemize}
+
 \subsection{Trajectory Tracking}
-Now we want to define a controller that performs trajectory tracking while minimizing the cost function. The desired trajectory is \begin{equation}
+Now we want to define a controller that performs trajectory tracking while minimizing the cost function (for instance, a mobile robot controlled with linear velocity and angular velocity that has to follow a reference trajectory in the plane). The desired trajectory is \begin{equation}
     \mathbf x_0^*,\mathbf x_1^*,\dots, \mathbf x_H^*.
 \end{equation}
 Each single transition of the trajectory is a forced equilibrium\begin{equation}
-    f( \mathbf x_t^*,\mathbf u_t^*)= \mathbf x_{t+1}^*.
+    f( \mathbf x_t^*,\mathbf u_t^*)= \mathbf x_{t+1}^*
 \end{equation}
-In other words, we are trying to find a control input for each time step\begin{equation}
+(we assume that the reference trajectory is feasible, i.e. that the inputs $\mathbf u_t^*$ realizing it exist and are known). In other words, we are trying to find a control input for each time step\begin{equation}
     \mathbf u_0,\mathbf u_1,\dots,\mathbf u_{H-1}
 \end{equation}
 that minimizes the overall cost:\begin{align}
     &\operatorname*{\min}_{ \mathbf u_0,\mathbf u_1,\dots,\mathbf u_{H-1}}\quad\sum_{t=0}^{H-1}(\mathbf x_t-\mathbf x_t^*)^\top C_x (\mathbf x_t-\mathbf x_t^*)+(\mathbf u_t-\mathbf u_t^*)^\top C_u (\mathbf u_t-\mathbf u_t^*)\\ 
     &\text{s.t.}\quad \mathbf x_{t+1}=f(\mathbf x_t,\mathbf u_t).
 \end{align}
-The solution is simple: at each time step we linearize the system around the desired trajectory, and we treat it as a linear time-varying system:\begin{align}
+The solution is simple: at each time step we linearize the system around the desired trajectory, i.e. around $(\mathbf x_t^*,\mathbf u_t^*)$ (the linearization point changes with $t$), with $A_t=\nabla_xf(\mathbf x_t^*,\mathbf u_t^*)$ and $B_t=\nabla_uf(\mathbf x_t^*,\mathbf u_t^*)$, and we treat it as a linear time-varying system:\begin{align}
     &\mathbf x_{t+1}-\mathbf x_{t+1}^*\approx A_t(\mathbf x_t-\mathbf x_t^*)+ B_t(\mathbf u_t-\mathbf u_t^*)\\
-    &\mathbf u_t-\mathbf u_t^*=K_t(\mathbf x_t-\mathbf x_t^*).
+    &\mathbf u_t-\mathbf u_t^*=K_t(\mathbf x_t-\mathbf x_t^*)
 \end{align}
-\section{Iterative LQR}
+where the gains $K_t$ are computed with the LQR recursion for LTV systems ($A_t$ and $B_t$ play the role of $F_{x,t}$ and $F_{u,t}$).
+
+\section{Iterative LQR}\label{sec:iLQR}
 Now we try to solve the most general case of a discrete-time optimal control problem:\begin{align}
     &\operatorname*{\min}_{ \mathbf u_0,\dots,\mathbf u_{H-1}}\quad g_H(\mathbf x_H)+\sum_{h=0}^{H-1}g_h(\mathbf x_h,\mathbf u_h)\\ 
-    &\text{s.t.}\quad \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h).
+    &\text{s.t.}\quad \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h)
 \end{align}
-\noindent A problem of this kind can be solved with Algorithm \ref{alg:iLQR}.
+by iteratively approximating it with an LQ problem (linear dynamics, quadratic cost) and leveraging the LQR formulation. A problem of this kind can be solved with Algorithm \ref{alg:iLQR}: the initialization is either a control policy $\pi^{(0)}$, or directly a sequence of states and inputs $\{\mathbf x_t^{(0)},\mathbf u_t^{(0)}\}$, in which case the execution step is skipped in the first iteration.
 
 \begin{algorithm}[H]
 \caption{Iterative  LQR}\label{alg:iLQR}
 \begin{algorithmic}[1]
-    \State Initialize a control policy $\pi^{(0)}$.
+    \State Initialize a control policy $\pi^{(0)}$ (or a state-input sequence $\{\mathbf x_t^{(0)},\mathbf u_t^{(0)}\}$).
     \For{$i=0,1,\dots, I$}
     \State Execute $\pi^{(i)}$ and collect the state-input trajectory $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ for $t=0,\dots, H$.
     \State Obtain an LQ approximation of this problem by linearizing around $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ with first order Taylor expansion for the dynamics and second order Taylor expansion for the cost.
@@ -1290,4 +1353,74 @@ Now we try to solve the most general case of a discrete-time optimal control pro
     \EndFor
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{The LQ Approximation}
+Let us detail steps 4 and 5 at iteration $i$. Define the deviation variables\begin{equation}
+    \mathbf z_t=\begin{pmatrix}\mathbf x_t-\mathbf x_t^{(i)}\\ 1\end{pmatrix}\in\R^{d+1},\qquad \mathbf v_t=\mathbf u_t-\mathbf u_t^{(i)}\in\R^k
+\end{equation}
+(the constant $1$ is appended as in the affine case). The first order Taylor expansion of the dynamics gives\begin{equation}
+    \mathbf x_{t+1}-\mathbf x_{t+1}^{(i)}\approx f(\mathbf x_t^{(i)},\mathbf u_t^{(i)})-\mathbf x_{t+1}^{(i)}+\nabla_xf(\mathbf x_t^{(i)},\mathbf u_t^{(i)})(\mathbf x_t-\mathbf x_t^{(i)})+\nabla_uf(\mathbf x_t^{(i)},\mathbf u_t^{(i)})(\mathbf u_t-\mathbf u_t^{(i)})
+\end{equation}
+which is an LTV system $\mathbf z_{t+1}=F_{x,t}\mathbf z_t+F_{u,t}\mathbf v_t$ with\begin{equation}
+    F_{x,t}=\begin{pmatrix}
+        \nabla_xf(\mathbf x_t^{(i)},\mathbf u_t^{(i)}) & f(\mathbf x_t^{(i)},\mathbf u_t^{(i)})-\mathbf x_{t+1}^{(i)}\\
+        \mathbf 0^\top & 1
+    \end{pmatrix},\qquad 
+    F_{u,t}=\begin{pmatrix}
+        \nabla_uf(\mathbf x_t^{(i)},\mathbf u_t^{(i)})\\ \mathbf 0^\top
+    \end{pmatrix}.
+\end{equation}
+The vector $f(\mathbf x_t^{(i)},\mathbf u_t^{(i)})-\mathbf x_{t+1}^{(i)}$ is the \textit{defect} of the reference sequence: it is zero if the trajectory has been generated by executing the dynamics (as in step 3 of the algorithm), while it may be non-zero if the algorithm is initialized with an arbitrary sequence of states and inputs.
+
+For the cost, let $g_t=g_t(\mathbf x_t^{(i)},\mathbf u_t^{(i)})$ and let all the derivatives be evaluated at $(\mathbf x_t^{(i)},\mathbf u_t^{(i)})$. The expansion of Equation \eqref{LQ_cost} can be written as $\mathbf z_t^\top C_{x,t}\mathbf z_t+\mathbf v_t^\top C_{u,t}\mathbf v_t+2\mathbf z_t^\top N_t\mathbf v_t$ with\begin{equation}
+    C_{x,t}=\begin{pmatrix}
+        \frac12\nabla_{xx}^2g_t & \frac12\nabla_xg_t\\[0.5ex]
+        \frac12(\nabla_xg_t)^\top & g_t
+    \end{pmatrix},\qquad 
+    C_{u,t}=\tfrac12\nabla_{uu}^2g_t,\qquad 
+    N_t=\begin{pmatrix}
+        \frac12\nabla_{xu}^2g_t\\[0.5ex]
+        \frac12(\nabla_ug_t)^\top
+    \end{pmatrix}.
+\end{equation}
+Indeed, expanding the quadratic form with $\mathbf z_t=(\mathbf x_t-\mathbf x_t^{(i)},1)$ gives exactly the constant, linear, and quadratic terms of the Taylor expansion. When the cost is separable, $g(\mathbf x,\mathbf u)=g(\mathbf x)+g(\mathbf u)$, the mixed term is zero ($\nabla^2_{xu}g_t=\mathcal O$) and the first block of $N_t$ vanishes. At the final step, $P_H=C_{x,H}$ is built in the same way from $g_H(\mathbf x_H)$.
+
+Applying the LQR recursion with cross term (previous section) to this LTV system we obtain gains $K_t\in\R^{k\times(d+1)}$. Splitting $K_t=\begin{pmatrix}K_t^{x}&\mathbf k_t\end{pmatrix}$, with $K_t^{x}\in\R^{k\times d}$ and $\mathbf k_t\in\R^k$ the last column, the new policy is the time-varying affine feedback\begin{equation}
+    \pi^{(i+1)}_t(\mathbf x)=\mathbf u_t^{(i)}+K_t^{x}(\mathbf x-\mathbf x_t^{(i)})+\mathbf k_t
+\end{equation}
+where $\mathbf k_t$ is a feedforward correction.
+
+\subsection{Convergence}
+As it is, the algorithm might not converge, because the optimal policy for the LQ approximation might end up not staying close to the linearization points, where the approximation is not valid anymore. A solution is to modify the cost at iteration $i$ as\begin{equation}
+    (1-\alpha)g(\mathbf x_t,\mathbf u_t)+\alpha\left(\|\mathbf x_t-\mathbf x_t^{(i)}\|_2^2+\|\mathbf u_t-\mathbf u_t^{(i)}\|_2^2\right)
+\end{equation}
+with $\alpha\in(0,1)$. The second term penalizes the deviation from the linearization points: if $g$ is bounded and $\alpha$ is close enough to $1$, the second term dominates and ensures that the linearizations are good approximations of the solution trajectory. In terms of the LQ approximation, this simply multiplies the derivatives of $g$ by $(1-\alpha)$ and adds $\alpha I$ to $C_{x,t}$ (on the block of the state deviation) and to $C_{u,t}$. The price to pay is a smaller progress at each iteration.
+
+\subsection{Practical Tricks}
+\begin{itemize}
+    \item \textbf{Initialization}: a good initialization matters, since the algorithm only finds a local optimum of a non-convex problem and can get stuck. Alternative solutions are to use simulated annealing (a stochastic global search that sometimes accepts worse solutions to escape local optima, usable only if there are no computational constraints) or a line-search on the update (e.g. accept the new trajectory only if the true cost decreases, otherwise take a smaller step).
+    \item \textbf{Non-convex cost}: if $g$ is non-convex, the quadratic approximation might lead to matrices $C_{x,t}$ and $C_{u,t}$ that are not positive (semi)definite, and the LQR recursion is no longer well defined (the minimization over $\mathbf v$ may be unbounded or the matrix $W_t$ may not be invertible). The solution is to add more cost for deviating from the linearization points (e.g. increasing $\alpha$ as above) until they become positive (semi)definite.
+\end{itemize}
+
+\section{Model Predictive Control}
+At iLQR convergence, the system could execute the policy and not be at the expected trajectory, for instance due to inaccurate dynamics, noise, etc. The idea is to \textbf{replan}: at every time step $t$, starting from the state $\mathbf x_t$ that is actually measured, we solve again the problem from $t$ to $H$ and we apply the first input. This is called \textbf{receding horizon control}, or \textbf{Model Predictive Control} (MPC).
+
+Replanning until $H$ at every time step is typically too costly. The practical solution is to replan over a shorter horizon of $L$ steps (with $L\le H-t$), and to account for what happens after the end of the window with a terminal cost $\hat V_{t+L}$, which is an approximation of the cost-to-go from the state $\mathbf x_{t+L}$ (for instance the quadratic form $\mathbf x^\top P\mathbf x$ obtained from an LQR on the linearized system). At time $t$ we solve\begin{align}
+    &\operatorname*{\min}_{ \mathbf u_t,\dots,\mathbf u_{t+L-1}}\quad \sum_{h=t}^{t+L-1}g_h(\mathbf x_h,\mathbf u_h)+\hat V_{t+L}(\mathbf x_{t+L})\\ 
+    &\text{s.t.}\quad \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h),\quad \mathbf x_t\text{ given by the measurement}
+\end{align}
+with $\hat V_H=g_H$ when the window reaches the end of the horizon. Only the first input $\mathbf u_t$ of the solution is applied; at the next step the window moves forward by one step (hence ``receding'') and the problem is solved again with the new measured state. Since the optimization restarts from the measured state, errors due to model mismatch and disturbances are corrected at every step.
+\begin{algorithm}[H]
+\caption{Model Predictive Control with an iLQR solver}\label{alg:MPC}
+\begin{algorithmic}[1]
+    \State Choose the prediction horizon $L$ and the terminal cost $\hat V$.
+    \For{$t=0,1,\dots, H-1$}
+    \State Measure the current state $\mathbf x_t$.
+    \State Set $L_t=\min(L,H-t)$.
+    \State Solve the problem above with iLQR (possibly warm-started with the previous solution shifted by one step), obtaining $\hat{\mathbf u}_t,\dots,\hat{\mathbf u}_{t+L_t-1}$.
+    \State Apply to the system only the first input $\mathbf u_t=\hat{\mathbf u}_t$.
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+\noindent This is in practice a Model Predictive Controller with an iLQR solver.
 \end{document}

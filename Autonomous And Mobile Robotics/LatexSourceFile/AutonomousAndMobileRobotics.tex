@@ -1196,12 +1196,18 @@ The objective is to drive the state error to zero, we will express the error in 
         x_d-x\\ y_d-y\\ \theta_d-\theta 
     \end{pmatrix}.
 \end{equation}
-$(e_1,e_2)$ is the Cartesian error $\mathbf e_p=(x_d-x,\;y_d-y)^\top$ expressed in a frame rotated by $\theta$. Differentiating $\mathbf e$ and using the unicycle kinematic model together with the desired one, we obtain the \textbf{error dynamics}:\begin{align}
+$(e_1,e_2)$ is the Cartesian error $\mathbf e_p=(x_d-x,\;y_d-y)^\top$ expressed in a frame rotated by $\theta$, shown in Figure \ref{fig:cart_error}. Differentiating $\mathbf e$ and using the unicycle kinematic model together with the desired one, we obtain the \textbf{error dynamics}:\begin{align}
     \dot e_1&=v_d\cos e_3-v+e_2\,\omega\\
     \dot e_2&=v_d\sin e_3-e_1\,\omega\\
     \dot e_3&=\omega_d-\omega
 \end{align}
 which is \textbf{nonlinear} and \textbf{time-varying}, since it depends on the reference inputs $v_d(t),\omega_d(t)$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth ]{images/error.eps}
+    \caption{Error expressed in the rotated frame.}
+    \label{fig:cart_error}
+\end{figure}
 \subsection{Approximate Linearization}
 Before applying it to the unicycle, let us recall the idea of stabilization via approximate linearization: to stabilize a nonlinear system at an equilibrium, we stabilize its approximate linearization around it. Consider a generic nonlinear system\begin{equation}
     \dot{\mathbf x}=\boldsymbol\eta(\mathbf x,\mathbf u)=f(\mathbf x)+G(\mathbf x)\mathbf u\qquad \mathbf x\in\R^n,\ \mathbf u\in\R^m
@@ -1249,6 +1255,23 @@ and by letting $\mathbf e=\mathbf 0,\mathbf w=\mathbf 0$ we obtain\begin{equatio
         1&0\\0&0\\0&1
     \end{pmatrix}.
 \end{equation}
+This system is controllable if and only if the matrix\begin{equation}
+    \begin{pmatrix}
+        B & AB & A^2B & \dots & A^{n-1}B
+    \end{pmatrix}
+\end{equation}
+have full rank, this can be seen by building just $\begin{pmatrix}
+        B & AB 
+    \end{pmatrix}$:\begin{equation}
+        \text{rank}\begin{pmatrix}
+        B & AB 
+    \end{pmatrix}=\text{rank}\begin{pmatrix}
+        1&0&0&0\\ 
+        0&0&-\omega_d&v_d\\ 
+        0&1&0&0
+    \end{pmatrix}=3.
+    \end{equation}
+This holds if $\omega_d$ or $v_d$ is non-zero, so the system lose controllability when the unicycle is stopping.
 Note that $A$ is actually $A(t)$, due to the dependence of the reference inputs $v_d$ and $\omega_d$ on time, hence the linear approximation is still a \textbf{time-varying} system. Let us define the linear feedback\begin{equation}
     \mathbf w=\begin{pmatrix}
         w_1\\w_2
