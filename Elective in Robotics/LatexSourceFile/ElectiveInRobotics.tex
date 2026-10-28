@@ -2118,7 +2118,7 @@ In trajectory tracking, we must guarantee safety during autonomous flight in env
     \item Using a purely reactive collision avoidance approach, appropriate if the environment is unknown.
     \item By first planning a collision-free trajectory, appropriate with a known environment.
 \end{itemize}
-The objective of this section is t o describe a control method that let a quadrotor to track a  reference trajectory without colliding with obstacles, despite:\begin{itemize}
+The objective of this section is to describe a control method that lets a quadrotor track a reference trajectory without colliding with obstacles, despite:\begin{itemize}
     \item a reference that is not smooth as required,
     \item disturbances,
     \item unknown (and/or moving) obstacles.
@@ -2133,24 +2133,24 @@ We will describe this method in the small angles assumption, and for quasi-hover
 \end{align}
 By denoting:\begin{align}
     T_x&=\cos\varphi\sin\vartheta\cos\psi+\sin\varphi\sin\psi\\
-    T_y&=\cos\varphi\sin\vartheta\sin\psi-\sin\varphi\cos\psi\\
+    T_y&=\cos\varphi\sin\vartheta\sin\psi-\sin\varphi\cos\psi
 \end{align}
 we rewrite the translational dynamics as:\begin{equation}
-    \ddot x-\frac{T}{m}T_x,\quad
-    \ddot y-\frac{T}{m}T_y,\quad
+    \ddot x=-\frac{T}{m}T_x,\quad
+    \ddot y=-\frac{T}{m}T_y,\quad
     \ddot z=g-\frac{T}{m}\cos\varphi\cos\vartheta
 \end{equation}
-here $T_x,T_y$ are the horizontal components of the thrust vector direction (expressed in the inertial frame): $R\mathbf e_3$.
+Here $T_x,T_y$ are the horizontal components of the thrust vector direction (expressed in the inertial frame): $R\mathbf e_3$.
 \subsection{Position Controller}
 The formulation of the problem is the following:\begin{itemize}
     \item We have to follow a desired trajectory $\mathbf p_d(t)$.
     \item We have to (eventually) avoid obstacles on the path.
 \end{itemize}
-We approach the problem in an hierarchical fashion, first of all we assess the tracking of the reference position by imposing the following desired cartesian acceleration:\begin{equation}\label{nominal_controller}
-    \mathbf u^*=\ddot{\mathbf p_d}+K_d(\dot{\mathbf p_d}-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
+We approach the problem in a hierarchical fashion: first of all we ensure the tracking of the reference position by imposing the following desired cartesian acceleration:\begin{equation}\label{nominal_controller}
+    \mathbf u^*=\ddot{\mathbf p}_d+K_d(\dot{\mathbf p}_d-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
 \end{equation}
 we call this \textbf{nominal tracking control}.
-This acceleration can be imposed trough feedback linearization as seen in Chapter \ref{controlMethods}, hence we \textbf{assume} that $\mathbf u^*$ is \textbf{perfectly realized}:\begin{equation}
+This acceleration can be imposed through feedback linearization as seen in Chapter \ref{controlMethods}, hence we \textbf{assume} that $\mathbf u^*$ is \textbf{perfectly realized}:\begin{equation}
     \ddot{\mathbf p}=\mathbf u^*.
 \end{equation}
 In this way the model is a simple double integrator, linearized under feedback. For now, let's leave the quadrotor model aside, and define what a barrier function is for a dynamic system.
@@ -2173,21 +2173,20 @@ In this way the model is a simple double integrator, linearized under feedback. 
     let $h:\R^n\to \R$ be a differentiable function of the state, and $\mathcal S$ the set where $h$ is non-negative:\begin{equation}
         \mathcal S=\{\mathbf x\in \R^n \ : \ h(\mathbf x)\ge 0\}
     \end{equation}
-    $S$ is called \textbf{safety set}. The function $h$ is a \textbf{control barrier function} if there exists an extended class-$\mathcal K$ function $\alpha$ such that:\begin{equation}
+    $\mathcal S$ is called \textbf{safety set}. The function $h$ is a \textbf{control barrier function} if there exists an extended class-$\mathcal K$ function $\alpha$ such that:\begin{equation}
         \sup_{\mathbf u}\dot h(\mathbf x,\mathbf u)=\sup_{\mathbf u}\left[
             L_fh(\mathbf x)+L_gh(\mathbf x)\mathbf u
         \right]\ge -\alpha(h(\mathbf x))
     \end{equation}
     where $L_fh,L_gh$ are the Lie derivatives:\begin{equation}
         L_f h(\mathbf x) = \frac{\partial h}{\partial\mathbf  x} f(\mathbf x),\quad
-        L_g h(\mathbf x) = \frac{\partial h}{\partial\mathbf  x} g(\mathbf x).
+        L_g h(\mathbf x) = \frac{\partial h}{\partial\mathbf  x} G(\mathbf x).
     \end{equation}
 \end{boxdefinition}
-The existence of such function $h$ implies \textbf{forward invariance}: at each time step we can find a control input $\mathbf u$ such that:\begin{align}
-    \dot h(\mathbf x,\mathbf u)&=L_f h(\mathbf x) + L_g h(\mathbf x)\mathbf u \ge -\alpha(h(\mathbf x))\\
-    \implies \dot h(\mathbf x,\mathbf u)&\ge -\alpha(h(\mathbf x))
-\end{align}
-hence, if at the beginning $h(\mathbf x_0)$ is positive ($\mathbf x_0\in\mathcal S$), with the appropriate $\mathbf u$ the trajectory will never exit the safe ste $\mathcal S$, since $h$ will remain positive:\begin{itemize}
+The existence of such function $h$ implies \textbf{forward invariance}: at each time step we can find a control input $\mathbf u$ such that:\begin{equation}
+    \dot h(\mathbf x,\mathbf u)=L_f h(\mathbf x) + L_g h(\mathbf x)\mathbf u \ge -\alpha(h(\mathbf x))
+\end{equation}
+hence, if at the beginning $h(\mathbf x_0)$ is non-negative ($\mathbf x_0\in\mathcal S$), with the appropriate $\mathbf u$ the trajectory will never exit the safe set $\mathcal S$, since $h$ will remain non-negative:\begin{itemize}
     \item Let's assume that $h$ is decreasing over time ($\dot h < 0$),
     \item at some point $h=0$, there $\alpha(h)=\alpha(0)=0$,
     \item there we will have $\dot h \ge 0 $ hence $h$ will not decrease anymore.
@@ -2198,10 +2197,10 @@ Let's consider again the quadrotor model and assume we have a control barrier fu
 \end{align}
 We will proceed with the following approach:\begin{itemize}
     \item At each time step we wish to execute the nominal tracking control $\mathbf u^*$.
-    \item We have a barrier function $h$ relative to a safe set $\mathcal S$, the latter is the set were the quadrotor can move freely without colliding with obstacles.
+    \item We have a barrier function $h$ relative to a safe set $\mathcal S$, the latter is the set where the quadrotor can move freely without colliding with obstacles.
     \item At each time step we will solve the optimization problem to execute $\tilde{\mathbf u}$, in this way we will stay in the safe set.
 \end{itemize}
-This is a hierarchical approach, the task of avoiding the obstacles have an higher priority with respect to the task of following the desired trajectory.
+This is a hierarchical approach, the task of avoiding the obstacles has a higher priority with respect to the task of following the desired trajectory.
 \subsection{Barrier Function for the Obstacles}
 We need to describe the distance between the quadrotor and an obstacle. For computational reasons, we will consider a spherical hull around the quadrotor and compute the distances for that hull (conservative approach), furthermore we will consider point-wise obstacles.
 \begin{figure}[H]
@@ -2210,7 +2209,7 @@ We need to describe the distance between the quadrotor and an obstacle. For comp
 \end{figure}
 Even if the obstacles are not point-wise, we can consider a spherical hull around them and define the point-wise obstacle as the closest point on the spherical surface. Now let's define our barrier function, let $\mathbf p(t)$ be the quadrotor position and $\overline{\mathbf p}$ the obstacle position. We define a function $h$ as follows:\begin{equation}
     h(\mathbf p(t),\dot{\mathbf p}(t))=
-    \underbrace{(\mathbf p(t)-\overline{\mathbf p})^\top(\mathbf p(t)-\overline{\mathbf p})}_{\text{distance}}+\mu(\mathbf p(t)-\overline{\mathbf p})^\top\dot{\mathbf p}(t).
+    \underbrace{(\mathbf p(t)-\overline{\mathbf p})^\top(\mathbf p(t)-\overline{\mathbf p})}_{\text{squared distance}}+\mu(\mathbf p(t)-\overline{\mathbf p})^\top\dot{\mathbf p}(t).
 \end{equation}
 with $\mu>0$ being a positive scalar, it describes the distance of the vehicle to the obstacle $\overline{\mathbf p}$ corrected by the scalar product between the vector $(\mathbf p(t)-\overline{\mathbf p})$ and the vehicle velocity.
 \begin{boxobservation}{}{}
@@ -2219,13 +2218,13 @@ with $\mu>0$ being a positive scalar, it describes the distance of the vehicle t
 \noindent Our control design objective is to find a control input that guarantees:\begin{equation}
     h(\mathbf p(t),\dot{\mathbf p}(t))\ge \delta 
 \end{equation}
-to avoid the obstacle and remaining in the safe region. Let $r=\|\mathbf p-\overline{\mathbf p}\|$ be the distance, $h$ can be rewritten as:\begin{equation}
+to avoid the obstacle and remain in the safe region. Let $r=\|\mathbf p-\overline{\mathbf p}\|^2$ be the squared distance, $h$ can be rewritten as:\begin{equation}
     h=r+\frac{\mu}{2}\dot r
 \end{equation}
-in this way by keeping $h$ positive we are always far from the obstacle, and if $r=0$ we are moving away from it. Usually $\delta$ is chosen as $d_{min}^2$, where $d_{min}$ is the radius of the sphere bounding the quadrotor, plus a clearance. Since we added the velocity $\dot{\mathbf p}$ in $h$, the control input $\mathbf u$ appears in $\dot h$:\begin{equation}
+in this way by keeping $h\ge\delta$ we always stay far from the obstacle, and if $r=\delta$ we are moving away from it. Usually $\delta$ is chosen as $d_{min}^2$, where $d_{min}$ is the radius of the sphere bounding the quadrotor, plus a clearance. Since we added the velocity $\dot{\mathbf p}$ in $h$, the control input $\mathbf u$ appears in $\dot h$:\begin{equation}
     \dot h=2(\mathbf p-\overline{\mathbf p})^\top\dot{\mathbf p}+\mu\dot{\mathbf p}^\top\dot{\mathbf p}+\mu(\mathbf p-\overline{\mathbf p})^\top\mathbf u
 \end{equation}
-$h\ge \delta$ keeps the distance $\dot r\ge\frac{2}{\mu}(\delta-r)$, hence for the comparison lemma:\begin{equation}
+$h\ge \delta$ implies $\dot r\ge\frac{2}{\mu}(\delta-r)$, hence by the comparison lemma:\begin{equation}
     r(t)\ge \delta+(r(0)-\delta)e^{-\nicefrac{2t}{\mu}}\ge\min\{\delta,r(0)\}.
 \end{equation} 
 \begin{boxdefinition}{}{}
@@ -2234,12 +2233,12 @@ $h\ge \delta$ keeps the distance $\dot r\ge\frac{2}{\mu}(\delta-r)$, hence for t
     \end{equation}
 \end{boxdefinition}
 At each time step we select a control $\mathbf u$ such that\begin{equation}
-    \bar h(t)+\alpha(h(t)-\delta)\ge 0 
+    \dot{\bar h}(t)+\alpha\bar h(t)\ge 0
 \end{equation}
 or\begin{equation}\label{barh_der}
     \dot{\bar h}\ge-\alpha\bar h 
 \end{equation}
-were $\alpha$ is a positive number.
+where $\alpha$ is a positive constant (i.e. $\alpha(s)=\alpha s$).
 If the initial state $(\mathbf p,\dot{\mathbf p})$ is in the safe set $\mathcal S$ then the comparison lemma implies that:\begin{equation}
     \bar h(t)\ge e^{-\alpha t}\bar h(0)
 \end{equation}
@@ -2248,14 +2247,14 @@ hence $\mathcal S$ is forward invariant for all $t$.\bigskip
 \noindent Equation \eqref{barh_der} expanded is:\begin{equation}
     2 (\mathbf{p} - \overline{\mathbf{p}})^\top \dot{\mathbf{p}} + \blueText{\mu \dot{\mathbf{p}}^\top \dot{\mathbf{p}}} + \mu (\mathbf{p} - \overline{\mathbf{p}})^\top \mathbf{u} +\blueText{ \alpha(h - \delta)} \ge 0
 \end{equation}
-since the terms in \blueText{ blue } are positive in the safe set $\mathcal S$ a sufficient condition to guarantee forward invariance is:\begin{equation}
-     2 (\mathbf{p} - \overline{\mathbf{p}})^\top \dot{\mathbf{p}} +  + \mu (\mathbf{p} - \overline{\mathbf{p}})^\top \mathbf{u} \ge 0
+since the terms in \blueText{ blue } are non-negative in the safe set $\mathcal S$ a sufficient condition to guarantee forward invariance is:\begin{equation}
+     2 (\mathbf{p} - \overline{\mathbf{p}})^\top \dot{\mathbf{p}} + \mu (\mathbf{p} - \overline{\mathbf{p}})^\top \mathbf{u} \ge 0
 \end{equation}
 \subsection{Control Design}
 The nominal tracking control is:\begin{equation}
-    \mathbf u^*=\ddot{\mathbf p_d}+K_d(\dot{\mathbf p_d}-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
+    \mathbf u^*=\ddot{\mathbf p}_d+K_d(\dot{\mathbf p}_d-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
 \end{equation}
-consider the vector $\mathbf p-\overline{\mathbf p}$ (obstacle to quadrotor), the projection operator on the plane where $\mathbf p-\overline{\mathbf p}$ lies is defined as follows:\begin{equation}
+consider the vector $\mathbf p-\overline{\mathbf p}$ (obstacle to quadrotor), the projection operator onto the line spanned by $\mathbf p-\overline{\mathbf p}$ is defined as follows:\begin{equation}
     \Pi_{\mathbf p-\overline{\mathbf p}}=(\mathbf{p} - \overline{\mathbf{p}}) \left( (\mathbf{p} - \overline{\mathbf{p}})^\top (\mathbf{p} - \overline{\mathbf{p}}) \right)^{-1} (\mathbf{p} - \overline{\mathbf{p}})^\top
 \end{equation}
 and the projector on the orthogonal plane is just\begin{equation}
@@ -2269,7 +2268,7 @@ Figure \ref{projections} shows visually how a generic vector $\mathbf v$ is tran
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth ]{images/projector.pdf}
-    \caption{Projection on the plane defined by $\mathbf p-\overline{\mathbf p}$.}
+    \caption{Projection of $\mathbf v$ onto the direction of $\mathbf p-\overline{\mathbf p}$ and onto the orthogonal plane.}
     \label{projections}
 \end{figure}
 \noindent Before describing how our control law $\mathbf u$ is defined, we have to define some subsets of the state space. We denote $\mathbf z=\begin{pmatrix}
@@ -2282,13 +2281,13 @@ with $\delta_1$ being a positive real number.\begin{itemize}
     \item $\mathcal D_{\mathbf u^*}(t)$ contains all the states where $\mathbf p$ is moving away from the obstacle.
     \item $ \mathcal D_{\delta_1}(t)$ is a conservative safety region.
 \end{itemize}
-We define $\mathcal D_{\text{track}}(t)=\mathcal D_{\mathbf u^*}(t)\cup  \mathcal D_{\delta_1}(t)$ and we \textit{decompose} $\R^{2n}$ in two disjoint subsets:\begin{align}
+We define $\mathcal D_{\text{track}}(t)=\mathcal D_{\mathbf u^*}(t)\cup  \mathcal D_{\delta_1}(t)$ and we \textit{decompose} $\R^{2n}$ into two disjoint subsets:\begin{align}
     &\R^{2n}=\mathcal D_{\text{track}}(t)\cup \mathcal D_\bot(t)\\ 
 &\mathcal D_\bot(t)=\R^{2n} \setminus \mathcal D_{\text{track}}(t)
 \end{align}
 
 \begin{itemize}
-    \item When the state is in $\mathcal D_{\text{track}}$ we are moving away from the obstacles or we are at a safety distance hence we have the priority of following the desired trajectory.
+    \item When the state is in $\mathcal D_{\text{track}}$ we are moving away from the obstacles or we are at a safety distance hence the priority is following the desired trajectory.
     \item If the state is in $\mathcal D_\bot$ we give the priority to obstacle avoidance.
 \end{itemize}
 Our final control law (assuming that we can control directly the cartesian acceleration $\ddot{\mathbf p}=\mathbf u$) when we are in the state $\mathbf z$ will be:\begin{equation}\label{CBF_control}
@@ -2303,12 +2302,12 @@ Let's break down the control input in $\mathcal D_\bot$, that is\begin{equation}
 \end{equation}
 \noindent So:
 \begin{itemize}
-    \item With $\greenText{-\frac{2}{\mu}\Pi_{\mathbf p-\overline{\mathbf p}}\dot{\mathbf p}}$ we are taking the opposite direction of the velocity, projected on the plane where $\mathbf p-\overline{\mathbf p}$ lies.
-    \item With $\blueText{\Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf u^*}$ we are projecting the nominal tracking control on the plane orthogonal to $\mathbf p-\overline{\mathbf p}$, hence the resulting vector will be directed in such a way as to move away from the obstacle, essentially we are trying to follow the desired trajectory, admitting an error so as not to get closer to the obstacle.
+    \item With $\greenText{-\frac{2}{\mu}\Pi_{\mathbf p-\overline{\mathbf p}}\dot{\mathbf p}}$ we are taking the opposite direction of the velocity, projected onto the direction of $\mathbf p-\overline{\mathbf p}$.
+    \item With $\blueText{\Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf u^*}$ we are projecting the nominal tracking control on the plane orthogonal to $\mathbf p-\overline{\mathbf p}$, hence the resulting vector has no component along the direction towards the obstacle (it is tangential to the sphere around it), essentially we are trying to follow the desired trajectory, admitting an error so as not to get closer to the obstacle.
 \end{itemize}
 A visual representation of these terms is shown in Figure \ref{fig:cbf_control}.
 With this choice of $\mathbf u$ the derivative of the control barrier function will be (calculation omitted):\begin{equation}
-    \dot{\bar h}=\mu\dot{\mathbf p}^\top\mathbf p\ge 0
+    \dot{\bar h}=\mu\dot{\mathbf p}^\top\dot{\mathbf p}\ge 0
 \end{equation}
 hence we will remain in the safe set.
 \begin{boxproposition}{}{}
