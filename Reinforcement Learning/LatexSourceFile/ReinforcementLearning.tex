@@ -1523,8 +1523,6 @@ with $\mathbb{P}^\pi_h(s, a\mid s_0)$ being the exact probability of being in th
 \end{algorithmic}
 \end{algorithm}
 \section{Roll-Out Methods}
-The different roll-out methods that we will see ultimately define two of the most important algorithms in reinforcement learning, Q-Learning and SARSA.
-
 \subsection{Monte-Carlo Method}
 Let's see a method to perform the roll-out phase and estimate the labels: after having the sample $(\tilde s,\tilde a)$, we should find the label $y\approx Q^\pi(\tilde s,\tilde a)$. To get an unbiased estimation of $Q^\pi$, we sample many trajectories starting from the state-action pair $(\tilde s,\tilde a)$, collect the cumulative rewards of these trajectories and compute the average. The horizon is infinite, hence we use $\gamma$ again to randomly choose a horizon in the following way: at each time step, we terminate the current trajectory with probability $1-\gamma$.
 
@@ -1539,8 +1537,7 @@ Let's see a method to perform the roll-out phase and estimate the labels: after 
     \end{itemize}
     \item Return the approximation $y=\frac{1}{M}\sum_{j=1}^My_j$.
 \end{itemize}
-$M$ is the number of trajectories that we use to compute the average cumulative reward.
-
+$M$ is the number of trajectories/episodes that we use to compute the average cumulative reward.
 Each time we execute the MDP, the step $h$ is reached with probability $\gamma^h$, hence $\VA[y_j]=\sum_{h=0}^\infty\gamma^h\VA[r_h]=Q^\pi(\tilde s,\tilde a)$. The roll-out procedure with the Monte-Carlo method is described in Algorithm \ref{alg:roll-out-MC}.
 
 \begin{algorithm}[H]
@@ -1601,7 +1598,17 @@ When an agent uses the moving average update TD approach, it runs this loop at e
 \section{Q-Learning and SARSA}
 Up to now we have seen how the approximate policy iteration defines a family of methods, which are then specified by the way the roll-out is performed. In detail, if the state space $S$ is huge or not countable we can use the Monte-Carlo method to estimate $Q$, but if $S$ is countable and not huge we can use a tabular format and perform the updates with the temporal difference method. For the latter case, the way in which the generic action for $Q(s',\cdot)$ is selected defines two algorithms, Q-Learning and SARSA.
 \subsection{$\epsilon$-Greedy Exploration}
-\todo{}
+In the next section we will describe the difference between Q-Learning and SARSA, essentially in one algorithm the next action to be performed depends on the current estimate of $Q$, while in another it depends on the current policy $\pi$. In both cases, rather than selecting the best action (according to one of the two criteria), it is possible to make the agent select a random action with a certain probability. Let $\epsilon\in (0,1)$\begin{itemize}
+    \item With probability $1-\epsilon$ we choose the greedy action (the best action).
+    \item With probability $\epsilon$ we choose a random action.
+\end{itemize}
+This handles the exploration-exploitation trade-off. Suppose there are $m$ actions and we are using a stochastic policy, the $\epsilon$-greedy policy is defined as follows:\begin{equation}
+    \pi(a\mid s)=\begin{cases}
+        \nicefrac{\epsilon}{m}+1-\epsilon &\text{if }a=\operatorname*{arg\,max}_{a_j}Q(s,a_j)\\
+        \nicefrac{\epsilon}{m} &\text{otherwise}.
+    \end{cases}
+\end{equation}
+What we do, is using a variable $\epsilon$, at each time step $h$ we set $\epsilon=\frac{1}{h}$, in this way, with $k\rightarrow\infty$ we visit all state-action pairs infinitely many times, and the policy converges to a greedy policy.
 \subsection{Off-Policy and On-Policy}
 \noindent How do we select the action in $Q(s',\cdot)$?
 \begin{itemize}
@@ -1617,7 +1624,7 @@ The complete procedures of the two methods are reported in Algorithm \ref{alg:Q-
     \ForAll{episodes}
     \State choose an initial state  $s$
     \While{$s$ is not a terminal state}
-    \State select an action $a$ for $s$ using the policy derived from the current $Q$
+    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
     \State perform $a$ on $s$ and observe $r=R(s,a)$ and the next state $s'$
     \State $Q(s,a)\leftarrow Q(s,a)+\alpha[
         r+\gamma\max_{a'} Q(s',a')-Q(s,a)
@@ -1634,10 +1641,10 @@ The complete procedures of the two methods are reported in Algorithm \ref{alg:Q-
     \State initialize $Q(s,a)$ for each state-action pair arbitrarily. Let $Q(s^*,a)=0$ for all $a\in A$ if $s^*$ is a terminal state.
     \ForAll{episodes}
     \State choose an initial state  $s$
-    \State select an action $a$ for $s$ using the policy derived from the current $Q$
+    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
     \While{$s$ is not a terminal state}
     \State perform $a$ on $s$ and observe $r=R(s,a)$ and the next state $s'$
-    \State choose the next action $a'$ for $s'$ using the policy derived from the current $Q$
+    \State choose the next action $a'$ for $s'$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
     \State $Q(s,a)\leftarrow Q(s,a)+\alpha[
         r+\gamma Q(s',a')-Q(s,a)
     ]$

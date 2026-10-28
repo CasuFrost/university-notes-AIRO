@@ -1719,9 +1719,10 @@ The quadrotor is \textbf{underactuated}: it has four inputs $\mathbf u=(T,\tau_\
     \caption{Top: a level translation along a corridor is a path in $\mathcal C$ but not a feasible motion. Bottom: a feasible motion tilts the vehicle to accelerate and to brake, and needs more room.}
     \label{fig:corridor}
 \end{figure}
-\noindent A level translation along a corridor (the vehicle keeps $\varphi=\vartheta=0$) is a perfectly valid path in $\mathcal C$, but it is not a feasible motion, since it would require a horizontal acceleration with a vertical thrust. A feasible motion tilts the vehicle to accelerate and, symmetrically, to brake, hence it needs more room than the geometric path suggests.
-\subsection{Two Solution Approaches}
-There are two main ways to deal with these issues:\begin{enumerate}
+\noindent A level translation along a corridor (the vehicle keeps $\varphi=\vartheta=0$) is a perfectly valid path in $\mathcal C$, but it is not a feasible motion, since it would require a horizontal acceleration with a vertical thrust. A feasible motion tilts the vehicle to accelerate and, symmetrically, to brake, hence it needs more room than the geometric path suggests.\bigskip
+
+
+\noindent There are two main ways to deal with these issues:\begin{enumerate}
     \item \textbf{Decoupled approach}: plan a collision-free geometric path, then optimize/approximate it locally to obtain a dynamically feasible, time-parametrized trajectory. It relies on \textbf{differential flatness}: a path of the flat outputs, made smooth enough and suitably timed, is a feasible trajectory.
     \item \textbf{Kinodynamic planning}: explore directly the space of the feasible trajectories, by simulating the dynamics. Every branch of the search is feasible by construction.
 \end{enumerate}
@@ -1810,8 +1811,8 @@ The first approach is a \textit{decoupled} one, based on flatness. It is compose
     \item approximation of the computed path through a smooth \textbf{spline};
     \item \textbf{time scaling}: choice of the duration of the trajectory such that the input bounds are satisfied.
 \end{enumerate}
-\subsection{Visibility Roadmap Construction}
-The goal is to build a roadmap with \textit{few nodes} but sufficient for solving the global planning problem. Let $L(\q,\q')$ be a \textbf{local method}, a procedure that connects two configurations with a path (for example the straight line segment). The set of the configurations that can be reached from $\q$ through $L$ is its visibility domain.
+
+\noindent The goal is to build a roadmap with \textit{few nodes} but sufficient for solving the global planning problem. Let $L(\q,\q')$ be a \textbf{local method}, a procedure that connects two configurations with a path (for example the straight line segment). The set of the configurations that can be reached from $\q$ through $L$ is its visibility domain.
 \begin{boxdefinition}{Visibility Domain, Guard, Coverage}{visibility_domain}
     Given a local method $L$, the \textbf{visibility domain} of $\q$ is\begin{equation}
         \mathcal V_L(\q)=\left\{\q'\in\mathcal C_{\text{free}}\ \text{ such that }\ L(\q,\q')\subset\mathcal C_{\text{free}}\right\}.
@@ -1922,8 +1923,9 @@ so that the robot \textbf{points in the direction of motion}. With $\rho=\dot x^
     \dot\psi&=\frac{\dot x\ddot y-\dot y\ddot x}{\rho}\\
     \ddot\psi&=\frac{\dot x\,y^{(3)}-\dot y\,x^{(3)}}{\rho}-2\dot\psi\frac{\dot x\ddot x+\dot y\ddot y}{\rho}.
 \end{align}
-This choice is defined only when the horizontal speed is nonzero: it cannot be used at rest (start and goal) nor in vertical flight. Moreover, $\psi\in C^2$ requires $x,y\in C^3$, which is already guaranteed by the position spline ($C^4$).
-\subsection{Example}
+This choice is defined only when the horizontal speed is nonzero: it cannot be used at rest (start and goal) nor in vertical flight. Moreover, $\psi\in C^2$ requires $x,y\in C^3$, which is already guaranteed by the position spline ($C^4$).\bigskip
+
+\noindent\textbf{Example}:
 We consider an environment of $7\times7\times3$ m with walls: the long walls have openings, where the path can cross them.
 \begin{figure}[H]
     \centering
@@ -1958,8 +1960,10 @@ We consider an environment of $7\times7\times3$ m with walls: the long walls hav
     \caption{Control inputs $T,\tau_\varphi,\tau_\vartheta,\tau_\psi$ along the trajectory after time scaling.}
     \label{fig:vis_inputs}
 \end{figure}
-\noindent Figure \ref{fig:vis_inputs} shows the control inputs after the time scaling: the thrust $T$ is close to $mg$ and the torques are very small, i.e. the trajectory is smooth and slow. The inputs are continuous, as guaranteed by $\mathbf p\in C^4$ and $\psi\in C^2$.
-\subsection{Remarks on the Visibility-Based Approach}
+\noindent Figure \ref{fig:vis_inputs} shows the control inputs after the time scaling: the thrust $T$ is close to $mg$ and the torques are very small, i.e. the trajectory is smooth and slow. The inputs are continuous, as guaranteed by $\mathbf p\in C^4$ and $\psi\in C^2$.\bigskip
+
+
+\noindent Let's see some remarks on the visibility-based approach:
 \begin{itemize}
     \item The visibility algorithm is suitable for finding a roadmap with \textbf{few nodes}, easy to handle but possibly not containing the shortest path. A \textbf{smart cutting} of the path can reduce its length: it replaces a portion of the path with a shortcut between two points of the path that see each other.
     \item The trajectory would be even smoother if the spline passed \textit{near} the nodes of the roadmap instead of interpolating them: the optimizer would have more freedom.
@@ -1978,9 +1982,10 @@ The second approach is the \textbf{kinodynamic} one: a search tree is incrementa
     \item it takes into account both kinematic and dynamic constraints;
     \item it generates a trajectory directly in the state space, and provides the control inputs needed to execute it.
 \end{itemize}
-Here the planning space is the state space of the quadrotor, with state $\bxi\in\R^{12}$ and dynamics $\dot{\bxi}=f(\bxi)+g(\bxi)\mathbf u$ as in Equation \eqref{quadrotorSystem}.
-\subsection{The Algorithm}
-Let $\rho(\bxi,\bxi')$ be a \textbf{metric} on the state space (for example the Euclidean distance), and $\Delta t>0$ a fixed integration time. At each iteration:\begin{enumerate}
+Here the planning space is the state space of the quadrotor, with state $\bxi\in\R^{12}$ and dynamics $\dot{\bxi}=f(\bxi)+g(\bxi)\mathbf u$ as in Equation \eqref{quadrotorSystem}.\bigskip
+
+
+\noindent Let $\rho(\bxi,\bxi')$ be a \textbf{metric} on the state space (for example the Euclidean distance), and $\Delta t>0$ a fixed integration time. At each iteration:\begin{enumerate}
     \item extract a random state $\bxi_{\text{rand}}$;
     \item select the node $\bxi_{\text{near}}$ of the tree that is the closest to $\bxi_{\text{rand}}$ according to the metric $\rho$;
     \item compute an input $\mathbf u$ that steers the robot toward $\bxi_{\text{rand}}$;
@@ -2074,14 +2079,14 @@ for the linear system $\dot{\mathbf e}=A\mathbf e+B\tilde{\mathbf u}$, where $\m
     \caption{Control-based RRT in the same environment: the tree grows along feasible, controlled motions and reaches the goal region; the final trajectory is in red.}
     \label{fig:rrt_control}
 \end{figure}
-\subsection{Remarks on the Kinodynamic RRT}
+Let's see some remarks on the kinodynamic RRT:
 \begin{itemize}
     \item \textbf{Metric}: the Euclidean distance in the state space is a poor estimate of how hard it is to reach a state from another one. A better choice is an estimate of the \textit{cost-to-go}, for example the one given by the LQR of the linearized model (see Glassman and Tedrake).
     \item \textbf{Completeness}: the extension with a fixed time step and with the best of a set of inputs is \textbf{not} probabilistically complete in general (Kunz and Stilman). Probabilistic completeness is recovered by choosing random inputs and random durations (Kleinbort et al.).
     \item \textbf{Optimality}: the RRT returns the first trajectory found. Asymptotically optimal variants (kinodynamic RRT$^*$, Webb and van den Berg) rewire the tree.
 \end{itemize}
-\section{Comparison and Conclusions}
-The two approaches can be compared as follows.
+
+\noindent The two approaches can be compared as follows.
 \begin{table}[H]
     \centering
     \renewcommand{\arraystretch}{1.6}
@@ -2107,4 +2112,219 @@ The two approaches can be compared as follows.
     \item Decoupled approach: geometric roadmap (few nodes) $\to$ path $\to$ minimum-snap spline $\to$ time scaling for the input bounds.
     \item Kinodynamic RRT: feasible by construction, but slow without a good steering method and a good metric.
 \end{itemize}
+\chapter{Advanced Control Techniques}
+\section{Control Barrier Functions}
+In trajectory tracking, we must guarantee safety during autonomous flight in environments populated by obstacles, this problem can be solved in two ways:\begin{itemize}
+    \item Using a purely reactive collision avoidance approach, appropriate if the environment is unknown.
+    \item By first planning a collision-free trajectory, appropriate with a known environment.
+\end{itemize}
+The objective of this section is t o describe a control method that let a quadrotor to track a  reference trajectory without colliding with obstacles, despite:\begin{itemize}
+    \item a reference that is not smooth as required,
+    \item disturbances,
+    \item unknown (and/or moving) obstacles.
+\end{itemize}
+We will describe this method in the small angles assumption, and for quasi-hovering flight condition, to simplify the dynamic model (reasonable for control purposes). The model, with aerodynamic and gyroscopic effects neglected is:\begin{align}
+    \ddot x&=-\frac{T}{m}(\cos\varphi\sin\vartheta\cos\psi+\sin\varphi\sin\psi)
+    &\ddot\varphi&=\frac{\tau_\varphi}{I_x}\\
+    \ddot y&=-\frac{T}{m}(\cos\varphi\sin\vartheta\sin\psi-\sin\varphi\cos\psi)
+    &\ddot\vartheta&=\frac{\tau_\vartheta}{I_y}\\
+    \ddot z&=g-\frac{T}{m}\cos\varphi\cos\vartheta
+    &\ddot\psi&=\frac{\tau_\psi}{I_z}.
+\end{align}
+By denoting:\begin{align}
+    T_x&=\cos\varphi\sin\vartheta\cos\psi+\sin\varphi\sin\psi\\
+    T_y&=\cos\varphi\sin\vartheta\sin\psi-\sin\varphi\cos\psi\\
+\end{align}
+we rewrite the translational dynamics as:\begin{equation}
+    \ddot x-\frac{T}{m}T_x,\quad
+    \ddot y-\frac{T}{m}T_y,\quad
+    \ddot z=g-\frac{T}{m}\cos\varphi\cos\vartheta
+\end{equation}
+here $T_x,T_y$ are the horizontal components of the thrust vector direction (expressed in the inertial frame): $R\mathbf e_3$.
+\subsection{Position Controller}
+The formulation of the problem is the following:\begin{itemize}
+    \item We have to follow a desired trajectory $\mathbf p_d(t)$.
+    \item We have to (eventually) avoid obstacles on the path.
+\end{itemize}
+We approach the problem in an hierarchical fashion, first of all we assess the tracking of the reference position by imposing the following desired cartesian acceleration:\begin{equation}\label{nominal_controller}
+    \mathbf u^*=\ddot{\mathbf p_d}+K_d(\dot{\mathbf p_d}-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
+\end{equation}
+we call this \textbf{nominal tracking control}.
+This acceleration can be imposed trough feedback linearization as seen in Chapter \ref{controlMethods}, hence we \textbf{assume} that $\mathbf u^*$ is \textbf{perfectly realized}:\begin{equation}
+    \ddot{\mathbf p}=\mathbf u^*.
+\end{equation}
+In this way the model is a simple double integrator, linearized under feedback. For now, let's leave the quadrotor model aside, and define what a barrier function is for a dynamic system.
+\begin{boxdefinition}{Extended Class-$\mathcal K$ Function}{}
+    A continuous function $\alpha: (-b, a) \to \mathbb{R}$ (with $a, b > 0$) is of \textbf{extended class $\mathcal{K}$} ($\alpha \in \mathcal{K}_e$) if:
+\begin{enumerate}
+    \item $\alpha(0) = 0$,
+    \item it is strictly increasing,
+    \item $r \cdot \alpha(r) > 0$ for all $r \neq 0$.
+\end{enumerate}
+
+\end{boxdefinition}
+\begin{boxdefinition}{Control Barrier Function}{}
+    Consider a control system linear in the inputs:\begin{equation}
+        \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x)\mathbf u,\qquad\begin{matrix}
+            \mathbf x\in\R^n\\ 
+            \mathbf u\in \R^m
+        \end{matrix}
+    \end{equation}
+    let $h:\R^n\to \R$ be a differentiable function of the state, and $\mathcal S$ the set where $h$ is non-negative:\begin{equation}
+        \mathcal S=\{\mathbf x\in \R^n \ : \ h(\mathbf x)\ge 0\}
+    \end{equation}
+    $S$ is called \textbf{safety set}. The function $h$ is a \textbf{control barrier function} if there exists an extended class-$\mathcal K$ function $\alpha$ such that:\begin{equation}
+        \sup_{\mathbf u}\dot h(\mathbf x,\mathbf u)=\sup_{\mathbf u}\left[
+            L_fh(\mathbf x)+L_gh(\mathbf x)\mathbf u
+        \right]\ge -\alpha(h(\mathbf x))
+    \end{equation}
+    where $L_fh,L_gh$ are the Lie derivatives:\begin{equation}
+        L_f h(\mathbf x) = \frac{\partial h}{\partial\mathbf  x} f(\mathbf x),\quad
+        L_g h(\mathbf x) = \frac{\partial h}{\partial\mathbf  x} g(\mathbf x).
+    \end{equation}
+\end{boxdefinition}
+The existence of such function $h$ implies \textbf{forward invariance}: at each time step we can find a control input $\mathbf u$ such that:\begin{align}
+    \dot h(\mathbf x,\mathbf u)&=L_f h(\mathbf x) + L_g h(\mathbf x)\mathbf u \ge -\alpha(h(\mathbf x))\\
+    \implies \dot h(\mathbf x,\mathbf u)&\ge -\alpha(h(\mathbf x))
+\end{align}
+hence, if at the beginning $h(\mathbf x_0)$ is positive ($\mathbf x_0\in\mathcal S$), with the appropriate $\mathbf u$ the trajectory will never exit the safe ste $\mathcal S$, since $h$ will remain positive:\begin{itemize}
+    \item Let's assume that $h$ is decreasing over time ($\dot h < 0$),
+    \item at some point $h=0$, there $\alpha(h)=\alpha(0)=0$,
+    \item there we will have $\dot h \ge 0 $ hence $h$ will not decrease anymore.
+\end{itemize}
+Let's consider again the quadrotor model and assume we have a control barrier function $h$, at a given state $\mathbf x$ the input that is closest to the nominal tracking control $\mathbf u^*$ defined in Equation \eqref{nominal_controller} is:\begin{align}
+    &\tilde{\mathbf u} = \operatorname*{arg\,min}_{\mathbf u}\|\mathbf u-\mathbf u^*\|^2\\ 
+    &\text{s.t. } L_fh(\mathbf x)+L_gh(\mathbf x)\mathbf u\ge-\alpha(h(\mathbf x)).
+\end{align}
+We will proceed with the following approach:\begin{itemize}
+    \item At each time step we wish to execute the nominal tracking control $\mathbf u^*$.
+    \item We have a barrier function $h$ relative to a safe set $\mathcal S$, the latter is the set were the quadrotor can move freely without colliding with obstacles.
+    \item At each time step we will solve the optimization problem to execute $\tilde{\mathbf u}$, in this way we will stay in the safe set.
+\end{itemize}
+This is a hierarchical approach, the task of avoiding the obstacles have an higher priority with respect to the task of following the desired trajectory.
+\subsection{Barrier Function for the Obstacles}
+We need to describe the distance between the quadrotor and an obstacle. For computational reasons, we will consider a spherical hull around the quadrotor and compute the distances for that hull (conservative approach), furthermore we will consider point-wise obstacles.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/CBF_hull.eps}
+\end{figure}
+Even if the obstacles are not point-wise, we can consider a spherical hull around them and define the point-wise obstacle as the closest point on the spherical surface. Now let's define our barrier function, let $\mathbf p(t)$ be the quadrotor position and $\overline{\mathbf p}$ the obstacle position. We define a function $h$ as follows:\begin{equation}
+    h(\mathbf p(t),\dot{\mathbf p}(t))=
+    \underbrace{(\mathbf p(t)-\overline{\mathbf p})^\top(\mathbf p(t)-\overline{\mathbf p})}_{\text{distance}}+\mu(\mathbf p(t)-\overline{\mathbf p})^\top\dot{\mathbf p}(t).
+\end{equation}
+with $\mu>0$ being a positive scalar, it describes the distance of the vehicle to the obstacle $\overline{\mathbf p}$ corrected by the scalar product between the vector $(\mathbf p(t)-\overline{\mathbf p})$ and the vehicle velocity.
+\begin{boxobservation}{}{}
+    $h$ is not the control barrier function of the system. 
+\end{boxobservation}
+\noindent Our control design objective is to find a control input that guarantees:\begin{equation}
+    h(\mathbf p(t),\dot{\mathbf p}(t))\ge \delta 
+\end{equation}
+to avoid the obstacle and remaining in the safe region. Let $r=\|\mathbf p-\overline{\mathbf p}\|$ be the distance, $h$ can be rewritten as:\begin{equation}
+    h=r+\frac{\mu}{2}\dot r
+\end{equation}
+in this way by keeping $h$ positive we are always far from the obstacle, and if $r=0$ we are moving away from it. Usually $\delta$ is chosen as $d_{min}^2$, where $d_{min}$ is the radius of the sphere bounding the quadrotor, plus a clearance. Since we added the velocity $\dot{\mathbf p}$ in $h$, the control input $\mathbf u$ appears in $\dot h$:\begin{equation}
+    \dot h=2(\mathbf p-\overline{\mathbf p})^\top\dot{\mathbf p}+\mu\dot{\mathbf p}^\top\dot{\mathbf p}+\mu(\mathbf p-\overline{\mathbf p})^\top\mathbf u
+\end{equation}
+$h\ge \delta$ keeps the distance $\dot r\ge\frac{2}{\mu}(\delta-r)$, hence for the comparison lemma:\begin{equation}
+    r(t)\ge \delta+(r(0)-\delta)e^{-\nicefrac{2t}{\mu}}\ge\min\{\delta,r(0)\}.
+\end{equation} 
+\begin{boxdefinition}{}{}
+    The control barrier function of the quadrotor control system is:\begin{equation}
+        \bar h=h-\delta.
+    \end{equation}
+\end{boxdefinition}
+At each time step we select a control $\mathbf u$ such that\begin{equation}
+    \bar h(t)+\alpha(h(t)-\delta)\ge 0 
+\end{equation}
+or\begin{equation}\label{barh_der}
+    \dot{\bar h}\ge-\alpha\bar h 
+\end{equation}
+were $\alpha$ is a positive number.
+If the initial state $(\mathbf p,\dot{\mathbf p})$ is in the safe set $\mathcal S$ then the comparison lemma implies that:\begin{equation}
+    \bar h(t)\ge e^{-\alpha t}\bar h(0)
+\end{equation}
+hence $\mathcal S$ is forward invariant for all $t$.\bigskip 
+
+\noindent Equation \eqref{barh_der} expanded is:\begin{equation}
+    2 (\mathbf{p} - \overline{\mathbf{p}})^\top \dot{\mathbf{p}} + \blueText{\mu \dot{\mathbf{p}}^\top \dot{\mathbf{p}}} + \mu (\mathbf{p} - \overline{\mathbf{p}})^\top \mathbf{u} +\blueText{ \alpha(h - \delta)} \ge 0
+\end{equation}
+since the terms in \blueText{ blue } are positive in the safe set $\mathcal S$ a sufficient condition to guarantee forward invariance is:\begin{equation}
+     2 (\mathbf{p} - \overline{\mathbf{p}})^\top \dot{\mathbf{p}} +  + \mu (\mathbf{p} - \overline{\mathbf{p}})^\top \mathbf{u} \ge 0
+\end{equation}
+\subsection{Control Design}
+The nominal tracking control is:\begin{equation}
+    \mathbf u^*=\ddot{\mathbf p_d}+K_d(\dot{\mathbf p_d}-\dot{\mathbf p})+K_p(\mathbf p_d-\mathbf p)
+\end{equation}
+consider the vector $\mathbf p-\overline{\mathbf p}$ (obstacle to quadrotor), the projection operator on the plane where $\mathbf p-\overline{\mathbf p}$ lies is defined as follows:\begin{equation}
+    \Pi_{\mathbf p-\overline{\mathbf p}}=(\mathbf{p} - \overline{\mathbf{p}}) \left( (\mathbf{p} - \overline{\mathbf{p}})^\top (\mathbf{p} - \overline{\mathbf{p}}) \right)^{-1} (\mathbf{p} - \overline{\mathbf{p}})^\top
+\end{equation}
+and the projector on the orthogonal plane is just\begin{equation}
+    \Pi^\bot_{\mathbf p-\overline{\mathbf p}}=I-\Pi_{\mathbf p-\overline{\mathbf p}}
+\end{equation}
+Furthermore, for each vector $\mathbf v\in\R^n$:\begin{equation}
+    (\mathbf p-\overline{\mathbf p})^\top  \Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf v=0
+\end{equation}
+meaning that $\mathbf p-\overline{\mathbf p}$ is orthogonal to any vector projected with $\Pi^\bot_{\mathbf p-\overline{\mathbf p}}$ (tautological).
+Figure \ref{projections} shows visually how a generic vector $\mathbf v$ is transformed.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/projector.pdf}
+    \caption{Projection on the plane defined by $\mathbf p-\overline{\mathbf p}$.}
+    \label{projections}
+\end{figure}
+\noindent Before describing how our control law $\mathbf u$ is defined, we have to define some subsets of the state space. We denote $\mathbf z=\begin{pmatrix}
+    \mathbf p&\dot{\mathbf p}
+\end{pmatrix}^\top\in\R^{2n}$ the state, and we define two time-varying subsets of $\R^{2n}$:\begin{align}
+    \mathcal D_{\mathbf u^*}(t)&=\{\mathbf z \ : \ (\mathbf p-\overline{\mathbf p})^\top(\mu\mathbf u^*+2\dot{\mathbf p})>0 \}\\ 
+    \mathcal D_{\delta_1}(t)&=\{\mathbf z \ : \ h(\mathbf z)>\delta_1>\delta\}
+\end{align}
+with $\delta_1$ being a positive real number.\begin{itemize}
+    \item $\mathcal D_{\mathbf u^*}(t)$ contains all the states where $\mathbf p$ is moving away from the obstacle.
+    \item $ \mathcal D_{\delta_1}(t)$ is a conservative safety region.
+\end{itemize}
+We define $\mathcal D_{\text{track}}(t)=\mathcal D_{\mathbf u^*}(t)\cup  \mathcal D_{\delta_1}(t)$ and we \textit{decompose} $\R^{2n}$ in two disjoint subsets:\begin{align}
+    &\R^{2n}=\mathcal D_{\text{track}}(t)\cup \mathcal D_\bot(t)\\ 
+&\mathcal D_\bot(t)=\R^{2n} \setminus \mathcal D_{\text{track}}(t)
+\end{align}
+
+\begin{itemize}
+    \item When the state is in $\mathcal D_{\text{track}}$ we are moving away from the obstacles or we are at a safety distance hence we have the priority of following the desired trajectory.
+    \item If the state is in $\mathcal D_\bot$ we give the priority to obstacle avoidance.
+\end{itemize}
+Our final control law (assuming that we can control directly the cartesian acceleration $\ddot{\mathbf p}=\mathbf u$) when we are in the state $\mathbf z$ will be:\begin{equation}\label{CBF_control}
+    \mathbf u = \begin{cases}
+        \mathbf u^*&\text{ if }\mathbf z\in\mathcal D_{\text{track}}\\ 
+        -\frac{2}{\mu}\Pi_{\mathbf p-\overline{\mathbf p}}\dot{\mathbf p}+\Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf u^*
+        &\text{ if }\mathbf z\in\mathcal D_\bot
+    \end{cases}
+\end{equation}
+Let's break down the control input in $\mathcal D_\bot$, that is\begin{equation}
+    \greenText{-\frac{2}{\mu}\Pi_{\mathbf p-\overline{\mathbf p}}\dot{\mathbf p}}+\blueText{\Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf u^*}.
+\end{equation}
+\noindent So:
+\begin{itemize}
+    \item With $\greenText{-\frac{2}{\mu}\Pi_{\mathbf p-\overline{\mathbf p}}\dot{\mathbf p}}$ we are taking the opposite direction of the velocity, projected on the plane where $\mathbf p-\overline{\mathbf p}$ lies.
+    \item With $\blueText{\Pi^\bot_{\mathbf p-\overline{\mathbf p}}\mathbf u^*}$ we are projecting the nominal tracking control on the plane orthogonal to $\mathbf p-\overline{\mathbf p}$, hence the resulting vector will be directed in such a way as to move away from the obstacle, essentially we are trying to follow the desired trajectory, admitting an error so as not to get closer to the obstacle.
+\end{itemize}
+A visual representation of these terms is shown in Figure \ref{fig:cbf_control}.
+With this choice of $\mathbf u$ the derivative of the control barrier function will be (calculation omitted):\begin{equation}
+    \dot{\bar h}=\mu\dot{\mathbf p}^\top\mathbf p\ge 0
+\end{equation}
+hence we will remain in the safe set.
+\begin{boxproposition}{}{}
+    The control law defined in Equation \eqref{CBF_control} is an explicit solution to the following problem:\begin{align}
+    &\tilde{\mathbf u} = \operatorname*{arg\,min}_{\mathbf u}\|\mathbf u-\mathbf u^*\|^2\\ 
+    &\text{s.t. }\mu(\mathbf p-\overline{\mathbf p})^\top\mathbf{u}\ge -2(\mathbf p-\overline{\mathbf p})^\top\dot{\mathbf p}.
+\end{align}
+\end{boxproposition}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth ]{images/CBF_control.pdf}
+    \caption{Planar view of the terms in the control law.}
+    \label{fig:cbf_control}
+\end{figure}
+\section{Incremental Nonlinear Dynamic Inversion}
+\todo{}
+\chapter{The Ingenuity Model}
+\todo{}
 \end{document}
