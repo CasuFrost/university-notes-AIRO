@@ -617,6 +617,7 @@ To overcome this problem, we use a mechanism called \textbf{Ackermann steering},
     \caption{The intersections identifies two ICR.}
     \label{no_single_icr}
 \end{figure}
+\chapter{Controllability of Mobile Robots}
 \section{Nonlinear Controllability}
 Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
     \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 
@@ -1422,4 +1423,229 @@ The three controllers have been compared in simulation while tracking a circle, 
     \item \textbf{Static input-output linearization}: the steady-state error norm is equal to $b$, since it is the point $B$ that converges to the desired trajectory, while the contact point of the wheel stays at distance $b$ from it. The displaced output provides a \textbf{lookahead} behavior when tracking a square. Reducing $b$ reduces the steady-state error, but the steering velocity increases (the term $1/b$ appears in $T^{-1}$).
     \item \textbf{Dynamic input-output linearization}: zero steady-state error, reasonable velocities and faster transients (e.g. at the corners of the square).
 \end{itemize}
+\section{Regulation}
+Let's address the problem of posture regulation, we want to bring a mobile robot from a starting configuration $\q_i$ to a configuration $\q_d$ with a feedback control law.  One may ask, why can't we just use trajectory tracking with a trajectory that ends in the desired configuration $\q_d$? Non of the methods described in the previous section works for regulation, the controllers based on approximate linearization and input-output linearization via dynamic feedback requires a persistent trajectory, for example, the decoupling matrix $T(v,\theta)$ is not invertible if the desired velocity $v$ is zero. Furthermore, the input-output linearization via static feedback would lead the point $(x_b\quad y_b)^\top$ to a desired destination and not the wheel contact point.\bigskip
+
+There is a \textit{general result} that shows how the nonholonomic systems like the wheeled mobile robots, do not admit universal controllers for regulation, i.e. controllers that can stabilize arbitrary
+trajectories, whether persistent or not.
+\subsection{Recall on Lyapunov Theory}
+Let's recap some of the basic results of Lyapunov theory. Consider a general control system:\begin{equation}
+    \dot{\mathbf x}=f(\mathbf x,\mathbf u)
+\end{equation}
+let $\mathbf u=g(\mathbf x)$ be our control input, the closed loop system is:\begin{equation}\label{closed_loop_cs}
+    \dot{\mathbf x}=f(\mathbf x,g(\mathbf x))=f'(\mathbf x)
+\end{equation}
+let $\mathbf x_e$ be an equilibrium point, without loss of generality we can assume that $\mathbf x_e=\mathbf 0$:\begin{equation}
+    f'(\mathbf x_e)=f'(\mathbf 0)=\mathbf 0.
+\end{equation}
+\begin{boxtheorem}{Lyapunov Stability}{}
+    Consider the closed loop control system of Equation \eqref{closed_loop_cs}. If there exists a positive definite function $V(\mathbf x)$ the following holds:\begin{itemize}
+        \item If $\dot V$ is negative definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is asymptotically stable.
+        \item If $\dot V$ is negative semi-definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is stable (not asymptotically).
+    \end{itemize}
+\end{boxtheorem}
+\begin{boxlemma}{Barbalat}{}
+    Consider the closed loop control system of Equation \eqref{closed_loop_cs}, and let $V$ be a function of the state such that
+    \begin{itemize}
+        \item $V$ is positive semi-definite
+        \item $\dot V$ is negative semi-definite
+    \end{itemize}
+    if $\ddot V$ is bounded, then $\displaystyle\lim_{t\rightarrow\infty}\dot V(t)=0$, hence $V$ converges to a limit:\begin{equation}
+        \lim_{t\rightarrow\infty} V(t)=V_l\in[0,+\infty).
+    \end{equation}
+\end{boxlemma}
+\subsection{Regulation of the Cartesian Position}
+We build our discussion focusing on the unicycle model, before defining a regulation control law for the whole configuration $\q$, we define a \textbf{partial controller} that stabilizes a desired Cartesian position, regardless of the orientation $\theta$. \bigskip
+
+
+Without loss of generality, we can assume that the desired configuration is $(x \quad y)^\top=(0 \quad 0)^\top$, this can be done through an appropriate coordinate transformation. Hence we define the Cartesian error as\begin{equation}
+    \mathbf e_p=\begin{pmatrix}
+        x_d\\ y_d
+    \end{pmatrix}-\begin{pmatrix}
+        x\\ y
+    \end{pmatrix}=\begin{pmatrix}
+        -x\\ -y
+    \end{pmatrix}
+\end{equation}
+let $\mathbf n$ be the unit vector aligned with the sagittal axis, we will find useful the projection of $\mathbf e_p$ on the sagittal axis:\begin{equation}
+    \mathbf e_p^\top\mathbf n = \begin{pmatrix}
+        -x&-y
+    \end{pmatrix} \begin{pmatrix}
+        \cos\theta\\\sin\theta
+    \end{pmatrix}=-x\cos\theta-y\sin\theta.
+\end{equation}
+We also define the \textbf{pointing error} $\gamma$:\begin{equation}
+    \gamma=\text{atan2}(y,x)+\pi-\theta.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/cartesian_error_1.eps}
+\end{figure}
+\noindent In order to converge to the desired Cartesian position, we use the feedback control law described in Definition \ref{def:Regulation}.
+\begin{boxdefinition}{Unicycle Regulation Control Law (Cartesian Position)}{Regulation}
+    Let $k_1,k_2>0$.
+    \begin{align}
+    v&=-k_1(x\cos\theta+y\sin\theta)=-k_1\mathbf e_p^\top\mathbf n\\ 
+    \omega&=k_2(\text{atan2}(y,x)+\pi-\theta)=k_2\gamma
+\end{align}
+\end{boxdefinition}
+\noindent The geometrical interpretation is clear:\begin{itemize}
+    \item $v$ is proportional to the orthogonal projection of the Cartesian error on the sagittal axis.
+    \item $\omega$ is proportional to the pointing error.
+\end{itemize}
+In order to prove that this control law stabilizes the system on the desired position, we define the following Lyapunov function:\begin{equation}
+    V=\frac{1}{2}(x^2+y^2)\ge 0
+\end{equation}
+It's important to outline that $V(\q)$ is \textbf{not positive definite}, but positive semi-definite, since it is zero when $x=y=0$, but depends also on $\theta$ (the full configuration), hence there infinite non-zero vectors that makes $V$ zero:\begin{equation}
+    x=y=0\implies V(x,y,\theta)=0 \quad \forall \theta.
+\end{equation}
+Now we compute the derivative:\begin{equation}
+    \dot V = x\dot x+y\dot y 
+\end{equation}
+here we can use the dynamic model of the unicycle to substitute $\dot x,\dot y$:
+\begin{equation}
+    \dot V = xv\cos\theta+yv\sin\theta=v(x\cos\theta+y\sin\theta)
+\end{equation}
+due to the fact that we are considering the closed loop system, we can substitute $v$ with the control law:\begin{equation}
+    \dot V = -k_1(x\cos\theta+y\sin\theta)^2=-k_1(\mathbf e_p^\top\mathbf n)^2\le 0.
+\end{equation}
+For the same reasoning made for $V$, $\dot V$ is negative semi-definite, zero on all the configurations with $x=y=0$. We want to apply the Barbalat's lemma, we need to show that $\ddot V$ is bounded.
+\begin{boxproposition}{}{}
+    $\ddot V$ is bounded, i.e. $\exists c\in R^+$ such that $|\ddot V|\le c$.
+\end{boxproposition}
+\noindent\textit{Proof}:
+\begin{align}
+\ddot{V} &= \frac{d}{dt}\left[ -k_1 (x\cos\theta + y\sin\theta)^2 \right] \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \frac{d}{dt}(x\cos\theta + y\sin\theta) \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \left( \dot{x}\cos\theta - x\dot{\theta}\sin\theta + \dot{y}\sin\theta + y\dot{\theta}\cos\theta \right) \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \left[ (\dot{x} + y\dot{\theta})\cos\theta + (\dot{y} - x\dot{\theta})\sin\theta \right]
+\end{align}
+we use the unicycle model and the definition of the control law:
+\begin{align}
+\ddot{V} &= -2k_1 (x\cos\theta + y\sin\theta) \left[ (\dot{x} + y\dot{\theta})\cos\theta + (\dot{y} - x\dot{\theta})\sin\theta \right] \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \left[ (v\cos\theta + y\omega)\cos\theta + (v\sin\theta - x\omega)\sin\theta \right] \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \left[ v(\cos^2\theta + \sin^2\theta) + \omega(y\cos\theta - x\sin\theta) \right] \\
+&= -2k_1 (x\cos\theta + y\sin\theta) \left[ v + \omega(y\cos\theta - x\sin\theta) \right] \\
+&= -2k_1 (\mathbf{e}_p^\top\mathbf{n}) \left[ -k_1 \mathbf{e}_p^\top\mathbf{n} + k_2\gamma (\mathbf{e}_p^\top\mathbf{n}^\perp) \right] \\
+&= 2k_1^2 (\mathbf{e}_p^\top\mathbf{n})^2 - 2k_1 k_2 \gamma (\mathbf{e}_p^\top\mathbf{n})(\mathbf{e}_p^\top\mathbf{n}^\perp)\label{ddotV}
+\end{align}
+where $\mathbf n^\bot=(-\sin\theta \quad \cos\theta)^\top$. Due to the definition of the Lyapunov function, we can state that $\mathbf e_p$ is bounded, since $V$ is proportional to the squared norm of $\mathbf e_p$, and $V$ never increase, hence $\|\mathbf e_p(t)\|\le\|\mathbf e_p(0)\|$, $\forall t$. Since all the quantities in Equation \eqref{ddotV} are bounded, $\ddot V$ is bounded.\hfill$\blacksquare$\bigskip
+
+Having proved that $\ddot V$ is bounded, for the Barbalat's lemma we can say that $\dot V$ will converge to zero at steady state:\begin{equation}
+    \dot V = -k_1(\mathbf e_p^\top\mathbf n)^2=0\iff \mathbf e_p^\top\mathbf n=0
+\end{equation}
+so we can assert that at steady state $\mathbf e_p^\top\mathbf n=0$, this is true only in two possible cases:\begin{itemize}
+    \item $\mathbf e_p$ is zero, hence we have correctly regulated the desired Cartesian position.
+    \item $\mathbf e_p$ is orthogonal to $\mathbf n$.
+\end{itemize}
+\begin{boxobservation}{}{}
+    At steady state, it is impossible to have $\mathbf e_p$ orthogonal to $\mathbf n$.
+\end{boxobservation}
+This is pretty easy to show, since the control law for $\omega$ is $$\omega=k_2\gamma$$
+where $\gamma$ is the pointing error, with  $\mathbf e_p$ orthogonal to $\mathbf n$ we would have $\gamma=\pm\frac{\pi}{2}$, hence the steering angle velocity would be non-zero: $\dot\theta=\omega=\pm k_2\frac{\pi}{2}$, and by definition this is not steady state: the only possible steady state condition is $\mathbf e_p=\mathbf 0$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/regulation_simulation.png}
+    \caption{Simulations of the unicycle under the regulation control law for the cartesian position.}
+\end{figure}
+\subsection{Regulation of the Whole Configuration}
+Now we define a control law to achieve any desired posture $\q_d$, including the steering angle $\theta$. We will work on polar coordinates, hence we define the following coordinates transformation:\begin{align}
+    \rho&=\sqrt{x^2+y^2}\\
+    \gamma&=\text{atan2}(y,x)+\pi-\theta\\
+    \delta&=\gamma+\theta.
+\end{align}
+$\rho$ is the Cartesian distance from the origin, $\delta$ the angle between the Cartesian error vector and the horizontal axis, $\gamma$ the angle between the sagittal axis and the Cartesian error vector.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.28\textwidth ]{images/polar_coord.eps}
+\end{figure}
+\noindent Let's derive the kinematic model, starting from the time evolution of $\rho$:\begin{align}
+    \dot\rho&=\frac{1}{\sqrt{x^2+y^2}}(x\dot x+y\dot y)\\
+    &=\frac{v}{\rho}(x\cos\theta+y\sin\theta)
+\end{align}
+we denote $\beta$ the angle between the horizontal axis and the contact point of the wheel:\begin{equation}
+    \beta=\text{atan2}(y,x)\implies\begin{cases}
+        x=\rho\cos\beta\\ y=\rho\sin\beta 
+    \end{cases}
+\end{equation}
+hence\begin{align}
+    \dot\rho&=\frac{v}{\rho}(\rho\cos\beta\cos\theta+\rho\sin\beta\sin\theta)
+    \\ &=v\cos(\beta-\theta)\\ 
+    &=-v\cos(\beta-\theta+\pi) \\
+    &=-v\cos(\text{atan2}(y,x)-\theta+\pi)=-v\cos\gamma.
+\end{align}
+We proceed with the computation of $\dot\gamma$:
+\begin{align}
+\dot{\gamma} &= \frac{d}{dt}\left( \text{atan2}(y, x) + \pi - \theta \right) \\
+&= \frac{x\dot{y} - y\dot{x}}{x^2 + y^2} - \dot{\theta} \\
+&= \frac{x(v\sin\theta) - y(v\cos\theta)}{\rho^2} - \omega \\
+&= \frac{v}{\rho^2} (x\sin\theta - y\cos\theta) - \omega \\
+&= \frac{v}{\rho^2} \left[ -\rho\cos(\gamma + \theta)\sin\theta + \rho\sin(\gamma + \theta)\cos\theta \right] - \omega \\
+&= \frac{v}{\rho} \left[ \sin(\gamma + \theta)\cos\theta - \cos(\gamma + \theta)\sin\theta \right] - \omega \\
+&= \frac{v}{\rho}\sin\big((\gamma + \theta) - \theta\big) - \omega \\
+&= \frac{\sin\gamma}{\rho} v - \omega
+\end{align}
+for $\dot\delta$ the computation is straightforward:
+\begin{align}
+\dot{\delta} &= \frac{d}{dt}(\gamma + \theta) \\
+&= \dot{\gamma} + \dot{\theta} \\
+&= \left( \frac{\sin\gamma}{\rho} v - \omega \right) + \omega \\
+&= \frac{\sin\gamma}{\rho} v.
+\end{align}
+The kinematic model of the unicycle in polar coordinates is:\begin{align}
+\dot{\rho} &= -v\cos\gamma \\
+\dot{\gamma} &= \frac{\sin\gamma}{\rho} v - \omega \\
+\dot{\delta} &= \frac{\sin\gamma}{\rho} v.\label{dot_delta}
+\end{align}
+How to define a control law to stabilize $(\rho\quad\gamma\quad\delta)^\top$ to zero? In the previous section, we defined a control law and then proved it's correctness through Lyapunov analysis, now we first define a Lyapunov candidate, and then design a law for $v$ and $\omega$ in order to make $\dot V$ negative definite. Consider:\begin{equation}
+    V=\frac{1}{2}(\rho^2+\gamma^2+\delta^2)=\frac{1}{2}\|\q\|^2\ge 0
+\end{equation}
+differently from the previous case, this $V$ is \textit{positive definite}, zero only on $\q=\mathbf 0$. It's derivative is\begin{align}
+    \dot V &= \rho\dot\rho+\gamma\dot\gamma+\delta\dot\delta \\
+    &= -v\cos\gamma\rho + \left(\frac{\sin\gamma}{\rho} v - \omega\right)\gamma + \frac{\sin\gamma}{\rho} v\delta
+\end{align}
+$v$ and $\omega$ appears in $\dot V$, hence by an appropriate choice we can modify $\dot V$ in order to obtain the desired property. We rewrite $\dot V$ as follows:\begin{equation}
+    -\rho v\cos\gamma+v\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega
+\end{equation}
+the first choice that we made is letting $v=k_1\rho\cos\gamma$, in this way:\begin{align}
+    \dot V&=-\rho v\cos\gamma+v\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega\\
+    &=\underbrace{-k_1\rho^2\cos^2\gamma}_{\le 0}+k_1\sin\gamma\cos\gamma(\gamma+\delta)-\gamma\omega
+\end{align}
+now we can proceed with an appropriate choice of $\omega$, let $\omega=k_2\gamma+\alpha$, with $\alpha$ yet to be chosen:\begin{equation}
+    \dot V = 
+    \underbrace{-k_1\rho^2\cos^2\gamma}_{\le 0}
+    +k_1\sin\gamma\cos\gamma(\gamma+\delta)
+    \underbrace{-k_2\gamma^2}_{\le 0}-\gamma\alpha
+\end{equation}
+at this point we use $\alpha$ to cancel the remaining terms that are not less or equal than zero:\begin{align}
+   &\text{we want: } -\gamma\alpha+k_1\sin\gamma\cos\gamma(\gamma+\delta)=0\\ 
+   &\text{we set: } \alpha=\frac{1}{\gamma}k_1\sin\gamma\cos\gamma(\gamma+\delta)
+\end{align}
+hence:\begin{align}
+    \dot V&= 
+    {-k_1\rho^2\cos^2\gamma}
+    +k_1\sin\gamma\cos\gamma(\gamma+\delta)
+    {-k_2\gamma^2}-\gamma\blueText{\alpha}\\
+    &=
+    {-k_1\rho^2\cos^2\gamma}
+    +k_1\sin\gamma\cos\gamma(\gamma+\delta)
+    {-k_2\gamma^2}-\gamma\blueText{\frac{1}{\gamma}k_1\sin\gamma\cos\gamma(\gamma+\delta)}\\
+    &= -k_1\rho^2\cos^2\gamma-k_2\gamma^2\le 0.
+\end{align}
+$\dot V$ is negative semi-definite, having it's zero on the line $\gamma=\rho=0$, for any other value of $\delta$. 
+\begin{boxdefinition}{Unicycle Regulation Control Law (Full Configuration)}{}
+    The control law found through Lyapunov analysis is:\begin{align}
+    v&=k_1\rho\cos\gamma \\
+    \omega&=k_2\gamma+k_1\frac{\sin\gamma\cos\gamma}{\gamma}(\gamma+\delta).
+\end{align}
+\end{boxdefinition}
+It can be shown (\underline{proof omitted}) that $\ddot V$ is bounded, hence for the Barbalat's lemma $\dot V$ will converge to zero, at steady state we have $\gamma=\rho=0$, this (from the kinematic model in Equation \eqref{dot_delta}) implies that at steady state $\dot\delta= 0$, hence also $\delta$ will converge to a limit, and this will be exactly zero (\underline{proof omitted}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/regulation_simulation2.png}
+    \caption{Simulations of the unicycle under the regulation control law for the whole configuration.}
+\end{figure}
+
+\chapter{Mobile Manipulators}
+In this very small chapter we will discuss about the kinematics of mobile manipulators placed on a moving base.
 \end{document}
