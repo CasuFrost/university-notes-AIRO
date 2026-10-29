@@ -1608,16 +1608,19 @@ $v$ and $\omega$ appear in $\dot V$, hence by an appropriate choice we can modif
     \dot V=-\rho v\cos\gamma+v\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega
 \end{equation}
 the first choice that we make is $v=k_1\rho\cos\gamma$, in this way:\begin{align}
-    \dot V&=-\rho v\cos\gamma+v\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega\\
+    \dot V&=-\rho  \greenText{v}\cos\gamma+ \greenText{v}\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega\\
+    \dot V&=-\rho \greenText{(k_1\rho\cos\gamma)}\cos\gamma+\greenText{(k_1\rho\cos\gamma)}\frac{\sin\gamma}{\rho}(\gamma+\delta)-\gamma\omega\\
     &=\underbrace{-k_1\rho^2\cos^2\gamma}_{\le 0}+k_1\sin\gamma\cos\gamma(\gamma+\delta)-\gamma\omega
 \end{align}
-now we can proceed with an appropriate choice of $\omega$, let $\omega=k_2\gamma+\alpha$, with $\alpha$ yet to be chosen:\begin{equation}
-    \dot V = 
+now we can proceed with an appropriate choice of $\omega$, let $\omega=k_2\gamma+\alpha$, with $\alpha$ yet to be chosen:\begin{align}
+    \dot V&={-k_1\rho^2\cos^2\gamma}+k_1\sin\gamma\cos\gamma(\gamma+\delta)-\gamma\greenText{\omega}\\
+    &={-k_1\rho^2\cos^2\gamma}+k_1\sin\gamma\cos\gamma(\gamma+\delta)-\gamma\greenText{(k_2\gamma+\alpha)}\\
+    &= 
     \underbrace{-k_1\rho^2\cos^2\gamma}_{\le 0}
-    +k_1\sin\gamma\cos\gamma(\gamma+\delta)
-    \underbrace{-k_2\gamma^2}_{\le 0}-\gamma\alpha
-\end{equation}
-at this point we use $\alpha$ to cancel the remaining terms that are not guaranteed to be non-positive:\begin{align}
+    + \sapText{k_1\sin\gamma\cos\gamma(\gamma+\delta)}
+    \underbrace{-k_2\gamma^2}_{\le 0} - \sapText{\gamma\alpha}
+\end{align}
+at this point we use $\alpha$ to cancel the \sapText{ remaining terms } that are not guaranteed to be non-positive:\begin{align}
    &\text{we want: } -\gamma\alpha+k_1\sin\gamma\cos\gamma(\gamma+\delta)=0\\ 
    &\text{we set: } \alpha=\frac{1}{\gamma}k_1\sin\gamma\cos\gamma(\gamma+\delta)
 \end{align}
@@ -1647,5 +1650,184 @@ It can be shown (\underline{proof omitted}) that $\ddot V$ is bounded, hence by 
 \end{figure}
 
 \chapter{Mobile Manipulators}
-In this very small chapter we will discuss about the kinematics of mobile manipulators placed on a moving base.
+In this very small chapter we will discuss about the kinematics of mobile manipulators placed on a moving base. Let $\q_m\in\R^{n_m}$ be the configuration (joint coordinates) of a manipulator, placed on a mobile robot with configuration $\q_b\in\R^{n_b}$, the configuration of the whole system is $\q=(\q_b\quad\q_m)^\top$, we have seen how, for a manipulator the kinematic model is trivial (since it is unconstrained):\begin{equation}
+    \dq_m=\mathbf u_m 
+\end{equation}
+hence the kinematic model of the whole system is\begin{equation}
+    \dq=\begin{pmatrix}
+        \dq_b\\\dq_m
+    \end{pmatrix}=\begin{pmatrix}
+        G_b(\q_b)\mathbf u_b\\ \mathbf u_m 
+    \end{pmatrix}=\begin{pmatrix}
+        G_b(\q_b)&\mathcal O\\ 
+        \mathcal O& I 
+    \end{pmatrix}\begin{pmatrix}
+        \mathbf u_b\\\mathbf u_m
+    \end{pmatrix}=G(\q)\mathbf u 
+\end{equation}
+where $\mathcal O$ is a matrix with all zero entries, while $G_b(\q_b)$ is the matrix of the mobile robot kinematic model that we have seen in the previous chapters. For example, if the mobile base is a unicycle we have:\begin{equation}
+    \begin{pmatrix}
+        \dot x\\ \dot y\\ \dot \theta \\ \dot q_{m,1}\\\vdots\\\dot q_{m,n_m}
+    \end{pmatrix}=\left(
+\begin{array}{cc|ccc}
+    \cos\theta & 0 & 0 & \dots & 0 \\
+    \sin\theta & 0 & 0 & \dots & 0 \\
+    0 & 1 & 0 & \dots & 0 \\
+    \hline
+    0 & 0 & 1 & \dots & 0 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\ 
+    0 & 0 & 0 & \dots & 1
+\end{array}
+\right)\begin{pmatrix}
+        v\\ \omega\\ \mathbf u_{m,1}\\\vdots\\\mathbf u_{m,n_m}
+    \end{pmatrix}.
+\end{equation}
+Motion planning for mobile manipulators relies fundamentally on kinematic or geometric modeling. When planning takes place directly in the configuration space (such as finding a collision-free path between a starting pose and a goal pose) the system conveniently decouples. This separation allows us to plan paths for the mobile platform and the robotic arm independently, using well-established standalone algorithms for each subsystem. 
+
+In practice, however, mobile manipulators typically perform manipulation tasks where the end-effector must follow a strictly prescribed trajectory in the workspace. Introducing task-space constraints couples the two subsystems and requires solving the \emph{inverse differential kinematics problem}. To do this, we define a unified differential kinematic map that maps the desired end-effector velocities directly into coordinated velocity commands for both the base and the arm joints.
+\section{Differential Kinematics}
+Consider the end effector pose:\begin{equation}
+    \y_e=k_e(\q)=k_e(\q_b,\q_m)
+\end{equation}
+$\y_e$ is composed by the cartesian position $\mathbf p_e$ and a representation of its orientation (euler angles, rotation matrix  or others). The corresponding differential kinematics is\begin{equation}
+    \dy_e=\underbrace{\frac{\partial k_e}{\partial \q_b}}_{J_b}\dq_b+\underbrace{\frac{\partial k_e}{\partial \q_m}}_{J_m}\dq_m
+\end{equation}
+we swap $\dq_b$ with the mobile kinematic model
+\begin{equation}
+    \dy_e=J_b(\q)G_b(\q_b)\mathbf u_b+J_m(\q)\mathbf u_m
+\end{equation}
+in matrix form:\begin{equation}
+    \dy_e=\begin{pmatrix}
+        J_b(\q)G_b(\q_b) & J_m(\q)
+    \end{pmatrix}\begin{pmatrix}
+        \mathbf u_b\\ \mathbf u_m 
+    \end{pmatrix}=J_{mm}(\q)\mathbf u.
+\end{equation}
+The $6\times (n_b+n_m)$ matrix $J_{mm}(\q)$ is denoted the \textbf{Jacobian of the mobile manipulator}, despite is not a Jacobian mathematically speaking (it's not the matrix of the partial derivatives of a function, it contains the mobile kinematic model $G_b(\q)$). Typically, $n_b+n_m>6$, hence mobile manipulators are often kinematically redundant. The matrix $J_{mm}$ is used for singularity analysis and to solve the inverse differential kinematics problem.
+\subsection{Example: 2R Planar Manipulator on a Unicycle}
+We analyze the model of a 2R planar robot mounted on a unicycle, the arm is mounted on the sagittal axis, at distance $d$ from the wheel center. It's configuration is \begin{equation}
+    \q=(
+        x\quad y\quad \theta\quad  q_1\quad q_2
+    )^\top
+\end{equation}
+and the velocity inputs are \begin{equation}
+    \mathbf u=(
+       v\quad \omega\quad  \dot q_1\quad \dot q_2
+    )^\top.
+\end{equation}
+We denote $a_1,a_2$ the length of the links of the mobile manipulator.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth ]{images/mobile_manipulator.eps}
+\end{figure}
+\noindent The position of the end effector (our task vector) is:\begin{equation}
+   \mathbf y_e= \begin{pmatrix}
+        p_x\\ p_y 
+    \end{pmatrix}=\begin{pmatrix}
+        x+d\cos\theta+a_1\cos(\theta+q_1)+a_2\cos(\theta+q_1+q_2)\\
+        y+d\sin\theta+a_1\sin(\theta+q_1)+a_2\sin(\theta+q_1+q_2)
+    \end{pmatrix}
+\end{equation}
+for simplifying the notation we write:\begin{align}
+    &c_\theta=\cos\theta&  &s_\theta=\sin\theta\\
+     &c_{\theta1}=\cos(\theta+q_1)&  &s_{\theta1}=\sin(\theta+q_1)\\
+      &c_{\theta12}=\cos(\theta+q_1+q_2)&  &s_{\theta12}=\sin(\theta+q_1+q_2)
+\end{align}
+so\begin{equation}
+    \begin{pmatrix}
+        p_x\\ p_y 
+    \end{pmatrix}=\begin{pmatrix}
+        x+dc_\theta+a_1c_{\theta1}+a_2c_{\theta12}\\
+        y+ds_\theta+a_1s_{\theta1}+a_2s_{\theta12}
+    \end{pmatrix}
+\end{equation}
+now we compute the two Jacobian matrices:\begin{equation}
+    J_b=\begin{pmatrix}
+        1&0&-ds_\theta-a_1s_{\theta1}-a_2s_{\theta12}\\
+        0&1&dc_\theta+a_1c_{\theta1}+a_2c_{\theta12}
+    \end{pmatrix},\quad 
+    J_m=\begin{pmatrix}
+        -a_1s_{\theta1}-a_2s_{\theta12}&-a_2s_{\theta12}\\
+        a_1c_{\theta1}+a_2c_{\theta12}&a_2c_{\theta12}
+    \end{pmatrix}
+\end{equation}
+the unicycle kinematic model matrix is:
+\begin{equation}
+    G_b(\q_b)=\begin{pmatrix}
+         \cos\theta&0\\\sin\theta&0\\ 0&1
+    \end{pmatrix}
+\end{equation}
+so\begin{equation}
+    J_b(\q)G_b(\q_b)=\begin{pmatrix}
+c_\theta & -d \, s_\theta - a_1 s_{\theta 1} - a_2 s_{\theta 1 2} \\[6pt]
+s_\theta & d \, c_\theta + a_1 c_{\theta 1} + a_2 c_{\theta 1 2} 
+\end{pmatrix}
+\end{equation}
+furthermore the mobile manipulator Jacobian is:\begin{equation}
+J_{mm}(\q)=\begin{pmatrix}
+c_\theta & -d \, s_\theta - a_1 s_{\theta 1} - a_2 s_{\theta 1 2} & -a_1 s_{\theta 1} - a_2 s_{\theta 1 2} & -a_2 s_{\theta 1 2} \\[6pt]
+s_\theta & d \, c_\theta + a_1 c_{\theta 1} + a_2 c_{\theta 1 2} & a_1 c_{\theta 1} + a_2 c_{\theta 1 2} & a_2 c_{\theta 1 2}
+\end{pmatrix}
+\end{equation}
+If $d>0$,  $J_mm$ is never singular, hence any end-effector velocity can be realized at any configuration (adding the degrees of freedom of the base
+allows to remove the singularities of the 2R arm alone).
+\section{Inverse Differential Kinematics}
+The methods for solving the IDK in presence of kinematic redundancy that we have seen in previous robotics courses applies to mobile manipulators with minimal adaption, we use the pseudo-inverse matrix $ J_{mm}^\#$, if $\dy_d$ is the desired task vector velocity we select as input velocities:\begin{equation}\label{IDK_sol}
+    \mathbf u = J_{mm}^\#\dy_d
+\end{equation}
+this realize the desired velocity:\begin{equation}
+    \dq=J_{mm}J_{mm}^\#\dy_d=\dy_d
+\end{equation}
+in particular, $J_{mm}^\#$ provides the minimum norm solution. We recall that $J_{mm}^\#$ can be computed analytically if the rank of $J_{mm}$ is full, otherwise can be computed via numerical methods. In order to exploit the additional degrees of freedom given by the kinematic redundancy, we sum to the solution in Equation \eqref{IDK_sol} a term that is in the null space of $J_{mm}$, in this way we can move the configuration in a desired direction of the configuration space without affecting the task vector velocity. This is done in the following way:\begin{itemize}
+    \item Let $\mathbf u_N$ be an arbitrary vector that represents a desired direction in the configuration space.
+    \item We project $\mathbf u_N$ in the null space of $J_{mm}$ trough the projector:\begin{equation}
+       \underbrace{(I-J_{mm}^\#J_{mm})}_{\Pi}\mathbf u_N.
+    \end{equation}
+    \item By doing so we have:\begin{equation}
+        \Pi\mathbf u_N\in\mathcal N(J_{mm})\implies J_{mm}(\Pi\mathbf u_N)=\mathbf 0.
+    \end{equation}
+\end{itemize}
+The solution to the IDK will be completed with such projection in the null space:\begin{equation}
+    \mathbf u = J_{mm}^\#\dy_d+(I-J_{mm}^\#J_{mm})\mathbf u_N.
+\end{equation}
+How do we choose $\mathbf u_N$? Usually is the direction that tends to maximize (or minimize) a performance (or cost) criterion, let $H(\q)$ be a scalar function that assigns a value of ``goodness'' to a certain configuration ($H(\q)$ bight be the distance from a singular configuration), since we want to maximize (or minimize) $ H(\q)$ a preferred direction is its weighted gradient $\pm\alpha\nabla H(\q)$  (the sign establishes whether $H$ should be maximized or minimized).\bigskip 
+
+However, we can't simply set $\mathbf u_N=\pm\alpha\nabla H(\q)$, since the first $n_b$ components of the vector $\mathbf u$ are
+pseudo-velocities, rather than generalized velocities, and the nonholonomic constraints might prevent the motion defined by the first $n_b$ components of $\mathbf u_N$. In order to idenitfy a suitable velocity command $\mathbf u_N$ that does not violate the nonholonomic constraints of the mobile base, we have to look at the time derivative of $H(\q)$ along the system motion:\begin{equation}
+    \dot H(\q)=\frac{\partial H}{\partial \q}\dq=(\nabla H(\q))^\top G(\q)\mathbf u
+\end{equation}  
+so to set the maximum local improvement of $H(\q)$ we have to set:\begin{equation}
+    \mathbf u_N=\pm\alpha G^\top(\q)\nabla H(\q)=\pm\alpha\begin{pmatrix}
+        G_b^\top(\q_b) & \mathcal O \\ 
+        \mathcal O& I
+    \end{pmatrix}\nabla H(\q).
+\end{equation}
+To assess robustness, instead of considering $\dy_d$ as a desired velocity, we can close the loop with a feedback action on the error $\y_d-\y$:\begin{equation}
+    \dy_d+K(\y_d-\y)
+\end{equation}
+with $K$ being a positive definite matrix. Ultimately, to follow a task vector trajectory $\y_d(t)$ over time we will (at each time step) select the following control law:\begin{equation}
+    \mathbf u = J_{mm}^\#\left(
+        \dy_d+K(\y_d-\y)
+    \right)
+    \pm
+    \alpha(I-J_{mm}^\#J_{mm})\begin{pmatrix}
+        G_b^\top(\q_b) & \mathcal O \\ 
+        \mathcal O& I
+    \end{pmatrix}\nabla H(\q).
+\end{equation}
+However, keep in mind that kinematic control of mobile manipulators
+only results in acceptable performance if the required
+velocities are small, so that the inertial couplings
+between the coordinates of the base and those of the
+manipulator remain negligible. In general, as for manipulators, robust feedback control
+laws for manipulators should be designed on the basis of their
+dynamic model.
+
+
+
+
+
+
+
+
 \end{document}
