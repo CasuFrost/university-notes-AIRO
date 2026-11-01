@@ -2324,6 +2324,174 @@ hence we will remain in the safe set.
 \end{figure}
 \section{Incremental Nonlinear Dynamic Inversion}
 \todo{}
-\chapter{The Ingenuity Model}
-\todo{}
+\chapter{The Ingenuity Model}\label{ch:ingenuity}
+In this chapter we study the dynamic model of \textbf{Ingenuity}, the helicopter-drone that reached Mars together with the Perseverance rover in the NASA \textit{Mars 2020} mission. On April 19, 2021 it performed the first powered flight on another planet; up to January 18, 2024 it completed 72 flights, for a total of 129 minutes of flight time, 17 km covered and a maximum altitude of 24 m. Differently from the quadrotors studied so far, Ingenuity is a \textbf{coaxial helicopter}: it has two \textbf{counter-rotating rotors} mounted on the same axis, and each rotor is equipped with a \textbf{swashplate} that allows to change the pitch of its blades. We will see that, after some simplifications, the resulting model has the same structure as the quadrotor model, so that the controllers of the previous chapters can be applied.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth ]{images/ingenuity.png}
+\end{figure}
+\section{The Ingenuity Helicopter}
+The main characteristics of the vehicle are the following.
+\begin{itemize}
+    \item The mass is $m=1.8\ \text{kg}$ and the span of the blades is $1.2\ \text{m}$ tip-to-tip, hence the radius of each rotor (the length of a blade, denoted $L_b$) is about $0.6\ \text{m}$. The area of the disc swept by a rotor is $A=\pi L_b^2$.
+    \item The Martian environment makes the generation of thrust difficult: the air density $\rho$ is only about $1\text{--}2\%$ of the terrestrial one, while the gravity acceleration is $g_M=3.71\ \text{m/s}^2$ (we use the symbol $g_M$ in place of $g$ to remember that we are on Mars). To generate enough thrust the rotors have to spin at a very \textbf{high speed}: $2537\text{--}2700$ rpm, that is about $265\text{--}283$ rad/s.
+    \item The batteries are recharged by a solar panel; the flights are short (about $1.5$ minutes, the longest one lasted $169.5$ s).
+\end{itemize}
+The \textbf{weight} of the vehicle on Mars is $mg_M\simeq 6.7\ \text{N}$.
+\begin{boxobservation}{}{}
+The vehicle has two rotors, indicated with the subscripts $l$ (\textit{lower}) and $u$ (\textit{upper}), and one swashplate per rotor. Each swashplate is moved by three servomotors, hence there are six servos in total, and each rotor has its own \textbf{collective} and \textbf{cyclic} pitch (defined in the next section). The rotor speeds are kept \textbf{constant} during the flight (their value is chosen according to the atmospheric density), therefore, differently from the quadrotor, the control inputs are not the rotor speeds $\omega_i$ but the blade pitches.
+\end{boxobservation}
+
+\section{The Swashplate Mechanism}
+The \textbf{swashplate} is the mechanism that connects the (non-rotating) vehicle with the (rotating) blades, and allows to change the \textbf{pitch} of the blades. The pitch of a blade is the angle between the chord of the blade (the line joining its leading and trailing edges) and the plane of the rotor. The swashplate is composed of two plates:
+\begin{itemize}
+    \item the \textbf{bottom, non-rotating plate}, moved by the servos; its vertical position determines the \textit{collective pitch};
+    \item the \textbf{top, rotating plate}, which rotates together with the blades and is connected to each of them through a \textit{pitch link}; its orientation determines the \textit{cyclic pitch}.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/swashplate.png}
+\end{figure}
+Two kinds of pitch command are available.
+\begin{boxdefinition}{Collective and Cyclic Pitch}{}
+\begin{itemize}
+    \item The \textbf{collective pitch} is obtained by moving the swashplate up and down: the pitch of \textbf{all} the blades of a rotor changes by the \textit{same} amount.
+    \item The \textbf{cyclic pitch} is obtained by tilting the swashplate: the pitch of each blade varies \textit{once per revolution}, being larger on one side of the rotor disc and smaller on the opposite side.
+\end{itemize}
+Denoting with $\sigma$ the azimuth angle of a blade (its angular position on the rotor disc), the pitch of the blade of the $j$-th rotor, $j\in\{l,u\}$, can be written as\begin{equation}
+    \kappa_j(\sigma)=\kappa_j+\kappa_{c,j}\cos\sigma+\kappa_{s,j}\sin\sigma
+\end{equation}
+where $\kappa_j$ is the collective pitch (the mean value of the blade pitch), while $\kappa_{c,j},\kappa_{s,j}$ are the amplitudes of the cyclic pitch along the two axes of the rotor disc.
+\end{boxdefinition}
+\noindent Since the swashplate of each rotor has three degrees of freedom (the height and the two tilts) and is moved by three servos, each rotor has three pitch commands: one collective and two cyclic.
+
+\section{Lift Generation}
+Each blade is a small wing: when it moves with respect to the air, the \textbf{relative wind} generates on it a \textbf{lift} force $F_L$, perpendicular to the relative wind, and a \textbf{drag} force $F_D$, parallel to the relative wind. The angle between the chord of the blade and the relative wind is the \textbf{angle of attack}, denoted $\chi$; when the angle of attack is positive, the lift is directed upward.
+
+Lift and drag increase with the angle of attack and with the square of the rotor speed:\begin{equation}\label{lift_drag}
+    F_L=k_L\,\omega^2,\qquad F_D=k_D\,\omega^2
+\end{equation}
+where $\omega$ is the rotor speed and $k_L,k_D$ are coefficients that depend on the geometry of the blade, on the air density and, in particular, on the angle of attack (hence on the pitch of the blade). The lift is (almost) along the rotor axis, the drag (almost) in the rotor plane.
+\begin{itemize}
+    \item The \textbf{collective pitch} determines the \textit{average} value of these forces on the rotor disc.
+    \item The \textbf{cyclic pitch} produces \textit{different} values of these forces on different sides of the rotor disc.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/lift_drag.png}
+\end{figure}
+\section{Ingenuity Maneuvering}
+The vertical acceleration is controlled through the rotor speed and the angle of attack of the blades (the collective pitch). Since the rotor speed on Ingenuity is kept constant, the total thrust is controlled only through the \textbf{collective pitch of the two rotors}: increasing it the vehicle takes off, decreasing it the vehicle lands.\bigskip
+
+
+As for quadrotors, the vehicle moves horizontally by \textbf{tilting the thrust}. The main difference is how the roll and pitch torques are generated: on a quadrotor they come from thrust \textit{differences} between the rotors, here they come from the \textbf{cyclic pitch}.
+
+Let us consider an example, in the frame of the rotor with the $\mathbf z$ axis along the rotor axis.
+\begin{enumerate}
+    \item The cyclic pitch commanded through the swashplate produces a torque on the rotor in the direction of $\mathbf x$.
+    \item Due to the \textbf{gyroscopic precession}, the angular momentum of the rotor (directed along $\mathbf z$) varies in the direction of $\mathbf x$, hence the rotor disc rotates about the axis $\mathbf y$: the response is delayed by about $90^\circ$ of rotor revolution, and this delay is taken into account by the \textit{phasing} of the swashplate (the cyclic command is applied $90^\circ$ in advance with respect to the point of the disc where the effect is desired).
+    \item The thrust, which is perpendicular to the rotor disc, tilts toward $\mathbf x$, thus generating a motion along $\mathbf x$.
+\end{enumerate}
+The two rotors \textbf{counter-rotate}, hence their reaction torques (the torques exerted by the air on the rotors, opposing their rotation) have opposite directions: in hovering they cancel each other. The yaw motion is obtained by commanding a \textit{different collective pitch} to the two rotors, so that the individual reaction torques differ; their difference is the net torque along the vertical axis that generates the yaw acceleration.
+
+\section{Equations of Motion}
+We use the notation of the previous chapters: $SR_i$ is the inertial NED frame (the $\mathbf z$ axis points down), $SR_b$ is the body frame, ${}^iR_b=R$ is the rotation matrix mapping body components into inertial components, $\mathbf p$ is the position of the center of mass (com) in $SR_i$, ${}^b\mathbf V$ is the velocity of the com expressed in $SR_b$, $\boldsymbol{\Omega}$ is the angular velocity expressed in $SR_b$, $J$ is the inertia tensor in $SR_b$ and $S(\cdot)$ is the skew-symmetric matrix of a vector, so that $S(\mathbf a)\mathbf b=\mathbf a\times\mathbf b$. Here the translational dynamics is written in the body frame (hence the Coriolis term $\boldsymbol{\Omega}\times m\,{}^b\mathbf V$ appears; it is equivalent to Equation \eqref{sum_forces}, since $\dot{\mathbf V}=R({}^b\dot{\mathbf V}+\boldsymbol{\Omega}\times{}^b\mathbf V)$). The model is
+\begin{align}
+    \dot{\mathbf p}&=R\,{}^b\mathbf V\\
+    \dot R&=R\,S(\boldsymbol{\Omega})\\
+    m\,{}^b\dot{\mathbf V}&={}^b\mathbf F_{tot}+R^\top\mathbf F_e-\boldsymbol{\Omega}\times m\,{}^b\mathbf V\label{ing_trans}\\
+    J\dot{\boldsymbol{\Omega}}&=-\boldsymbol{\Omega}\times J\boldsymbol{\Omega}+\btau_{tot}+R^\top\btau_e\label{ing_rot}
+\end{align}
+where $\mathbf F_e,\btau_e$ are the external \textit{unknown} forces and torques (aerodynamic effects not modeled, wind, disturbances) expressed in $SR_i$, which are rotated in $SR_b$ through $R^\top$, while ${}^b\mathbf F_{tot}$ and $\btau_{tot}$ are the known contributions expressed in $SR_b$:
+\begin{align}
+    {}^b\mathbf F_{tot}&={}^b\mathbf F_{ac}+R^\top\mathbf F_g+{}^b\mathbf F_l+{}^b\mathbf F_u\\
+    \btau_{tot}&=\btau_{ac}+\btau_r+\btau_l+\btau_u.
+\end{align}
+The terms are the following.
+\begin{itemize}
+    \item ${}^b\mathbf F_{ac}$ and $\btau_{ac}$ are the \textbf{actuation coupling} force and torque: parasitic effects of the actuation on the other degrees of freedom, analogous to the terms $\Sigma_R\btau$ and $\Sigma_T T\mathbf z$ of the quadrotor model (see Chapter 1 of Hua's PhD thesis for details).
+    \item $\mathbf F_g=mg_M\mathbf e_3$ is the \textbf{gravity} force expressed in $SR_i$ ($\mathbf e_3=(0,0,1)^\top$ points downward in the NED frame).
+    \item ${}^b\mathbf F_l,{}^b\mathbf F_u$ are the \textbf{thrust} vectors of the lower and upper rotor, and $\btau_l,\btau_u$ the torques that these thrusts produce about the com (they are treated in the following sections).
+    \item $\btau_r$ is the total \textbf{reaction} (resistance) torque exerted by the air on the two rotors.
+\end{itemize}
+
+\section{Rotor Thrust and Reaction Torque}
+For each rotor, $j\in\{l,u\}$, let $\omega_j$ be its angular speed (as for the quadrotor, we assume it perfectly controlled; on Ingenuity it is constant). Following the notation of Equations \eqref{f_i} and \eqref{tau_R}, the magnitude of the net thrust $T_j$ and the reaction torque $\tau_{R,j}$ of the rotor are determined by its speed and by the pitch of its blades:\begin{equation}\label{ing_thrust}
+    T_j=b_j\,\omega_j^2,\qquad \tau_{R,j}=d_j\,\omega_j^2
+\end{equation}
+where $b_j,d_j$ are the thrust and drag factors of the rotor which, differently from the quadrotor, are \textbf{not constant} but depend on the collective pitch $\kappa_j$. The net thrust is almost equal to the lift in Equation \eqref{lift_drag}, i.e.\ $b_j\simeq k_L$ (the drag barely reduces the thrust, as shown below).
+
+The total thrust is $T=T_l+T_u$. The reaction torque of each rotor acts about the rotor axis; with the convention that the torque of the lower rotor acts along the positive $\mathbf z_b$ axis and the one of the upper rotor along the negative one (counter-rotation), the total reaction torque is\begin{equation}
+    \btau_r=\begin{pmatrix}0&0&\tau_{R,l}-\tau_{R,u}\end{pmatrix}^\top.
+\end{equation}
+
+\subsection{Blade Element Analysis}
+To understand why $T_j\simeq$ lift, and which are the components of the reaction torque, we consider a \textbf{blade element}: the infinitesimal section of a blade at distance $s\in[0,L_b]$ from the rotor axis.
+\begin{itemize}
+    \item The air velocity with respect to the section has a component $\omega s$ \textit{along} the rotor plane (due to the rotation of the blade) and a component $v_c+v_{ind}$ \textit{across} it, where $v_c$ is the climb speed of the vehicle and $v_{ind}$ is the \textbf{induced velocity}, i.e.\ the speed of the air pushed through the rotor disc by the rotor itself.
+    \item The \textbf{inflow angle} $\iota$ is the angle between the relative wind and the rotor plane:\begin{equation}
+        \tan\iota=\frac{v_c+v_{ind}}{\omega s}.
+    \end{equation}
+    \item If $\kappa$ is the pitch of the blade section, the angle of attack is $\chi=\kappa-\iota$ (the angle $\iota$ is exaggerated in the usual pictures).
+    \item The lift $dL$ of the element is normal to the relative wind, the drag $dD$ parallel to it. The projections along the rotor axis and on the rotor plane give the elementary thrust $dT$ and the elementary resistive force $dQ/s$ (where $dQ$ is the elementary reaction torque about the rotor axis):\begin{align}
+        dT&=dL\cos\iota-dD\sin\iota\\
+        dQ&=s\,(dL\sin\iota+dD\cos\iota).
+    \end{align}
+\end{itemize}
+In hover, the momentum theory gives the induced velocity $v_{ind}=\sqrt{T/(2\rho A)}$, with $T$ the total thrust, $\rho$ the air density and $A$ the area of a rotor disc. For Ingenuity $v_{ind}\simeq13$ m/s, while the tip speed is $\omega L_b\simeq160$ m/s, hence at the tip $\iota\simeq5^\circ$ (and it is even smaller along the blade). Therefore $\cos\iota\simeq1$, $\sin\iota\simeq 0$ and $dT\simeq dL$, which justifies $b_j\simeq k_L$.
+
+Moreover, the reaction torque is made of two parts: the \textbf{induced} part $s\,dL\sin\iota$, due to the tilt of the lift caused by the induced flow, and the \textbf{profile} part $s\,dD\cos\iota$, due to the drag of the blades.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth ]{images/blade_elements.eps}
+\end{figure}
+\subsection{Thrust Vector}
+The direction of the thrust of each rotor is perpendicular to the rotor disc, whose inclination is determined by the cyclic pitch commanded through the swashplate. In the body frame the rotor axis is $-\mathbf z_b$ (the thrust points upward, as for the quadrotor).
+\begin{boxdefinition}{Thrust Vector}{ing_thrust_vector}
+Let $\gamma_j$ be the angle between the thrust of the $j$-th rotor and the rotor axis $-\mathbf z_b$, and let $\alpha_j,\beta_j$ be the angles formed with $-\mathbf z_b$ by the projections of the thrust on the $\mathbf x_b\mathbf z_b$ and $\mathbf y_b\mathbf z_b$ planes, respectively. The thrust vector in $SR_b$ is\begin{equation}
+    {}^b\mathbf F_j=\mathbf n(\alpha_j,\beta_j)\,T_j,\qquad 
+    \mathbf n(\alpha,\beta)=\begin{pmatrix}
+        -\tan\alpha\cos\gamma\\ \tan\beta\cos\gamma\\ -\cos\gamma
+    \end{pmatrix},\qquad \tan^2\gamma=\tan^2\alpha+\tan^2\beta.
+\end{equation}
+\end{boxdefinition}
+\noindent The vector $\mathbf n(\alpha,\beta)$ is a unit vector (it gives only the direction of the thrust); indeed\begin{equation}
+    \|\mathbf n(\alpha,\beta)\|^2=\cos^2\gamma\,(\tan^2\alpha+\tan^2\beta+1)=\cos^2\gamma\,(1+\tan^2\gamma)=1.
+\end{equation}
+For small angles, $\mathbf n(\alpha,\beta)\simeq\begin{pmatrix}-\alpha&\beta&-1\end{pmatrix}^\top$. The angles $\alpha_j,\beta_j$ are the \textbf{tilt} of the rotor disc: they are determined by the cyclic pitch (via the gyroscopic precession described above), hence they can be considered as inputs of the model, together with the collective pitches $\kappa_l,\kappa_u$ which determine $T_l,T_u$ and $\tau_{R,l},\tau_{R,u}$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/thrust_vector.pdf}
+\end{figure}
+\noindent Let $\boldsymbol{\rho}_j$ be the position of the hub of the $j$-th rotor with respect to the com, expressed in $SR_b$. The thrust of each rotor generates the torque\begin{equation}
+    \btau_l=\boldsymbol{\rho}_l\times{}^b\mathbf F_l,\qquad \btau_u=\boldsymbol{\rho}_u\times{}^b\mathbf F_u.
+\end{equation}
+Since the rotors are coaxial with the hubs on the body $\mathbf z_b$ axis, at height $h_j>0$ above the com (in the NED frame, upward means negative $\mathbf z_b$), we have $\boldsymbol{\rho}_j=-h_j\mathbf e_3$ and\begin{equation}
+    \btau_j=h_j\,T_j\cos\gamma_j\begin{pmatrix}\tan\beta_j&\tan\alpha_j&0\end{pmatrix}^\top.
+\end{equation}
+
+\section{Control Model}
+\subsection{Comparison with the Quadrotor}
+Assuming small tilt angles and writing $T_l=\|{}^b\mathbf F_l\|$, $T_u=\|{}^b\mathbf F_u\|$ (so that $\cos\gamma_j\simeq1$), we obtain\begin{align}
+    {}^b\mathbf F_l+{}^b\mathbf F_u&\simeq-(T_l+T_u)\mathbf e_3+\begin{pmatrix}-\alpha_lT_l-\alpha_uT_u\\ \beta_lT_l+\beta_uT_u\\ 0\end{pmatrix}\\
+    \btau_l+\btau_u+\btau_r&\simeq\begin{pmatrix}h_l\beta_lT_l+h_u\beta_uT_u\\ h_l\alpha_lT_l+h_u\alpha_uT_u\\ \tau_{R,l}-\tau_{R,u}\end{pmatrix}.
+\end{align}
+Comparing with the quadrotor model, in which the inputs are $T$ and the torques $\tau_\varphi,\tau_\vartheta,\tau_\psi$ (see Equation \eqref{quadrotorSystem}), we see that:
+\begin{itemize}
+    \item the total thrust $T=T_l+T_u$ is obtained with a \textbf{symmetric collective} pitch of the two rotors;
+    \item the roll and pitch torques $\tau_\varphi,\tau_\vartheta$ are generated by the \textbf{cyclic} pitch, through the tilts $(\alpha_j,\beta_j)$;
+    \item the yaw torque $\tau_\psi=\tau_{R,l}-\tau_{R,u}$ is generated by a \textbf{differential collective} pitch.
+\end{itemize}
+\begin{boxobservation}{}{}
+The tilt that produces the roll and pitch torques also gives a small \textbf{horizontal force} (the first term in the first equation above): this is the coupling between torques and forces, studied in the literature on underactuated VTOL vehicles (see Chapter 1 of Hua's PhD thesis and the review by Hua, Hamel, Morin and Samson). \textbf{Neglecting it}, the model has the same structure as the quadrotor model: a thrust along $-\mathbf z_b$ and three torques. Hence, the model is again \textit{underactuated} (6 degrees of freedom, 4 independent inputs $T,\tau_\varphi,\tau_\vartheta,\tau_\psi$), and the controllers designed in the previous chapters can be applied also to Ingenuity. Notice that the physical commands ($\kappa_l,\kappa_u,\alpha_l,\beta_l,\alpha_u,\beta_u$, realized by the six servos) are more than the four inputs of the model, so there is some redundancy in the allocation of the inputs.
+\end{boxobservation}
+
+\subsection{Hovering}
+Neglecting aerodynamics and the coupling terms, and writing $\boldsymbol{\Theta}$ for the roll-pitch-yaw angles and $\boldsymbol{\Gamma}=(\tau_\varphi,\tau_\vartheta,\tau_\psi)^\top$ for the torques as in the previous chapters, the model reduces to\begin{equation}
+    \ddot{\mathbf p}=g_M\mathbf e_3-{}^iR_b(\boldsymbol{\Theta})\frac{T}{m}\mathbf e_3,\qquad \ddot{\boldsymbol{\Theta}}\simeq J^{-1}\boldsymbol{\Gamma}
+\end{equation}
+which is Equation \eqref{traslational_dynamic} (and the rotational dynamics) with $g$ replaced by $g_M$ and $T=T_l+T_u$. The \textbf{hovering equilibrium} corresponds to\begin{equation}
+    \alpha_l=\beta_l=\alpha_u=\beta_u=0,\qquad T_l+T_u=mg_M,\qquad \tau_{R,l}=\tau_{R,u}
+\end{equation}
+that is: the thrusts are aligned with the vertical axis and balance the weight, and the reaction torques of the two counter-rotating rotors cancel, so that no yaw torque is produced.
 \end{document}
