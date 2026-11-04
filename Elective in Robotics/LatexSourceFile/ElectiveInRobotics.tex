@@ -2322,8 +2322,210 @@ hence we will remain in the safe set.
     \caption{Planar view of the terms in the control law.}
     \label{fig:cbf_control}
 \end{figure}
-\section{Incremental Nonlinear Dynamic Inversion}
-\todo{}
+\section{Incremental Nonlinear Dynamic Inversion}\label{sec:indi}
+All the controllers seen so far (backstepping, dynamic feedback linearization, geometric control on $SE(3)$) \textbf{invert a model} of the vehicle: mass, inertia, rotor coefficients and allocation are identified off-line, while many effects are not modeled (rotor drag, blade flapping, center of mass offsets, payloads, damaged propellers, wind, ground effect). The model errors enter the closed loop directly, and cause tracking errors, steady-state errors and a loss of performance in agile flight. \textbf{Incremental Nonlinear Dynamic Inversion (INDI)} replaces most of the model with a \textit{measurement of the response of the vehicle}: only the \textbf{control effectiveness}, i.e. how the inputs act on the accelerations, must be known. INDI originates in aircraft flight control, it has been introduced for small drones by Smeur et al., and it is now the inner loop of many agile and fault-tolerant multirotor controllers.
+
+\subsection{From NDI to INDI}
+\noindent\textbf{Nonlinear Dynamic Inversion (NDI).} Let $\bxi\in\R^n$ be a generic vector of quantities to be controlled (in the following it will be $\Bomega$ or $\dot{\mathbf p}$, and \textbf{not} the full state of Definition \textit{State of the Quadrotor}) and consider a system affine in the input, with as many inputs as controlled quantities:\begin{equation}\label{indi_system}
+    \dot{\bxi}=f(\bxi)+D(\bxi)\mathbf u,\qquad \bxi,\mathbf u\in\R^n,\quad D(\bxi)\ \text{invertible}.
+\end{equation}
+$D(\bxi)\in\R^{n\times n}$ is the \textbf{control effectiveness} (it is the decoupling matrix of the input-output linearization, for outputs of relative degree $1$). Given a desired derivative $\mathbf v\in\R^n$ (the \textbf{virtual control} or \textbf{pseudo-control}, the same symbol used in the DFL), the inversion
+\begin{equation}\label{ndi_law}
+    \mathbf u=D^{-1}(\bxi)\left(\mathbf v-f(\bxi)\right)\ \Longrightarrow\ \dot{\bxi}=\mathbf v
+\end{equation}
+is an input-output static feedback linearization. The invertibility of $D$ means that the dynamics is \textit{fully actuated}: this is not the case for the complete quadrotor, for which the decoupling matrix is singular and a dynamic compensator is needed (see the DFL). The pseudo-control $\mathbf v$ comes from a linear outer loop, e.g. $\mathbf v=\dot{\bxi}_d+K(\bxi_d-\bxi)$, which gives $\dot{\mathbf e}=-K\mathbf e$ for $\mathbf e=\bxi-\bxi_d$.\bigskip
+
+\noindent\textbf{NDI of the attitude dynamics.} Consider the rotational dynamics, in the body frame, with $\btau_e$ the \textbf{unmodeled moments} (aerodynamic effects, center of mass offsets, disturbances) and $\boldsymbol{\Gamma}$ the control torque:\begin{equation}\label{indi_rot}
+    J\dot{\Bomega}=-\Bomega\times J\Bomega+\boldsymbol{\Gamma}+\btau_e.
+\end{equation}
+Here $\bxi=\Bomega$, $f=-J^{-1}(\Bomega\times J\Bomega)+J^{-1}\btau_e$ and $D=J^{-1}$. NDI with the inertia estimate $\hat J$ and $\btau_e=\mathbf 0$ is the computed-torque part of the geometric controller: $\boldsymbol{\Gamma}=\hat J\mathbf v+\Bomega\times\hat J\Bomega$. With model errors the closed loop is
+\begin{equation}
+    \dot{\Bomega}=\mathbf v+\underbrace{J^{-1}\left[(\hat J-J)\mathbf v+\Bomega\times(\hat J-J)\Bomega+\btau_e\right]}_{\text{enters directly}}
+\end{equation}
+\begin{boxobservation}{}{}
+Example: a center of mass $1$ cm off the rotor center, with $m=4.34$ kg, gives an unmodeled moment $\tau_e=mg\cdot0.01\simeq0.43$ N m. With the gains of the geometric controller ($k_R=8.81$) the steady-state roll error is $\tau_e/k_R\simeq0.049$ rad $\simeq2.8^\circ$. An integral action helps, but it is slow and tuned on the model: can we compensate $\btau_e$ and the model errors \textit{without modeling them}?
+\end{boxobservation}
+\noindent\textbf{The key observation.} From Equation \eqref{indi_system} the unknown part of the dynamics is visible in the response:\begin{equation}
+    f(\bxi)=\dot{\bxi}-D(\bxi)\mathbf u.
+\end{equation}
+If $\dot{\bxi}$ and $\mathbf u$ are measured, $f$ is known without a model. For the attitude, $\dot{\Bomega}$ is the angular acceleration and $\boldsymbol{\Gamma}$ is the moment produced by the rotors (computed from the rotor speeds): $f$ contains the gyroscopic term, the aerodynamic moments, the center of mass offsets and the disturbances. Only $D$ must be known: for the quadrotor it depends on the inertia and on the allocation (arm length, rotor coefficients), which are usually much better known than the aerodynamics. The price is the need of a measurement of the derivative of the state and of the actuator output, affected by noise and delays.\bigskip
+
+\noindent\textbf{Derivation 1: incremental model.} Let $(\bxi_0,\mathbf u_0)=(\bxi,\mathbf u)(t-\Delta t)$ be the values one sample earlier, with $\dot{\bxi}_0=f(\bxi_0)+D(\bxi_0)\mathbf u_0$. The first-order Taylor expansion of Equation \eqref{indi_system} about $(\bxi_0,\mathbf u_0)$ is
+\begin{equation}
+    \dot{\bxi}\simeq\dot{\bxi}_0+\frac{\partial}{\partial\bxi}\Big[f(\bxi)+D(\bxi)\mathbf u_0\Big]_{\bxi_0}(\bxi-\bxi_0)+D(\bxi_0)(\mathbf u-\mathbf u_0).
+\end{equation}
+Under the \textbf{time-scale separation} assumption ($\Delta t$ small and actuators fast), $\bxi-\bxi_0=O(\Delta t)$ because the state changes continuously, while $\mathbf u-\mathbf u_0$ is \textit{not} small: the inputs can change significantly within $\Delta t$. Hence the second term is neglected:\begin{equation}
+    \dot{\bxi}\simeq\dot{\bxi}_0+D(\bxi_0)\Delta\mathbf u,\qquad\Delta\mathbf u=\mathbf u-\mathbf u_0.
+\end{equation}
+Inverting the incremental model, $\dot{\bxi}=\mathbf v$ is obtained with
+\begin{equation}\label{indi_law}
+    \boxed{\mathbf u=\mathbf u_0+D^{-1}(\bxi_0)\left(\mathbf v-\dot{\bxi}_0\right)}
+\end{equation}
+the input is computed as an \textbf{increment} of the current input, driven by the acceleration error $\mathbf v-\dot{\bxi}_0$.\bigskip
+
+\noindent\textbf{Derivation 2: NDI with measured dynamics.} Estimate $f$ from the last measurements, $\hat f=\dot{\bxi}_0-D(\bxi_0)\mathbf u_0$, and use it in the NDI law \eqref{ndi_law}:\begin{equation}
+    \mathbf u=D^{-1}(\bxi_0)\left(\mathbf v-\dot{\bxi}_0+D(\bxi_0)\mathbf u_0\right)=\mathbf u_0+D^{-1}(\bxi_0)(\mathbf v-\dot{\bxi}_0)
+\end{equation}
+which is the same law: \textbf{INDI is NDI in which $f$ is measured instead of modeled}. With the exact $D$, the applied acceleration is
+\begin{equation}
+    \dot{\bxi}=f(\bxi)+D(\bxi)\mathbf u=\mathbf v+\underbrace{\left[f(\bxi)-f(\bxi_0)\right]+\left[D(\bxi)-D(\bxi_0)\right]\mathbf u}_{\boldsymbol{\epsilon}=O(\Delta t)}
+\end{equation}
+the residual $\boldsymbol{\epsilon}$ is due to the variation of the state in one sample, \textbf{not} to model errors. For the attitude, the command is $\boldsymbol{\Gamma}_c=\boldsymbol{\Gamma}_0+J(\mathbf v-\dot{\Bomega}_0)=J\mathbf v+\Bomega_0\times J\Bomega_0-\btau_{e,0}$: the gyroscopic term and the unmodeled moments are compensated with their values at $t-\Delta t$.
+
+\begin{table}[htbp]
+  \centering
+  \renewcommand{\arraystretch}{1.35}
+  \begin{tabular}{p{2.3cm}p{4.0cm}p{4.4cm}}
+    \toprule
+    & \textbf{NDI} & \textbf{INDI}\\
+    \midrule
+    control law & $\mathbf u=D^{-1}(\mathbf v-f)$ & $\mathbf u=\mathbf u_0+D^{-1}(\mathbf v-\dot{\bxi}_0)$\\
+    model needed & $f$ and $D$ & $D$ only\\
+    measurements & $\bxi$ & $\bxi$, $\dot{\bxi}$, actuator output $\mathbf u_0$\\
+    errors in $f$ & enter the closed loop & compensated, with a delay\\
+    errors in $D$ & change the loop gain & change the transient, not the steady state\\
+    critical issues & model accuracy & noise, delays, actuator bandwidth, synchronization\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\noindent The sensitivity is moved from the model to the sensors.\bigskip
+
+\noindent\textbf{Errors in the control effectiveness (discrete time).} Assume that the actuators reach the command within one sample and that $\dot{\bxi}$ is measured exactly. At the sample $t_k$, with the previous input $\mathbf u_{k-1}$, the acceleration is $\dot{\bxi}_k^-=f(\bxi_k)+D(\bxi_k)\mathbf u_{k-1}$ and the error is $\mathbf e_k=\mathbf v_k-\dot{\bxi}_k^-$. The INDI law with the estimate $\hat D$ is $\mathbf u_k=\mathbf u_{k-1}+\hat D^{-1}\mathbf e_k$, so that after applying $\mathbf u_k$ the acceleration is $\dot{\bxi}_k^+=\dot{\bxi}_k^-+D\hat D^{-1}\mathbf e_k$, and
+\begin{equation}
+    \mathbf e_{k+1}=\left(I-D\hat D^{-1}\right)\mathbf e_k-\boldsymbol{\delta}_k,\qquad\boldsymbol{\delta}_k=\left(\dot{\bxi}_{k+1}^--\dot{\bxi}_k^+\right)-\left(\mathbf v_{k+1}-\mathbf v_k\right)=O(\Delta t).
+\end{equation}
+The error is contracted if the eigenvalues of $I-D\hat D^{-1}$ lie inside the unit circle. In the scalar case let $\kappa:=D/\hat D$ be the ratio between the true and the estimated effectiveness: $e_{k+1}=(1-\kappa)e_k-\delta_k$, i.e. each increment corrects a fraction $\kappa$ of the error.
+\begin{itemize}
+    \item $0<\kappa<1$: under-correction, the error keeps its sign and decreases slowly; $\kappa=1$: the error is removed in one sample.
+    \item $1<\kappa<2$: over-correction, the error alternates its sign but still decreases; $\kappa\notin(0,2)$: divergence.
+\end{itemize}
+The error on $D$ changes the convergence rate, not the steady state. Real actuators and filters change the bound on $\kappa$ (see below).\bigskip
+
+\noindent\textbf{INDI as a high-gain PI controller.} Consider the rate loop $\dot{\bxi}=f+D\mathbf u$ with $\mathbf v=\lambda(\bxi_d-\bxi)$, $\lambda>0$, constant $\bxi_d$, and the acceleration computed by backward difference $(\bxi_k-\bxi_{k-1})/\Delta t$:\begin{equation}
+    \mathbf u_k=\mathbf u_{k-1}+\hat D^{-1}\left(\lambda(\bxi_d-\bxi_k)-\frac{\bxi_k-\bxi_{k-1}}{\Delta t}\right).
+\end{equation}
+Summing the increments from the initial values $(\bxi_0,\mathbf u_0)$ one obtains
+\begin{equation}
+    \mathbf u_k=\underbrace{\frac{1}{\Delta t}\hat D^{-1}}_{K_P}\left[(\bxi_d-\bxi_k)+\lambda\Delta t\sum_{j=1}^k(\bxi_d-\bxi_j)\right]+\text{const}
+\end{equation}
+a discrete \textbf{PI controller} with proportional gain $K_P=(\Delta t\,\hat D)^{-1}$ and integral time $T_I=1/\lambda$. The integral action rejects constant disturbances without modeling them. The gain is very high: for the attitude rate loop $\hat D^{-1}=\hat J$, with $I_x=0.082$ kg m$^2$ and $\Delta t=2$ ms, $K_P=\hat J_x/\Delta t=41$ N m s/rad, which is $16$ times the gain $k_\Omega=2.54$ of the geometric controller. The consequence is an excellent disturbance rejection but reduced robustness to noise and delays: \textbf{filtering and synchronization matter}.
+
+\subsection{Practical Implementation: Measurements, Filters and Actuators}
+\noindent\textbf{Measuring the angular acceleration.} Gyroscopes measure $\Bomega$, not $\dot{\Bomega}$, and differentiation amplifies the noise: with a finite difference at $500$ Hz and a gyro noise of standard deviation $\sigma=0.002$ rad/s, the noise on the acceleration is $\sqrt2\sigma/\Delta t\simeq1.4$ rad/s$^2$. A second-order low-pass filter with natural frequency $\omega_f$ (rad/s) and damping ratio $\zeta_f$,
+\begin{equation}
+    H(s)=\frac{\omega_f^2}{s^2+2\zeta_f\omega_fs+\omega_f^2}
+\end{equation}
+gives at the same time the filtered velocity and its derivative. With the filter states $\boldsymbol{\chi}_1,\boldsymbol{\chi}_2$:\begin{equation}
+    \dot{\boldsymbol{\chi}}_1=\boldsymbol{\chi}_2,\quad\dot{\boldsymbol{\chi}}_2=\omega_f^2(\Bomega-\boldsymbol{\chi}_1)-2\zeta_f\omega_f\boldsymbol{\chi}_2\ :\quad\boldsymbol{\chi}_1=\Bomega_f=H\Bomega,\quad\boldsymbol{\chi}_2=\dot{\Bomega}_f=sH\Bomega
+\end{equation}
+(here, and in the following, the product of a transfer function and a signal denotes the filtered signal, with the Laplace variable $s$ also used as the derivative operator). For a Butterworth filter ($\zeta_f=1/\sqrt2$) with cut-off $f_c=10$ Hz ($\omega_f=2\pi f_c$) the standard deviation of the noise on $\dot{\Bomega}_f$ is $0.016$ rad/s$^2$, but the filter introduces a \textbf{delay} $\simeq2\zeta_f/\omega_f=22$ ms. Alternatives are angular accelerometers or the prediction of the angular acceleration.\bigskip
+
+\noindent\textbf{Measuring the actuator output.} The increment is applied to the \textit{actual} input $\mathbf u_0$, not to the last command. For the rotors, $\mathbf u_0$ is the set of thrust and moments produced by the \textbf{measured} rotor speeds (ESC telemetry, optical encoders). Without speed sensors an actuator model is used, $\hat{\mathbf u}_0=\hat A(s)\mathbf u_c$, e.g. a first-order lag with the motor time constant. The measured output includes saturations and actuator faults: the increment starts from what the actuators really do.
+
+With the thrust factor $b$, the drag factor $d$ and the arm length $l$ of the model of the quadrotor, define $w_i=\omega_i^2\ge0$ and $\mathbf w=(w_1,\dots,w_4)^\top$. The thrust and the torques are linear in $\mathbf w$:\begin{equation}\label{indi_allocation}
+    \begin{pmatrix}T\\\tau_\varphi\\\tau_\vartheta\\\tau_\psi\end{pmatrix}=\underbrace{\begin{pmatrix}
+        b&b&b&b\\
+        0&lb&0&-lb\\
+        lb&0&-lb&0\\
+        -d&d&-d&d
+    \end{pmatrix}}_{\Lambda}\mathbf w
+\end{equation}
+where $\Lambda$ is the \textbf{allocation matrix} (invertible for $b,d,l>0$). Let $(T_f,\boldsymbol{\Gamma}_f)=\Lambda\mathbf w_f$ be the thrust and torque produced by the filtered measured rotor speeds. The command is computed exactly, with no linearization, on the squared speeds:\begin{equation}\label{indi_allocation_cmd}
+    \Delta\mathbf w=\Lambda^{-1}\begin{pmatrix}T_c-T_f\\\hat J(\mathbf v_\Omega-\dot{\Bomega}_f)\end{pmatrix},\qquad\mathbf w_c=\mathbf w_f+\Delta\mathbf w,\qquad\omega_{i,c}=\sqrt{w_{i,c}}
+\end{equation}
+where $T_c$ is the thrust command given by the position loop and $\mathbf v_\Omega$ the desired angular acceleration (see below). In terms of the speeds, to first order, $\Delta\omega_i=\frac{1}{2\omega_{i,f}}\Delta w_i$, undefined if a rotor stops. On small vehicles the reaction torque due to the spin-up of the rotors, proportional to $I_r\dot\omega_i$ ($I_r$ being the inertia of the blades), is fast and large: it is included in the effectiveness along the yaw axis.\bigskip
+
+\noindent\textbf{Synchronization of the filtered signals.} The filter delays $\dot{\Bomega}_f$: if $\mathbf u_0$ is not filtered, the law compares an old acceleration with the current input. Both signals are filtered with the \textit{same} $H(s)$: for slowly varying $f$ and $D$,\begin{equation}
+    \dot{\Bomega}_f=H\dot{\Bomega}\simeq Hf+D(H\mathbf u)=Hf+D\mathbf u_f
+\end{equation}
+the filtered acceleration and the filtered input satisfy the same relation, so that they are used in the law
+\begin{equation}\label{indi_sync_law}
+    \mathbf u_c=\mathbf u_f+\hat D^{-1}\left(\mathbf v-\dot{\Bomega}_f\right).
+\end{equation}
+\noindent\textbf{Closed-loop analysis with actuator and filter.} Consider one axis (a scalar channel of the attitude dynamics), with $D=1/I_x$, $\hat D=1/\hat I_x$, $\kappa=D/\hat D=\hat I_x/I_x$. Let $d$ collect everything that does not depend on the input (gyroscopic term, aerodynamics, disturbances) and let the actuator be the transfer function $A(s)$ with $A(0)=1$ (for a first-order motor, $A(s)=1/(T_ms+1)$ with $T_m$ the motor time constant). Then
+\begin{equation}
+    \dot\Omega=d+Du,\qquad u=A\,u_c,\qquad u_c=Hu+\hat D^{-1}(v-H\dot\Omega).
+\end{equation}
+Eliminating $u$ and $u_c$:\begin{equation}\label{indi_closed_loop}
+    \dot\Omega=\frac{\kappa A}{1+(\kappa-1)AH}\,v+\frac{1-AH}{1+(\kappa-1)AH}\,d.
+\end{equation}
+\begin{boxobservation}{}{}
+Consequences of Equation \eqref{indi_closed_loop}:\begin{itemize}
+    \item With exact effectiveness ($\kappa=1$): $\dot\Omega=A\,v+(1-AH)\,d$. From $v$ to $\dot\Omega$ there is \textbf{only the actuator dynamics}, whatever $f$ and $D$; the disturbances are attenuated by $1-AH$, which vanishes at steady state ($A(0)=H(0)=1$).
+    \item For any $\kappa>0$ the static gains are $1$ (from $v$) and $0$ (from $d$): the errors on $D$ act only on the transient.
+    \item With matrices, using the same $A$ and $H$ on all channels, $\kappa$ is replaced by the matrix $N=D\hat D^{-1}$ (for the attitude, $N=J^{-1}\hat J$) and one obtains one scalar loop for each eigenvalue $\kappa_i$ of $N$.
+\end{itemize}
+\end{boxobservation}
+\noindent\textbf{What if the signals are not synchronized?} Take $\mathbf u_f=\mathbf u$ (unfiltered actuator output), $\kappa=1$ and $A=1/(T_ms+1)$:\begin{gather*}
+    \frac{\dot\Omega}{v}=\frac{1}{T_ms+H(s)},\\[1ex]\text{characteristic polynomial:}\quad T_ms^3+2\zeta_f\omega_fT_ms^2+T_m\omega_f^2s+\omega_f^2.
+\end{gather*}
+Recall the \textbf{Routh-Hurwitz criterion} for a cubic $a_3s^3+a_2s^2+a_1s+a_0$ with positive coefficients: all the roots have negative real part if and only if $a_2a_1>a_3a_0$. Here it gives
+\begin{equation}
+    \omega_f>\frac{1}{2\zeta_fT_m}
+\end{equation}
+For $T_m=0.03$ s this means $f_c>3.75$ Hz, and the response is poorly damped above this limit. On the contrary, in the synchronized case the response is the actuator response $A(s)$, for any cut-off frequency.\bigskip
+
+\noindent\textbf{Errors in the control effectiveness (continuous time).} In the synchronized case with $A=1/(T_ms+1)$ the denominator of Equation \eqref{indi_closed_loop} gives the characteristic polynomial
+\begin{equation}
+    T_ms^3+(1+2\zeta_f\omega_fT_m)s^2+(2\zeta_f\omega_f+T_m\omega_f^2)s+\kappa\omega_f^2
+\end{equation}
+and the Routh-Hurwitz criterion gives the stability range
+\begin{equation}
+    0<\kappa<\kappa_{\max}=\frac{(1+2\zeta_f\omega_fT_m)(2\zeta_f\omega_f+T_m\omega_f^2)}{T_m\omega_f^2}.
+\end{equation}
+For the reference vehicle ($T_m=0.03$ s) and $f_c=10$ Hz, $\kappa_{\max}=6.4$ ($6.0$ with a $500$ Hz sampling), much larger than the ideal discrete-time range $0<\kappa<2$: the actuator lag smooths the increments. If $\kappa<1$ (inertia underestimated) the response is slower; if $\kappa>1$ it is faster and then oscillating, up to the instability for $\kappa\ge\kappa_{\max}$. For matrices, the stability condition must hold for all the eigenvalues of $N=J^{-1}\hat J$.\bigskip
+
+\noindent\textbf{Simulation: center of mass offset.} Roll axis of the reference vehicle ($I_x=0.082$ kg m$^2$, $T_m=0.03$ s, $500$ Hz, gyro noise, $f_c=10$ Hz). Both controllers use the same outer loop, $v=-\frac{k_R}{I_x}(\varphi-\varphi_d)-\frac{k_\Omega}{I_x}p$ (with $p=\dot\varphi$ the roll rate and the gains of the geometric controller). A $20^\circ$ step is commanded, and at $t=1.5$ s a center of mass offset of $1$ cm ($0.43$ N m), unknown to both controllers, is applied. NDI shows a steady-state error of $2.8^\circ$, as predicted; INDI shows no steady-state error. The unmodeled moment seen by INDI, $\hat J\dot{\Bomega}_f-\boldsymbol{\Gamma}_f=H(s)\btau_e$, is the \textit{filtered disturbance}.
+
+\subsection{INDI for the Quadrotor}
+\noindent\textbf{Attitude control.} In Equation \eqref{indi_rot} the gyroscopic term is part of the measured dynamics. The torque command and the estimate of all the unmodeled moments are\begin{equation}
+    \boldsymbol{\Gamma}_c=\boldsymbol{\Gamma}_f+\hat J\left(\mathbf v_\Omega-\dot{\Bomega}_f\right),\qquad\hat{\btau}_{un}=\hat J\dot{\Bomega}_f-\boldsymbol{\Gamma}_f.
+\end{equation}
+At each sample:\begin{enumerate}
+    \item read the gyro and the rotor speeds, and filter them with the same $H(s)$: $\Bomega_f,\dot{\Bomega}_f,\mathbf w_f$;
+    \item compute the thrust and torque of the rotors, $(T_f,\boldsymbol{\Gamma}_f)=\Lambda\mathbf w_f$;
+    \item the attitude controller computes the desired angular acceleration $\mathbf v_\Omega$ (see below);
+    \item compute $\boldsymbol{\Gamma}_c=\boldsymbol{\Gamma}_f+\hat J(\mathbf v_\Omega-\dot{\Bomega}_f)$, while the thrust $T_c$ comes from the position loop;
+    \item allocate as in Equation \eqref{indi_allocation_cmd}, saturate ($0\le w_i\le\omega_{\max}^2$, with $\omega_{\max}$ the maximum rotor speed) and compute $\omega_{i,c}=\sqrt{w_{i,c}}$.
+\end{enumerate}
+In case of saturation, roll and pitch are given priority over yaw, and then over the thrust. The model enters only through $\hat J$ and $\Lambda$, and the matrix $N=J^{-1}\hat J$ must satisfy the stability bounds above.\bigskip
+
+\noindent\textbf{The outer attitude loop.} INDI turns the rotational dynamics into $\dot{\Bomega}\simeq\mathbf v_\Omega$ (up to the actuator lag). Let $\mathbf e_R$ and $\mathbf e_\Omega=\Bomega-R^\top R_d\Bomega_d$ be the attitude errors of the geometric controller, whose dynamics is
+\begin{equation}
+    \dot{\mathbf e}_\Omega=\dot{\Bomega}+S(\Bomega)R^\top R_d\Bomega_d-R^\top R_d\dot{\Bomega}_d.
+\end{equation}
+Choosing the desired angular acceleration
+\begin{equation}
+    \mathbf v_\Omega=-K_R\mathbf e_R-K_\Omega\mathbf e_\Omega-S(\Bomega)R^\top R_d\Bomega_d+R^\top R_d\dot{\Bomega}_d
+\end{equation}
+and using $\dot{\Bomega}=\mathbf v_\Omega$, one gets $\dot{\mathbf e}_\Omega=-K_R\mathbf e_R-K_\Omega\mathbf e_\Omega$, i.e. the error dynamics of the geometric controller (with $J^{-1}k_R$, $J^{-1}k_\Omega$ in place of $K_R,K_\Omega$). $K_R,K_\Omega$ are positive definite (e.g. diagonal) gain matrices, expressed in rad/s$^2$ per unit error: \textbf{no inertia appears in the outer loop}, and no gyroscopic compensation is needed, since it is measured. $\Bomega_d,\dot{\Bomega}_d$ are computed from the flat outputs as seen in the Flatness-Based Trajectory Generation section.\bigskip
+
+\noindent\textbf{Cascaded INDI: the translational dynamics.} Including an unmodeled external force $\mathbf F_e$ (drag, wind, payload), the translational dynamics is $m\ddot{\mathbf p}=mg\mathbf e_3-TR\mathbf e_3+\mathbf F_e$. Define the \textbf{thrust acceleration} $\boldsymbol{\sigma}=-\frac{T}{m}R\mathbf e_3$, so that $\ddot{\mathbf p}=g\mathbf e_3+\boldsymbol{\sigma}+\mathbf F_e/m$. The accelerometer measures the specific force, hence (Sensors section) the acceleration of the center of mass is recovered as $R\mathbf a_{IMU}+g\mathbf e_3=\ddot{\mathbf p}$; let $\ddot{\mathbf p}_f$ be its filtered version and $\boldsymbol{\sigma}_f$ the filtered thrust acceleration computed from the rotor speeds and the attitude. INDI on the acceleration, with the desired acceleration $\mathbf v_p$, gives
+\begin{equation}
+    \boldsymbol{\sigma}_c=\boldsymbol{\sigma}_f+\mathbf v_p-\ddot{\mathbf p}_f=\mathbf v_p-g\mathbf e_3-\hat{\mathbf F}_e/m,\qquad\hat{\mathbf F}_e=m(\ddot{\mathbf p}_f-g\mathbf e_3-\boldsymbol{\sigma}_f)
+\end{equation}
+that is, the external force is estimated and compensated. The thrust and the direction are computed as in the geometric controller:\begin{equation}
+    T_c=m\|\boldsymbol{\sigma}_c\|,\qquad\mathbf b_{3d}=-\frac{\boldsymbol{\sigma}_c}{\|\boldsymbol{\sigma}_c\|}
+\end{equation}
+and, together with the desired yaw $\mathbf b_{1d}$, they define $R_d$. The outer loop is the PD with feedforward $\mathbf v_p=\ddot{\mathbf p}_d-K_d\mathbf e_v-K_p\mathbf e_p$, while the inner loop is the INDI attitude control. The model enters only through $m$ and the thrust coefficient (needed to compute $\boldsymbol{\sigma}_f$ from the rotor speeds and the attitude).\bigskip
+
+\noindent The resulting \textbf{cascaded} architecture is the following:\begin{itemize}
+    \item position PD with feedforward $\to$ INDI on the acceleration $\to$ attitude controller ($R_d$) $\to$ INDI on the angular acceleration $\to$ allocation $\Lambda^{-1}$;
+    \item each INDI loop uses the measured acceleration of its own level (accelerometer for the position, filtered gyro for the attitude), and the same filter is applied to the acceleration and to the corresponding input at each level;
+    \item the thrust command $T_c$ bypasses the attitude loop: its increment is applied at the rotor level, as in Equation \eqref{indi_allocation_cmd};
+    \item with differential flatness, $\Bomega_d,\dot{\Bomega}_d$ are feedforward terms computed from the jerk and the snap of the planned trajectory, and INDI absorbs what the flat model neglects (drag, disturbances).
+\end{itemize}
+\noindent\textbf{Experimental results.} Smeur et al. tested cascaded INDI on a Parrot Bebop: in a $10$ m/s wind tunnel jet the position deviation is $\simeq0.2$ m (INDI) against $\simeq1.5$ m (PID with integral action), and outdoors with a mean wind of $5.1$ m/s the mean horizontal error is $\simeq0.24$ m against $\simeq0.85$ m. Tal and Karaman, with INDI and flatness feedforward at $2$ kHz and the rotor speeds from optical encoders, reached $12.9$ m/s and $2.1$ g with $6.6$ cm RMS position error; by adding a drag plate the estimated external force tripled while the tracking remained almost unchanged. Sun et al. showed that an INDI inner loop (with a drag model) reduces by more than $78\%$ the real-world tracking error of both nonlinear MPC and flatness-based control, and that INDI-based flight is possible after the complete loss of two opposing rotors.\bigskip
+
+\noindent\textbf{Stability, robustness and limits.} The derivation by time-scale separation is an approximation. Wang et al. reformulated INDI without it, proving with Lyapunov methods and perturbation theory the closed-loop stability under external disturbances, and the robustness to regular perturbations (model uncertainties) and to singular perturbations (fast actuator dynamics), also for arbitrary relative degree and internal dynamics. Lu and Holzapfel showed that the high loop gain gives a good disturbance rejection but reduced stability margins, that the sensor delay is the most damaging factor, and that synchronization enlarges the stable region. Steffensen et al. showed that with first-order actuators INDI approximates a sensor-based NDI arbitrarily well if the actuators are fast, while with slow actuators an NDI that includes the actuator dynamics performs better. INDI therefore requires:\begin{itemize}
+    \item actuators fast with respect to the controlled dynamics: this holds for the attitude (the moments act directly on $\dot{\Bomega}$), not for the position;
+    \item high-rate measurements ($0.5$--$2$ kHz), small delays, and rotor speed measurements or a good actuator model;
+    \item a reasonable $\hat D$: the sign and the order of magnitude matter.
+\end{itemize}
+Extensions include the online estimation of the effectiveness (least mean squares), the flight with the complete loss of two opposing rotors, and \textit{learned INDI}, in which a neural network replaces the rotor speed sensors in the estimate of the unmodeled forces. The method is also applied to aircraft, its original domain, and to eVTOL vehicles.
+\begin{boxobservation}{}{}
+\textbf{Summary.} NDI inverts the whole model, INDI inverts only the control effectiveness and measures the rest, $f=\dot{\bxi}-D\mathbf u$. The law $\mathbf u_c=\mathbf u_f+\hat D^{-1}(\mathbf v-\dot{\bxi}_f)$ is an increment of the actual input, driven by the acceleration error, with an integral-like action: constant disturbances and model errors in $f$ are rejected, while errors in $D$ act on the transient only, within a stability range. The price is the derivative of noisy measurements, the filters and the delays, hence input and acceleration must be synchronized with the same filter. For quadrotors, INDI gives an angular acceleration loop (moments from the rotor speeds), cascaded on an acceleration loop based on the accelerometer.
+\end{boxobservation}
 \chapter{The Ingenuity Model}\label{ch:ingenuity}
 In this chapter we study the dynamic model of \textbf{Ingenuity}, the helicopter-drone that reached Mars together with the Perseverance rover in the NASA \textit{Mars 2020} mission. On April 19, 2021 it performed the first powered flight on another planet; up to January 18, 2024 it completed 72 flights, for a total of 129 minutes of flight time, 17 km covered and a maximum altitude of 24 m. Differently from the quadrotors studied so far, Ingenuity is a \textbf{coaxial helicopter}: it has two \textbf{counter-rotating rotors} mounted on the same axis, and each rotor is equipped with a \textbf{swashplate} that allows to change the pitch of its blades. We will see that, after some simplifications, the resulting model has the same structure as the quadrotor model, so that the controllers of the previous chapters can be applied.
 \begin{figure}[H]
