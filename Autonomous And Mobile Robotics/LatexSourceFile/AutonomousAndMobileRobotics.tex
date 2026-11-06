@@ -51,7 +51,7 @@ We can define a robot as a collection of $n_b$ bodies moving in an operative spa
 To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, which requires a total of 12 parameters for the whole system, despite that, we know that 2 variables are enough to describe the whole configuration of the system.
 \begin{boxdefinition}{Configuration}{}
 The configuration of a robot is a \textbf{minimum} set of parameters that allows one to specify the posture\footnote{
-    bt posture we mean the position of all the points of the robot.
+    by posture we mean the position of all the points of the robot.
 } of the robot in the workspace.
 \end{boxdefinition}
 The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique, however, each robot always has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
@@ -1824,9 +1824,318 @@ laws for mobile manipulators should be designed on the basis of their
 dynamic model.
 \chapter{Localization}
 \section{Odometric localization}
-\todo{}
+All the discussion about planning and control in the previous chapters assumes that, in the control loop, the information about the current configuration $\q$ is known. Clearly, this is not true a priori: we need to use sensors to measure the internal and external state of our robot and, from them, reconstruct the configuration $\q$.\bigskip
+
+The encoders of mobile robots are incremental and measure only the rotation of the wheels (i.e., their angular displacement over time); \textbf{localization} is the procedure of estimating the robot configuration $\q$ in real time.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth ]{images/localization.eps}
+\end{figure}
+We will explore how to build the localization block in this scheme. We will use the equations of motion of the robot and, by integrating them, we will track the configuration evolution. This kind of state reconstruction uses only the internal sensors of the robot, which measure only the internal state (wheel angular speed) and not the environment.\bigskip
+
+We need to use a \textit{digital control scheme} for the low-level control of the robot; this assumes that the control inputs are constant during the sampling interval. We use the unicycle model as an example. Let $T_s$ be the sampling interval; the time window where the inputs $v_k,\omega_k$ are constant is:\begin{equation}
+    [t_k,t_{k+1}]=[t_k,t_k+T_s]
+\end{equation}
+where $k$ is the time step. Given the unicycle model, it is easy to see how a constant set of inputs $v_k,\omega_k$ results in an arc of a circle in the Cartesian plane.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth ]{images/constant_inputs.eps}
+    \caption{Arc of a circle traced during the sampling interval.}
+    \label{sampling}
+\end{figure}
+In Figure \ref{sampling}, $\Delta\theta$ is the variation of the orientation angle and $\Delta s$ is the length of the path traveled in the sampling interval; the circle has radius $R=\frac{v_k}{\omega_k}$ (for $\omega_k\neq 0$).
+\subsection{Euler Integration}
+Now let us see how to integrate the equations numerically. The kinematic model is nonlinear:\begin{equation}
+    \dq=f(\q,\mathbf u)
+\end{equation}
+Consider the time interval $t\in [t_k,t_{k+1}]$; starting from $\q(t_k)$ we want to compute the displacement $\Delta\q=\q(t_{k+1})-\q(t_k)$ in order to obtain the next configuration $\q(t_{k+1})$:\begin{align}
+    \q(t_{k+1})-\q(t_k)&=\int_{t_k}^{t_{k+1}}\dq\, dt =  \int_{t_k}^{t_{k+1}}f(\q(t),\mathbf u(t))\, dt\\
+    &\implies \q_{k+1}=\q_k+ \int_{t_k}^{t_{k+1}}f(\q(t),\mathbf u(t))\, dt
+\end{align}
+One simple method is \textbf{Euler Integration}, where we assume that $f(\q,\mathbf u)$ is constant during $[t_k,t_{k+1}]$:\begin{equation}
+    \q_{k+1}=\q_k+ \int_{t_k}^{t_{k+1}}f(\q_k,\mathbf u_k) dt=\q_k+
+   f(\q_k,\mathbf u_k) \int_{t_k}^{t_{k+1}}dt=\q_k+f(\q_k,\mathbf u_k)T_s 
+\end{equation}
+This assumption of course does not hold: $\mathbf u_k$ is constant due to the digital control, but $\q$ is time-varying, hence this integration method accumulates a small error at each time step. Geometrically, we are assuming that the robot moves on a straight line in a time interval (we have seen that it moves on an arc of a circle). Euler integration applied to the unicycle model gives the following:\begin{align}
+    x_{k+1}&=x_k+v_kT_s\cos\theta_k\\ 
+    y_{k+1}&=y_k+v_kT_s\sin\theta_k\\ 
+    \theta_{k+1}&=\theta_k+\omega_kT_s
+\end{align}
+The update of $\theta_{k+1}$ is exact, while $x_{k+1}$ and $y_{k+1}$ are approximated.
+\subsection{Runge-Kutta Integration}
+The error accumulated over many steps by the Euler method is not negligible. A more precise method is the \textbf{Runge-Kutta Integration} (here, its second-order version), which uses the following approximation:\begin{equation}
+    f(\q(t),\mathbf u(t))\simeq f\left(\q_k+\frac{T_s}{2}f(\q_k,\mathbf u_k),\mathbf u_k\right)
+\end{equation}
+in the time interval $[t_k,t_{k+1}]$. It uses the average orientation, that is $\theta_k+\frac{\omega_kT_s}{2}$, hence the update rule is\begin{align}
+    x_{k+1}&=x_k+v_kT_s\cos\left(\theta_k+\frac{\omega_kT_s}{2}\right)\\ 
+    y_{k+1}&=y_k+v_kT_s\sin\left(\theta_k+\frac{\omega_kT_s}{2}\right)\\ 
+    \theta_{k+1}&=\theta_k+\omega_kT_s
+\end{align}
+Note that $x_{k+1}$ and $y_{k+1}$ are still approximate, but more accurate.
+\subsection{Exact Integration}
+The last method that we see simply computes the exact integral in the time interval $[t_k,t_{k+1}]$. This method requires the dynamics to have an analytical solution for the integral, hence it cannot be applied to all systems. The unicycle model has equations of motion that are easily integrable for constant $v,\omega$:
+\begin{align}
+    &\begin{cases}
+        x_{k+1}=x_k+\frac{v_k}{\omega_k}(\sin\theta_{k+1}-\sin\theta_k)\\ 
+        y_{k+1}=y_k-\frac{v_k}{\omega_k}(\cos\theta_{k+1}-\cos\theta_k)\\ 
+        \theta_{k+1}=\theta_k+\omega_kT_s
+    \end{cases}\\\implies
+    &\begin{cases}
+        x_{k+1}=x_k+\frac{v_k}{\omega_k}\left(\sin(\theta_k+\omega_kT_s)-\sin\theta_k\right)\\ 
+        y_{k+1}=y_k-\frac{v_k}{\omega_k}\left(\cos(\theta_k+\omega_kT_s)-\cos\theta_k\right)\\ 
+        \theta_{k+1}=\theta_k+\omega_kT_s
+    \end{cases}.
+\end{align}
+For $\omega_k=0$ the expressions above are undefined (division by zero), but their limit for $\omega_k\to 0$ exists and coincides with the solution given by Euler and Runge-Kutta, i.e., $x_{k+1}=x_k+v_kT_s\cos\theta_k$ and $y_{k+1}=y_k+v_kT_s\sin\theta_k$. When $\omega_k\simeq 0$, conditional instructions must be used in the implementation to avoid numerical problems; this is not desirable, and in real cases Euler integration is usually used, together with methods that correct the estimate using sensors.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth ]{images/integrations.eps}
+\end{figure}
+The methods seen use the nominal inputs $v_k,\omega_k$. Since no actuation system is ideal, we cannot assume that any requested input is immediately realized; hence, instead of using $v_k$ and $\omega_k$, we should compute their ``real'' values inferred from the encoder readings. First of all we use the following identities:\begin{equation}
+    v_kT_s=\Delta s, \qquad \omega_kT_s=\Delta \theta
+\end{equation}
+$\Delta s$ and $\Delta \theta$ are reconstructed via proprioceptive sensors. For example, in a differential-drive robot we have access to the total rotations of the right and left wheels measured by the encoders in a time window:\begin{equation}
+    \Delta\phi_R,\quad\Delta\phi_L 
+\end{equation}
+$\Delta s$ and $\Delta \theta$ are then reconstructed as follows (where $r$ is the wheel radius and $d$ the distance between the wheels):\begin{equation}
+    \Delta s = \frac{r}{2} (\Delta \phi_R + \Delta \phi_L), \qquad \Delta \theta = \frac{r}{d} (\Delta \phi_R - \Delta \phi_L).
+\end{equation}
+Odometric localization maintains an estimate of a robot's configuration via iterative integration of its kinematic model. While fundamental to autonomous navigation, it inherently suffers from cumulative odometric drift, which grows without bound over extended trajectories. This divergence stems primarily from unmodeled physical perturbations such as wheel slippage, systematic uncertainties such as imperfect wheel radius calibration, and numerical integration errors. Consequently, practical and effective localization frameworks cannot rely solely on proprioceptive dead reckoning, necessitating the sensor fusion of proprioceptive measurements with exteroceptive sensing modalities to bound estimation errors over time.
 \section{Kalman Filter}
-\todo{}
+In the previous section, we have seen how to integrate the equations of motion in order to track the configuration evolution over time. Odometric localization alone is subject to an error that diverges over time; effective localization methods use proprioceptive as
+well as exteroceptive sensors, exploiting the information about a known map in order to compare it with the actual sensor readings. Instead of maintaining a single
+hypothesis on the configuration, the \textbf{Kalman Filter} maintains a probability
+distribution over the space of all possible hypotheses.\bigskip
+
+Although in the robotics context we denote the configuration by $\q$,
+in this section we will present the filter for a generic dynamical system, denoting the state by $\mathbf x$.
+\subsection{Probability Recap}
+We recall three basic definitions of probability theory. Let $\mathbf X$ be a random variable over $\R^n$, with density function $f_X(\mathbf x)$, its \textbf{expected value} is:\begin{equation}
+    \VA(\mathbf X)=\bar{\mathbf X}=\int_{\R^n}\mathbf xf_X(\mathbf x)d\mathbf x.
+\end{equation}
+The \textbf{covariance matrix} is defined as follows:\begin{equation}
+P_X=\VA\left((\mathbf X-\bar{\mathbf X})(\mathbf X-\bar{\mathbf X})^\top\right). 
+\end{equation}
+A random variable has a \textbf{multivariate Gaussian distribution} if its density function is:\begin{equation}
+    f_X(\mathbf x)=\frac{1}{\sqrt{(2\pi)^n\text{det}P_X}}\exp\left(
+        -\frac{1}{2}(\mathbf x-\bar{\mathbf X})^\top 
+        P_X^{-1}
+        (\mathbf x-\bar{\mathbf X})
+    \right).
+\end{equation}
+In a Gaussian distribution the level sets of the density are ellipsoids described by the covariance matrix: the eigenvalues of $P_X$ are proportional to the squared lengths of the principal semi-axes, and the directions of the axes are given by the eigenvectors.\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth ]{images/gaussian.eps}
+\end{figure}
+\subsection{Zero-Noise Kalman Filter}
+The Kalman Filter was initially developed for linear systems; we will describe its basic formulation and then extend it to nonlinear systems. Consider a linear discrete-time system:\begin{align}
+    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k\label{motion_KF}\\ 
+    &\mathbf y_k=C_k\mathbf x_k
+\end{align}
+$\mathbf x_k$ is the state and $\mathbf y_k$ the observations given by the sensors. We denote $\widehat{\mathbf x}_k$ our state estimate at time step $k$. To estimate $\mathbf x_{k+1}$, we will use the equation of motion \eqref{motion_KF} to get a first estimate, and then use the observation $\mathbf y_{k+1}$ to correct such an estimate.\begin{itemize}
+    \item \textbf{Prediction}: We generate an intermediate estimate $\widehat{\mathbf x}_{k+1|k}$ by propagating $\widehat{\mathbf x}$ using the equation of motion.
+    \item \textbf{Correction}: We correct the prediction on the basis of the
+    difference between the measured and the predicted output.
+\end{itemize}
+The prediction phase is just:\begin{equation}
+    \widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k
+\end{equation}
+Now we have to use the measurement. To be consistent, we want our estimate to be mapped into the observation, hence $\widehat{\mathbf x}_{k+1}$ should lie in the affine subspace:\begin{equation}
+    \Omega=\{\mathbf x\in\R^n \ : \ C_{k+1}\mathbf x=\mathbf y_{k+1}\}
+\end{equation}
+Hence our correction $\Delta\mathbf x$ should satisfy the following equation:\begin{equation}
+    C_{k+1}(\widehat{\mathbf x}_{k+1|k}+\Delta\mathbf x)=\mathbf y_{k+1}
+\end{equation}
+which can be rewritten as:\begin{equation}\label{correction}
+    C_{k+1}\Delta\mathbf x = \mathbf y_{k+1}-C_{k+1}\widehat{\mathbf x}_{k+1|k}.
+\end{equation}
+There are infinitely many corrections $\Delta \mathbf x$ that satisfy Equation \eqref{correction}, hence we choose the one with minimum norm, provided by the pseudo-inverse matrix:\begin{equation}
+    \Delta\mathbf x =  C_{k+1}^\#(\mathbf y_{k+1}-C_{k+1}\widehat{\mathbf x}_{k+1|k})=C_{k+1}^\#\bnu_{k+1}
+\end{equation}
+where we denoted by $\bnu_{k+1}$ the term called \textbf{innovation}. We have assumed that $C_{k+1}$ has full row rank (so that the system in Equation \eqref{correction} admits a solution). 
+\begin{boxdefinition}{Two-step observer}{}
+    \begin{align}
+    &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+    &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+
+    C_{k+1}^\#\bnu_{k+1}.
+\end{align}
+\end{boxdefinition}
+\subsection{Noise on the Dynamics}
+The full Kalman filter considers the dynamics and the observations to be stochastic, i.e., affected by noise. Let us proceed by including randomness only in the equation of motion.
+Let us assume that the dynamics includes a zero-mean Gaussian noise:
+\begin{align}
+    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\label{motion_KF_noise}\\ 
+    &\mathbf y_k=C_k\mathbf x_k
+\end{align}
+where\begin{equation}
+    \mathbf v_k\sim \mathcal N(\mathbf 0,V_k)\footnote{
+In this chapter $\mathcal N$ is used to denote a Gaussian distribution, while in the previous chapters the same symbol is used for the null space of a matrix.
+    }
+\end{equation}
+$V_k$ is the covariance matrix of $\mathbf v_k$. It is a white noise: samples at different time steps are independent. Now the process is stochastic, hence we do not have to estimate a state, but a distribution of states, specified by a mean value $\widehat{\mathbf x}_k$ and a covariance matrix $P_k$ (the distribution is Gaussian):\begin{equation}
+    \mathcal N(\widehat{\mathbf x}_k,P_k).
+\end{equation} 
+We keep a prediction/correction structure.
+Suppose that at time step $k$ we have our current estimate $\widehat{\mathbf x}_k$, $P_k$. We want to obtain a first estimate of the next state distribution through the system dynamics as before (with this prediction we update just the mean):
+\begin{equation}\label{pred_noise}
+    \widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k
+\end{equation}
+Normally we would also include the mean value of the noise, but it is zero, hence the prediction phase is unchanged.
+Then we use the observation to correct both the mean and the covariance. First, we introduce an intermediate covariance, that is the covariance matrix of the prediction error with respect to our first estimate $\widehat{\mathbf x}_{k+1|k}$ of the next state:\begin{equation}
+    P_{k+1|k}=\VA\left(
+        (\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1|k})
+        (\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1|k})^\top
+    \right)
+\end{equation}
+we use Equations \eqref{motion_KF_noise} and \eqref{pred_noise}:\begin{align}
+     P_{k+1|k}&=\VA\left(
+        (A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k-A_k\widehat{\mathbf x}_k-B_k\mathbf u_k)
+        (A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k-A_k\widehat{\mathbf x}_k-B_k\mathbf u_k)^\top
+    \right)\\
+    &=\VA\left(
+        (A_k\mathbf x_k+\mathbf v_k-A_k\widehat{\mathbf x}_k)
+       (A_k\mathbf x_k+\mathbf v_k-A_k\widehat{\mathbf x}_k)^\top
+    \right)\\
+     &=\VA\left(
+        (A_k(\mathbf x_k-\widehat{\mathbf x}_k)+\mathbf v_k)
+        (A_k(\mathbf x_k-\widehat{\mathbf x}_k)+\mathbf v_k)^\top
+    \right)\\
+    &=\VA\left(
+A_k(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top +
+A_k(\mathbf x_k-\widehat{\mathbf x}_k)\mathbf v_k^\top +\mathbf v_k(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top+\mathbf v_k\mathbf v_k^\top
+     \right)
+\end{align}
+the expected value is linear:\begin{align}
+     P_{k+1|k}&=\VA\left(
+A_k(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top \right)+
+\VA\left(A_k(\mathbf x_k-\widehat{\mathbf x}_k)\mathbf v_k^\top +\mathbf v_k(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top \right)+\underbrace{\VA\left(\mathbf v_k\mathbf v_k^\top
+     \right)}_{V_k}\\
+     &=\blueText{\VA\left(
+A_k(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top \right)}+
+\VA\left(\greenText{A_k(\mathbf x_k-\widehat{\mathbf x}_k)\mathbf v_k^\top} +\sapText{\mathbf v_k(\mathbf x_k-\widehat{\mathbf x}_k)^\top A_k^\top} \right)+V_k
+\end{align}
+$A_k$ is constant hence we exploit once again the linearity of the expected value:\begin{equation}
+    P_{k+1|k}=\blueText{A_k\VA\left(
+(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top \right)A_k^\top} +
+\greenText{A_k \VA\left((\mathbf x_k-\widehat{\mathbf x}_k)\mathbf v_k^\top \right)}+
+\sapText{\VA\left(\mathbf v_k(\mathbf x_k-\widehat{\mathbf x}_k)^\top\right) A_k^\top }+V_k
+\end{equation}
+we use the fact that $\VA(\mathbf a\mathbf b^\top)=\VA(\mathbf a)\VA(\mathbf b)^\top$ if $\mathbf a,\mathbf b$ are independent (here, $\mathbf v_k$ is white noise, hence independent of $\mathbf x_k-\widehat{\mathbf x}_k$):\begin{equation}
+     P_{k+1|k}={A_k\VA\left(
+(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top \right)A_k^\top} +
+{A_k \VA\left((\mathbf x_k-\widehat{\mathbf x}_k)  \right)\VA\left(\mathbf v_k\right)^\top}+
+{\VA\left(\mathbf v_k\right)\VA\left((\mathbf x_k-\widehat{\mathbf x}_k)\right)^\top A_k^\top }+V_k
+\end{equation}
+$\VA\left(\mathbf v_k\right)$ is zero (hence also its transpose), so the two cross terms vanish:\begin{equation}
+P_{k+1|k}=A_k\underbrace{\VA\left(
+(\mathbf x_k-\widehat{\mathbf x}_k)(\mathbf x_k-\widehat{\mathbf x}_k)^\top\right)}_{P_k} A_k^\top+V_k
+\end{equation}
+ultimately\begin{equation}
+    \boxed{
+        P_{k+1|k}=A_kP_kA_k^\top+V_k
+    }.
+\end{equation}
+$P_{k+1|k}$ is a measure of the uncertainty associated with the state estimate $\widehat{\mathbf x}_{k+1|k}$. Notice how at each step the previous covariance matrix $P_k$ is stretched/compressed (and/or) rotated through the application of $A_k$, and is increased by the addition of $V_k$. Hence, at each step we are adding noise and the uncertainty tends to increase\footnote{
+    The volume of the associated ellipsoid tends to grow.
+}; without corrections, it may grow without bound.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth ]{images/step_KF.eps}
+\end{figure}
+\noindent Now that we have a first estimate $\mathcal N(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, we can find the correction $\Delta\mathbf x$ by solving the system as in Equation \eqref{correction}, but instead of taking the minimum norm correction, we will consider the \textbf{maximum likelihood} correction. We want to select the value in $\Omega$ that maximizes the density of the Gaussian distribution $\mathcal N(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, which is defined by:\begin{equation}
+    p(\mathbf x)=\frac{1}{\sqrt{(2\pi)^n\text{det}P_{k+1|k}}}\exp\left(
+        -\frac{1}{2}(\mathbf x-\widehat{\mathbf x}_{k+1|k})^\top 
+        P_{k+1|k}^{-1}
+       (\mathbf x-\widehat{\mathbf x}_{k+1|k})
+    \right)
+\end{equation}
+\begin{boxobservation}{}{}
+    Maximizing $p(\mathbf x)$ is equivalent to minimizing $\frac{1}{2}(\mathbf x-\widehat{\mathbf x}_{k+1|k})^\top 
+        P_{k+1|k}^{-1}
+       (\mathbf x-\widehat{\mathbf x}_{k+1|k})$.
+\end{boxobservation}
+Formally, the state estimation that we want to find for step $k+1$ is given by the following minimization problem:\begin{align}
+    &\operatorname*{arg\,min}_{\mathbf x\in \R^n}\frac{1}{2}(\mathbf x-\widehat{\mathbf x}_{k+1|k})^\top 
+        P_{k+1|k}^{-1}
+       (\mathbf x-\widehat{\mathbf x}_{k+1|k})\\
+       \text{s.t. }&C_{k+1}\mathbf x = \mathbf y_{k+1}
+\end{align}
+since $\mathbf x-\widehat{\mathbf x}_{k+1|k}$ is exactly the correction $\Delta \mathbf x$, the problem can be rewritten in the variable $\Delta\mathbf x$:
+\begin{align}
+    &\operatorname*{arg\,min}_{\Delta\mathbf x\in \R^n}\frac{1}{2}\Delta\mathbf x^\top 
+        P_{k+1|k}^{-1}
+       \Delta\mathbf x\\
+       \text{s.t. }&C_{k+1}\Delta \mathbf x =\underbrace{ \mathbf y_{k+1}-C_{k+1}\widehat{\mathbf x}_{k+1|k}}_{\bnu_{k+1}}.
+\end{align}
+We are trying to minimize a quadratic form on an affine subspace, hence the solution is given by the weighted pseudo-inverse of $C_{k+1}$, which uses the weight $M=P_{k+1|k}^{-1}$:\begin{equation}
+    \boxed{
+      \Delta\mathbf x = \blueText{C^\#_{k+1,M}}\, \bnu_{k+1}=\blueText{P_{k+1|k}C_{k+1}^\top (C_{k+1}P_{k+1|k}C_{k+1}^\top)^{-1}}\, \bnu_{k+1}
+    }
+\end{equation}
+so the next state estimate will be\begin{equation}
+    \widehat{\mathbf x}_{k+1}=
+     \widehat{\mathbf x}_{k+1|k}+C^\#_{k+1,M}\, \bnu_{k+1}.
+\end{equation}
+Without giving the proof, the correction of the covariance matrix is the following:\begin{equation}
+    P_{k+1}=P_{k+1|k}-C_{k+1,M}^\#C_{k+1}P_{k+1|k}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth ]{images/step_KF2.eps}
+    \caption{Geometric interpretation of the correction.}
+\end{figure}\begin{boxdefinition}{Observer With Noise on the Dynamics}{}
+    The Kalman filter for a system with noise on the dynamics is defined as follows:\begin{itemize}
+        \item \textbf{prediction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+            &P_{k+1|k}=A_kP_kA_k^\top+V_k
+        \end{align}
+        \item \textbf{correction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+C_{k+1,M}^\#\bnu_{k+1}\\
+            &P_{k+1}=P_{k+1|k}-C_{k+1,M}^\#C_{k+1}P_{k+1|k}.
+        \end{align}
+    \end{itemize}
+\end{boxdefinition}
+\subsection{Complete Kalman Filter}
+Now the noise is considered also in the observations:
+\begin{align}
+    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\\ 
+    &\mathbf y_k=C_k\mathbf x_k+\mathbf w_k
+\end{align}
+with $\mathbf w_k\sim\mathcal N(\mathbf 0,W_k)$. This noise usually comes from the sensors, the noise on the dynamics comes from non-modeled factors (for example, the slippage of the wheels, which the model does not include).
+The dynamics is unchanged and the prediction phase is identical to the one seen before:
+\begin{align}
+            &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+            &P_{k+1|k}=A_kP_kA_k^\top+V_k.
+\end{align}
+Due to the noise, the observation $\mathbf y_{k+1}$ is not exact: it is drawn from a Gaussian distribution with mean value $C_{k+1}\mathbf x_{k+1}$ and covariance $W_{k+1}$. We compute the \textbf{most likely} output value $\mathbf y^*_{k+1}$ associated to the prediction $\widehat{\mathbf x}_{k+1|k}$ and the measured output $\mathbf y_{k+1}$. Then the correction is identical, but instead of using \begin{equation}
+    \Omega=\{\mathbf x\in\R^n \ : \ C_{k+1}\mathbf x=\mathbf y_{k+1}\}
+\end{equation}
+it uses\begin{equation}
+    \Omega^*=\{\mathbf x\in\R^n \ : \ C_{k+1}\mathbf x=\mathbf y^*_{k+1}\}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/likelhood_hyperplane.pdf}
+\end{figure}
+We will not dive into the details of the computation and give just the result: the correction uses the \textbf{Kalman Gain Matrix}:\begin{equation}
+    \boxed{R_{k+1}=P_{k+1|k}C_{k+1}^\top (C_{k+1}P_{k+1|k}C_{k+1}^\top+W_{k+1})^{-1}}
+\end{equation}
+The matrix $R_{k+1}$ weighs the accuracy of the prediction with respect to that of the measurements.\begin{itemize}
+    \item $R_{k+1}$ is large (in terms of eigenvalues) if the measurements are more reliable.
+    \item $R_{k+1}$ is small (in terms of eigenvalues) if the prediction is more reliable.
+\end{itemize}
+\begin{boxdefinition}{Kalman Filter}{}
+    The Kalman Filter is an observer defined in two steps:\begin{itemize}
+        \item \textbf{prediction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+            &P_{k+1|k}=A_kP_kA_k^\top+V_k
+        \end{align}
+        \item \textbf{correction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+R_{k+1}\bnu_{k+1}\\
+            &P_{k+1}=P_{k+1|k}-R_{k+1}C_{k+1}P_{k+1|k}.
+        \end{align}
+    \end{itemize}
+\end{boxdefinition}
+It can be proved that the Kalman filter provides an optimal estimate: at each time step $k$ it minimizes the mean squared estimation error $\VA\left(\|\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1}\|^2\right)$. Notice how $R_{k}$ does not depend on the measurements, hence the sequence $\{R_1,\dots, R_k,\dots\}$ can be precomputed a priori.
 \section{Extended Kalman Filter}
-\todo{}
 \end{document}
