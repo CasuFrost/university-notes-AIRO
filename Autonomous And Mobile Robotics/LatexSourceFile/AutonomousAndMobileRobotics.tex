@@ -2138,4 +2138,63 @@ The matrix $R_{k+1}$ weighs the accuracy of the prediction with respect to that 
 \end{boxdefinition}
 It can be proved that the Kalman filter provides an optimal estimate: at each time step $k$ it minimizes the mean squared estimation error $\VA\left(\|\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1}\|^2\right)$. Notice how $R_{k}$ does not depend on the measurements, hence the sequence $\{R_1,\dots, R_k,\dots\}$ can be precomputed a priori.
 \section{Extended Kalman Filter}
+Now we have to extend the Kalman filter to a general nonlinear system (as the mobile robots kinematic model).\begin{equation}\label{nonlinear_sys}\begin{cases}
+    \mathbf x_{k+1}=f_k(\mathbf x_k,\mathbf u_k)+\mathbf v_k\\
+    \mathbf y_k=h_k(\mathbf x_k)+\mathbf w_k
+\end{cases}\end{equation}
+with $f_k,h_k$ being continuously differentiable for each $k$. What we do is apply approximate linearization around the current estimation $\widehat{\mathbf x}_k$ and consider the Kalman filter on that approximation.
+\begin{boxdefinition}{Extended Kalman Filter}{}
+    For a system like in Equation \eqref{nonlinear_sys}, we consider the Jacobian matrices:\begin{equation}
+        F_k=\frac{\partial f_k}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_k},\qquad  H_{k+1}=\frac{\partial h_{k+1}}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_{k+1}},
+    \end{equation}
+    the extended Kalman filter is an observer defined in two steps:\begin{itemize}
+        \item \textbf{prediction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1|k}=f_k(\mathbf x_k,\mathbf u_k)\\
+            &P_{k+1|k}=F_kP_kF_k^\top+V_k
+        \end{align}
+        \item \textbf{correction}:\begin{align}
+            &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+R_{k+1}\bnu_{k+1}\\
+            &P_{k+1}=P_{k+1|k}-R_{k+1}H_{k+1}P_{k+1|k}.
+        \end{align}
+    \end{itemize}
+    with the Kalman gain matrix being:\begin{equation}
+        R_{k+1}=P_{k+1|k}H_{k+1}^\top (H_{k+1}P_{k+1|k}H_{k+1}^\top+W_{k+1})^{-1}.
+    \end{equation}
+\end{boxdefinition}
+\noindent The block scheme of the filter is shown in Figure \ref{fig:EKF_blockscheme}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/KF_blochscheme.eps}
+    \caption{Block scheme of the extended Kalman filter.}
+    \label{fig:EKF_blockscheme}
+\end{figure}
+\section{Landmark-Based and SLAM}
+Now we apply the extended Kalman filter to a robotic system in order to localize the robot and have a proper estimation of the state. We will construct the discussion based on the assumption that our mobile robot is equipped with a sensor that can measure the \textit{relative distance (range) and orientation (bearing)} to a set of \textbf{landmarks}, that are point-wise obstacles, they may be artificial or natural. The position of the landmarks is fixed and known.\bigskip
+
+There are various sensors that can provide this kind of landmarks, such as laser rangefinders, depth cameras or RFID sensors.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/landmarks.png}
+\end{figure}
+Let's use the unicycle model, with the addition of a white gaussian noise $\blueText{\mathbf v_k}$ with zero mean and covariance matrix $V_k$:\begin{align}
+    &x_{k+1}=x_k+\greenText{v_k}T_s\cos\theta_k+\blueText{v_{1k}}\\
+    &y_{k+1}=y_k+\greenText{v_k}T_s\sin\theta_k+\blueText{v_{2k}}\\
+    &\theta_{k+1}=\theta_k+\omega_kT_s+\blueText{v_{3k}}.
+\end{align}
+\begin{boxnotation}{}{}
+    With $\greenText{v_k}$, we denote the translational velocity input of the unicycle model at time step $k$, while with $\blueText{\mathbf v_k=\begin{pmatrix}
+       v_{1k}& v_{2k}& v_{3k}
+    \end{pmatrix}^\top}$ we denote the Gaussian noise on the dynamics at time step $k$.
+\end{boxnotation}
+Let $L$ be the total number of landmarks, and let $L_k\le L$ be the number of landmarks that the robot can sense at time step $k$, identify the cartesian positions of the landmarks as:\begin{equation}
+    \mathbf p_{li}=\begin{pmatrix}
+        x_{li}\\y_{li}
+    \end{pmatrix}, \quad 1\le i \le L.
+\end{equation}
+The robot do not have direct access to the landmark position $\begin{pmatrix}
+        x_{li}&y_{li}
+\end{pmatrix}^\top$, but to te relative range and bearing. We assume that the robot can identify and distinguish the landmarks between each other, each landmark is identified by an index between 1 to $L$. At a given time step, there are $L_k$ landmarks sensed, but the $i$-th landmark sensed is not necessarily the landmark $i$ out of $L$, hence we use an association map $a$ that assign at an integer between 1 to $L_k$ (the $i$-th landmark sensed) the $j$-th landmark between 1 to $L$:\begin{equation}
+    a:\{1,2,\dots,L_k\}\to\{1,2,\dots,L\}
+\end{equation}
+so we denote $a(i)$ the index of the landmark observed at the $i$-th measurement.
 \end{document}
