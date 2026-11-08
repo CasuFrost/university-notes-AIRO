@@ -48,13 +48,13 @@ This document summarizes and presents the topics for the \titolo course for the 
 \section{Configuration Space}   
 We can define a robot as a collection of $n_b$ bodies moving in an operative space, denoted $W$ and called the \textbf{workspace}. $W$ can be $\R^2$ (if the robot moves on a plane, like a planar 2R) as well as $\R^3$, if the robot moves in the space. For example, an elbow-type spatial manipulator is a system of $n_b=3$ rigid bodies moving in $W=\R^3$. A quadrotor is a single body ($n_b=1$) moving in the same workspace $W=\R^3$. 
 
-To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, which requires a total of 12 parameters for the whole system, despite that, we know that 2 variables are enough to describe the whole configuration of the system.
+To describe the complete pose of a planar 2R manipulator, we might use the position vector and roll-pitch-yaw angles for the two bodies, which requires a total of 12 parameters for the whole system. Despite this, we know that 2 variables are enough to describe the whole configuration of the system.
 \begin{boxdefinition}{Configuration}{}
 The configuration of a robot is a \textbf{minimum} set of parameters that allows one to specify the posture\footnote{
     by posture we mean the position of all the points of the robot.
 } of the robot in the workspace.
 \end{boxdefinition}
-The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique, however, each robot always has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
+The configuration of a robot can be defined in several ways, and a choice of a set of parameters is not unique; however, each robot has a \textit{minimum number} of parameters. We usually denote $\q$ the configuration vector:\begin{equation}
     \q=\begin{pmatrix}
         q_1\\ \vdots\\ q_n 
     \end{pmatrix}
@@ -77,7 +77,7 @@ and it's not Euclidean, despite being called \textit{special Euclidean group}. A
 \begin{equation}
     \mathcal C = \R^3\times SO(3)=SE(3).
 \end{equation}
-We have seen in previous courses of robotics that the number of generalized coordinates of an  $n$-link serial manipulator is exactly $n$.
+We have seen in previous courses of robotics that the number of generalized coordinates of an $n$-link serial manipulator (with single-degree-of-freedom joints) is exactly $n$.
 \subsection{Topology of a Space}
 We are interested in describing the configuration space of a given manipulator, since it's not Euclidean (in most cases), we would like to have an idea of how to navigate this space. Before defining what a \textit{manifold} is, we give some examples.\bigskip 
 
@@ -89,11 +89,11 @@ Let's try to represent graphically $\mathcal C$. We might represent a configurat
     \centering
     \includegraphics[width=0.8\textwidth ]{images/configuration_2R.eps}
 \end{figure}
-The problem of this representation is that different configurations $\q\in \mathcal C$ map to the same posture of the robot in $W$, as shown in Figure \ref{not_injective}.
+The problem of this representation is that different points of the plane (angles differing by multiples of $2\pi$) represent the same configuration $\q\in \mathcal C$, and hence map to the same posture of the robot in $W$, as shown in Figure \ref{not_injective}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth ]{images/configuration_2R_notInjective.eps}
-    \caption{Different configurations map to the same posture.}
+    \caption{Different points of the plane map to the same posture.}
     \label{not_injective}
 \end{figure}
 To overcome this problem, we might try to represent the configuration space as a square in the plane $[0,2\pi)\times [0,2\pi)$:
@@ -101,7 +101,7 @@ To overcome this problem, we might try to represent the configuration space as a
     \centering
     \includegraphics[width=0.3\textwidth ]{images/2pi_times_2pi.eps}
 \end{figure}
-This representation also presents a problem: The distance between two configurations in $\mathcal C$ does not represent the true distance between two postures in the workspace: Two very distant configurations $\q_a$ and $\q_b$ in $\mathcal C$ can be mapped to two very close postures in $W$:
+This representation also presents a problem: the Euclidean distance between two points of the square does not represent the true distance between two postures in the workspace. Two points $\q_a$ and $\q_b$ that are very distant in the square can be mapped to two very close postures in $W$ (for example, angles close to $0$ and angles close to $2\pi$):
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth ]{images/a_b_distance.pdf}
@@ -146,14 +146,14 @@ In the robotics context, we want to define the distance between two postures of 
 For example, we might let $\mathbf p$ be the center of mass of the manipulator, and observe how it changes by varying $\q\in \mathcal C$. One simple way to define a distance metric is to consider the maximum Euclidean distance between two points of the manipulator in two different configurations:\begin{equation}\label{displacement_metric}
     d(\q_a,\q_b)=\max_{\mathbf p\in \text{robot}}\|\mathbf p(\q_a)-\mathbf p(\q_b)\|
 \end{equation}
-This distance is called \textbf{displacement metric}. Notice how in the definition we are writing $\mathbf p \in \text{robot}$, by letting robot be the set of all the points in the structure of the manipulator, which clearly depend on the current configuration. This kind of metric works under the assumption that, if the region occupied by the robot is similar in two different postures, then the distance between their respective configurations is small:\begin{equation}
+This distance is called \textbf{displacement metric}. Notice how in the definition we are writing $\mathbf p \in \text{robot}$, where robot denotes the set of all the (material) points of the structure of the manipulator, whose positions clearly depend on the configuration. This kind of metric works under the assumption that, if the region occupied by the robot is similar in two different postures, then the distance between their respective configurations is small:\begin{equation}
     d(\q_a,\q_b)\simeq 0\implies B(\q_a)\simeq B(\q_b).
 \end{equation}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth ]{images/displacement_metric.eps}
 \end{figure}
-To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an uncountably infinite set. If the links are polyhedral shapes, the problem becomes finite, since it is possible to find the maximum distance between any pair of polytopes in the three dimensional space. 
+To compute the distance in Equation \eqref{displacement_metric}, we should check each point of the robot, and in general this is an uncountably infinite set. If the links are polyhedral shapes, the problem becomes finite: for a rigid link, the difference $\mathbf p(\q_a)-\mathbf p(\q_b)$ is an affine function of the position of the point in the link frame, hence its norm is a convex function and its maximum over a polyhedron is attained at one of its (finitely many) vertices. 
 
 A more computationally feasible approach is to check only for a finite set of points in the robot structure, called \textbf{control points}. Let \begin{equation}
     P=\{\mathbf p_1,\mathbf p_2,\dots, \mathbf p_c\}
@@ -163,7 +163,7 @@ be a set of $c$ points of the robot (in general, they all depend on the configur
 \end{equation}
 Not all the points of a robot are feasible control points, for example, the base of a manipulator usually doesn't change with the configuration. $P$ is a set of \textit{proper control points} if the function $d$ as defined in Equation \eqref{cp_metric} satisfies the properties of a distance given in Definition \ref{def:distance}.
 \begin{boxobservation}{Approximation for Local Motion}{}
-Since a smooth manifold is locally homeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold (assuming it is smooth) with the Euclidean distance.
+Since a smooth manifold is locally diffeomorphic to $\R^n$, for sufficiently close configurations we can approximate the distance on the manifold (assuming it is smooth) with the Euclidean distance.
 \end{boxobservation}
 \begin{boxobservation}{Prismatic Joints}{}
 The configuration space of a robot with \textit{only} prismatic joints is Euclidean.
@@ -183,7 +183,7 @@ The convex hull of two points is a line segment, hence a robot with only two whe
 \noindent There are three main types of wheels:\begin{itemize}
     \item \textbf{Fixed Wheels}: They have a fixed orientation: Can roll but can't steer about their vertical axis (see Figure \ref{fixed_wheel}). They are usually actuated, if passive, they are used for balance and offer a contact point.
     \item \textbf{Steerable Wheels}: They can steer and are used for orientation, hence they are typically active (e.g. the front wheels of a car).
-    \item \textbf{Caster Wheels}: They have a variable orientation but they are typically not actuated. Their axis of orientation are not aligned, this property makes the wheels align automatically with the direction of motion, hence they are ``invisible'' kinematically, but offer a contact point.
+    \item \textbf{Caster Wheels}: They have a variable orientation but they are typically not actuated. Their axes of orientation are not aligned (the steering axis does not pass through the contact point), this property makes the wheels align automatically with the direction of motion, hence they are ``invisible'' kinematically, but offer a contact point.
 \end{itemize}
 \begin{figure}[H]
     \centering
@@ -204,7 +204,7 @@ Consider the following path taken by a car-like robot:
     \centering
     \includegraphics[width=0.5\textwidth ]{images/differential.eps}
 \end{figure}
-In the same time interval, the wheels on the outer path travels a longer distance with respect to the wheels on the inner path, hence their rotation speed must be higher. In order to avoid using two distinct actuators for the front wheels we use a device called \textbf{differential}.
+In the same time interval, the wheels on the outer path travel a longer distance with respect to the wheels on the inner path, hence their rotation speed must be higher. In order to avoid using two distinct actuators for the two driving wheels we use a device called \textbf{differential}.
 \begin{boxdefinition}{Differential}{}
    A mechanical differential is a gear assembly (usually using bevel or planetary gears) connected to a single drive motor. It splits power to two wheels on the same axle while allowing them to rotate at different speeds. When a robot with a single motor turns, the outside wheel must travel a larger arc than the inside wheel. The differential lets the wheels spin at their own natural speeds, preventing tire slip, scrubbing, and mechanical strain on the drivetrain.
 \end{boxdefinition}
@@ -263,7 +263,7 @@ with $\mathbf a$ being an $n$ dimensional vector that depends on the configurati
     \end{pmatrix}\dq=\mathbf 0\implies A(\q)\dq=\mathbf 0\iff \dq\in\mathcal N(A).
 \end{equation}
 The admissible velocities are the ones that lie in the null space of $A$\footnote{
-    Sometimes, we let the dependencies of a term implicit.
+    Sometimes, we leave the dependencies of a term implicit.
 }, hence they lie in a linear space. 
 \begin{boxobservation}{Relationship Between Geometric and Kinematic Constraints}{}
     Any geometric constraint implies a kinematic constraint.
@@ -292,11 +292,11 @@ We have seen how a geometric constraint always implies a kinematic one. The oppo
 this implies a geometric constraint if there exists a function $h(\q)$ such that \begin{equation}\label{holonomic}
     \nabla_\q h=\mathbf a
 \end{equation}
-hence the constraint defined by $\mathbf a(\q)$ should be \textit{integrable}.
+so that $\mathbf a^\top(\q)\dq=\dot h=0$ can be integrated to $h(\q)=c$; hence the constraint defined by $\mathbf a(\q)$ should be \textit{integrable}.
 \begin{boxdefinition}{Holonomic Constraint}{}
     An integrable kinematic constraint is called \textbf{holonomic}, and it defines a geometric constraint.
 \end{boxdefinition}
-What conditions determine if a constraint is integrable or not? In general, the conditions are stated in the \textit{Frobenius Theorem}, we will not discuss this result, which belongs to the domain of differential geometry. We will determine if a given constraint is holonomic or not by a different way.
+What conditions determine if a constraint is integrable or not? In general, the conditions are stated in the \textit{Frobenius Theorem}, we will not discuss this result, which belongs to the domain of differential geometry. We will determine if a given constraint is holonomic or not in a different way.
 
 Consider the following kinematic constraint for a 2-dimensional robot:\begin{equation}
      q_1\dot q_1+q_2\dot q_2=0
@@ -304,11 +304,11 @@ Consider the following kinematic constraint for a 2-dimensional robot:\begin{equ
 is this integrable? The answer is yes. The resulting geometric constraint is\begin{equation}
     q_1^2+q_2^2=c, \quad c>0.
 \end{equation}
-In general, in Equation \eqref{holonomic} we can add a scalar integrating factor that depend on the configuration:
+In general, in Equation \eqref{holonomic} we can add a scalar integrating factor $\gamma(\q)\neq 0$ that depends on the configuration (the constraint is integrable if the Pfaffian form $\mathbf a^\top(\q)\dq$ becomes an exact differential after the multiplication by $\gamma$):
 \begin{equation}
     \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^\top(\q)
 \end{equation}
-since the right-hand side is zero, $\gamma$ can be dropped.
+this is allowed because the constraint $\mathbf a^\top\dq=0$ is equal to zero, hence multiplying it by a non-zero factor $\gamma$ does not change it. In the previous example, $\frac{\partial h}{\partial \q}=2\begin{pmatrix}q_1&q_2\end{pmatrix}=\gamma\,\mathbf a^\top$ with $\gamma=2$.
 \subsection{Non-Holonomic Constraints}\label{sec:nonhol}
 A non-holonomic constraint defines a local limitation, it stops the robot from moving towards a certain direction when it is in that specific configuration, it does not prevent the robot from reaching a configuration by following an allowed path. The simplest example of a system with a non-holonomic constraint is a rolling disk.
 \begin{figure}[H]
@@ -317,7 +317,7 @@ A non-holonomic constraint defines a local limitation, it stops the robot from m
 \end{figure}
 The configuration is given by the vector $\begin{pmatrix}
     x&y&\theta
-\end{pmatrix}^\top$, $\theta$ is its orientation with respect to the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction that is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
+\end{pmatrix}^\top$, $\theta$ is its orientation with respect to the horizontal axis. It is clear that the disk in pure rolling (no slippage) can move \textit{only} in the direction it is pointing (by rolling), hence can't move laterally. This constraint is expressed as follows:\begin{equation}
     \sin\theta\dot x-\cos\theta \dot y = 0
 \end{equation}
 or in vector form:\begin{equation}
@@ -375,7 +375,7 @@ We have seen how  the kinematic constraints are defined in Pfaffian form as $A(\
         \mathbf g_1(\q),\mathbf g_2(\q),\dots,\mathbf g_m(\q)
     \right\}
 \end{equation}
-$\mathcal N(A(\q))$ has dimension $m:=n-k$. Each vector $\mathbf g_i(\q)$ of the basis is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the base:\begin{equation}
+$\mathcal N(A(\q))$ has dimension $m:=n-k$ (assuming that the $k$ constraints are linearly independent, i.e., $A(\q)$ has full row rank). Each vector $\mathbf g_i(\q)$ of the basis is a vector field on $\mathcal C$ with values in $\R^n$, any admissible velocity is a linear combination of the vectors in the basis:\begin{equation}
     \dq=\sum_{i=1}^m u_i\mathbf g_i(\q)
 \end{equation}
 we can write any admissible velocity in compact form by using an $m$ dimensional vector $\mathbf u$:\begin{equation}
@@ -399,18 +399,18 @@ it does not have a free evolution. The kinematic model is not unique, since we c
 Now we want to observe the differences between a kinematically constrained robot and an unconstrained robot. Consider an open-chain manipulator with revolute joints, with $\q$ being the joint variables (DH coordinates). This choice of coordinates makes the manipulator free from any constraint, the configuration can ``fly'' in the configuration space, any joint velocity $\dq$ is always admissible, hence its kinematic model is\begin{equation}
     \dq=\mathbf u.
 \end{equation}
-This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this does not hold. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not represent directly the joint velocity, but is called \textbf{pseudo-velocity}.
+This is a simple integrator, we can impose any joint velocity. For a robot with non-holonomic constraint this does not hold. The kinematic model is not a simple integrator since it has a \textit{filtering} component given by the matrix $G(\q)$, the vector $\mathbf u$ does not directly represent the generalized velocity $\dq$, and it is called \textbf{pseudo-velocity}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth ]{images/constrained_vs_unconstrained.eps}
 \end{figure}
-\noindent Let's discuss about controllability of the constrained model. The controllability of a system can be proved formally through nonlinear control theory, or constructively, by the definition of a universal maneuver (as we did in the previous section).
+\noindent Let's discuss the controllability of the constrained model. The controllability of a system can be proved formally through nonlinear control theory, or constructively, by the definition of a universal maneuver (as we did in the previous section).
 \begin{boxdefinition}{Controllability}{}
-    The kinematic model of a manipulator is controllable if any configuration can be reached from any initial configuration in finite time.
+    The kinematic model of a robot is controllable if any configuration can be reached from any initial configuration in finite time.
 \end{boxdefinition}
-A holonomic constraint defines a geometric constraint that prevents the robot from accessing a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the presence of holonomic constraints.
+A holonomic constraint defines a geometric constraint that prevents the robot from accessing a specific region in the configuration space, hence a robot with geometric constraints is never controllable. By this reasoning, there is a 1-to-1 correspondence between controllability and the \textit{absence} of holonomic constraints.
 \begin{boxobservation}{}{}
-    The kinematic model of a robot is controllable \textbf{if and only if}  the set of kinematic constraints is non-holonomic.
+    The kinematic model of a robot is controllable \textbf{if and only if}  the set of kinematic constraints is (completely) non-holonomic, i.e., no integrable constraint can be derived from it.
 \end{boxobservation}
 \subsection{The Unicycle Model}
 Let's define the kinematic model of a unicycle, that is equivalent to the rolling disk seen in Section \ref{sec:nonhol}. It has one kinematic constraint, the pure rolling condition imposes that:\begin{equation}
@@ -466,7 +466,7 @@ We can rewrite the kinematic model by splitting the Cartesian part from the angu
 \end{equation} 
 Is this model controllable? Yes, we already proved for the rolling disk that a universal maneuver exists.\bigskip
 
-What are the real world robots that are kinematically and mechanically equivalent to the unicycle? First of all the differential drive, since it can rotate along its vertical axis, and move in the Cartesian plane only towards its sagittal axis (it can't slide laterally). It has two actuated wheels, of radius $r$ and rolling velocities $\omega_R,\omega_L$. Its Cartesian velocity $v$ is given by the average angular velocity of the two wheels:\begin{equation}
+What are the real world robots that are kinematically and mechanically equivalent to the unicycle? First of all the differential drive, since it can rotate about its vertical axis, and move in the Cartesian plane only towards its sagittal axis (it can't slide laterally). It has two actuated wheels, of radius $r$ and rolling velocities $\omega_R,\omega_L$. Its Cartesian velocity $v$ is given by the average of the rolling velocities of the two wheels, multiplied by the radius:\begin{equation}
     v=r\frac{\omega_R+\omega_L}{2}
 \end{equation}
 while its angular velocity is given by the difference:\begin{equation}
@@ -476,7 +476,7 @@ where $d$ is the distance between the contact points of the wheels.\begin{figure
     \centering
     \includegraphics[width=0.6\textwidth ]{images/diff_drive.eps}
 \end{figure}
-The other robot that is equivalent to the unicycle is the synchro-drive, it has two motors equipped with a pulley and belt mechanism, one controls the orientation of all the wheels, the other the rolling speed, hence these motors directly controls $v$ and $\omega$, where $v$ is relative to the velocity of the geometric center of the three contact points.
+The other robot that is equivalent to the unicycle is the synchro-drive, it has two motors equipped with a pulley and belt mechanism, one controls the orientation of all the wheels, the other the rolling speed, hence these motors directly control $v$ and $\omega$, where $v$ is the velocity of the geometric center of the three contact points.
 \subsection{The Bicycle Model}
 This kinematic model has two wheels, one fixed at the back (called rear wheel)  and one steerable in the front. 
 \begin{figure}[H]
@@ -494,7 +494,7 @@ the configuration vector is\begin{equation}
         x&y&\theta&\phi 
     \end{pmatrix}^\top.
 \end{equation}
-Since there are two wheels, we will have two constraints, that imposes the pure rolling condition both wheels. For the rear wheel and the front wheel, respectively::\begin{align}
+Since there are two wheels, we will have two constraints, that impose the pure rolling condition on both wheels. For the rear wheel and the front wheel, respectively:\begin{align}
     &\sin\theta\dot x-\cos\theta \dot y=0\\ 
     &\sin(\theta+\phi)\dot x_f-\cos(\theta+\phi)\dot y_f=0\label{front_wheel_constr}
 \end{align}
@@ -510,14 +510,14 @@ in vector form:\begin{align}
         \dot x_f\\ \dot y_f
     \end{pmatrix}=0
 \end{align}
-$\mathbf a_1$ and $\mathbf a_2$ identify the direction of the (forbidden) slide direction for both wheels. The two lines meet at the point known as \textbf{instantaneous center of rotation (ICR)}, as shown in Figure \ref{ICR}.
+$\mathbf a_1$ and $\mathbf a_2$ identify the (forbidden) sliding direction of the two wheels. The two lines meet at the point known as \textbf{instantaneous center of rotation (ICR)}, as shown in Figure \ref{ICR}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/ICR.eps}
     \caption{The instantaneous center of rotation.}
     \label{ICR}
 \end{figure}
-The ICR represents the geometric point around which all the parts of the robot are rotating at a given instant. Now we want to make explicit $(\dot x_f,\dot y_f)$ in order to write the constraints only as a function of $\q$.\begin{align}
+The ICR represents the geometric point around which all the parts of the robot are rotating at a given instant. Now we want to express $(\dot x_f,\dot y_f)$ as a function of $\q$ and $\dq$, in order to write the constraints only as a function of $\q$ and $\dq$.\begin{align}
     &\begin{cases}
         x_f=x+l\cos\theta\\
         y_f=y+l\sin\theta
@@ -581,7 +581,7 @@ This model has a singularity, since $\tan\phi$ isn't defined at $\phi=\pm\frac{\
     \centering
     \includegraphics[width=0.4\textwidth ]{images/phi_singularity.eps}
 \end{figure}
-\noindent This problem is easily avoided by considering a limits on the joint values. Now let's derive a model where $u_1$ is the velocity of the front wheel, to do so, we have to modify the first vector of the basis:\begin{equation}
+\noindent This problem is easily avoided by considering limits on the joint values. Now let's derive a model where $u_1$ is the velocity of the front wheel, to do so, we have to modify the first vector of the basis:\begin{equation}
     \widehat{\mathbf g}_1=\mathbf g_1\cos\phi
 \end{equation}
 then\begin{equation}
@@ -614,19 +614,19 @@ To overcome this problem, we use a mechanism called \textbf{Ackermann steering},
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{images/no_single_icr.eps}
-    \caption{The intersections identifies two ICR.}
+    \caption{The intersections identify two different ICRs.}
     \label{no_single_icr}
 \end{figure}
 \chapter{Controllability of Mobile Robots}
 \section{Nonlinear Controllability}
-Let's discuss about the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
+Let's discuss the controllability of a nonlinear \textit{driftless} system:\begin{equation}\label{driftless_system}
     \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i 
 \end{equation}
 with $\mathbf g_i:\R^n\rightarrow\R^n$ being a vector field and $u_1,\dots,u_m$ the inputs. In this general discussion we use the symbol $\mathbf x$ to denote the state of our system, although we usually use $\q$ (in the robotics domain).
 \begin{boxdefinition}{Controllability of a Nonlinear System}{}
-    The system in Equation \eqref{driftless_system} is \textbf{controllable} if, for any pair of states $(\mathbf x_i,\mathbf x_f)$, with $\mathbf x(0)=\mathbf x_i$, there exists a profile $\tilde{\mathbf u}(t)$ for the inputs in $t\in [0,T]$ such that the system will reach at the end the state $\mathbf x(T)=\mathbf x_f$.
+    The system in Equation \eqref{driftless_system} is \textbf{controllable} if, for any pair of states $(\mathbf x_i,\mathbf x_f)$, with $\mathbf x(0)=\mathbf x_i$, there exists a profile $\mathbf u(t)$ for the inputs in $t\in [0,T]$ such that the system will reach at the end the state $\mathbf x(T)=\mathbf x_f$.
 \end{boxdefinition} 
-In linear systems, the controllability is guaranteed when the controllability matrix of the system have full rank, we will see how also for the nonlinear case, the controllability test will result in the derivation of the rank of a matrix.
+In linear systems, the controllability is guaranteed when the controllability matrix of the system has full rank, we will see how also for the nonlinear case, the controllability test will result in the derivation of the rank of a matrix.
 \begin{boxdefinition}{Lie Brackets}{}
     Let $\mathbf g_1,\mathbf g_2$ be two vector fields on $\R^n$. The \textbf{Lie Bracket} of these vector fields is the new vector field $[\mathbf g_1,\mathbf g_2]$ defined as follows:\begin{equation}
         [\mathbf g_1,\mathbf g_2](\mathbf x)=\frac{\partial \mathbf g_2}{\partial \mathbf x}\mathbf g_1(\mathbf x)-\frac{\partial \mathbf g_1}{\partial \mathbf x}\mathbf g_2(\mathbf x).
@@ -683,7 +683,7 @@ This result affirms that the displacement will be in the direction of the Lie br
     \includegraphics[width=\textwidth ]{images/lie_bracket_direction.eps}
 \end{figure}
 \begin{boxdefinition}{Distribution}{}
-    Let $\mathcal C$ be a smooth manifold. A \textit{Distribution} $\Delta$ is a map that assign at each point $\mathbf x\in \mathcal C$ a subspace of the tangent space $T_\mathbf x\mathcal C$:\begin{equation}
+    Let $\mathcal C$ be a smooth manifold. A \textit{Distribution} $\Delta$ is a map that assigns to each point $\mathbf x\in \mathcal C$ a subspace of the tangent space $T_\mathbf x\mathcal C$:\begin{equation}
         \Delta : \mathbf x \mapsto \Delta(\mathbf x)\subset T_\mathbf x\mathcal C.
     \end{equation}
 \end{boxdefinition}
@@ -700,17 +700,17 @@ Let's break it down:\begin{itemize}
     \item This nested definition can continue, for example the third order Lie brackets are in the form  $[\mathbf g_i,[\mathbf g_j,[\mathbf g_k,\mathbf g_h]]]$.
     \item The definition of $\Delta_{\mathcal A}$ consider all the possible combination of Lie brackets, for each possible order, up to infinity.
 \end{itemize}
-Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension depending on $\mathbf x$, for a nonlinear system, to assert controllability, is \textit{mandatory} that $\Delta_{\mathcal A}(\mathbf x)$ have dimension $n$ on every single $\mathbf x\in\mathcal C$.
+Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension depending on $\mathbf x$, for a nonlinear system, to assert controllability, it is \textit{mandatory} that $\Delta_{\mathcal A}(\mathbf x)$ has dimension $n$ at every single $\mathbf x\in\mathcal C$.
 \begin{boxdefinition}{Dimension of a Distribution}{}
-    The distribution $\Delta_{\mathcal A}$ have dimension $k$ if $\dim\Delta_{\mathcal A}(\mathbf x)=k$ for every $\mathbf x\in\mathcal C$. In that case we write $\dim\Delta_{\mathcal A}=k$.
+    The distribution $\Delta_{\mathcal A}$ has dimension $k$ if $\dim\Delta_{\mathcal A}(\mathbf x)=k$ for every $\mathbf x\in\mathcal C$. In that case we write $\dim\Delta_{\mathcal A}=k$.
 \end{boxdefinition}
 \noindent The nonlinear controllability problem is fully described by the following result.
 \begin{boxtheorem}{Accessibility Criterion}{}
-    A nonlinear system of the form \eqref{driftless_system} with an $n$-dimensional state vector is controllable \textit{if and only if} its accessibility distribution have dimension $n$:\begin{equation}
+    A nonlinear system of the form \eqref{driftless_system} with an $n$-dimensional state vector is controllable \textit{if and only if} its accessibility distribution has dimension $n$:\begin{equation}
         \dim\Delta_{\mathcal A}=n.
     \end{equation}
 \end{boxtheorem}
-So in practice, we have to build the matrix $M$ which the columns are the vector fields $\mathbf g_i$ and all their Lie brackets, and check if the rank is full.\begin{equation}
+So in practice, we have to build the matrix $M$ whose columns are the vector fields $\mathbf g_i$ and all their Lie brackets, and check if the rank is full.\begin{equation}
     M(\mathbf x)=\begin{pmatrix}
           |& &| & &| & &|&\\
         \mathbf g_1(\mathbf x)&\dots&\mathbf g_m(\mathbf x)&\dots &[\mathbf g_i,\mathbf g_j](\mathbf x)&\dots&[\mathbf g_i,[\mathbf g_j,\mathbf g_k]](\mathbf x)\dots\\
@@ -718,7 +718,7 @@ So in practice, we have to build the matrix $M$ which the columns are the vector
     \end{pmatrix}
 \end{equation}
 It's impossible to write out all the columns, we can check each iteratively for the vector fields $\mathbf g_1,\dots,\mathbf g_m$, then for the first order Lie brackets, then for the higher order,  as soon as the rank of the matrix reaches size $n$, the criterion is satisfied ($\dim \Delta_{\mathcal{A}} = n$) and the system is controllable. All remaining infinite columns can be ignored. For systems described by analytic functions, the chain of Lie brackets stabilizes after a finite number of steps. If at a certain point the new Lie brackets no longer increase the rank and it remains lower than $n$, the process stops and the system is not controllable. \begin{boxproposition}{}{}
-If the system is analytical, the accessibility distribution stabilizes. The chain of Lie brackets cannot generate distributions of infinitely increasing size in a space of dimension $n$. Consequently, in the worst case, it is not necessary to go beyond the Lie brackets of order $n-1$ (or in any case limited according to the size of the state).
+If the system is analytic, the accessibility distribution stabilizes. The chain of Lie brackets cannot generate distributions of infinitely increasing size in a space of dimension $n$. Consequently, in the worst case, it is not necessary to go beyond the Lie brackets of order $n-1$ (or in any case limited according to the size of the state).
 \end{boxproposition}
 In computational practice (for example using symbolic calculation software such as MATLAB or Python), the brackets are calculated in ascending order of degree and those that do not increase the rank are immediately discarded, blocking the algorithm as soon as the rank is equal to $n$.\bigskip 
 \subsection{The Unicycle Case}
@@ -740,7 +740,7 @@ we compute the first order Lie bracket:\begin{equation}
        \sin\theta\\-\cos\theta\\ 0
     \end{pmatrix}
 \end{equation}
-we denote $\mathbf g_3$ the Lie bracket, notice how is the unit vector orthogonal to the sagittal axis, called the \textbf{slide vector field}. Let's check the matrix given by $\mathbf g_1,\mathbf g_2,\mathbf g_3$:\begin{equation}
+we denote $\mathbf g_3$ the Lie bracket, notice how it is the unit vector orthogonal to the sagittal axis, called the \textbf{slide vector field}. Let's check the matrix given by $\mathbf g_1,\mathbf g_2,\mathbf g_3$:\begin{equation}
     \text{rank}\begin{pmatrix}
         \cos\theta&0&\sin\theta\\ 
         \sin\theta&0&-\cos\theta\\ 
@@ -756,7 +756,7 @@ The rank is full, we don't have to check the higher order Lie brackets, hence th
     \centering
     \includegraphics[width=0.3\textwidth ]{images/slide_vector.eps}
 \end{figure}
-In this case the Lie bracket defines a velocity that is immediately unrealizable, but specifies a direction achievable through a sequence of motions.
+In this case the Lie bracket defines a velocity that is not instantaneously realizable, but specifies a direction achievable through a sequence of motions.
 \subsection{The Bicycle Case}
 The model of the bicycle is:\begin{equation}
     \dq=
@@ -789,7 +789,7 @@ It can be verified that:\begin{equation}
 hence the model is controllable.
 \subsection{Chained-Form}
 \begin{boxdefinition}{Chained-Form Systems}{}
-    Consider a nonlinear system with an $n$-dimensional state vector $\mathbf z\in\R^n$ and $2$ inputs $\mathbf w\in \R^2$. The system is in chained-form if has the following structure:\begin{align}
+    Consider a nonlinear system with an $n$-dimensional state vector $\mathbf z\in\R^n$ and $2$ inputs $\mathbf w\in \R^2$. The system is in chained-form if it has the following structure:\begin{align}
         \dot z_1&=w_1\\ 
         \dot z_2&=w_2\\
         \dot z_3&=z_2w_1\\ 
@@ -802,11 +802,11 @@ hence the model is controllable.
     \includegraphics[width=\textwidth ]{images/chained_form.eps}
     \caption{Block diagram of a chained-form system.}
 \end{figure}
-We can observe how, if the inputs $\mathbf w$ are constant, the system becomes linear, hence in digital control, where the inputs are piece-wise constants, the system is piece-wise linear. 
+We can observe how, if the input $w_1$ is constant, the system becomes linear in $\mathbf z$ (with $w_2$ as the only input), hence in digital control, where the inputs are piece-wise constant, the system is piece-wise linear. 
 \begin{boxproposition}{}{}
     Any chained-form system is controllable.
 \end{boxproposition}
-All the controllable driftless systems (that are the systems of our interest for the kinematic model of the mobile robots) can be rewritten in chained-form under a coordinate and inputs transformation:\begin{align}
+Many controllable driftless systems with two inputs (in particular, the kinematic models of the mobile robots of our interest) can be rewritten in chained-form under a coordinate and input transformation:\begin{align}
     \mathbf z=&\alpha(\q)\\ 
     \mathbf w=&\beta(\q)\mathbf u.
 \end{align}
@@ -838,7 +838,7 @@ then:\begin{align}
     =\underbrace{v-\omega z_3=w_2}_{\text{input transformation}}
 \end{align}
 ultimately:\begin{align}
-    \dot z_3&=\dot x\sin\theta-\dot y\cos\theta-x\cos\theta\dot\theta+y\sin\theta\dot\theta\\
+    \dot z_3&=\dot x\sin\theta-\dot y\cos\theta+x\cos\theta\dot\theta+y\sin\theta\dot\theta\\
     &= \underbrace{(\dot{x} \sin\theta - \dot{y} \cos\theta)}_{0\text{ due to the constraint}} + \dot{\theta}(x \cos\theta + y \sin\theta)\\[1.5ex]
     &=\underbrace{\dot{\theta}}_{\omega=w_1}\underbrace{(x \cos\theta + y \sin\theta)}_{z_2}=z_2w_1
 \end{align}
@@ -847,7 +847,7 @@ so the model after the transformations is:\begin{align}
     \dot z_2&=w_2\\ 
     \dot z_3&=z_2w_1
 \end{align}
-and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation, are the coordinates of the unicycle in the reference frame with its horizontal axis rotated by $\theta$ with respect to the base frame, as shown in Figure \ref{z2z3}.
+and it is in chained-form. $z_2$ and $z_3$ have a clear interpretation: $z_2$ is the $x$ coordinate of the unicycle in the reference frame rotated by $\theta$ with respect to the base frame (i.e., with its horizontal axis aligned with the sagittal axis), while $z_3$ is the opposite of the $y$ coordinate in the same frame, as shown in Figure \ref{z2z3}.
 
 \begin{figure}[H]
     \centering
@@ -861,7 +861,7 @@ Setting aside the unicycle model: an interesting property of \textbf{trailed veh
 It is in our interest to define a method to \textit{plan} a motion that transfers a mobile robot from an initial configuration $\q_i$ to a final configuration $\q_f$, hence, we should define a trajectory:\begin{equation}
     \q(s),\quad s\in[s_i,s_f]
 \end{equation}
-such that $\q(t_i)=\q_i$ and $\q(t_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we have already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
+such that $\q(s_i)=\q_i$ and $\q(s_f)=\q_f$, without violating the kinematic constraints on $\dq$. In general, as we have already seen in previous robotics courses, we separate the geometric path from the timing law:\begin{align}
     \q(s),\quad &s\in [s_i,s_f]\\
     s(t),\quad &t \in [t_i,t_f].
 \end{align}
@@ -869,7 +869,7 @@ The path parameter $s$ is usually chosen as the arc length.\begin{itemize}
     \item By \textbf{path planning} we mean the plan of a geometric path $\q(s)$ in the configuration space.
     \item By \textbf{trajectory planning} instead, we also include the time, i.e. we mean the plan of a time evolution of the configuration: $\q(t)$. This is usually done indirectly: first plan a path, then add a timing law.
 \end{itemize}
-We already specified that a trajectory $\q(s(t))$ must satisfy the constraints:\begin{equation}
+Let us compute the velocity along a trajectory $\q(s(t))$, which must satisfy the kinematic constraints:\begin{equation}
     \dq=\frac{d\q}{dt}=\frac{d\q}{ds}\dot s = \q'\dot s
 \end{equation}
 we denote $\q'$ the derivative of $\q$ with respect to $s$, this represents the \textit{tangent vector} of the geometric path in the configuration space. If $s$ is the arc length, then $\| \q'\|=1$.\bigskip
@@ -964,7 +964,7 @@ the same can be done for the angular velocity (we skip the proof):\begin{equatio
 \end{equation}
 Equations \eqref{tildev},\eqref{tildeOmega} are the reconstruction map for the input $\tilde{\mathbf u}=\Phi_u(x',y',x'',y'')$. These reconstructions have a problem that arises if $x'=y'=0$: atan2 is not defined and $\tilde\omega$ would have a zero in the denominator. This singularity has an intuitive meaning: if the robot stops and its Cartesian velocity is zero, we cannot know whether it is steering in place or not, hence we cannot infer the evolution of $\theta(s)$ when it is not moving.
 \begin{boxproposition}{}{flat_chained}
-    A driftless dynamic system is differentially flat if and only if it can be transformed into chained-form.
+    A driftless system with two inputs is differentially flat if and only if it can be transformed into chained-form.
 \end{boxproposition}
 \begin{boxproposition}{}{}
     A general dynamic system is differentially flat if and only if it can be linearized via dynamic feedback.
@@ -985,6 +985,8 @@ hence\begin{align}
     &=\arctan\left(\frac{l\frac{x' y'' - y' x''}{(x')^2 + (y')^2}}{\pm\sqrt{(x')^2+(y')^2}}\right)\\ &=
     \arctan\left(\pm \frac{l(x' y'' - y' x'')}{\left((x')^2 + (y')^2\right)^{3/2}}\right).
 \end{align}
+The input $\tilde\omega=\phi'$ is obtained by differentiating the last expression, hence it depends on the derivatives of $x,y$ up to the third order (we omit the explicit expression).\bigskip
+
 Now we use Proposition \ref{def:flat_chained} and show how a 2-input/3-state chained-form system admits flat outputs. The system is the following:\begin{align}
     z_1'&=\tilde w_1\\ 
     z_2'&=\tilde w_2\\ 
@@ -1032,7 +1034,7 @@ this polynomial already satisfies the boundary conditions:\begin{align}
     x(0)=x_i,\quad x(1)=x_f\\ 
     y(0)=y_i,\quad y(1)=y_f
 \end{align}
-then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that come from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions:\begin{align}
+then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that come from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions on the orientation:\begin{align}
     \text{atan2}(y'(0),x'(0))&=\theta_i\\\text{atan2}(y'(1),x'(1))&=\theta_f.
 \end{align}
 
@@ -1040,7 +1042,7 @@ The initial and final Cartesian velocities must be:\begin{align}
     x'(0)&=k_i\cos\theta_i,\quad x'(1)=k_f\cos\theta_f\\ 
     y'(0)&=k_i\sin\theta_i,\quad y'(1)=k_f\sin\theta_f
 \end{align}
-with $k_i,k_f$ being two arbitrary non-zero constants, for simplicity we set $k_i=k_f=k$. To impose these conditions, we can solve algebraically for $\alpha_x,\beta_x,\alpha_y,\beta_y$ and obtain:\begin{align}
+with $k_i,k_f$ being two arbitrary positive constants, for simplicity we set $k_i=k_f=k$. To impose these conditions, we can solve algebraically for $\alpha_x,\beta_x,\alpha_y,\beta_y$ and obtain:\begin{align}
     \alpha_x&=k\cos\theta_f-3x_f,\quad \beta_x=k\cos\theta_i+3x_i\\
     \alpha_y&=k\sin\theta_f-3y_f,\quad \beta_y=k\sin\theta_i+3y_i.
 \end{align}
@@ -1076,7 +1078,7 @@ and then $z_{2i},z_{2f}$ can't be inferred since we would have a division by zer
 \end{equation}
 or add a mid-point $\q_m=\begin{pmatrix}
     x_m&y_m&\theta_m
-\end{pmatrix}$ in the trajectory with $\theta_m\ne\theta_i$.
+\end{pmatrix}^\top$ in the trajectory with $\theta_m\ne\theta_i$.
 \subsection{Path Planning via Parametrized Inputs}
 A different approach, not directly based on flatness,
 consists of writing the inputs in parametrized form and
@@ -1110,6 +1112,7 @@ if $D(\Delta)$ is invertible we can find the values for the coefficients. For ex
         z_{3f}-z_{3i}-z_{2i}\Delta
     \end{pmatrix}
 \end{equation}
+Here $\det D=-\text{sign}(\Delta)\frac{\Delta^4}{12}$, hence $D$ is invertible as long as $\Delta\neq 0$, i.e., when the initial and final values of $z_1=\theta$ are different (compare with the previous subsection).
 \subsection{Choice of the Timing Law}
 We have separated the timing law $s(t)$ from the geometric path $\q(s)$, now we have to assign a timing law that interpolates $s_i$ to $s_f$:\begin{equation}
     s(t_i)=s_i,\quad s(t_f)=s_f.
@@ -1124,7 +1127,7 @@ usually we use $t\in[0,T]$:
 \begin{equation}
     s(t)=s_i+(s_f-s_i)\frac{t}{T}.
 \end{equation}
-One of the most used timing laws is the bang-coast-bang acceleration profile (\textbf{trapezoidal timing law}), since it starts and ends with zero velocity.
+One of the most used timing laws is the bang-coast-bang acceleration profile (which gives a trapezoidal velocity profile, hence the name \textbf{trapezoidal timing law}), since it starts and ends with zero velocity.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/trapezoidal_timing_law.eps}
@@ -1135,7 +1138,7 @@ One of the most used timing laws is the bang-coast-bang acceleration profile (\t
         -a_{max}&\text{ if }t\in(t_f-t_m,t_f]
     \end{cases}.
 \end{equation}
-Now let's take into account the bounds on velocity, for example, consider a unicycle subject to the following bounds for the linear and angular velocities:\begin{equation}
+Here $t_m$ is the duration of the acceleration phase (which is equal to the duration of the deceleration phase). Now let's take into account the bounds on velocity, for example, consider a unicycle subject to the following bounds for the linear and angular velocities:\begin{equation}
     |v|\le v_{max},\quad |\omega|\le \omega_{max}
 \end{equation}
 assume that a path $\q(s)$ has already been generated, with geometric inputs $\tilde v(s)$ and $\tilde\omega(s)$, we choose a linear timing law parametrized by a positive real number $k$:\begin{equation}
@@ -1166,10 +1169,10 @@ In order to follow a desired trajectory, or to regulate the robot into a desired
     \includegraphics[width=0.75\textwidth ]{images/motion_control_scheme2.png}
     \caption{Simplified control scheme (for design).}
 \end{figure}
-We cover two type of control tasks, \textit{trajectory tracking} and \textit{regulation}, we will provide a full description of this problem for the unicycle model.
+We cover two types of control tasks, \textit{trajectory tracking} and \textit{regulation}, we will provide a full description of this problem for the unicycle model.
 In \textbf{trajectory tracking} the robot must converge to a desired Cartesian trajectory $(x_d(t),y_d(t))$, while in \textbf{posture regulation} the robot must converge to a desired configuration $\q_d$. Trajectory tracking is more relevant in practice, since moving along planned trajectories reduces the risk of collision, however, posture regulation does not require any planning.
 \section{Trajectory Tracking}
-Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, there exists control inputs $v_d,\omega_d$ such that:\begin{equation}
+Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, there exist control inputs $v_d,\omega_d$ such that:\begin{equation}
     \begin{cases}
         \dot x_d=v_d\cos\theta_d\\
         \dot y_d=v_d\sin\theta_d\\
@@ -1272,7 +1275,7 @@ have full rank, this can be seen by building just $\begin{pmatrix}
         0&1&0&0
     \end{pmatrix}=3.
     \end{equation}
-This holds if $\omega_d$ or $v_d$ is non-zero, so the system lose controllability when the unicycle is stopping.
+This holds if $\omega_d$ or $v_d$ is non-zero, so the system loses controllability when the reference is at rest ($v_d=\omega_d=0$).
 Note that $A$ is actually $A(t)$, due to the dependence of the reference inputs $v_d$ and $\omega_d$ on time, hence the linear approximation is still a \textbf{time-varying} system. Let us define the linear feedback\begin{equation}
     \mathbf w=\begin{pmatrix}
         w_1\\w_2
@@ -1306,7 +1309,7 @@ Note that $(v,\omega)\to(v_d,\omega_d)$ as $\mathbf e\to\mathbf 0$, i.e. the con
     w_1&=-k_1(v_d,\omega_d)\,e_1\\
     w_2&=-k_2\,v_d\frac{\sin e_3}{e_3}\,e_2-k_3(v_d,\omega_d)\,e_3
 \end{align}
-with $k_2>0$ constant and $k_1,k_3$ bounded, positive and with bounded derivatives. The actual inputs are then recovered from the same input transformation.
+with $k_2>0$ constant and $k_1,k_3$ bounded, positive and with bounded derivatives, provided that $v_d,\omega_d$ are bounded with bounded derivatives and do not both converge to zero. The actual inputs are then recovered from the same input transformation.
 \subsection{Output Error Feedback}
 Another approach is to develop the feedback action from the \textbf{output (Cartesian) error} only, without computing a desired state trajectory $\q_d(t)$, using as \textbf{feedforward term} the velocity $\dot{\mathbf p}_d$ along the reference trajectory, where $\mathbf p=(x,y)^\top$ is the Cartesian position of the unicycle and $\mathbf p_d$ the desired one.
 We will design this controller through the technique of \textbf{exact input-output linearization}.
@@ -1424,7 +1427,7 @@ The three controllers have been compared in simulation while tracking a circle, 
     \item \textbf{Dynamic input-output linearization}: zero steady-state error, reasonable velocities and faster transients (e.g. at the corners of the square).
 \end{itemize}
 \section{Regulation}
-Let's address the problem of posture regulation: we want to bring a mobile robot from a starting configuration $\q_i$ to a configuration $\q_d$ with a feedback control law. One may ask, why can't we just use trajectory tracking with a trajectory that ends in the desired configuration $\q_d$? None of the methods described in the previous section works for regulation: the controllers based on approximate linearization and input-output linearization via dynamic feedback require a persistent trajectory. For example, the decoupling matrix $T(v,\theta)$ is not invertible if the desired velocity $v$ is zero. Furthermore, the input-output linearization via static feedback would lead the point $(x_b\quad y_b)^\top$ to the desired destination, and not the wheel contact point.\bigskip
+Let's address the problem of posture regulation: we want to bring a mobile robot from a starting configuration $\q_i$ to a configuration $\q_d$ with a feedback control law. One may ask, why can't we just use trajectory tracking with a trajectory that ends in the desired configuration $\q_d$? None of the methods described in the previous section works for regulation: the controllers based on approximate linearization and input-output linearization via dynamic feedback require a persistent trajectory. For example, the decoupling matrix $T(v,\theta)$ is not invertible if the desired velocity $v$ is zero. Furthermore, the input-output linearization via static feedback would lead the point $(x_B\quad y_B)^\top$ to the desired destination, and not the wheel contact point.\bigskip
 
 There is a \textit{general result} that shows that nonholonomic systems, like wheeled mobile robots, do not admit universal controllers, i.e., controllers that can stabilize arbitrary
 trajectories, whether persistent or not.
@@ -1439,9 +1442,9 @@ let $\mathbf x_e$ be an equilibrium point, without loss of generality we can ass
     f'(\mathbf x_e)=f'(\mathbf 0)=\mathbf 0.
 \end{equation}
 \begin{boxtheorem}{Lyapunov Stability}{}
-    Consider the closed loop control system of Equation \eqref{closed_loop_cs}. If there exists a positive definite function $V(\mathbf x)$ such that the following holds:\begin{itemize}
+    Consider the closed loop control system of Equation \eqref{closed_loop_cs}. Let $V(\mathbf x)$ be a positive definite (continuously differentiable) function, and let $\dot V$ be its time derivative along the trajectories of the closed loop system. Then:\begin{itemize}
         \item If $\dot V$ is negative definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is asymptotically stable.
-        \item If $\dot V$ is negative semi-definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is stable (not asymptotically).
+        \item If $\dot V$ is negative semi-definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is stable (but not necessarily asymptotically stable).
     \end{itemize}
 \end{boxtheorem}
 \begin{boxlemma}{Barbalat}{}
@@ -1450,7 +1453,7 @@ let $\mathbf x_e$ be an equilibrium point, without loss of generality we can ass
         \item $V$ is positive semi-definite
         \item $\dot V$ is negative semi-definite
     \end{itemize}
-    if $\ddot V$ is bounded, then $\displaystyle\lim_{t\rightarrow\infty}\dot V(t)=0$, hence $V$ converges to a limit:\begin{equation}
+    if $\ddot V$ is bounded (hence $\dot V$ is uniformly continuous), then $\displaystyle\lim_{t\rightarrow\infty}\dot V(t)=0$. Moreover, since $V$ is non-increasing and bounded from below, it converges to a limit:\begin{equation}
         \lim_{t\rightarrow\infty} V(t)=V_l\in[0,+\infty).
     \end{equation}
 \end{boxlemma}
@@ -1474,7 +1477,7 @@ Let $\mathbf n$ be the unit vector aligned with the sagittal axis; we will find 
         \cos\theta\\\sin\theta
     \end{pmatrix}=-x\cos\theta-y\sin\theta.
 \end{equation}
-We also define the \textbf{pointing error} $\gamma$:\begin{equation}
+We also define the \textbf{pointing error} $\gamma$ (the angle between the sagittal axis and the Cartesian error vector, normalized in $(-\pi,\pi]$):\begin{equation}
     \gamma=\text{atan2}(y,x)+\pi-\theta.
 \end{equation}
 \begin{figure}[H]
@@ -1509,7 +1512,7 @@ here we can use the kinematic model of the unicycle to substitute $\dot x,\dot y
 due to the fact that we are considering the closed loop system, we can substitute $v$ with the control law:\begin{equation}
     \dot V = -k_1(x\cos\theta+y\sin\theta)^2=-k_1(\mathbf e_p^\top\mathbf n)^2\le 0.
 \end{equation}
-For the same reason as for $V$, $\dot V$ is negative semi-definite, zero on all the configurations with $x=y=0$. To apply Barbalat's lemma, we need to show that $\ddot V$ is bounded.
+For the same reason as for $V$, $\dot V$ is negative semi-definite, zero on all the configurations with $x=y=0$ (and, in general, whenever $\mathbf e_p^\top\mathbf n=0$). To apply Barbalat's lemma, we need to show that $\ddot V$ is bounded.
 \begin{boxproposition}{}{}
     $\ddot V$ is bounded, i.e. $\exists c\in\mathbb R^+$ such that $|\ddot V|\le c$.
 \end{boxproposition}
@@ -1529,7 +1532,7 @@ we use the unicycle model and the definition of the control law:
 &= 2k_1 (\mathbf{e}_p^\top\mathbf{n}) \left[ k_1 \mathbf{e}_p^\top\mathbf{n} - k_2\gamma (\mathbf{e}_p^\top\mathbf{n}^\perp) \right] \\
 &= 2k_1^2 (\mathbf{e}_p^\top\mathbf{n})^2 - 2k_1 k_2 \gamma (\mathbf{e}_p^\top\mathbf{n})(\mathbf{e}_p^\top\mathbf{n}^\perp)\label{ddotV}
 \end{align}
-where $\mathbf n^\bot=(-\sin\theta \quad \cos\theta)^\top$. Due to the definition of the Lyapunov function, we can state that $\mathbf e_p$ is bounded, since $V$ is proportional to the squared norm of $\mathbf e_p$, and $V$ never increases, hence $\|\mathbf e_p(t)\|\le\|\mathbf e_p(0)\|$, $\forall t$. Since all the quantities in Equation \eqref{ddotV} are bounded, $\ddot V$ is bounded.\hfill$\blacksquare$\bigskip
+where $\mathbf n^\bot=(-\sin\theta \quad \cos\theta)^\top$. Due to the definition of the Lyapunov function, we can state that $\mathbf e_p$ is bounded, since $V$ is proportional to the squared norm of $\mathbf e_p$, and $V$ never increases, hence $\|\mathbf e_p(t)\|\le\|\mathbf e_p(0)\|$, $\forall t$. Since all the quantities in Equation \eqref{ddotV} are bounded ($\gamma$ is bounded since it is an angle in $(-\pi,\pi]$), $\ddot V$ is bounded.\hfill$\blacksquare$\bigskip
 
 Having proved that $\ddot V$ is bounded, by Barbalat's lemma we can say that $\dot V$ will converge to zero at steady state:\begin{equation}
     \dot V = -k_1(\mathbf e_p^\top\mathbf n)^2=0\iff \mathbf e_p^\top\mathbf n=0
@@ -1642,7 +1645,7 @@ $\dot V$ is negative semi-definite, having its zeros on the line $\gamma=\rho=0$
     \omega&=k_2\gamma+k_1\frac{\sin\gamma\cos\gamma}{\gamma}(\gamma+\delta).
 \end{align}
 \end{boxdefinition}
-It can be shown (\underline{proof omitted}) that $\ddot V$ is bounded, hence by Barbalat's lemma $\dot V$ will converge to zero. At steady state we have $\gamma=\rho=0$, and this (from the kinematic model in Equation \eqref{dot_delta}) implies that at steady state $\dot\delta=0$, hence also $\delta$ will converge to a limit, and this will be exactly zero (\underline{proof omitted}).
+Notice that $\frac{\sin\gamma}{\gamma}$ is extended by continuity to $1$ for $\gamma=0$ (the apparent singularity in $\alpha$ is removable). It can be shown (\underline{proof omitted}) that $\ddot V$ is bounded, hence by Barbalat's lemma $\dot V$ will converge to zero. At steady state we have $\gamma=\rho=0$, and this (from the kinematic model in Equation \eqref{dot_delta}) implies that at steady state $\dot\delta=0$ (indeed, by substituting $v=k_1\rho\cos\gamma$ in Equation \eqref{dot_delta} we get $\dot\delta=k_1\sin\gamma\cos\gamma$, which vanishes for $\gamma=0$, avoiding the indeterminate form at $\rho=0$), hence also $\delta$ will converge to a limit, and this will be exactly zero (\underline{proof omitted}).
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth ]{images/regulation_simulation2.png}
@@ -1703,7 +1706,7 @@ in matrix form:\begin{equation}
         \mathbf u_b\\ \mathbf u_m 
     \end{pmatrix}=J_{mm}(\q)\mathbf u.
 \end{equation}
-The $m\times (n_b+n_m)$ matrix $J_{mm}(\q)$, where $m$ is the dimension of the task vector ($m=6$ for a full spatial pose), is called the \textbf{Jacobian of the mobile manipulator}, although it is not a Jacobian in the strict mathematical sense (it is not the matrix of the partial derivatives of a function, since it contains the mobile base kinematic model $G_b(\q_b)$). Typically, $n_b+n_m>m$, hence mobile manipulators are often kinematically redundant. The matrix $J_{mm}$ is used for singularity analysis and to solve the inverse differential kinematics problem.
+The $r\times (m_b+n_m)$ matrix $J_{mm}(\q)$, where $r$ is the dimension of the task vector ($r=6$ for a full spatial pose) and $m_b=\dim\mathbf u_b$ is the number of pseudo-velocities of the mobile base, is called the \textbf{Jacobian of the mobile manipulator}, although it is not a Jacobian in the strict mathematical sense (it is not the matrix of the partial derivatives of a function, since it contains the mobile base kinematic model $G_b(\q_b)$). Typically, $m_b+n_m>r$, hence mobile manipulators are often kinematically redundant. The matrix $J_{mm}$ is used for singularity analysis and to solve the inverse differential kinematics problem.
 \subsection{Example: 2R Planar Manipulator on a Unicycle}
 We analyze the model of a 2R planar robot mounted on a unicycle, the arm is mounted on the sagittal axis, at distance $d$ from the center of the wheel axle. Its configuration is \begin{equation}
     \q=(
@@ -1792,8 +1795,8 @@ The solution to the IDK is then completed with such a null-space projection:\beg
 \end{equation}
 How do we choose $\mathbf u_N$? Usually it is a direction that tends to maximize (or minimize) a performance (or cost) criterion. Let $H(\q)$ be a scalar function that assigns a value of ``goodness'' to a given configuration ($H(\q)$ might be, e.g., the distance from a singular configuration). Since we want to maximize (or minimize) $H(\q)$, a preferred direction is its weighted gradient $\pm\alpha\nabla H(\q)$ (the sign establishes whether $H$ should be maximized or minimized).\bigskip 
 
-However, we can't simply set $\mathbf u_N=\pm\alpha\nabla H(\q)$, since the first $n_b$ components of the vector $\mathbf u$ are
-pseudo-velocities, rather than generalized velocities, and the nonholonomic constraints might prevent the motion defined by the first $n_b$ components of $\mathbf u_N$. In order to identify a suitable velocity command $\mathbf u_N$ that does not violate the nonholonomic constraints of the mobile base, we have to look at the time derivative of $H(\q)$ along the system motion:\begin{equation}
+However, we can't simply set $\mathbf u_N=\pm\alpha\nabla H(\q)$, since the first $m_b$ components of the vector $\mathbf u$ are
+pseudo-velocities, rather than generalized velocities, and the nonholonomic constraints might prevent the motion defined by the first $m_b$ components of $\mathbf u_N$. In order to identify a suitable velocity command $\mathbf u_N$ that does not violate the nonholonomic constraints of the mobile base, we have to look at the time derivative of $H(\q)$ along the system motion:\begin{equation}
     \dot H(\q)=\frac{\partial H}{\partial \q}\dq=(\nabla H(\q))^\top G(\q)\mathbf u
 \end{equation}  
 so, to obtain the maximum local improvement of $H(\q)$, we have to set:\begin{equation}
@@ -2192,9 +2195,9 @@ Let $L$ be the total number of landmarks, and let $L_k\le L$ be the number of la
         x_{l\, i}\\y_{l\, i}
     \end{pmatrix}, \quad 1\le i \le L.
 \end{equation}
-The robot does not have direct access to the landmark positions $\begin{pmatrix}
+The sensor does not directly measure the (known) landmark positions $\begin{pmatrix}
         x_{l\,i}&y_{l\,i}
-\end{pmatrix}^\top$, but only to the relative range and bearing. We assume that the robot can identify and distinguish the landmarks from each other: each landmark is identified by an index from 1 to $L$. At a given time step, there are $L_k$ landmarks sensed, but the $i$-th landmark sensed is not necessarily the landmark $i$ out of $L$. Hence, we use an association map $a$ that assigns to each integer $i$ from 1 to $L_k$ (the $i$-th landmark sensed) the index $j$, between 1 and $L$, of the corresponding landmark:\begin{equation}
+\end{pmatrix}^\top$, but only the relative range and bearing (the landmark positions are known a priori). We assume that the robot can identify and distinguish the landmarks from each other: each landmark is identified by an index from 1 to $L$. At a given time step, there are $L_k$ landmarks sensed, but the $i$-th landmark sensed is not necessarily the landmark $i$ out of $L$. Hence, we use an association map $a$ that assigns to each integer $i$ from 1 to $L_k$ (the $i$-th landmark sensed) the index $j$, between 1 and $L$, of the corresponding landmark:\begin{equation}
     a:\{1,2,\dots,L_k\}\to\{1,2,\dots,L\},
 \end{equation}
 so we denote by $a(i)$ the index of the landmark observed at the $i$-th measurement. At each time step, we define the vector of the measurements $\mathbf y_k$; this is a vector of length $2L_k$ (the length of the vector changes over the time steps) and is defined as follows:\begin{equation}
@@ -2208,13 +2211,15 @@ where $\mathbf w_k=\begin{pmatrix}
 \end{pmatrix}^\top\in\R^{2L_k}$ is a Gaussian white noise with covariance matrix $W_k$, and each $\mathbf h_i(\q_k,a(i))$ is a two-component vector with the range and bearing of the $a(i)$-th landmark. Of course, it depends on the current configuration $\q_k$:\begin{equation}
     \mathbf h_i(\blueText{\q_k},a(i))=\begin{pmatrix}
        \sqrt{(\blueText{x_k}-x_{l \, a(i)})^2+(\blueText{y_k}-y_{l \, a(i)})^2} \\[1.5ex]
-       \text{atan2}\left(\blueText{y_k}-y_{l \, a(i)}, \, \blueText{x_k}-x_{l \, a(i)}\right)-\blueText{\theta_k}
+       \text{atan2}\left(y_{l \, a(i)}-\blueText{y_k}, \, x_{l \, a(i)}-\blueText{x_k}\right)-\blueText{\theta_k}
     \end{pmatrix}.
 \end{equation}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{images/bearing.eps}
 \end{figure}
+The bearing is the angle of the landmark in the robot frame; the angular component of the innovation must always be normalized in $(-\pi,\pi]$.\bigskip
+
 The kinematic model of the unicycle is nonlinear, so we need to linearize the equations of motion at a given configuration in order to apply the extended Kalman filter. We denote by $F_k$ the Jacobian of the process dynamics at time $k$, which is defined as follows:\begin{equation}
     F_k=\begin{pmatrix}
         1&0&-v_kT_s\sin\widehat{\theta}_k\\
