@@ -582,12 +582,12 @@ This model has a singularity, since $\tan\phi$ isn't defined at $\phi=\pm\frac{\
     \includegraphics[width=0.4\textwidth ]{images/phi_singularity.eps}
 \end{figure}
 \noindent This problem is easily avoided by considering a limits on the joint values. Now let's derive a model where $u_1$ is the velocity of the front wheel, to do so, we have to modify the first vector of the basis:\begin{equation}
-    \hat{\mathbf g}_1=\mathbf g_1\cos\phi
+    \widehat{\mathbf g}_1=\mathbf g_1\cos\phi
 \end{equation}
 then\begin{equation}
     \dq=\underbrace{\begin{pmatrix}
         \cos\theta\cos\phi\\\sin\theta\cos\phi\\\frac{1}{l}\sin\phi \\0
-    \end{pmatrix}}_{\hat{\mathbf g}_1}u_1+\begin{pmatrix}
+    \end{pmatrix}}_{\widehat{\mathbf g}_1}u_1+\begin{pmatrix}
         0\\0\\0\\1 
     \end{pmatrix}u_2
 \end{equation}
@@ -2118,7 +2118,7 @@ it uses\begin{equation}
     \includegraphics[width=0.6\textwidth]{images/likelhood_hyperplane.pdf}
 \end{figure}
 We will not dive into the details of the computation and give just the result: the correction uses the \textbf{Kalman Gain Matrix}:\begin{equation}
-    \boxed{R_{k+1}=P_{k+1|k}C_{k+1}^\top (C_{k+1}P_{k+1|k}C_{k+1}^\top+W_{k+1})^{-1}}
+    \boxed{R_{k+1}=P_{k+1|k}C_{k+1}^\top (C_{k+1}P_{k+1|k}C_{k+1}^\top+W_{k+1})^{-1}}.
 \end{equation}
 The matrix $R_{k+1}$ weighs the accuracy of the prediction with respect to that of the measurements.\begin{itemize}
     \item $R_{k+1}$ is large (in terms of eigenvalues) if the measurements are more reliable.
@@ -2138,26 +2138,27 @@ The matrix $R_{k+1}$ weighs the accuracy of the prediction with respect to that 
 \end{boxdefinition}
 It can be proved that the Kalman filter provides an optimal estimate: at each time step $k$ it minimizes the mean squared estimation error $\VA\left(\|\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1}\|^2\right)$. Notice how $R_{k}$ does not depend on the measurements, hence the sequence $\{R_1,\dots, R_k,\dots\}$ can be precomputed a priori.
 \section{Extended Kalman Filter}
-Now we have to extend the Kalman filter to a general nonlinear system (as the mobile robots kinematic model).\begin{equation}\label{nonlinear_sys}\begin{cases}
+Now we extend the Kalman filter to a general nonlinear system (such as the kinematic model of a mobile robot):\begin{equation}\label{nonlinear_sys}\begin{cases}
     \mathbf x_{k+1}=f_k(\mathbf x_k,\mathbf u_k)+\mathbf v_k\\
     \mathbf y_k=h_k(\mathbf x_k)+\mathbf w_k
 \end{cases}\end{equation}
-with $f_k,h_k$ being continuously differentiable for each $k$. What we do is apply approximate linearization around the current estimation $\widehat{\mathbf x}_k$ and consider the Kalman filter on that approximation.
+with $f_k,h_k$ being continuously differentiable for each $k$. What we do is apply approximate linearization around the current estimate and use the Kalman filter on that approximation.
 \begin{boxdefinition}{Extended Kalman Filter}{}
-    For a system like in Equation \eqref{nonlinear_sys}, we consider the Jacobian matrices:\begin{equation}
-        F_k=\frac{\partial f_k}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_k},\qquad  H_{k+1}=\frac{\partial h_{k+1}}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_{k+1}},
+    For a system like the one in Equation \eqref{nonlinear_sys}, we consider the Jacobian matrices:\begin{equation}
+        F_k=\frac{\partial f_k}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_k,\,\mathbf u=\mathbf u_k},\qquad  H_{k+1}=\frac{\partial h_{k+1}}{\partial \mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_{k+1|k}}.
     \end{equation}
-    the extended Kalman filter is an observer defined in two steps:\begin{itemize}
+    The extended Kalman filter is an observer defined in two steps:\begin{itemize}
         \item \textbf{prediction}:\begin{align}
-            &\widehat{\mathbf x}_{k+1|k}=f_k(\mathbf x_k,\mathbf u_k)\\
+            &\widehat{\mathbf x}_{k+1|k}=f_k(\widehat{\mathbf x}_k,\mathbf u_k)\\
             &P_{k+1|k}=F_kP_kF_k^\top+V_k
         \end{align}
         \item \textbf{correction}:\begin{align}
             &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+R_{k+1}\bnu_{k+1}\\
-            &P_{k+1}=P_{k+1|k}-R_{k+1}H_{k+1}P_{k+1|k}.
+            &P_{k+1}=P_{k+1|k}-R_{k+1}H_{k+1}P_{k+1|k},
         \end{align}
+        where the innovation is $\bnu_{k+1}=\mathbf y_{k+1}-h_{k+1}(\widehat{\mathbf x}_{k+1|k})$,
     \end{itemize}
-    with the Kalman gain matrix being:\begin{equation}
+    and the Kalman gain matrix is:\begin{equation}
         R_{k+1}=P_{k+1|k}H_{k+1}^\top (H_{k+1}P_{k+1|k}H_{k+1}^\top+W_{k+1})^{-1}.
     \end{equation}
 \end{boxdefinition}
@@ -2168,15 +2169,15 @@ with $f_k,h_k$ being continuously differentiable for each $k$. What we do is app
     \caption{Block scheme of the extended Kalman filter.}
     \label{fig:EKF_blockscheme}
 \end{figure}
-\section{Landmark-Based and SLAM}
-Now we apply the extended Kalman filter to a robotic system in order to localize the robot and have a proper estimation of the state. We will construct the discussion based on the assumption that our mobile robot is equipped with a sensor that can measure the \textit{relative distance (range) and orientation (bearing)} to a set of \textbf{landmarks}, that are point-wise obstacles, they may be artificial or natural. The position of the landmarks is fixed and known.\bigskip
+\section{Landmark-Based Localization}
+Now we apply the extended Kalman filter to a robotic system in order to localize the robot and obtain a proper estimate of its state. We base the discussion on the assumption that our mobile robot is equipped with a sensor that can measure the \textit{relative distance (range) and orientation (bearing)} to a set of \textbf{landmarks}, which are point-like obstacles that may be artificial or natural. The positions of the landmarks are fixed and known.\bigskip
 
-There are various sensors that can provide this kind of landmarks, such as laser rangefinders, depth cameras or RFID sensors.
+There are various sensors that can provide this kind of measurement, such as laser rangefinders, depth cameras or RFID sensors.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{images/landmarks.png}
 \end{figure}
-Let's use the unicycle model, with the addition of a white gaussian noise $\blueText{\mathbf v_k}$ with zero mean and covariance matrix $V_k$:\begin{align}
+Let us use the unicycle model, with the addition of a white Gaussian noise $\blueText{\mathbf v_k}$ with zero mean and covariance matrix $V_k$:\begin{align}
     &x_{k+1}=x_k+\greenText{v_k}T_s\cos\theta_k+\blueText{v_{1k}}\\
     &y_{k+1}=y_k+\greenText{v_k}T_s\sin\theta_k+\blueText{v_{2k}}\\
     &\theta_{k+1}=\theta_k+\omega_kT_s+\blueText{v_{3k}}.
@@ -2186,15 +2187,224 @@ Let's use the unicycle model, with the addition of a white gaussian noise $\blue
        v_{1k}& v_{2k}& v_{3k}
     \end{pmatrix}^\top}$ we denote the Gaussian noise on the dynamics at time step $k$.
 \end{boxnotation}
-Let $L$ be the total number of landmarks, and let $L_k\le L$ be the number of landmarks that the robot can sense at time step $k$, identify the cartesian positions of the landmarks as:\begin{equation}
-    \mathbf p_{li}=\begin{pmatrix}
-        x_{li}\\y_{li}
+Let $L$ be the total number of landmarks, and let $L_k\le L$ be the number of landmarks that the robot can sense at time step $k$. We identify the Cartesian positions of the landmarks as:\begin{equation}
+    \mathbf p_{l\, i}=\begin{pmatrix}
+        x_{l\, i}\\y_{l\, i}
     \end{pmatrix}, \quad 1\le i \le L.
 \end{equation}
-The robot do not have direct access to the landmark position $\begin{pmatrix}
-        x_{li}&y_{li}
-\end{pmatrix}^\top$, but to te relative range and bearing. We assume that the robot can identify and distinguish the landmarks between each other, each landmark is identified by an index between 1 to $L$. At a given time step, there are $L_k$ landmarks sensed, but the $i$-th landmark sensed is not necessarily the landmark $i$ out of $L$, hence we use an association map $a$ that assign at an integer between 1 to $L_k$ (the $i$-th landmark sensed) the $j$-th landmark between 1 to $L$:\begin{equation}
-    a:\{1,2,\dots,L_k\}\to\{1,2,\dots,L\}
+The robot does not have direct access to the landmark positions $\begin{pmatrix}
+        x_{l\,i}&y_{l\,i}
+\end{pmatrix}^\top$, but only to the relative range and bearing. We assume that the robot can identify and distinguish the landmarks from each other: each landmark is identified by an index from 1 to $L$. At a given time step, there are $L_k$ landmarks sensed, but the $i$-th landmark sensed is not necessarily the landmark $i$ out of $L$. Hence, we use an association map $a$ that assigns to each integer $i$ from 1 to $L_k$ (the $i$-th landmark sensed) the index $j$, between 1 and $L$, of the corresponding landmark:\begin{equation}
+    a:\{1,2,\dots,L_k\}\to\{1,2,\dots,L\},
 \end{equation}
-so we denote $a(i)$ the index of the landmark observed at the $i$-th measurement.
+so we denote by $a(i)$ the index of the landmark observed at the $i$-th measurement. At each time step, we define the vector of the measurements $\mathbf y_k$; this is a vector of length $2L_k$ (the length of the vector changes over the time steps) and is defined as follows:\begin{equation}
+    \mathbf y_k=\begin{pmatrix}
+        \mathbf h_1(\q_k,a(1))\\\mathbf h_2(\q_k,a(2))\\\vdots\\ 
+        \mathbf h_{L_k}(\q_k,a(L_k))
+    \end{pmatrix}+\begin{pmatrix}\mathbf w_{1k}\\\mathbf w_{2k}\\\vdots \\ \mathbf w_{L_kk}\end{pmatrix},
+\end{equation} 
+where $\mathbf w_k=\begin{pmatrix}
+       \mathbf w_{1k}^\top& \dots & \mathbf w_{L_kk}^\top
+\end{pmatrix}^\top\in\R^{2L_k}$ is a Gaussian white noise with covariance matrix $W_k$, and each $\mathbf h_i(\q_k,a(i))$ is a two-component vector with the range and bearing of the $a(i)$-th landmark. Of course, it depends on the current configuration $\q_k$:\begin{equation}
+    \mathbf h_i(\blueText{\q_k},a(i))=\begin{pmatrix}
+       \sqrt{(\blueText{x_k}-x_{l \, a(i)})^2+(\blueText{y_k}-y_{l \, a(i)})^2} \\[1.5ex]
+       \text{atan2}\left(\blueText{y_k}-y_{l \, a(i)}, \, \blueText{x_k}-x_{l \, a(i)}\right)-\blueText{\theta_k}
+    \end{pmatrix}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/bearing.eps}
+\end{figure}
+The kinematic model of the unicycle is nonlinear, so we need to linearize the equations of motion at a given configuration in order to apply the extended Kalman filter. We denote by $F_k$ the Jacobian of the process dynamics at time $k$, which is defined as follows:\begin{equation}
+    F_k=\begin{pmatrix}
+        1&0&-v_kT_s\sin\widehat{\theta}_k\\
+        0&1&v_kT_s\cos\widehat{\theta}_k\\
+        0&0&1
+    \end{pmatrix}
+\end{equation}
+and is evaluated at the current configuration estimate $\widehat{\q}_k$. Now we have to differentiate the measurement equations $ \mathbf h_i({\q_k},a(i))$ to obtain $H_{k+1}$:\begin{equation}
+    H_{k+1}=\begin{pmatrix}
+        \displaystyle\frac{\partial  \mathbf h_1}{\partial \q}\bigg|_{\q=\widehat\q_{k+1|k}}\\ \vdots \\ 
+        \displaystyle\frac{\partial  \mathbf h_{L_k}}{\partial \q}\bigg|_{\q=\widehat\q_{k+1|k}}
+    \end{pmatrix}\in \R^{2L_k\times 3},
+\end{equation}
+where each 
+$\frac{\partial  \mathbf h_i}{\partial \q}$ is a matrix with two rows and three columns, defined as follows:
+\begin{align}
+\frac{\partial \mathbf{h}_i}{\partial \mathbf{q}} \bigg|_{\mathbf{q} = \widehat{\mathbf{q}}_{k+1|k}}&=
+\begin{pmatrix}
+   \displaystyle\frac{\partial \mathbf{h}_i}{\partial x} \bigg|_{x = \widehat{x}_{k+1|k}}&
+   \displaystyle\frac{\partial \mathbf{h}_i}{\partial y} \bigg|_{y = \widehat{y}_{k+1|k}}&
+   \displaystyle\frac{\partial \mathbf{h}_i}{\partial \theta} \bigg|_{\theta = \widehat\theta_{k+1|k}}
+\end{pmatrix}
+\\
+&=\begin{pmatrix} 
+\frac{\widehat{x}_{k+1|k} - x_{l \, a(i)}}{\sqrt{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2}} & 
+\frac{\widehat{y}_{k+1|k} - y_{l \, a(i)}}{\sqrt{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2}} & 
+0 \\
+\frac{-(\widehat{y}_{k+1|k} - y_{l \, a(i)})}{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2} & 
+\frac{\widehat{x}_{k+1|k} - x_{l \, a(i)}}{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2} & 
+-1 
+\end{pmatrix}.
+\end{align}
+Then, it is possible to run the extended Kalman filter. Figure \ref{fig:EKF_result} shows a typical application of the EKF: the robot's estimated trajectory $\widehat \q(t)$ is compared with the actual path.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/EFK_result.png}
+    \caption{Simulation of the extended Kalman filter on a unicycle.}
+    \label{fig:EKF_result}
+\end{figure}
+\subsection{Data Association}
+Now we drop the assumption that the landmarks can be distinguished from each other: every time we sense a landmark, we cannot tell which of the $L$ landmarks it is, hence the association map $a$ must be estimated as well. The innovation $\bnu_k$ in the EKF is the difference between the actual and the predicted measurement; we associate each observation to the landmark that minimizes the innovation magnitude.\bigskip
+
+At the $(k+1)$-th step, we consider the $i$-th measurement $\mathbf y_{i\, k+1}$ and we compute the \textbf{candidate innovation} for the landmark $j$ as follows:\begin{equation}
+    \bnu_{ij}=\mathbf y_{i\, k+1}-\mathbf h_i(\widehat\q_{k+1|k},j).
+\end{equation}
+The smaller $\bnu_{ij}$ is, the more likely it is that the $i$-th measurement corresponds to the $j$-th landmark. We cannot simply minimize $\|\bnu_{ij}\|$, since we also have to consider the \textit{uncertainty} of the measurement.
+We define the matrix $H_{k+1}(i,j)$ as the Jacobian matrix of the measurement function at time $k+1$, evaluated under the specific hypothesis that the $i$-th measurement made by the sensor corresponds to the $j$-th landmark.
+The already mentioned uncertainty of the measurement is encoded in a matrix $S_{ij}$ defined as follows:\begin{equation}
+    S_{ij}=H_{k+1}(i,j)P_{k+1|k}H_{k+1}(i,j)^\top+W_{k+1}(i),
+\end{equation}
+where $W_{k+1}(i)$ represents the covariance matrix of the measurement noise referring exclusively to the single $i$-th measurement at time $k+1$.
+Hence, we minimize the norm of $\bnu_{ij}$ weighted with $S_{ij}^{-1}$, and the landmark associated to the $i$-th measurement is:\begin{equation} 
+        j^*=\operatorname*{arg\,min}_{1\le j\le L}\bnu_{ij}^\top S_{ij}^{-1}\bnu_{ij}.
+\end{equation}
+\subsection{Localization on a Map}
+Now, we assume that a metric map $\mathcal M$ of the environment is available; in particular, it can be:\begin{itemize}
+    \item \textbf{Line-based map}: A geometric representation that models environmental features, such as walls and corridors, through vector segments and lines, similar to an architectural floor plan.
+    \item \textbf{Occupancy grid}: A discrete representation in which space is divided into a grid of cells, each of which indicates whether that specific spatial area is occupied by an obstacle or free.
+\end{itemize}
+The map is a global reference known a priori; the EKF uses this map to refine the estimate $\widehat\q_k$ by comparing the sensor readings with the readings predicted from the map. We assume that our mobile robot is equipped with a range finder, a sensor that can provide range measurements in all directions. The \textit{whole scan} is used as the output vector, whose components are the range readings in all available directions (usually, a discretization of the angles from 0 to 360 degrees).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/range_finder.png}
+\end{figure}
+\noindent\textbf{Example}: Assume that a range finder scans 5 angles ($0^\circ,45^\circ,90^\circ,135^\circ,180^\circ$) at each time step. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/range_finder.eps}
+\end{figure}
+\noindent The output vector will have 5 components, each containing the distance between the robot and the sensed point at that orientation (hence the bearing is also known). The \textit{innovation} $\bnu_{k+1}$ is computed as the difference between the actual scan $\mathbf y_{k+1}$ and the predicted scan $\mathbf h(\widehat\q_{k+1|k},\mathcal M)$, which is computed by considering the range values that the robot should read if it were in the configuration $\widehat\q_{k+1|k}$ according to the map $\mathcal M$:\begin{equation}
+    \bnu_{k+1}=\mathbf y_{k+1}-\mathbf h(\widehat\q_{k+1|k},\mathcal M).
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/range_finder2.pdf}
+\end{figure}
+At this point we can apply the extended Kalman filter by linearizing the equations and using the innovation just defined. Notice how no feature matching is needed; however, multiple similar features in the environment may cause a severe displacement in the estimate (\textbf{aliasing}).\bigskip
+
+\noindent The diagram of the whole localization scheme is shown in Figure \ref{localization_diagram}. To summarize all the steps:
+\begin{itemize}
+    \item \textbf{Odometric prediction}: Use proprioceptive sensors to predict the next configuration, $\widehat\q_{k+1|k}$.
+    \item \textbf{Output prediction}: Use $\widehat\q_{k+1|k}$ to compute the expected sensor readings, $\mathbf h(\widehat\q_{k+1|k},\mathcal M)$, leveraging the known map $\mathcal M$ to determine what the robot ``should see'' at its predicted location.
+    \item \textbf{Matching}: Compare the actual sensor readings with the predicted ones to compute the innovation $\bnu_{k+1}$.
+    \item \textbf{Correction}: Update the robot's configuration estimate using the innovation, which is the difference between the actual and predicted sensor readings. This step uses the Kalman gain matrix:
+    \[
+    R_{k+1} = P_{k+1|k}H_{k+1}^\top(H_{k+1}P_{k+1|k}H_{k+1}^\top + W_{k+1})^{-1}
+    \]
+    to determine how much weight to assign to the predicted configuration $\widehat\q_{k+1|k}$ (from odometry) versus the measurements from exteroceptive sensors, based on their respective uncertainties.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/localization_diagram.png}
+    \caption{Localization diagram.}
+    \label{localization_diagram}
+\end{figure}
+\noindent\textbf{Summary of EKF localization}:
+\begin{itemize}
+    \item \textbf{state prediction}: $\widehat\q_{k+1|k}=f(\widehat\q_k,\mathbf u_k)$;
+    \item \textbf{covariance prediction}: $P_{k+1|k}=F_kP_kF_k^\top+V_k$;
+    \item \textbf{innovation}: $\bnu_{k+1}=\mathbf y_{k+1}-\mathbf h(\widehat\q_{k+1|k})$;
+    \item \textbf{Kalman gain}: $R_{k+1} = P_{k+1|k}H_{k+1}^\top(H_{k+1}P_{k+1|k}H_{k+1}^\top + W_{k+1})^{-1}$;
+    \item \textbf{state update}: $\widehat\q_{k+1}=\widehat\q_{k+1|k}+R_{k+1}\bnu_{k+1}$;
+    \item \textbf{covariance update}: $P_{k+1}=P_{k+1|k}-R_{k+1}H_{k+1}P_{k+1|k}$.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/EFK_result2.png}
+    \caption{Simulation of a robotized wheelchair with high wheel slippage, equipped with 5 ultrasonic sensors that sample at 2\,Hz and can sense only in front of the robot.}
+\end{figure}
+\section{SLAM}
+SLAM is the acronym of \textbf{Simultaneous Localization And Map-building}. It is a method that removes the assumption of a known map and aims to use the robot's sensors to 
+build a map and, at the same time, localize the robot. In probabilistic SLAM, the idea is to estimate the map 
+features in addition to the robot configuration; we discuss a simple landmark-based version of 
+the problem, which can be solved using the KF or the EKF. 
+\begin{boxobservation}{}{}
+    In this setup, the state vector includes both the robot configuration and the landmark positions.
+\end{boxobservation}
+\noindent To simplify the discussion we work under the following assumptions:\begin{itemize}
+    \item The robot is an omnidirectional point-robot, whose 
+    configuration is then a Cartesian position (no steering angle).
+    \item There are $L$ landmarks distributed in the environment, whose positions are unknown.
+    \item The robot is equipped with a sensor that can see, 
+    identify and measure the relative position of all 
+    landmarks with respect to itself, i.e., the field of view is unbounded and there is no occlusion.
+\end{itemize}
+We denote by $\mathbf x$ the extended state vector to be estimated; it contains the Cartesian position $(x,y)$ of the robot and the positions of the $L$ landmarks:
+\begin{equation}
+        \mathbf x = \begin{pmatrix}
+            x&y&x_{l\, 1}&y_{l\, 1}&\dots & x_{l\, L}&y_{l\, L}
+        \end{pmatrix}^\top\in \R^{2L+2}.
+\end{equation}
+The equations of motion in $\mathbf x$ are easy to define since the landmarks cannot move, hence their positions do not change over time:\begin{equation}
+    \mathbf x_{k+1}=\mathbf x_k+T_s\begin{pmatrix}
+        1&0\\ 0&1 \\ 
+        0&0 \\
+        \vdots&\vdots\\ 0&0
+    \end{pmatrix}\begin{pmatrix}
+        u_{x,k}\\ u_{y,k}
+    \end{pmatrix}+\begin{pmatrix}
+        v_{x,k}\\ v_{y,k} \\ 
+       0 \\
+        \vdots\\ 0
+    \end{pmatrix}
+\end{equation}
+with $ u_{x,k},u_{y,k}$ being the velocity inputs, $T_s$ the sampling time, and $\mathbf v_{xy,k}=\begin{pmatrix}
+     v_{x,k} & v_{y,k}
+\end{pmatrix}^\top$ a Gaussian white noise with zero 
+mean and covariance matrix $V_{xy,k}$. This is a linear model of the form:\begin{equation}
+    \mathbf x_{k+1}=A\mathbf x_k+B\mathbf u_k+\mathbf v_k,
+\end{equation}
+where $A=I_{2L+2}$, $\mathbf u_{k}=\begin{pmatrix}
+     u_{x,k} & u_{y,k}
+\end{pmatrix}^\top$, $B$ is the $(2L+2)\times 2$ matrix in the previous equation (including the factor $T_s$), and $
+    \mathbf v_k=\begin{pmatrix}
+        v_{x,k}&v_{y,k}&0&\dots &0
+    \end{pmatrix}^\top$
+is a white Gaussian noise with zero mean and covariance matrix\begin{equation}
+    V_k=\begin{pmatrix}
+        V_{xy,k} & 0 &\dots & 0\\ 
+        0& 0 & \dots & 0\\ 
+        \vdots & \vdots & \ddots & \vdots \\ 
+        0& 0 & \dots & 0
+    \end{pmatrix}.
+\end{equation}
+The $i$-th measurement contains the relative position of the $i$-th landmark (which by assumption can be sensed from anywhere) plus the noise:\begin{equation}
+    \mathbf y_{i,k}=\begin{pmatrix}
+        x_{l\, i}-x_{k}\\ y_{l\, i}-y_{k}
+    \end{pmatrix}+\mathbf w_{i,k},
+\end{equation}
+where $\mathbf w_{i,k}\sim\mathcal N(\mathbf 0,W_{i,k})$. The output equation is also linear:\begin{equation}
+    \mathbf y_{i,k}=C_i\mathbf x_k+\mathbf w_{i,k},
+\end{equation}
+where $C_i=\begin{pmatrix}-I_2&\mathbf 0&\dots&I_2&\dots&\mathbf 0\end{pmatrix}\in\R^{2\times(2L+2)}$ has the identity block $I_2$ in the columns corresponding to the $i$-th landmark. We can stack all measurements to create the output vector:\begin{equation}
+    \mathbf y_k=C\mathbf x_k+\mathbf w_k,
+\end{equation}
+where\begin{equation}
+    C=\begin{pmatrix}
+        C_1\\ \vdots \\ C_L
+    \end{pmatrix},\qquad 
+    \mathbf w_k=\begin{pmatrix}
+         \mathbf w_{1,k}\\ \vdots \\ \mathbf w_{L,k}
+    \end{pmatrix},
+\end{equation}
+and the covariance of the measurement noise (the noises of different landmarks being independent) is\begin{equation}
+    W_k=\begin{pmatrix}
+{W}_{1,k} & 0 & \dots & 0 \\
+0 & {W}_{2,k} & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & {W}_{L,k}
+\end{pmatrix}.
+\end{equation}
+At this point, we just apply the Kalman filter (since the model is linear, the EKF reduces to the standard KF).
 \end{document}
