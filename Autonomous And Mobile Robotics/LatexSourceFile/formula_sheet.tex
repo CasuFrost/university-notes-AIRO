@@ -1,0 +1,822 @@
+%sebbene gli appunti siano scritti a mano, questo formulario l'ho fatto scrivere a claude basandosi sui miei appunti
+\chapter*{Formula sheet}
+\addcontentsline{toc}{chapter}{Formula sheet}
+
+%==================== CHAPTER 1: WHEELED MOBILE ROBOTS ====================%
+\subsubsection{Configuration vector}
+\begin{equation*}
+    \q=\begin{pmatrix} q_1 & \dots & q_n \end{pmatrix}^\top
+\end{equation*}
+
+\subsubsection{Configuration space of the disk robot / free polyhedral robot}
+\begin{equation*}
+    \mathcal C=\R^2\times SO(2)=SE(2),\qquad \mathcal C=\R^3\times SO(3)=SE(3)
+\end{equation*}
+
+\subsubsection{Configuration space of a 2R manipulator}
+\begin{equation*}
+    \mathcal C=SO(2)\times SO(2)=SO(2)^2
+\end{equation*}
+
+\subsubsection{Properties of a distance}
+\begin{align*}
+    &d(\q_a,\q_b)\ge 0\\
+    &d(\q_a,\q_b)=0\iff \q_a=\q_b\\
+    &d(\q_a,\q_b)=d(\q_b,\q_a)\\
+    &d(\q_a,\q_b)\le d(\q_a,\q_c)+d(\q_c,\q_b)
+\end{align*}
+
+\subsubsection{Displacement metric}
+\begin{equation*}
+    d(\q_a,\q_b)=\max_{\mathbf p\in \text{robot}}\|\mathbf p(\q_a)-\mathbf p(\q_b)\|
+\end{equation*}
+
+\subsubsection{Control points metric}
+\begin{equation*}
+    d(\q_a,\q_b)=\max_{1\le i \le c}\|\mathbf p_i(\q_a)-\mathbf p_i(\q_b)\|
+\end{equation*}
+
+\subsubsection{Geometric constraint}
+\begin{equation*}
+    h_i(\q)=0,\quad i=1,\dots,k
+\end{equation*}
+
+\subsubsection{Dimension of the constrained sub-manifold}
+\begin{equation*}
+    \dim=n-k
+\end{equation*}
+
+\subsubsection{Kinematic constraint (Pfaffian form)}
+\begin{equation*}
+    \mathbf a^\top(\q)\dq=0,\qquad A(\q)\dq=\mathbf 0\iff \dq\in\mathcal N(A(\q))
+\end{equation*}
+
+\subsubsection{Kinematic constraint implied by a geometric constraint}
+\begin{equation*}
+    \dot h(\q)=\frac{\partial h}{\partial \q}\dq=(\nabla_\q h)^\top\dq=0
+\end{equation*}
+
+\subsubsection{Holonomic (integrable) constraint}
+\begin{equation*}
+    \frac{\partial h}{\partial \q}=\gamma(\q)\,\mathbf a^\top(\q),\quad \gamma(\q)\neq 0
+\end{equation*}
+
+\subsubsection{Rolling disk constraint}
+\begin{equation*}
+    \sin\theta\,\dot x-\cos\theta\,\dot y=0
+\end{equation*}
+
+\subsubsection{Null space basis and dimension}
+\begin{equation*}
+    \mathcal N(A(\q))=\text{span}\{\mathbf g_1(\q),\dots,\mathbf g_m(\q)\},\qquad m=n-k
+\end{equation*}
+
+\subsubsection{Kinematic model}
+\begin{equation*}
+    \dq=\sum_{i=1}^m u_i\mathbf g_i(\q)=G(\q)\mathbf u
+\end{equation*}
+
+\subsubsection{Driftless property}
+\begin{equation*}
+    \mathbf u=\mathbf 0\implies\dq=\mathbf 0
+\end{equation*}
+
+\subsubsection{Unicycle kinematic model}
+\begin{equation*}
+    \begin{pmatrix}\dot x\\\dot y\\\dot\theta\end{pmatrix}=\begin{pmatrix}\cos\theta\\\sin\theta\\0\end{pmatrix}v+\begin{pmatrix}0\\0\\1\end{pmatrix}\omega
+\end{equation*}
+
+\subsubsection{Unicycle pure rolling constraint (matrix form)}
+\begin{equation*}
+    \begin{pmatrix}\sin\theta&-\cos\theta&0\end{pmatrix}\begin{pmatrix}\dot x\\\dot y\\\dot\theta\end{pmatrix}=0
+\end{equation*}
+
+\subsubsection{Linear velocity of the unicycle}
+\begin{equation*}
+    v=\pm\sqrt{\dot x^2+\dot y^2}=\omega_{\text{roll}}\,r
+\end{equation*}
+
+\subsubsection{Differential drive velocities}
+\begin{equation*}
+    v=r\,\frac{\omega_R+\omega_L}{2},\qquad \omega=(\omega_R-\omega_L)\frac{r}{d}
+\end{equation*}
+
+\subsubsection{Bicycle: front wheel position}
+\begin{equation*}
+    x_f=x+l\cos\theta,\qquad y_f=y+l\sin\theta
+\end{equation*}
+
+\subsubsection{Bicycle kinematic constraints}
+\begin{equation*}
+    \begin{pmatrix}
+        \sin\theta&-\cos\theta&0&0\\
+        \sin(\theta+\phi)&-\cos(\theta+\phi)&-l\cos\phi&0
+    \end{pmatrix}\begin{pmatrix}\dot x\\\dot y\\\dot\theta\\\dot\phi\end{pmatrix}=\mathbf 0
+\end{equation*}
+
+\subsubsection{Bicycle kinematic model (rear-wheel drive)}
+\begin{equation*}
+    \dq=\begin{pmatrix}\cos\theta\\\sin\theta\\\frac{1}{l}\tan\phi\\0\end{pmatrix}u_1+\begin{pmatrix}0\\0\\0\\1\end{pmatrix}u_2
+\end{equation*}
+
+\subsubsection{Bicycle kinematic model (front-wheel drive)}
+\begin{equation*}
+    \dq=\begin{pmatrix}\cos\theta\cos\phi\\\sin\theta\cos\phi\\\frac{1}{l}\sin\phi\\0\end{pmatrix}u_1+\begin{pmatrix}0\\0\\0\\1\end{pmatrix}u_2
+\end{equation*}
+
+%==================== CHAPTER 2: CONTROLLABILITY ====================%
+\subsubsection{Driftless nonlinear system}
+\begin{equation*}
+    \dot{\mathbf x}=\sum_{i=1}^m\mathbf g_i(\mathbf x)u_i
+\end{equation*}
+
+\subsubsection{Lie bracket}
+\begin{equation*}
+    [\mathbf g_1,\mathbf g_2](\mathbf x)=\frac{\partial \mathbf g_2}{\partial \mathbf x}\mathbf g_1(\mathbf x)-\frac{\partial \mathbf g_1}{\partial \mathbf x}\mathbf g_2(\mathbf x)
+\end{equation*}
+
+\subsubsection{Antisymmetry of the Lie bracket}
+\begin{equation*}
+    [\mathbf g_i,\mathbf g_j]=-[\mathbf g_j,\mathbf g_i]
+\end{equation*}
+
+\subsubsection{Displacement along the Lie bracket}
+\begin{equation*}
+    \mathbf x(4\varepsilon)=\mathbf x(0)+\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))+O(\varepsilon^3)
+\end{equation*}
+
+\subsubsection{Input distribution}
+\begin{equation*}
+    \Delta(\mathbf x)=\text{span}\{\mathbf g_1(\mathbf x),\dots,\mathbf g_m(\mathbf x)\}
+\end{equation*}
+
+\subsubsection{Accessibility distribution}
+\begin{equation*}
+    \Delta_{\mathcal A}(\mathbf x)=\text{span}\{\mathbf g_1,\dots,\mathbf g_m,\dots,[\mathbf g_i,\mathbf g_j],\dots,[\mathbf g_i,[\mathbf g_j,\mathbf g_k]],\dots\}(\mathbf x)
+\end{equation*}
+
+\subsubsection{Accessibility criterion}
+\begin{equation*}
+    \text{controllable}\iff\dim\Delta_{\mathcal A}=n
+\end{equation*}
+
+\subsubsection{Unicycle: first order Lie bracket (slide vector field)}
+\begin{equation*}
+    \mathbf g_3=[\mathbf g_1,\mathbf g_2]=\begin{pmatrix}\sin\theta\\-\cos\theta\\0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Bicycle: first order Lie bracket (wriggle)}
+\begin{equation*}
+    \mathbf g_3=[\mathbf g_1,\mathbf g_2]=\begin{pmatrix}0\\0\\-\frac{1}{l\cos^2\phi}\\0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Bicycle: second order Lie bracket}
+\begin{equation*}
+    \mathbf g_4=[\mathbf g_1,\mathbf g_3]=\begin{pmatrix}-\frac{\sin\theta}{l\cos^2\phi}\\\frac{\cos\theta}{l\cos^2\phi}\\0\\0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Chained-form system}
+\begin{align*}
+    \dot z_1&=w_1\\
+    \dot z_2&=w_2\\
+    \dot z_3&=z_2w_1\\
+    &\;\;\vdots\\
+    \dot z_n&=z_{n-1}w_1
+\end{align*}
+
+\subsubsection{Chained-form transformation of the unicycle (coordinates)}
+\begin{equation*}
+    z_1=\theta,\qquad z_2=x\cos\theta+y\sin\theta,\qquad z_3=x\sin\theta-y\cos\theta
+\end{equation*}
+
+\subsubsection{Chained-form transformation of the unicycle (inputs)}
+\begin{equation*}
+    w_1=\omega,\qquad w_2=v-z_3\omega
+\end{equation*}
+
+\subsubsection{Velocity along a path}
+\begin{equation*}
+    \dq=\q'\,\dot s,\qquad \|\q'\|=1\text{ if $s$ is the arc length}
+\end{equation*}
+
+\subsubsection{Admissible tangent vector}
+\begin{equation*}
+    A(\q)\q'=\mathbf 0\iff\q'\in\mathcal N(A)
+\end{equation*}
+
+\subsubsection{Geometric model}
+\begin{equation*}
+    \q'=G(\q)\tilde{\mathbf u},\qquad \mathbf u(t)=\tilde{\mathbf u}(s)\,\dot s(t)
+\end{equation*}
+
+\subsubsection{Differential flatness}
+\begin{equation*}
+    \y=\Psi(\mathbf x),\qquad \mathbf x=\Phi_x(\y,\dy,\dots,\y^{(r_x)}),\qquad \mathbf u=\Phi_u(\y,\dy,\dots,\y^{(r_u)})
+\end{equation*}
+
+\subsubsection{Unicycle flat outputs: orientation}
+\begin{equation*}
+    \theta(s)=\text{atan2}(y',x')+k\pi,\quad k\in\{0,1\}
+\end{equation*}
+
+\subsubsection{Unicycle flat outputs: geometric inputs}
+\begin{equation*}
+    \tilde v=\pm\sqrt{(x')^2+(y')^2},\qquad \tilde\omega=\frac{y''x'-x''y'}{(x')^2+(y')^2}
+\end{equation*}
+
+\subsubsection{Bicycle flat outputs: steering angle}
+\begin{equation*}
+    \phi(s)=\arctan\left(\pm\frac{l\,(x'y''-y'x'')}{\left((x')^2+(y')^2\right)^{3/2}}\right)
+\end{equation*}
+
+\subsubsection{Chained-form flat outputs}
+\begin{equation*}
+    \y=\begin{pmatrix}z_1\\z_3\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Chained-form reconstruction maps}
+\begin{equation*}
+    z_2=\frac{z_3'}{z_1'},\qquad \tilde w_1=z_1',\qquad \tilde w_2=\frac{z_1'z_3''-z_1''z_3'}{(z_1')^2}
+\end{equation*}
+
+\subsubsection{Cubic polynomial interpolation of the unicycle path}
+\begin{align*}
+    x(s)&=s^3x_f-(s-1)^3x_i+\alpha_xs^2(s-1)+\beta_xs(s-1)^2\\
+    y(s)&=s^3y_f-(s-1)^3y_i+\alpha_ys^2(s-1)+\beta_ys(s-1)^2
+\end{align*}
+
+\subsubsection{Boundary conditions on the Cartesian velocity}
+\begin{align*}
+    x'(0)&=k\cos\theta_i,\quad x'(1)=k\cos\theta_f\\
+    y'(0)&=k\sin\theta_i,\quad y'(1)=k\sin\theta_f
+\end{align*}
+
+\subsubsection{Coefficients of the cubic path of the unicycle}
+\begin{align*}
+    \alpha_x&=k\cos\theta_f-3x_f,\quad \beta_x=k\cos\theta_i+3x_i\\
+    \alpha_y&=k\sin\theta_f-3y_f,\quad \beta_y=k\sin\theta_i+3y_i
+\end{align*}
+
+\subsubsection{Path planning for a chained-form system: interpolation}
+\begin{align*}
+    z_1(s)&=z_{1i}+s(z_{1f}-z_{1i})\\
+    z_3(s)&=s^3z_{3f}-(s-1)^3z_{3i}+\alpha_3s^2(s-1)+\beta_3s(s-1)^2
+\end{align*}
+
+\subsubsection{Path planning for a chained-form system: coefficients}
+\begin{align*}
+    \alpha_3&=z_{2f}(z_{1f}-z_{1i})-3z_{3f}\\
+    \beta_3&=z_{2i}(z_{1f}-z_{1i})+3z_{3i}
+\end{align*}
+
+\subsubsection{Path planning via parametrized inputs}
+\begin{equation*}
+    \Delta=z_{1f}-z_{1i},\qquad
+    \begin{cases}
+        \tilde w_1=\text{sign}(\Delta)\\
+        \tilde w_2=\displaystyle\sum_{j=0}^{n-2}c_js^j
+    \end{cases}\quad s\in[0,|\Delta|]
+\end{equation*}
+
+\subsubsection{Linear system for the input coefficients}
+\begin{equation*}
+    D(\Delta)\begin{pmatrix}c_0\\\vdots\\c_{n-2}\end{pmatrix}=\mathbf d(\mathbf z_i,\mathbf z_f,\Delta)
+\end{equation*}
+
+\subsubsection{Matrices $D$ and $\mathbf d$ for 2 inputs and 3 states}
+\begin{equation*}
+    D=\begin{pmatrix}|\Delta|&\nicefrac{\Delta^2}{2}\\ \text{sign}(\Delta)\nicefrac{\Delta^2}{2}&\nicefrac{\Delta^3}{6}\end{pmatrix},\quad
+    \mathbf d=\begin{pmatrix}z_{2f}-z_{2i}\\z_{3f}-z_{3i}-z_{2i}\Delta\end{pmatrix},\quad
+    \det D=-\text{sign}(\Delta)\frac{\Delta^4}{12}
+\end{equation*}
+
+\subsubsection{Linear timing law}
+\begin{equation*}
+    s(t)=s_i+\frac{s_f-s_i}{t_f-t_i}(t-t_i),\qquad s(t)=s_i+(s_f-s_i)\frac{t}{T}
+\end{equation*}
+
+\subsubsection{Trapezoidal timing law (bang-coast-bang)}
+\begin{equation*}
+    \ddot s(t)=\begin{cases}
+        a_{max}&t\in[t_i,t_i+t_m]\\
+        0&t\in(t_i+t_m,t_f-t_m]\\
+        -a_{max}&t\in(t_f-t_m,t_f]
+    \end{cases}
+\end{equation*}
+
+\subsubsection{Velocity bounds}
+\begin{equation*}
+    |v|\le v_{max},\qquad|\omega|\le\omega_{max}
+\end{equation*}
+
+\subsubsection{Timing law with velocity bounds}
+\begin{equation*}
+    s(t)=s_i+\frac{t}{k},\qquad v(t)=\frac{\tilde v(s(t))}{k},\qquad\omega(t)=\frac{\tilde\omega(s(t))}{k}
+\end{equation*}
+
+\subsubsection{Scaling factor of the timing law}
+\begin{equation*}
+    k=\max\left\{\frac{\tilde v_{peak}}{v_{max}},\frac{\tilde\omega_{peak}}{\omega_{max}}\right\},\quad
+    \tilde v_{peak}=\max_{s}|\tilde v(s)|,\quad\tilde\omega_{peak}=\max_{s}|\tilde\omega(s)|
+\end{equation*}
+
+%==================== CHAPTER 3: MOTION CONTROL ====================%
+\subsubsection{Desired trajectory of the unicycle (flatness)}
+\begin{align*}
+    \theta_d(t)&=\text{atan2}(\dot y_d,\dot x_d)+k\pi\\
+    v_d(t)&=\pm\sqrt{\dot x_d^2+\dot y_d^2}\\
+    \omega_d(t)&=\frac{\ddot y_d\dot x_d-\ddot x_d\dot y_d}{\dot x_d^2+\dot y_d^2}
+\end{align*}
+
+\subsubsection{Tracking error in the rotated frame}
+\begin{equation*}
+    \mathbf e=\begin{pmatrix}e_1\\e_2\\e_3\end{pmatrix}=\begin{pmatrix}\cos\theta&\sin\theta&0\\-\sin\theta&\cos\theta&0\\0&0&1\end{pmatrix}\begin{pmatrix}x_d-x\\y_d-y\\\theta_d-\theta\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Error dynamics}
+\begin{align*}
+    \dot e_1&=v_d\cos e_3-v+e_2\,\omega\\
+    \dot e_2&=v_d\sin e_3-e_1\,\omega\\
+    \dot e_3&=\omega_d-\omega
+\end{align*}
+
+\subsubsection{Approximate linearization}
+\begin{equation*}
+    \dot{\mathbf x}=A\mathbf x+B\mathbf u,\quad A=\left.\frac{\partial\boldsymbol\eta}{\partial\mathbf x}\right|_{\mathbf 0,\mathbf 0},\quad B=\left.\frac{\partial\boldsymbol\eta}{\partial\mathbf u}\right|_{\mathbf 0,\mathbf 0}
+\end{equation*}
+
+\subsubsection{Closed loop with linear state feedback}
+\begin{equation*}
+    \mathbf u=K\mathbf x\implies\dot{\mathbf x}=(A+BK)\mathbf x
+\end{equation*}
+
+\subsubsection{Kalman controllability matrix}
+\begin{equation*}
+    \begin{pmatrix}B&AB&A^2B&\dots&A^{n-1}B\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Input transformation for the error dynamics}
+\begin{equation*}
+    w_1=v_d\cos e_3-v,\qquad w_2=\omega_d-\omega
+\end{equation*}
+
+\subsubsection{Error dynamics with transformed inputs}
+\begin{equation*}
+    \dot{\mathbf e}=\begin{pmatrix}\omega_de_2\\-\omega_de_1+v_d\sin e_3\\0\end{pmatrix}+\begin{pmatrix}1&-e_2\\0&e_1\\0&1\end{pmatrix}\begin{pmatrix}w_1\\w_2\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Linearized error dynamics}
+\begin{equation*}
+    A(t)=\begin{pmatrix}0&\omega_d&0\\-\omega_d&0&v_d\\0&0&0\end{pmatrix},\qquad B=\begin{pmatrix}1&0\\0&0\\0&1\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Linear feedback gain matrix}
+\begin{equation*}
+    \mathbf w=K\mathbf e,\qquad K=\begin{pmatrix}-k_1&0&0\\0&-k_2&-k_3\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Closed-loop error dynamics}
+\begin{equation*}
+    \dot{\mathbf e}=A_{cl}(t)\mathbf e=\begin{pmatrix}-k_1&\omega_d&0\\-\omega_d&0&v_d\\0&-k_2&-k_3\end{pmatrix}\mathbf e
+\end{equation*}
+
+\subsubsection{Gains for approximate linearization}
+\begin{equation*}
+    k_1=k_3=2\zeta a,\qquad k_2=\frac{a^2-\omega_d^2}{v_d},\qquad a>0,\ \zeta\in(0,1)
+\end{equation*}
+
+\subsubsection{Characteristic polynomial of the closed loop}
+\begin{equation*}
+    p(\lambda)=(\lambda+2\zeta a)(\lambda^2+2\zeta a\lambda+a^2)
+\end{equation*}
+
+\subsubsection{Trajectory tracking control law (approximate linearization)}
+\begin{align*}
+    v&=v_d\cos e_3+k_1e_1\\
+    \omega&=\omega_d+k_2e_2+k_3e_3
+\end{align*}
+
+\subsubsection{Trajectory tracking control law (global stability)}
+\begin{align*}
+    w_1&=-k_1(v_d,\omega_d)\,e_1\\
+    w_2&=-k_2\,v_d\frac{\sin e_3}{e_3}\,e_2-k_3(v_d,\omega_d)\,e_3
+\end{align*}
+
+\subsubsection{Input-output linearization: decoupling matrix}
+\begin{equation*}
+    \dy=\frac{\partial h}{\partial\mathbf x}G(\mathbf x)\mathbf u=T(\mathbf x)\mathbf u
+\end{equation*}
+
+\subsubsection{Input-output linearization: linearizing feedback}
+\begin{equation*}
+    \mathbf u=T^{-1}(\mathbf x)\mathbf w\implies\dy=\mathbf w
+\end{equation*}
+
+\subsubsection{Input-output linearization: output error dynamics}
+\begin{equation*}
+    \mathbf e=\y_d-\y,\qquad\mathbf w=\dy_d+K\mathbf e,\qquad\dot{\mathbf e}=-K\mathbf e
+\end{equation*}
+
+\subsubsection{Input-output linearization: control law}
+\begin{equation*}
+    \mathbf u=T^{-1}(\mathbf x)(\dy_d+K\mathbf e)
+\end{equation*}
+
+\subsubsection{Static feedback: displaced output point}
+\begin{equation*}
+    \begin{pmatrix}x_B\\y_B\end{pmatrix}=\begin{pmatrix}x+b\cos\theta\\y+b\sin\theta\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Static feedback: decoupling matrix}
+\begin{equation*}
+    \begin{pmatrix}\dot x_B\\\dot y_B\end{pmatrix}=\begin{pmatrix}\cos\theta&-b\sin\theta\\\sin\theta&b\cos\theta\end{pmatrix}\begin{pmatrix}v\\\omega\end{pmatrix}=T(\theta)\begin{pmatrix}v\\\omega\end{pmatrix},\qquad\det T=b
+\end{equation*}
+
+\subsubsection{Static feedback: linearizing input transformation}
+\begin{equation*}
+    \begin{pmatrix}v\\\omega\end{pmatrix}=\begin{pmatrix}\cos\theta&\sin\theta\\-\dfrac{\sin\theta}{b}&\dfrac{\cos\theta}{b}\end{pmatrix}\begin{pmatrix}w_1\\w_2\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Static feedback: linearized system and zero dynamics}
+\begin{equation*}
+    \dot x_B=w_1,\qquad\dot y_B=w_2,\qquad\dot\theta=\frac{w_2\cos\theta-w_1\sin\theta}{b}
+\end{equation*}
+
+\subsubsection{Static feedback: control law}
+\begin{align*}
+    w_1&=\dot x_d+k_x(x_d-x_B)\\
+    w_2&=\dot y_d+k_y(y_d-y_B)
+\end{align*}
+
+\subsubsection{Dynamic feedback: dynamic extension}
+\begin{equation*}
+    \dot v=a
+\end{equation*}
+
+\subsubsection{Dynamic feedback: second derivative of the output}
+\begin{equation*}
+    \begin{pmatrix}\ddot x\\\ddot y\end{pmatrix}=\begin{pmatrix}\cos\theta&-v\sin\theta\\\sin\theta&v\cos\theta\end{pmatrix}\begin{pmatrix}a\\\omega\end{pmatrix}=T(v,\theta)\begin{pmatrix}a\\\omega\end{pmatrix},\qquad\det T=v
+\end{equation*}
+
+\subsubsection{Dynamic feedback: linearizing input transformation}
+\begin{equation*}
+    \begin{pmatrix}a\\\omega\end{pmatrix}=\begin{pmatrix}\cos\theta&\sin\theta\\-\dfrac{\sin\theta}{v}&\dfrac{\cos\theta}{v}\end{pmatrix}\begin{pmatrix}w_1\\w_2\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Dynamic feedback: control law}
+\begin{align*}
+    w_1&=\ddot x_d+k_{p,x}(x_d-x)+k_{d,x}(\dot x_d-\dot x)\\
+    w_2&=\ddot y_d+k_{p,y}(y_d-y)+k_{d,y}(\dot y_d-\dot y)
+\end{align*}
+
+\subsubsection{Lyapunov stability theorem}
+\begin{equation*}
+    \dot V<0\implies\text{asymptotically stable},\qquad\dot V\le0\implies\text{stable}
+\end{equation*}
+
+\subsubsection{Barbalat's lemma}
+\begin{equation*}
+    \ddot V\text{ bounded}\implies\lim_{t\to\infty}\dot V(t)=0
+\end{equation*}
+
+\subsubsection{Cartesian error and projection on the sagittal axis}
+\begin{equation*}
+    \mathbf e_p=\begin{pmatrix}-x\\-y\end{pmatrix},\qquad\mathbf e_p^\top\mathbf n=-x\cos\theta-y\sin\theta,\qquad\mathbf n=\begin{pmatrix}\cos\theta\\\sin\theta\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Pointing error}
+\begin{equation*}
+    \gamma=\text{atan2}(y,x)+\pi-\theta
+\end{equation*}
+
+\subsubsection{Regulation of the Cartesian position: control law}
+\begin{align*}
+    v&=-k_1(x\cos\theta+y\sin\theta)=k_1\mathbf e_p^\top\mathbf n\\
+    \omega&=k_2\gamma
+\end{align*}
+
+\subsubsection{Regulation of the Cartesian position: Lyapunov function}
+\begin{equation*}
+    V=\frac{1}{2}(x^2+y^2),\qquad\dot V=-k_1(x\cos\theta+y\sin\theta)^2=-k_1(\mathbf e_p^\top\mathbf n)^2
+\end{equation*}
+
+\subsubsection{Polar coordinates}
+\begin{align*}
+    \rho&=\sqrt{x^2+y^2}\\
+    \gamma&=\text{atan2}(y,x)+\pi-\theta\\
+    \delta&=\gamma+\theta
+\end{align*}
+
+\subsubsection{Unicycle kinematic model in polar coordinates}
+\begin{align*}
+    \dot\rho&=-v\cos\gamma\\
+    \dot\gamma&=\frac{\sin\gamma}{\rho}v-\omega\\
+    \dot\delta&=\frac{\sin\gamma}{\rho}v
+\end{align*}
+
+\subsubsection{Regulation of the whole configuration: Lyapunov function}
+\begin{equation*}
+    V=\frac{1}{2}(\rho^2+\gamma^2+\delta^2),\qquad\dot V=-k_1\rho^2\cos^2\gamma-k_2\gamma^2
+\end{equation*}
+
+\subsubsection{Regulation of the whole configuration: control law}
+\begin{align*}
+    v&=k_1\rho\cos\gamma\\
+    \omega&=k_2\gamma+k_1\frac{\sin\gamma\cos\gamma}{\gamma}(\gamma+\delta)
+\end{align*}
+
+%==================== CHAPTER 4: MOBILE MANIPULATORS ====================%
+\subsubsection{Kinematic model of a mobile manipulator}
+\begin{equation*}
+    \dq=\begin{pmatrix}\dq_b\\\dq_m\end{pmatrix}=\begin{pmatrix}G_b(\q_b)&\mathcal O\\\mathcal O&I\end{pmatrix}\begin{pmatrix}\mathbf u_b\\\mathbf u_m\end{pmatrix}=G(\q)\mathbf u
+\end{equation*}
+
+\subsubsection{End-effector differential kinematics}
+\begin{equation*}
+    \dy_e=J_b\dq_b+J_m\dq_m,\qquad J_b=\frac{\partial k_e}{\partial\q_b},\quad J_m=\frac{\partial k_e}{\partial\q_m}
+\end{equation*}
+
+\subsubsection{Jacobian of the mobile manipulator}
+\begin{equation*}
+    \dy_e=\begin{pmatrix}J_b(\q)G_b(\q_b)&J_m(\q)\end{pmatrix}\begin{pmatrix}\mathbf u_b\\\mathbf u_m\end{pmatrix}=J_{mm}(\q)\mathbf u
+\end{equation*}
+
+\subsubsection{2R planar manipulator on a unicycle: end-effector position}
+\begin{equation*}
+    \begin{pmatrix}p_x\\p_y\end{pmatrix}=\begin{pmatrix}x+d\cos\theta+a_1\cos(\theta+q_1)+a_2\cos(\theta+q_1+q_2)\\y+d\sin\theta+a_1\sin(\theta+q_1)+a_2\sin(\theta+q_1+q_2)\end{pmatrix}
+\end{equation*}
+
+\subsubsection{2R planar manipulator on a unicycle: Jacobians}
+\begin{align*}
+    J_b&=\begin{pmatrix}1&0&-ds_\theta-a_1s_{\theta1}-a_2s_{\theta12}\\0&1&dc_\theta+a_1c_{\theta1}+a_2c_{\theta12}\end{pmatrix}\\
+    J_m&=\begin{pmatrix}-a_1s_{\theta1}-a_2s_{\theta12}&-a_2s_{\theta12}\\a_1c_{\theta1}+a_2c_{\theta12}&a_2c_{\theta12}\end{pmatrix}
+\end{align*}
+
+\subsubsection{2R planar manipulator on a unicycle: mobile manipulator Jacobian}
+\begin{equation*}
+    J_{mm}=\begin{pmatrix}
+    c_\theta&-ds_\theta-a_1s_{\theta1}-a_2s_{\theta12}&-a_1s_{\theta1}-a_2s_{\theta12}&-a_2s_{\theta12}\\
+    s_\theta&dc_\theta+a_1c_{\theta1}+a_2c_{\theta12}&a_1c_{\theta1}+a_2c_{\theta12}&a_2c_{\theta12}
+    \end{pmatrix}
+\end{equation*}
+
+\subsubsection{Pseudo-inverse (full row rank)}
+\begin{equation*}
+    J_{mm}^\#=J_{mm}^\top(J_{mm}J_{mm}^\top)^{-1}
+\end{equation*}
+
+\subsubsection{Inverse differential kinematics (minimum norm)}
+\begin{equation*}
+    \mathbf u=J_{mm}^\#\dy_d
+\end{equation*}
+
+\subsubsection{Null-space projector}
+\begin{equation*}
+    \Pi=I-J_{mm}^\#J_{mm},\qquad J_{mm}\Pi\mathbf u_N=\mathbf 0
+\end{equation*}
+
+\subsubsection{Inverse differential kinematics with null-space term}
+\begin{equation*}
+    \mathbf u=J_{mm}^\#\dy_d+(I-J_{mm}^\#J_{mm})\mathbf u_N
+\end{equation*}
+
+\subsubsection{Time derivative of the performance criterion}
+\begin{equation*}
+    \dot H(\q)=(\nabla H(\q))^\top G(\q)\mathbf u
+\end{equation*}
+
+\subsubsection{Null-space direction compatible with the constraints}
+\begin{equation*}
+    \mathbf u_N=\pm\alpha G^\top(\q)\nabla H(\q)=\pm\alpha\begin{pmatrix}G_b^\top(\q_b)&\mathcal O\\\mathcal O&I\end{pmatrix}\nabla H(\q)
+\end{equation*}
+
+\subsubsection{Mobile manipulator control law}
+\begin{equation*}
+    \mathbf u=J_{mm}^\#\left(\dy_d+K(\y_d-\y_e)\right)\pm\alpha(I-J_{mm}^\#J_{mm})\begin{pmatrix}G_b^\top(\q_b)&\mathcal O\\\mathcal O&I\end{pmatrix}\nabla H(\q)
+\end{equation*}
+
+%==================== CHAPTER 5: LOCALIZATION ====================%
+\subsubsection{Euler integration (general)}
+\begin{equation*}
+    \q_{k+1}=\q_k+f(\q_k,\mathbf u_k)T_s
+\end{equation*}
+
+\subsubsection{Euler integration (unicycle)}
+\begin{align*}
+    x_{k+1}&=x_k+v_kT_s\cos\theta_k\\
+    y_{k+1}&=y_k+v_kT_s\sin\theta_k\\
+    \theta_{k+1}&=\theta_k+\omega_kT_s
+\end{align*}
+
+\subsubsection{Runge-Kutta integration (unicycle)}
+\begin{align*}
+    x_{k+1}&=x_k+v_kT_s\cos\left(\theta_k+\frac{\omega_kT_s}{2}\right)\\
+    y_{k+1}&=y_k+v_kT_s\sin\left(\theta_k+\frac{\omega_kT_s}{2}\right)\\
+    \theta_{k+1}&=\theta_k+\omega_kT_s
+\end{align*}
+
+\subsubsection{Exact integration (unicycle)}
+\begin{align*}
+    x_{k+1}&=x_k+\frac{v_k}{\omega_k}\left(\sin(\theta_k+\omega_kT_s)-\sin\theta_k\right)\\
+    y_{k+1}&=y_k-\frac{v_k}{\omega_k}\left(\cos(\theta_k+\omega_kT_s)-\cos\theta_k\right)\\
+    \theta_{k+1}&=\theta_k+\omega_kT_s
+\end{align*}
+
+\subsubsection{Radius of the circular arc}
+\begin{equation*}
+    R=\frac{v_k}{\omega_k}
+\end{equation*}
+
+\subsubsection{Odometry from encoders (differential drive)}
+\begin{equation*}
+    v_kT_s=\Delta s=\frac{r}{2}(\Delta\phi_R+\Delta\phi_L),\qquad\omega_kT_s=\Delta\theta=\frac{r}{d}(\Delta\phi_R-\Delta\phi_L)
+\end{equation*}
+
+\subsubsection{Expected value}
+\begin{equation*}
+    \bar{\mathbf X}=\VA(\mathbf X)=\int_{\R^n}\mathbf x f_X(\mathbf x)d\mathbf x
+\end{equation*}
+
+\subsubsection{Covariance matrix}
+\begin{equation*}
+    P_X=\VA\left((\mathbf X-\bar{\mathbf X})(\mathbf X-\bar{\mathbf X})^\top\right)
+\end{equation*}
+
+\subsubsection{Multivariate Gaussian distribution}
+\begin{equation*}
+    f_X(\mathbf x)=\frac{1}{\sqrt{(2\pi)^n\det P_X}}\exp\left(-\frac{1}{2}(\mathbf x-\bar{\mathbf X})^\top P_X^{-1}(\mathbf x-\bar{\mathbf X})\right)
+\end{equation*}
+
+\subsubsection{Linear discrete-time system}
+\begin{equation*}
+    \mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k,\qquad\mathbf y_k=C_k\mathbf x_k
+\end{equation*}
+
+\subsubsection{Innovation}
+\begin{equation*}
+    \bnu_{k+1}=\mathbf y_{k+1}-C_{k+1}\widehat{\mathbf x}_{k+1|k}
+\end{equation*}
+
+\subsubsection{Zero-noise Kalman filter (two-step observer)}
+\begin{align*}
+    \widehat{\mathbf x}_{k+1|k}&=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+    \widehat{\mathbf x}_{k+1}&=\widehat{\mathbf x}_{k+1|k}+C_{k+1}^\#\bnu_{k+1}
+\end{align*}
+
+\subsubsection{System with noise on the dynamics}
+\begin{equation*}
+    \mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k,\qquad\mathbf v_k\sim\mathcal N(\mathbf 0,V_k)
+\end{equation*}
+
+\subsubsection{Covariance prediction}
+\begin{equation*}
+    P_{k+1|k}=A_kP_kA_k^\top+V_k
+\end{equation*}
+
+\subsubsection{Maximum likelihood correction (weighted pseudo-inverse)}
+\begin{equation*}
+    \Delta\mathbf x=C_{k+1,M}^\#\bnu_{k+1}=P_{k+1|k}C_{k+1}^\top(C_{k+1}P_{k+1|k}C_{k+1}^\top)^{-1}\bnu_{k+1}
+\end{equation*}
+
+\subsubsection{Kalman filter with noise on the dynamics only}
+\begin{align*}
+    \widehat{\mathbf x}_{k+1|k}&=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+    P_{k+1|k}&=A_kP_kA_k^\top+V_k\\
+    \widehat{\mathbf x}_{k+1}&=\widehat{\mathbf x}_{k+1|k}+C_{k+1,M}^\#\bnu_{k+1}\\
+    P_{k+1}&=P_{k+1|k}-C_{k+1,M}^\#C_{k+1}P_{k+1|k}
+\end{align*}
+
+\subsubsection{System with noise on dynamics and observations}
+\begin{equation*}
+    \mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k,\qquad\mathbf y_k=C_k\mathbf x_k+\mathbf w_k,\qquad\mathbf w_k\sim\mathcal N(\mathbf 0,W_k)
+\end{equation*}
+
+\subsubsection{Kalman gain matrix}
+\begin{equation*}
+    R_{k+1}=P_{k+1|k}C_{k+1}^\top(C_{k+1}P_{k+1|k}C_{k+1}^\top+W_{k+1})^{-1}
+\end{equation*}
+
+\subsubsection{Kalman filter}
+\begin{align*}
+    \widehat{\mathbf x}_{k+1|k}&=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+    P_{k+1|k}&=A_kP_kA_k^\top+V_k\\
+    R_{k+1}&=P_{k+1|k}C_{k+1}^\top(C_{k+1}P_{k+1|k}C_{k+1}^\top+W_{k+1})^{-1}\\
+    \widehat{\mathbf x}_{k+1}&=\widehat{\mathbf x}_{k+1|k}+R_{k+1}\bnu_{k+1}\\
+    P_{k+1}&=P_{k+1|k}-R_{k+1}C_{k+1}P_{k+1|k}
+\end{align*}
+
+\subsubsection{Optimality of the Kalman filter}
+\begin{equation*}
+    \widehat{\mathbf x}_{k+1}=\operatorname*{arg\,min}\ \VA\left(\|\mathbf x_{k+1}-\widehat{\mathbf x}_{k+1}\|^2\right)
+\end{equation*}
+
+\subsubsection{Nonlinear system for the extended Kalman filter}
+\begin{equation*}
+    \mathbf x_{k+1}=f_k(\mathbf x_k,\mathbf u_k)+\mathbf v_k,\qquad\mathbf y_k=h_k(\mathbf x_k)+\mathbf w_k
+\end{equation*}
+
+\subsubsection{Jacobians of the extended Kalman filter}
+\begin{equation*}
+    F_k=\frac{\partial f_k}{\partial\mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_k,\,\mathbf u=\mathbf u_k},\qquad H_{k+1}=\frac{\partial h_{k+1}}{\partial\mathbf x}\bigg|_{\mathbf x=\widehat{\mathbf x}_{k+1|k}}
+\end{equation*}
+
+\subsubsection{Extended Kalman filter}
+\begin{align*}
+    \widehat{\mathbf x}_{k+1|k}&=f_k(\widehat{\mathbf x}_k,\mathbf u_k)\\
+    P_{k+1|k}&=F_kP_kF_k^\top+V_k\\
+    \bnu_{k+1}&=\mathbf y_{k+1}-h_{k+1}(\widehat{\mathbf x}_{k+1|k})\\
+    R_{k+1}&=P_{k+1|k}H_{k+1}^\top(H_{k+1}P_{k+1|k}H_{k+1}^\top+W_{k+1})^{-1}\\
+    \widehat{\mathbf x}_{k+1}&=\widehat{\mathbf x}_{k+1|k}+R_{k+1}\bnu_{k+1}\\
+    P_{k+1}&=P_{k+1|k}-R_{k+1}H_{k+1}P_{k+1|k}
+\end{align*}
+
+\subsubsection{Unicycle model with noise (landmark-based localization)}
+\begin{align*}
+    x_{k+1}&=x_k+v_kT_s\cos\theta_k+v_{1k}\\
+    y_{k+1}&=y_k+v_kT_s\sin\theta_k+v_{2k}\\
+    \theta_{k+1}&=\theta_k+\omega_kT_s+v_{3k}
+\end{align*}
+
+\subsubsection{Landmark measurement (range and bearing)}
+\begin{equation*}
+    \mathbf h_i(\q_k,a(i))=\begin{pmatrix}
+        \sqrt{(x_k-x_{l\,a(i)})^2+(y_k-y_{l\,a(i)})^2}\\[1ex]
+        \text{atan2}\left(y_{l\,a(i)}-y_k,\,x_{l\,a(i)}-x_k\right)-\theta_k
+    \end{pmatrix}
+\end{equation*}
+
+\subsubsection{Measurement vector}
+\begin{equation*}
+    \mathbf y_k=\begin{pmatrix}\mathbf h_1(\q_k,a(1))\\\vdots\\\mathbf h_{L_k}(\q_k,a(L_k))\end{pmatrix}+\begin{pmatrix}\mathbf w_{1k}\\\vdots\\\mathbf w_{L_kk}\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Jacobian of the unicycle dynamics}
+\begin{equation*}
+    F_k=\begin{pmatrix}1&0&-v_kT_s\sin\widehat\theta_k\\0&1&v_kT_s\cos\widehat\theta_k\\0&0&1\end{pmatrix}
+\end{equation*}
+
+\subsubsection{Jacobian of the measurement function}
+\begin{equation*}
+    \frac{\partial\mathbf h_i}{\partial\q}\bigg|_{\q=\widehat\q_{k+1|k}}=
+    \begin{pmatrix}
+    \dfrac{\widehat x_{k+1|k}-x_{l\,a(i)}}{\sqrt{(\widehat x_{k+1|k}-x_{l\,a(i)})^2+(\widehat y_{k+1|k}-y_{l\,a(i)})^2}}&
+    \dfrac{\widehat y_{k+1|k}-y_{l\,a(i)}}{\sqrt{(\widehat x_{k+1|k}-x_{l\,a(i)})^2+(\widehat y_{k+1|k}-y_{l\,a(i)})^2}}&0\\[3ex]
+    \dfrac{-(\widehat y_{k+1|k}-y_{l\,a(i)})}{(\widehat x_{k+1|k}-x_{l\,a(i)})^2+(\widehat y_{k+1|k}-y_{l\,a(i)})^2}&
+    \dfrac{\widehat x_{k+1|k}-x_{l\,a(i)}}{(\widehat x_{k+1|k}-x_{l\,a(i)})^2+(\widehat y_{k+1|k}-y_{l\,a(i)})^2}&-1
+    \end{pmatrix}
+\end{equation*}
+
+\subsubsection{Stacked Jacobian of the measurements}
+\begin{equation*}
+    H_{k+1}=\begin{pmatrix}\dfrac{\partial\mathbf h_1}{\partial\q}\bigg|_{\q=\widehat\q_{k+1|k}}\\\vdots\\\dfrac{\partial\mathbf h_{L_k}}{\partial\q}\bigg|_{\q=\widehat\q_{k+1|k}}\end{pmatrix}\in\R^{2L_k\times3}
+\end{equation*}
+
+\subsubsection{Candidate innovation (data association)}
+\begin{equation*}
+    \bnu_{ij}=\mathbf y_{i\,k+1}-\mathbf h_i(\widehat\q_{k+1|k},j)
+\end{equation*}
+
+\subsubsection{Innovation covariance (data association)}
+\begin{equation*}
+    S_{ij}=H_{k+1}(i,j)P_{k+1|k}H_{k+1}(i,j)^\top+W_{k+1}(i)
+\end{equation*}
+
+\subsubsection{Data association criterion}
+\begin{equation*}
+    j^*=\operatorname*{arg\,min}_{1\le j\le L}\bnu_{ij}^\top S_{ij}^{-1}\bnu_{ij}
+\end{equation*}
+
+\subsubsection{Innovation for localization on a map}
+\begin{equation*}
+    \bnu_{k+1}=\mathbf y_{k+1}-\mathbf h(\widehat\q_{k+1|k},\mathcal M)
+\end{equation*}
+
+\subsubsection{SLAM: extended state vector}
+\begin{equation*}
+    \mathbf x=\begin{pmatrix}x&y&x_{l\,1}&y_{l\,1}&\dots&x_{l\,L}&y_{l\,L}\end{pmatrix}^\top\in\R^{2L+2}
+\end{equation*}
+
+\subsubsection{SLAM: motion model}
+\begin{equation*}
+    \mathbf x_{k+1}=A\mathbf x_k+B\mathbf u_k+\mathbf v_k,\qquad A=I_{2L+2},\qquad B=T_s\begin{pmatrix}1&0\\0&1\\0&0\\\vdots&\vdots\\0&0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{SLAM: process noise covariance}
+\begin{equation*}
+    V_k=\begin{pmatrix}V_{xy,k}&0&\dots&0\\0&0&\dots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\dots&0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{SLAM: measurement of the $i$-th landmark}
+\begin{equation*}
+    \mathbf y_{i,k}=\begin{pmatrix}x_{l\,i}-x_k\\y_{l\,i}-y_k\end{pmatrix}+\mathbf w_{i,k}=C_i\mathbf x_k+\mathbf w_{i,k},\qquad C_i=\begin{pmatrix}-I_2&\mathbf 0&\dots&I_2&\dots&\mathbf 0\end{pmatrix}
+\end{equation*}
+
+\subsubsection{SLAM: stacked output equation}
+\begin{equation*}
+    \mathbf y_k=C\mathbf x_k+\mathbf w_k,\qquad C=\begin{pmatrix}C_1\\\vdots\\C_L\end{pmatrix},\qquad\mathbf w_k=\begin{pmatrix}\mathbf w_{1,k}\\\vdots\\\mathbf w_{L,k}\end{pmatrix}
+\end{equation*}
+
+\subsubsection{SLAM: measurement noise covariance}
+\begin{equation*}
+    W_k=\begin{pmatrix}W_{1,k}&0&\dots&0\\0&W_{2,k}&\dots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\dots&W_{L,k}\end{pmatrix}
+\end{equation*}
