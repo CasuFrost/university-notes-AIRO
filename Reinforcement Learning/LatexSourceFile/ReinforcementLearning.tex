@@ -335,7 +335,7 @@ $\epsilon$ can also be time-varying, by making it high at the beginning (first e
 \subsection{Gaussian Bayesian Bandits}
 In the previous discussion, we treated the reward $r$ as deterministic. Now let $r$ be random again. We denote $\nu(i)$ the reward distribution, for the specific action $a_i$ (hence we have a reward distribution for each action), we are making a step back by removing the context, the following discussion assumes that there is only one state.
 We exploit  prior knowledge by \textit{assuming} that the distributions $\nu(i)$ are \textbf{Gaussians}:\begin{equation}
-    \nu(i)=\mathcal N\big(\mu(i),\sigma^2(i)\big)
+    \nu(i)=\normal\big(\mu(i),\sigma^2(i)\big)
 \end{equation}
 with $\mu(i)$ and $\sigma^2(i)$ being the mean and variance for the reward by choosing the action $a_i$.
 \begin{center}
@@ -1226,7 +1226,7 @@ The cost is still quadratic in the new coordinates, since $\mathbf x^\top C_x\ma
 
 \noindent Now we take into account \textit{stochastic systems}; in particular, we consider noisy dynamics that are perturbed by a zero-mean Gaussian noise:\begin{align}
     &\mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf w_t\\ 
-    &\mathbf w_t\sim \mathcal N(\mathbf 0,\sigma^2 I)
+    &\mathbf w_t\sim \normal(\mathbf 0,\sigma^2 I)
 \end{align}
 where $I$ is the $d\times d$ identity matrix, $\sigma^2>0$ is the variance of the noise, and $\mathbf w_t$ is independent of the state, of the input and of the noise at the other time steps. Assume $V_{h+1}^*(\mathbf x)=\mathbf x^\top P_{h+1}\mathbf x+p_{h+1}$ with $p_{h+1}$ a scalar; then the expectation in the Bellman equation becomes (the cross term vanishes since $\VA[\mathbf w_t]=\mathbf 0$, and $\VA[\mathbf w_t^\top P_{h+1}\mathbf w_t]=\text{tr}(P_{h+1}\VA[\mathbf w_t\mathbf w_t^\top])=\sigma^2\text{tr}(P_{h+1})$):\begin{align}
     \VA_{\mathbf w_t}\left[V_{h+1}^*(F_x\mathbf x+F_u\mathbf u+\mathbf w_t)\right]=(F_x\mathbf x+F_u\mathbf u)^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)+\sigma^2\,\text{tr}(P_{h+1})+p_{h+1}.

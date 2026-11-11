@@ -1971,12 +1971,10 @@ Let us assume that the dynamics includes a zero-mean Gaussian noise:
     &\mathbf y_k=C_k\mathbf x_k
 \end{align}
 where\begin{equation}
-    \mathbf v_k\sim \mathcal N(\mathbf 0,V_k)\footnote{
-In this chapter $\mathcal N$ is used to denote a Gaussian distribution, while in the previous chapters the same symbol is used for the null space of a matrix.
-    }
+    \mathbf v_k\sim \normal(\mathbf 0,V_k)
 \end{equation}
 $V_k$ is the covariance matrix of $\mathbf v_k$. It is a white noise: samples at different time steps are independent. Now the process is stochastic, hence we do not have to estimate a state, but a distribution of states, specified by a mean value $\widehat{\mathbf x}_k$ and a covariance matrix $P_k$ (the distribution is Gaussian):\begin{equation}
-    \mathcal N(\widehat{\mathbf x}_k,P_k).
+    \normal(\widehat{\mathbf x}_k,P_k).
 \end{equation} 
 We keep a prediction/correction structure.
 Suppose that at time step $k$ we have our current estimate $\widehat{\mathbf x}_k$, $P_k$. We want to obtain a first estimate of the next state distribution through the system dynamics as before (with this prediction we update just the mean):
@@ -2045,7 +2043,7 @@ $P_{k+1|k}$ is a measure of the uncertainty associated with the state estimate $
     \centering
     \includegraphics[width=0.5\textwidth ]{images/step_KF.eps}
 \end{figure}
-\noindent Now that we have a first estimate $\mathcal N(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, we can find the correction $\Delta\mathbf x$ by solving the system as in Equation \eqref{correction}, but instead of taking the minimum norm correction, we will consider the \textbf{maximum likelihood} correction. We want to select the value in $\Omega$ that maximizes the density of the Gaussian distribution $\mathcal N(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, which is defined by:\begin{equation}
+\noindent Now that we have a first estimate $\normal(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, we can find the correction $\Delta\mathbf x$ by solving the system as in Equation \eqref{correction}, but instead of taking the minimum norm correction, we will consider the \textbf{maximum likelihood} correction. We want to select the value in $\Omega$ that maximizes the density of the Gaussian distribution $\normal(\widehat{\mathbf x}_{k+1|k},P_{k+1|k})$, which is defined by:\begin{equation}
     p(\mathbf x)=\frac{1}{\sqrt{(2\pi)^n\text{det}P_{k+1|k}}}\exp\left(
         -\frac{1}{2}(\mathbf x-\widehat{\mathbf x}_{k+1|k})^\top 
         P_{k+1|k}^{-1}
@@ -2104,7 +2102,7 @@ Now the noise is considered also in the observations:
     &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\\ 
     &\mathbf y_k=C_k\mathbf x_k+\mathbf w_k
 \end{align}
-with $\mathbf w_k\sim\mathcal N(\mathbf 0,W_k)$. This noise usually comes from the sensors, the noise on the dynamics comes from non-modeled factors (for example, the slippage of the wheels, which the model does not include).
+with $\mathbf w_k\sim\normal(\mathbf 0,W_k)$. This noise usually comes from the sensors, the noise on the dynamics comes from non-modeled factors (for example, the slippage of the wheels, which the model does not include).
 The dynamics is unchanged and the prediction phase is identical to the one seen before:
 \begin{align}
             &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
@@ -2389,7 +2387,7 @@ The $i$-th measurement contains the relative position of the $i$-th landmark (wh
         x_{l\, i}-x_{k}\\ y_{l\, i}-y_{k}
     \end{pmatrix}+\mathbf w_{i,k},
 \end{equation}
-where $\mathbf w_{i,k}\sim\mathcal N(\mathbf 0,W_{i,k})$. The output equation is also linear:\begin{equation}
+where $\mathbf w_{i,k}\sim\normal(\mathbf 0,W_{i,k})$. The output equation is also linear:\begin{equation}
     \mathbf y_{i,k}=C_i\mathbf x_k+\mathbf w_{i,k},
 \end{equation}
 where $C_i=\begin{pmatrix}-I_2&\mathbf 0&\dots&I_2&\dots&\mathbf 0\end{pmatrix}\in\R^{2\times(2L+2)}$ has the identity block $I_2$ in the columns corresponding to the $i$-th landmark. We can stack all measurements to create the output vector:\begin{equation}
