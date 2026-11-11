@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20261004184747" modified="D:20261004185051"/>
+<info created="D:20261004184747" modified="D:20261111184143"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -323,16 +323,7 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" matrix="1 0 0 1 12 8" stroke="0.753" fill="0.859">
-228 672 m
-232 672 l
-4 0 0 8 232 680 232 688 a
-228 688 l
-</path>
-<path matrix="0.5625 0 0 1 110 8" stroke="0.753" fill="0.859">
-8 0 0 8 232 680 e
-</path>
-<path matrix="1 0 0 1 44 24" stroke="0.753" fill="0.859">
+<path layer="alpha" matrix="1 0 0 1 44 24" stroke="0.753" fill="0.859">
 228 672 m
 232 672 l
 4 0 0 8 232 680 232 688 a
@@ -341,9 +332,8 @@ h
 <path matrix="0.5625 0 0 1 142 24" stroke="0.753" fill="0.859">
 8 0 0 8 232 680 e
 </path>
-<use name="mark/disk(sx)" pos="240 680" size="normal" stroke="0 0.502 0"/>
-<use name="mark/disk(sx)" pos="272 664" size="normal" stroke="0 0.502 0"/>
-<use name="mark/disk(sx)" pos="272 696" size="normal" stroke="0 0.502 0"/>
+<use name="mark/disk(sx)" pos="272 664" size="small" stroke="0 0.502 0"/>
+<use name="mark/disk(sx)" pos="272 696" size="small" stroke="0 0.502 0"/>
 <text matrix="1 0 0 1 -4 -4" transformations="translations" pos="280 696" stroke="0 0.502 0" type="label" width="28.712" height="3.457" depth="1.4" valign="baseline" size="tiny">contact point</text>
 <text matrix="1 0 0 1 -4 -40" transformations="translations" pos="280 696" stroke="0 0.502 0" type="label" width="28.712" height="3.457" depth="1.4" valign="baseline" size="tiny">contact point</text>
 <text matrix="1 0 0 1 -76 -24" transformations="translations" pos="280 696" stroke="0 0.502 0" type="label" width="28.712" height="3.457" depth="1.4" valign="baseline" size="tiny">contact point</text>
@@ -353,7 +343,7 @@ h
 272 696 l
 h
 </path>
-<use matrix="1 0 0 1 0 -4" name="mark/disk(sx)" pos="260 720" size="large"/>
+<use matrix="1 0 0 1 0 -4" name="mark/disk(sx)" pos="260 720" size="normal"/>
 <text matrix="1 0 0 1 -16 24" transformations="translations" pos="280 696" stroke="0" type="label" width="10.964" height="3.459" depth="0.1" valign="baseline" size="tiny">CoM</text>
 <path stroke="0" fill="0.91 1 0.91" dash="dashed" opacity="75%" stroke-opacity="opaque">
 260 716 m
@@ -367,6 +357,16 @@ h
 228 688 l
 </path>
 <path matrix="0.5625 0 0 1 142 -8" stroke="0.753" fill="0.859">
+8 0 0 8 232 680 e
+</path>
+<use name="mark/disk(sx)" pos="240 680" size="small" stroke="0 0.502 0"/>
+<path matrix="1 0 0 1 12 8" stroke="0.753" fill="0.859">
+228 672 m
+232 672 l
+4 0 0 8 232 680 232 688 a
+228 688 l
+</path>
+<path matrix="0.5625 0 0 1 110 8" stroke="0.753" fill="0.859">
 8 0 0 8 232 680 e
 </path>
 </page>

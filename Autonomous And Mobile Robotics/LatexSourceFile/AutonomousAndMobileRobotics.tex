@@ -199,7 +199,7 @@ The simplest wheeled robot that we can have is the \textbf{differential drive} r
 \end{figure}
 The tricycle has two fixed wheels in the back and one actuated steerable wheel in the front, the car-like is similar, but with two steerable wheels.\bigskip
 
-Consider the following path taken by a car-like robot:
+\noindent Consider the following path taken by a car-like robot:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/differential.eps}
@@ -296,9 +296,9 @@ so that $\mathbf a^\top(\q)\dq=\dot h=0$ can be integrated to $h(\q)=c$; hence t
 \begin{boxdefinition}{Holonomic Constraint}{}
     An integrable kinematic constraint is called \textbf{holonomic}, and it defines a geometric constraint.
 \end{boxdefinition}
-What conditions determine if a constraint is integrable or not? In general, the conditions are stated in the \textit{Frobenius Theorem}, we will not discuss this result, which belongs to the domain of differential geometry. We will determine if a given constraint is holonomic or not in a different way.
+What conditions determine if a constraint is integrable or not? In general, the conditions are stated in the \textit{Frobenius Theorem}, we will not discuss this result, which belongs to the domain of differential geometry. We will determine if a given constraint is holonomic or not in a different way.\bigskip
 
-Consider the following kinematic constraint for a 2-dimensional robot:\begin{equation}
+\noindent\textbf{Example}: Consider the following kinematic constraint for a 2-dimensional robot:\begin{equation}
      q_1\dot q_1+q_2\dot q_2=0
 \end{equation}
 is this integrable? The answer is yes. The resulting geometric constraint is\begin{equation}
@@ -540,7 +540,7 @@ The constraints in matrix form are:\begin{equation}
         \dot x\\\dot y\\\dot \theta\\\dot \phi 
     \end{pmatrix}=\mathbf 0
 \end{equation}
-with $\text{dim}\mathcal N(A)=2$, we should find two vectors for the basis of $\mathcal N(A)$. Since the last column of $A$ is zero, one of the two vectors is:\begin{equation}
+with $\dim\mathcal N(A)=2$, we should find two vectors for the basis of $\mathcal N(A)$. Since the last column of $A$ is zero, one of the two vectors is:\begin{equation}
     \mathbf g_2(\q)=\begin{pmatrix}
         0\\0\\0\\1 
     \end{pmatrix}.
@@ -560,7 +560,7 @@ with $\alpha$ a term that has yet to be chosen. We see that:\begin{equation}
      \sin(\theta+\phi)\cos\theta-\cos(\theta+\phi)\sin\theta-l\cos\phi\alpha
 \end{pmatrix}
 \end{equation}
-now we choose $\alpha$ to make the second component zero:\begin{align}
+now we choose $\alpha$ in order to make the second component zero:\begin{align}
      &\sin(\theta+\phi)\cos\theta-\cos(\theta+\phi)\sin\theta-l\cos\phi\alpha=0\implies\\
      &\sin\phi-l\cos\phi\alpha=0\implies \\ 
      &\alpha=\frac{1}{l}\tan\phi 
