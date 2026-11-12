@@ -658,7 +658,9 @@ hence:\begin{equation}
         \cos x_3
      \end{pmatrix}
 \end{equation}
-notice how in this case $[\mathbf g_1,\mathbf g_2]$ is linearly independent from $\mathbf g_1,\mathbf g_2$. Now we want to give an \textit{interpretation} of the Lie bracket. Consider the following 2-inputs system:\begin{equation}
+notice how in this case $[\mathbf g_1,\mathbf g_2]$ is linearly independent from $\mathbf g_1,\mathbf g_2$.
+\subsection{Lie Bracket Motion}
+Now we want to give an \textit{interpretation} of the Lie bracket. Consider the following 2-inputs system:\begin{equation}
     \dot{\mathbf x}=\mathbf g_1(\mathbf x)u_1+\mathbf g_2(\mathbf x)u_2
 \end{equation}
 the interpretation of the Lie brackets can be defined by considering the following time profile for $u_1,u_2$ in $t\in [0,4\varepsilon]$:
@@ -669,9 +671,9 @@ the interpretation of the Lie brackets can be defined by considering the followi
     &(u_1,u_2)=(0,-1)\quad t\in[3\varepsilon,4\varepsilon].
 \end{align}\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth ]{images/lie_inputs.eps}
+    \includegraphics[width=0.5\textwidth ]{images/lie_inputs.eps}
 \end{figure}
-After applying this input profile the system will be in the state:\begin{equation}
+\noindent This input profile is called \textbf{Lie bracket motion}, and after applying it the system will be in the state:\begin{equation}
     \mathbf x(4\varepsilon)=\mathbf x(0)+\underbrace{\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))+O(\varepsilon^3)}_{\text{displacement}}.
 \end{equation}
 This result affirms that the displacement will be in the direction of the Lie bracket, with an error given by the term $O(\varepsilon^3)$: if $\varepsilon\rightarrow 0$, the terms in $O(\varepsilon^3)$ will vanish faster, and the displacement will be defined mainly by  $\varepsilon^2[\mathbf g_1,\mathbf g_2](\mathbf x(0))$.
@@ -680,7 +682,7 @@ This result affirms that the displacement will be in the direction of the Lie br
 \end{boxobservation} 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth ]{images/lie_bracket_direction.eps}
+    \includegraphics[width=0.9\textwidth ]{images/lie_bracket_direction.eps}
 \end{figure}
 \begin{boxdefinition}{Distribution}{}
     Let $\mathcal C$ be a smooth manifold. A \textit{Distribution} $\Delta$ is a map that assigns to each point $\mathbf x\in \mathcal C$ a subspace of the tangent space $T_\mathbf x\mathcal C$:\begin{equation}
@@ -705,7 +707,7 @@ Of course $\Delta_{\mathcal A}(\mathbf x)$ can have different dimension dependin
     The distribution $\Delta_{\mathcal A}$ has dimension $k$ if $\dim\Delta_{\mathcal A}(\mathbf x)=k$ for every $\mathbf x\in\mathcal C$. In that case we write $\dim\Delta_{\mathcal A}=k$.
 \end{boxdefinition}
 \noindent The nonlinear controllability problem is fully described by the following result.
-\begin{boxtheorem}{Accessibility Criterion}{}
+\begin{boxtheorem}{Accessibility Criterion (Chow)}{}
     A nonlinear system of the form \eqref{driftless_system} with an $n$-dimensional state vector is controllable \textit{if and only if} its accessibility distribution has dimension $n$:\begin{equation}
         \dim\Delta_{\mathcal A}=n.
     \end{equation}
@@ -720,7 +722,14 @@ So in practice, we have to build the matrix $M$ whose columns are the vector fie
 It's impossible to write out all the columns, we can check each iteratively for the vector fields $\mathbf g_1,\dots,\mathbf g_m$, then for the first order Lie brackets, then for the higher order,  as soon as the rank of the matrix reaches size $n$, the criterion is satisfied ($\dim \Delta_{\mathcal{A}} = n$) and the system is controllable. All remaining infinite columns can be ignored. For systems described by analytic functions, the chain of Lie brackets stabilizes after a finite number of steps. If at a certain point the new Lie brackets no longer increase the rank and it remains lower than $n$, the process stops and the system is not controllable. \begin{boxproposition}{}{}
 If the system is analytic, the accessibility distribution stabilizes. The chain of Lie brackets cannot generate distributions of infinitely increasing size in a space of dimension $n$. Consequently, in the worst case, it is not necessary to go beyond the Lie brackets of order $n-1$ (or in any case limited according to the size of the state).
 \end{boxproposition}
-In computational practice (for example using symbolic calculation software such as MATLAB or Python), the brackets are calculated in ascending order of degree and those that do not increase the rank are immediately discarded, blocking the algorithm as soon as the rank is equal to $n$.\bigskip 
+In computational practice (for example using symbolic calculation software such as MATLAB or Python), the brackets are calculated in ascending order of degree and those that do not increase the rank are immediately discarded, blocking the algorithm as soon as the rank is equal to $n$.
+\begin{boxproposition}{}{stop_cond}
+    Consider the vector fields $\mathcal B=\{\mathbf g_1,\dots,\mathbf g_m\}$. If all the Lie brackets of first order are linearly dependent on the vector fields in $\mathcal B$\begin{equation}
+         [\mathbf g_i,\mathbf g_j]\in\text{span}\mathcal B, \quad 1\le i,j\le m
+    \end{equation}
+    then also the higher order Lie brackets are linearly dependent on the vector fields in $\mathcal B$.
+\end{boxproposition}  
+\noindent Proposition \ref{def:stop_cond} provides a criterion to stop computing Lie brackets for a system if all the first order Lie brackets are linearly dependent on the vector fields in $\mathcal B$.
 \subsection{The Unicycle Case}
 The unicycle model is:\begin{equation}
     \dq=\underbrace{\begin{pmatrix}
@@ -939,7 +948,7 @@ algebraically as a function of $\mathbf y$ and its time derivatives up to a fini
     \mathbf u &= \Phi_u(\y,\dy,\ddy,\dots,\mathbf y^{(r_u)})
 \end{align}
 \end{boxdefinition}
-In Definition \ref{def:flatness} we talk about time derivatives (since that is the domain of dynamical systems), but of course it also holds if all the derivatives are taken with respect to the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$ order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
+In Definition \ref{def:flatness} we talk about time derivatives (since that is the domain of dynamical systems), but of course it also holds if all the derivatives are taken with respect to the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$-th order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
 
 \noindent We immediately show this property with the unicycle model.\begin{align}
 x'&=\tilde v\cos\theta\\
@@ -1037,8 +1046,7 @@ this polynomial already satisfies the boundary conditions:\begin{align}
 then $\alpha_x,\beta_x,\alpha_y,\beta_y$ must be chosen in order to satisfy two additional boundary conditions that come from the kinematic constraints, $(x',y')$ must be aligned with $\theta$, and $\theta_i,\theta_f$ are given, hence there are the following conditions on the orientation:\begin{align}
     \text{atan2}(y'(0),x'(0))&=\theta_i\\\text{atan2}(y'(1),x'(1))&=\theta_f.
 \end{align}
-
-The initial and final Cartesian velocities must be:\begin{align}
+\noindent The initial and final Cartesian velocities must be:\begin{align}
     x'(0)&=k_i\cos\theta_i,\quad x'(1)=k_f\cos\theta_f\\ 
     y'(0)&=k_i\sin\theta_i,\quad y'(1)=k_f\sin\theta_f
 \end{align}
@@ -1053,6 +1061,52 @@ It will be $\tilde v(0)=\tilde v(1)=k$, hence $k$ can be chosen to shape the tra
     \caption{Difference between two paths with the same interpolating points but different choice of $k$.}
     \label{k_shape}
 \end{figure}
+\subsection{Boundary Conditions for the General Case}
+In the unicycle example the boundary conditions on the flat outputs were obtained by inspection. Let's now formalize how they must be chosen for a generic differentially flat system
+\begin{equation}
+    \dot{\q}=\mathbf{G}(\q)\mathbf{u},\qquad \q\in\mathbb{R}^n,\ \mathbf{u}\in\mathbb{R}^m,
+\end{equation}
+with flat output $\y\in\mathbb{R}^m$. By definition of flatness, the state and the input can be reconstructed from $\y$ and a finite number of its derivatives:\begin{align}
+    \q&=\Phi_x\big(\y,\y',\dots,\y^{(r)}\big)\label{gen_phi}\\
+    \tilde{\mathbf u}&=\Phi_u\big(\y,\y',\dots,\y^{(r+1)}\big)\label{gen_psi}
+\end{align}
+To simplify the notation we collect the flat output and its derivatives up to order $r$ in the vector
+\begin{equation}
+    \bar{\y}(s)=\begin{pmatrix}
+        \y(s)\\\y'(s)\\\vdots\\\y^{(r)}(s)
+    \end{pmatrix}\in\mathbb{R}^{m(r+1)}
+\end{equation}
+so that \eqref{gen_phi} becomes $\q=\Phi_x(\bar{\y})$.\bigskip
+
+\noindent\textbf{Conditions on the boundary values}:
+Given $\q_i,\q_f$, the profile $\y(s)$ must produce a path that starts in $\q_i$ and ends in $\q_f$. Because of \eqref{gen_phi}, this is not a condition on $\y(0),\y(1)$ alone, but on the whole vectors $\bar{\y}(0),\bar{\y}(1)$:\begin{equation}
+    \Phi_x\big(\bar{\y}(0)\big)=\q_i,\qquad \Phi_x\big(\bar{\y}(1)\big)=\q_f.\label{gen_bc}
+\end{equation}
+Each of the two conditions in \eqref{gen_bc} is a set of $n$ scalar equations in the $m(r+1)$ unknowns $\bar{\y}_i=\bar{\y}(0)$, $\bar{\y}_f=\bar{\y}(1)$ respectively. Since $\Phi_x$ is determined by the system alone, the two boundaries are decoupled, and can be treated separately. Let $\mathbf{h}(\q)$ be the map that extracts the flat output from the state, as in the first step of the algorithm. Then the first $m$ equations of \eqref{gen_bc} are simply\begin{equation}
+    \y(0)=\y_i=\mathbf{h}(\q_i),\qquad \y(1)=\y_f=\mathbf{h}(\q_f)
+\end{equation}
+while the remaining $n-m$ equations are the constraints that the kinematics (or dynamics) of the system impose on the derivatives $\y^{(k)}(0),\y^{(k)}(1)$ for $k=1,\dots,r$. These are the equations that, in the unicycle case ($n=3$, $m=2$, $r=1$), reduce to the alignment of $(x',y')$ with $\theta$ at the two ends.\bigskip
+
+
+The number of scalar unknowns at each boundary exceeds the number of equations by\begin{equation}
+    d=m(r+1)-n\ \ge 0.
+\end{equation}
+Hence, at each boundary, $n$ components of $\bar{\y}$ are fixed by $\q_i$ (resp. $\q_f$), while $d$ components are free and can be used to shape the path. In general, the solution set of \eqref{gen_bc} can be parametrized as\begin{equation}
+    \bar{\y}_i=\boldsymbol{\sigma}(\q_i,\boldsymbol{\kappa}_i),\qquad \bar{\y}_f=\boldsymbol{\sigma}(\q_f,\boldsymbol{\kappa}_f),\qquad \boldsymbol{\kappa}_i,\boldsymbol{\kappa}_f\in\mathbb{R}^d
+\end{equation}
+where $\boldsymbol{\sigma}$ is a right inverse of $\Phi_x$, i.e. $\Phi_x(\boldsymbol{\sigma}(\q,\boldsymbol{\kappa}))=\q$. For the unicycle $d=2\cdot 2-3=1$, and the free parameters $\kappa_i,\kappa_f$ are exactly the constants $k_i,k_f$ that we introduced, with $\boldsymbol{\sigma}(\q,k)=(x,\,y,\,k\cos\theta,\,k\sin\theta)$.\bigskip
+
+\noindent The free parameters cannot be chosen arbitrarily, they must be such that:\begin{enumerate}
+    \item $\bar{\y}_i,\bar{\y}_f$ belong to the domain where $\Phi_x$ and $\Phi_u$ are well defined and regular, i.e. the reconstruction formulas do not hit a singularity at the boundaries. For the unicycle the singularity is at $(x',y')=(0,0)$, where $\theta$ is undefined, hence it must be $k_i,k_f\neq 0$ (in particular, positive for a forward motion);
+    \item the path has the required regularity: $\tilde{\mathbf u}$ depends on $\y^{(r+1)}$, hence $\y(s)$ must be at least $C^{r+1}$ on $[0,1]$.
+\end{enumerate}
+Moreover, if the initial and final inputs are also prescribed, $\tilde{\mathbf u}(0)=\tilde{\mathbf u}_i$ and $\tilde{\mathbf u}(1)=\tilde{\mathbf u}_f$, then from \eqref{gen_psi} the derivative of order $r+1$ must be constrained as well: $\Phi_u(\bar{\y}_i,\y^{(r+1)}(0))=\tilde{\mathbf u}_i$, and similarly at $s=1$. This adds $m$ equations for each boundary, which are solved for $\y^{(r+1)}(0),\y^{(r+1)}(1)$ and consume $m$ additional degrees of freedom in the interpolation.\bigskip
+
+
+\noindent Once $\bar{\y}_i,\bar{\y}_f$ are fixed, $\y(s)$ is any sufficiently smooth function such that\begin{equation}
+    \y^{(k)}(0)=\y_i^{(k)},\qquad \y^{(k)}(1)=\y_f^{(k)},\qquad k=0,\dots,r.
+\end{equation}
+This corresponds to $2(r+1)$ conditions for each component of $\y$, hence the lowest-degree polynomial that satisfies them is the Hermite polynomial of degree $2r+1$, which is unique. The cubic interpolation used for the unicycle is the case $r=1$. Higher-order derivatives of $\y$ at the boundaries (if needed to impose $\tilde{\mathbf u}_i,\tilde{\mathbf u}_f$) require increasing the degree of the polynomial accordingly.
 \subsection{Path Planning for a Chained-Form System}
 Consider a 2-input/3-state chained-form system, we apply the path planning algorithm to this case. We recall that the flat outputs are $z_1,z_3$, hence we have to interpolate $(z_{1i},z_{3i})$ with $(z_{1f},z_{3f})$. We interpolate linearly $z_1$ and with a cubic polynomial $z_3$:\begin{align}
     z_1(s)&=z_{1i}+s(z_{1f}-z_{1i})\\
@@ -1172,7 +1226,7 @@ In order to follow a desired trajectory, or to regulate the robot into a desired
 We cover two types of control tasks, \textit{trajectory tracking} and \textit{regulation}, we will provide a full description of this problem for the unicycle model.
 In \textbf{trajectory tracking} the robot must converge to a desired Cartesian trajectory $(x_d(t),y_d(t))$, while in \textbf{posture regulation} the robot must converge to a desired configuration $\q_d$. Trajectory tracking is more relevant in practice, since moving along planned trajectories reduces the risk of collision, however, posture regulation does not require any planning.
 \section{Trajectory Tracking}
-Let $(x_d(t),y_d(t))$ be an admissible desired trajectory for the unicycle, there exist control inputs $v_d,\omega_d$ such that:\begin{equation}
+Let $(x_d(t),y_d(t))$ be an admissible desired Cartesian trajectory for the unicycle, there exist control inputs $v_d,\omega_d$ such that:\begin{equation}
     \begin{cases}
         \dot x_d=v_d\cos\theta_d\\
         \dot y_d=v_d\sin\theta_d\\
@@ -1324,9 +1378,7 @@ differentiating the output we obtain\begin{equation}
 where $T$ is an $m\times m$ matrix called the \textbf{decoupling matrix}. If $T$ is invertible, we can set the \textbf{linearizing feedback}\begin{equation}
     \mathbf u=T^{-1}(\mathbf x)\mathbf w\implies\dy=T(\mathbf x)T^{-1}(\mathbf x)\mathbf w=\mathbf w
 \end{equation}
-i.e. an \textbf{exactly linear} map between the new linearizing inputs $\mathbf w$ and (the time derivative of) the outputs: under the action of the linearizing feedback the system behaves as a simple (vector) integrator from $\mathbf w$ to $\y$.
-
-Given a reference output $\y_d(t)$, the dynamics of the output error $\mathbf e=\y_d-\y$ is\begin{equation}
+i.e. an \textbf{exactly linear} map between the new linearizing inputs $\mathbf w$ and (the time derivative of) the outputs: under the action of the linearizing feedback the system behaves as a simple (vector) integrator from $\mathbf w$ to $\y$. Given a reference output $\y_d(t)$, the dynamics of the output error $\mathbf e=\y_d-\y$ is\begin{equation}
     \dot{\mathbf e}=\dy_d-\dy=\dy_d-\mathbf w.
 \end{equation}
 Let $\mathbf w=\dy_d+K\mathbf e$ (feedforward plus proportional feedback), to obtain\begin{equation}
