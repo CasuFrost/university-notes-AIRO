@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.28">
-<info created="D:20261029121214" modified="D:20261029121846"/>
+<info created="D:20261029121214" modified="D:20261114195543"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -388,13 +388,8 @@ h
 </path>
 <text matrix="1 0 0 1 24.8453 -35.1547" transformations="translations" pos="208 740" stroke="1 0.502 0.251" type="label" width="4.435" height="3.287" depth="0.04" halign="center" valign="center" size="script" style="math">\mathbf n</text>
 <text matrix="1 0 0 1 34.8613 -8.4185" transformations="translations" pos="208 740" stroke="0.502 0 0" type="label" width="7.049" height="3.288" depth="2.42" halign="center" valign="center" size="script" style="math">\mathbf e_p</text>
-<path matrix="0.923543 0 0 0.923543 19.5729 56.2721" stroke="0.502 0 0" dash="dotted">
-256 736 m
-272 720 l
-</path>
-<use name="mark/disk(sx)" pos="270.844 721.142" size="tiny" stroke="0.502 0 0"/>
 <text matrix="1 0 0 1 67.5869 -25.9709" transformations="translations" pos="208 740" stroke="0.502 0.502 1" type="label" width="12.754" height="6.133" depth="3.1" halign="center" valign="center" size="script" style="math">\mathbf e_p^\top\mathbf n</text>
-<path matrix="0.999853 -0.309306 0.309306 0.999853 -212.785 64.4301" stroke="0.502 0.502 1" dash="dotted">
+<path matrix="0.914542 -0.282915 0.282915 0.914542 -176.883 117.635" stroke="0.502 0.502 1" dash="dotted">
 208 688 m
 256 736 l
 </path>
@@ -495,5 +490,10 @@ h
 12 0 0 -12 368 736 359.515 727.515 a
 </path>
 <text matrix="1 0 0 1 183.71 -13.6352" transformations="translations" pos="208 740" stroke="0.502" type="label" width="23.709" height="3.903" depth="1.37" halign="center" valign="center" size="tiny" style="math">\text{atan2}(y,x)</text>
+<path matrix="5.08911 0 0 5.08911 -1086.08 -2936.28" stroke="0.502 0 0" dash="dotted">
+265.575 718.144 m
+263.715 721.594 l
+</path>
+<use matrix="1 0 0 1 -5.31987 -2.79993" name="mark/disk(sx)" pos="270.844 721.142" size="tiny" stroke="0.502 0 0"/>
 </page>
 </ipe>
