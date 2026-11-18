@@ -173,7 +173,7 @@ The main sources of movement for a mobile robot are:\begin{itemize}
     \item Wheels: wheeled robots usually consist of one single rigid body, with the wheels in contact with the ground.
     \item Feet: legged robots, several rigid bodies articulated through joints.
 \end{itemize}
-The wheels are in contact with the ground, and this introduces some constraints. Each wheel defines a point of contact with the ground, we call the \textbf{support polygon} the convex hull of all the contact points. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass falls inside the support polygon. Of course a robot must be balanced in order not to fall to the ground.
+The wheels are in contact with the ground, and this introduces some constraints. Each wheel defines a point of contact with the ground, we call \textbf{support polygon} the convex hull of all the contact points. A wheeled robot is in \textbf{static balance} if the projection on the ground of its center of mass falls inside the support polygon. Of course a robot must be balanced in order not to fall to the ground.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth ]{images/balance.pdf}
@@ -304,7 +304,7 @@ What conditions determine if a constraint is integrable or not? In general, the 
 is this integrable? The answer is yes. The resulting geometric constraint is\begin{equation}
     q_1^2+q_2^2=c, \quad c>0.
 \end{equation}
-In general, in Equation \eqref{holonomic} we can add a scalar integrating factor $\gamma(\q)\neq 0$ that depends on the configuration (the constraint is integrable if the Pfaffian form $\mathbf a^\top(\q)\dq$ becomes an exact differential after the multiplication by $\gamma$):
+In general, in Equation \eqref{holonomic} we can add a scalar integrating factor $\gamma(\q)\neq 0$ that depends on the configuration (the constraint is integrable if the Pfaffian form $\mathbf a^{\scriptscriptstyle\top}(\q)\dq$ becomes an exact differential after the multiplication by $\gamma$):
 \begin{equation}
     \frac{\partial h}{\partial \q}=\gamma(\q)\mathbf a^\top(\q)
 \end{equation}
@@ -874,7 +874,7 @@ such that $\q(s_i)=\q_i$ and $\q(s_f)=\q_f$, without violating the kinematic con
     \q(s),\quad &s\in [s_i,s_f]\\
     s(t),\quad &t \in [t_i,t_f].
 \end{align}
-The path parameter $s$ is usually chosen as the arc length.\begin{itemize}
+The path parameter $s$ is usually chosen as the arc length, or within the range $[0,1]$.\begin{itemize}
     \item By \textbf{path planning} we mean the plan of a geometric path $\q(s)$ in the configuration space.
     \item By \textbf{trajectory planning} instead, we also include the time, i.e. we mean the plan of a time evolution of the configuration: $\q(t)$. This is usually done indirectly: first plan a path, then add a timing law.
 \end{itemize}
@@ -941,11 +941,11 @@ this means that the tangent vector $\q'$ must always be aligned with the sagitta
     Consider a general nonlinear system \begin{equation}
         \dot{\mathbf x}=f(\mathbf x)+G(\mathbf x)\mathbf u.
     \end{equation}
-    The system is \textbf{differentially flat} if there exists a vector $\y=\Psi(\mathbf x)$, called the \textbf{flat outputs}, such that the
+    The system is \textbf{differentially flat} if there exists a vector $\y=\Psi(\mathbf x)$ of $m=\dim\mathbf u$ components, called the \textbf{flat outputs}, such that the
 state and the control inputs can be expressed
 algebraically as a function of $\mathbf y$ and its time derivatives up to a finite order:\begin{align}
     \mathbf x &= \Phi_x(\y,\dy,\ddy,\dots,\mathbf y^{(r_x)})\\
-    \mathbf u &= \Phi_u(\y,\dy,\ddy,\dots,\mathbf y^{(r_u)})
+    \mathbf u &= \Phi_u(\y,\dy,\ddy,\dots,\mathbf y^{(r_u)}).
 \end{align}
 \end{boxdefinition}
 In Definition \ref{def:flatness} we talk about time derivatives (since that is the domain of dynamical systems), but of course it also holds if all the derivatives are taken with respect to the parameter $s$ (the case of our geometric model). The flatness property is useful in control, if we define a trajectory for $\mathbf y$ that is differentiable up to the $\max(r_x,r_u)$-th order, we can reconstruct the state evolution $\mathbf x$ and the required inputs $\mathbf u$ through the reconstruction maps $\Phi_x,\Phi_u$.\bigskip 
@@ -1009,7 +1009,7 @@ for a chained-form system the flat outputs \textbf{are always the first and the 
 the reconstruction maps are the following:\begin{align}
     \Phi_x(z'_1,z'_3)&=\frac{z'_3}{z'_1}\\
     \Phi_u(z'_1,z''_1,z'_3,z''_3)&=\begin{cases}
-        \tilde w_1=z_1'\\
+        \tilde w_1=z_1'\\[1.5ex]
         \tilde w_2=\dfrac{z_1'z_3''-z_1''z_3'}{(z'_1)^2}
     \end{cases}.
 \end{align}
@@ -1345,12 +1345,12 @@ the closed-loop error dynamics is\begin{equation}
     \end{pmatrix}\mathbf e
 \end{equation}
 which is still time-varying. Letting\begin{equation}
-    k_1=k_3=2\zeta a\qquad k_2=\frac{a^2-\omega_d^2}{v_d}
+    k_1=k_3=2\zeta \omega_n\qquad k_2=\frac{\omega_n^2-\omega_d^2}{v_d}
 \end{equation}
-with $a>0$ and $\zeta\in(0,1)$, the characteristic polynomial of $A_{cl}(t)$ becomes time-invariant and Hurwitz:\begin{equation}
-    p(\lambda)=(\lambda+2\zeta a)(\lambda^2+2\zeta a\lambda+a^2)
+with $\omega_n>0$ and $\zeta\in(0,1)$, the characteristic polynomial of $A_{cl}(t)$ becomes time-invariant and Hurwitz:\begin{equation}
+    p(\lambda)=(\lambda+2\zeta \omega_n)(\lambda^2+2\zeta \omega_n\lambda+\omega_n^2)
 \end{equation}
-it has one real negative eigenvalue and two complex eigenvalues with damping $\zeta$ and natural frequency $a$.
+it has one real negative eigenvalue and two complex eigenvalues with damping $\zeta$ and natural frequency $\omega_n$.
 \begin{boxobservation}{Caveats}{}
     Having the eigenvalues of $A_{cl}(t)$ fixed at every instant \textbf{does not guarantee} asymptotic stability of a time-varying system, unless $v_d$ and $\omega_d$ are constant (rectilinear and circular trajectories). Even in this case, the asymptotic stability is only \textbf{local} (not global), since it comes from the indirect Lyapunov method. Moreover, $k_2\to\infty$ as $v_d\to 0$, hence this controller can only be used with \textbf{persistent} Cartesian trajectories (stops are not allowed).
 \end{boxobservation}
@@ -1499,7 +1499,13 @@ let $\mathbf x_e$ be an equilibrium point, without loss of generality we can ass
         \item If $\dot V$ is negative semi-definite, then the equilibrium $\mathbf x_e=\mathbf 0$ is stable (but not necessarily asymptotically stable).
     \end{itemize}
 \end{boxtheorem}
-\begin{boxlemma}{Barbalat}{}
+\noindent We recall that a set $M$ is invariant for a system $\dot{\mathbf x}=f(\mathbf x)$ if $\mathbf x(t_0)\in M \implies \mathbf x(t)\in M, \ \forall t\ge t_0$.
+\begin{boxtheorem}{Invariant Set (LaSalle)}{lasalle}
+    Consider the closed loop control system of Equation \eqref{closed_loop_cs}. Let $V(\mathbf x)$ be a positive definite (continuously differentiable) function, and let $\dot V$ be negative semi-definite. 
+
+    Let $M$ be the \textit{largest invariant set} contained in $S=\{\mathbf x\in\R^n \text{ s.t. }\dot V(\mathbf x)=0\}$. If $M=\{\mathbf x_e\}$, then the equilibrium point $\mathbf x_e$ is asymptotically stable.
+\end{boxtheorem}
+\begin{boxlemma}{Barbalat}{barbalat}
     Consider the closed loop control system of Equation \eqref{closed_loop_cs}, and let $V$ be a function of the state such that
     \begin{itemize}
         \item $V$ is positive semi-definite
@@ -1509,6 +1515,7 @@ let $\mathbf x_e$ be an equilibrium point, without loss of generality we can ass
         \lim_{t\rightarrow\infty} V(t)=V_l\in[0,+\infty).
     \end{equation}
 \end{boxlemma}
+If $V$ is positive definite and $\dot V$ negative semi-definite, one can still prove asymptotic stability by using Theorem \ref{def:lasalle}. If $V$ is not positive definite but positive semi-definite, to prove  asymptotic stability we may use Lemma \ref{def:barbalat}.
 \subsection{Regulation of the Cartesian Position}
 We build our discussion focusing on the unicycle model. Before defining a regulation control law for the whole configuration $\q$, we define a \textbf{partial controller} that stabilizes a desired Cartesian position, regardless of the orientation $\theta$.\bigskip
 
@@ -1653,7 +1660,7 @@ The kinematic model of the unicycle in polar coordinates is:\begin{align}
 \dot{\delta} &= \frac{\sin\gamma}{\rho} v.\label{dot_delta}
 \end{align}
 How to define a control law to stabilize $(\rho\quad\gamma\quad\delta)^\top$ to zero? In the previous subsection, we defined a control law and then proved its correctness through Lyapunov analysis, now we first define a Lyapunov candidate, and then design a law for $v$ and $\omega$ in order to make $\dot V$ negative definite. Consider:\begin{equation}
-    V=\frac{1}{2}(\rho^2+\gamma^2+\delta^2)=\frac{1}{2}\left\|(\rho\quad\gamma\quad\delta)^\top\right\|^2\ge 0
+    V=\frac{1}{2}(\rho^2+\gamma^2+\delta^2)=\frac{1}{2}\left\|\q\right\|^2\ge 0
 \end{equation}
 differently from the previous case, this $V$ is \textit{positive definite}, zero only at $\rho=\gamma=\delta=0$. Its derivative is\begin{align}
     \dot V &= \rho\dot\rho+\gamma\dot\gamma+\delta\dot\delta \\
@@ -1966,7 +1973,7 @@ Although in the robotics context we denote the configuration by $\q$,
 in this section we will present the filter for a generic dynamical system, denoting the state by $\mathbf x$.
 \subsection{Probability Recap}
 We recall three basic definitions of probability theory. Let $\mathbf X$ be a random variable over $\R^n$, with density function $f_X(\mathbf x)$, its \textbf{expected value} is:\begin{equation}
-    \VA(\mathbf X)=\bar{\mathbf X}=\int_{\R^n}\mathbf xf_X(\mathbf x)d\mathbf x.
+    \VA(\mathbf X)=X=\int_{\R^n}\mathbf xf_X(\mathbf x)d\mathbf x.
 \end{equation}
 The \textbf{covariance matrix} is defined as follows:\begin{equation}
 P_X=\VA\left((\mathbf X-\bar{\mathbf X})(\mathbf X-\bar{\mathbf X})^\top\right). 
@@ -1980,12 +1987,39 @@ A random variable has a \textbf{multivariate Gaussian distribution} if its densi
 \end{equation}
 In a Gaussian distribution the level sets of the density are ellipsoids described by the covariance matrix: the eigenvalues of $P_X$ are proportional to the squared lengths of the principal semi-axes, and the directions of the axes are given by the eigenvectors.\begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth ]{images/gaussian.eps}
+    \includegraphics[width=0.4\textwidth ]{images/gaussian.eps}\begin{tikzpicture}
+  \begin{axis}[
+    axis lines=center,              
+    axis on top=true,               
+    xlabel={$x_1$},
+    ylabel={$x_2$},
+    zlabel={$f_X(x_1,x_2)$},
+    xlabel style={at={(ticklabel* cs:1.05)}, anchor=west},
+    ylabel style={at={(ticklabel* cs:1.05)}, anchor=south},
+    zlabel style={at={(ticklabel* cs:1.05)}, anchor=south},
+    ticks=none,                     
+    xmin=-3.5, xmax=3.5,
+    ymin=-3.5, ymax=3.5,
+    zmin=0, zmax=1.3,
+    view={45}{30},
+    colormap/viridis,
+    domain=-3:3,
+    y domain=-3:3,
+    samples=35,
+    samples y=35
+  ]
+    \addplot3 [
+      surf,
+      faceted color=black!30
+    ] {exp(-(x^2 + y^2))};
+  \end{axis}
+\end{tikzpicture}
+\caption{Gaussian distribution in $\R^2$.}
 \end{figure}
 \subsection{Zero-Noise Kalman Filter}
 The Kalman Filter was initially developed for linear systems; we will describe its basic formulation and then extend it to nonlinear systems. Consider a linear discrete-time system:\begin{align}
-    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k\label{motion_KF}\\ 
-    &\mathbf y_k=C_k\mathbf x_k
+    \mathbf x_{k+1}&=A_k\mathbf x_k+B_k\mathbf u_k\label{motion_KF}\\ 
+    \mathbf y_k&=C_k\mathbf x_k
 \end{align}
 $\mathbf x_k$ is the state and $\mathbf y_k$ the observations given by the sensors. We denote $\widehat{\mathbf x}_k$ our state estimate at time step $k$. To estimate $\mathbf x_{k+1}$, we will use the equation of motion \eqref{motion_KF} to get a first estimate, and then use the observation $\mathbf y_{k+1}$ to correct such an estimate.\begin{itemize}
     \item \textbf{Prediction}: We generate an intermediate estimate $\widehat{\mathbf x}_{k+1|k}$ by propagating $\widehat{\mathbf x}$ using the equation of motion.
@@ -2010,17 +2044,17 @@ There are infinitely many corrections $\Delta \mathbf x$ that satisfy Equation \
 where we denoted by $\bnu_{k+1}$ the term called \textbf{innovation}. We have assumed that $C_{k+1}$ has full row rank (so that the system in Equation \eqref{correction} admits a solution). 
 \begin{boxdefinition}{Two-step observer}{}
     \begin{align}
-    &\widehat{\mathbf x}_{k+1|k}=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
-    &\widehat{\mathbf x}_{k+1}=\widehat{\mathbf x}_{k+1|k}+
+    \widehat{\mathbf x}_{k+1|k}&=A_k\widehat{\mathbf x}_k+B_k\mathbf u_k\\
+    \widehat{\mathbf x}_{k+1}&=\widehat{\mathbf x}_{k+1|k}+
     C_{k+1}^\#\bnu_{k+1}.
 \end{align}
 \end{boxdefinition}
 \subsection{Noise on the Dynamics}
 The full Kalman filter considers the dynamics and the observations to be stochastic, i.e., affected by noise. Let us proceed by including randomness only in the equation of motion.
-Let us assume that the dynamics includes a zero-mean Gaussian noise:
+Assume that the dynamics includes a zero-mean Gaussian noise:
 \begin{align}
-    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\label{motion_KF_noise}\\ 
-    &\mathbf y_k=C_k\mathbf x_k
+    \mathbf x_{k+1}&=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\label{motion_KF_noise}\\ 
+    \mathbf y_k&=C_k\mathbf x_k
 \end{align}
 where\begin{equation}
     \mathbf v_k\sim \normal(\mathbf 0,V_k)
@@ -2151,8 +2185,8 @@ Without giving the proof, the correction of the covariance matrix is the followi
 \subsection{Complete Kalman Filter}
 Now the noise is considered also in the observations:
 \begin{align}
-    &\mathbf x_{k+1}=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\\ 
-    &\mathbf y_k=C_k\mathbf x_k+\mathbf w_k
+    \mathbf x_{k+1}&=A_k\mathbf x_k+B_k\mathbf u_k+\mathbf v_k\\ 
+    \mathbf y_k&=C_k\mathbf x_k+\mathbf w_k
 \end{align}
 with $\mathbf w_k\sim\normal(\mathbf 0,W_k)$. This noise usually comes from the sensors, the noise on the dynamics comes from non-modeled factors (for example, the slippage of the wheels, which the model does not include).
 The dynamics is unchanged and the prediction phase is identical to the one seen before:
@@ -2228,7 +2262,7 @@ Now we apply the extended Kalman filter to a robotic system in order to localize
 There are various sensors that can provide this kind of measurement, such as laser rangefinders, depth cameras or RFID sensors.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{images/landmarks.png}
+    \includegraphics[width=0.45\textwidth]{images/landmarks.pdf}
 \end{figure}
 Let us use the unicycle model, with the addition of a white Gaussian noise $\blueText{\mathbf v_k}$ with zero mean and covariance matrix $V_k$:\begin{align}
     &x_{k+1}=x_k+\greenText{v_k}T_s\cos\theta_k+\blueText{v_{1k}}\\
@@ -2286,18 +2320,19 @@ and is evaluated at the current configuration estimate $\widehat{\q}_k$. Now we 
 where each 
 $\frac{\partial  \mathbf h_i}{\partial \q}$ is a matrix with two rows and three columns, defined as follows:
 \begin{align}
-\frac{\partial \mathbf{h}_i}{\partial \mathbf{q}} \bigg|_{\mathbf{q} = \widehat{\mathbf{q}}_{k+1|k}}&=
+&\frac{\partial \mathbf{h}_i}{\partial \mathbf{q}} \bigg|_{\mathbf{q} = \widehat{\mathbf{q}}_{k+1|k}}=
 \begin{pmatrix}
    \displaystyle\frac{\partial \mathbf{h}_i}{\partial x} \bigg|_{x = \widehat{x}_{k+1|k}}&
    \displaystyle\frac{\partial \mathbf{h}_i}{\partial y} \bigg|_{y = \widehat{y}_{k+1|k}}&
    \displaystyle\frac{\partial \mathbf{h}_i}{\partial \theta} \bigg|_{\theta = \widehat\theta_{k+1|k}}
 \end{pmatrix}
-\\
-&=\begin{pmatrix} 
-\frac{\widehat{x}_{k+1|k} - x_{l \, a(i)}}{\sqrt{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2}} & 
+\\[2ex] 
+&=\begin{pmatrix}\displaystyle 
+\frac{\widehat{x}_{k+1|k} - x_{l \, a(i)}}{\sqrt{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2}} & \displaystyle 
 \frac{\widehat{y}_{k+1|k} - y_{l \, a(i)}}{\sqrt{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2}} & 
-0 \\
-\frac{-(\widehat{y}_{k+1|k} - y_{l \, a(i)})}{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2} & 
+0 \\ \\
+\displaystyle 
+\frac{-(\widehat{y}_{k+1|k} - y_{l \, a(i)})}{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2} & \displaystyle 
 \frac{\widehat{x}_{k+1|k} - x_{l \, a(i)}}{(\widehat{x}_{k+1|k} - x_{l \, a(i)})^2 + (\widehat{y}_{k+1|k} - y_{l \, a(i)})^2} & 
 -1 
 \end{pmatrix}.
