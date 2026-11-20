@@ -2671,7 +2671,7 @@ For small angles, $\mathbf n(\alpha,\beta)\simeq\begin{pmatrix}-\alpha&\beta&-1\
 Since the rotors are coaxial with the hubs on the body $\mathbf z_b$ axis, at height $h_j>0$ above the com (in the NED frame, upward means negative $\mathbf z_b$), we have $\boldsymbol{\rho}_j=-h_j\mathbf e_3$ and\begin{equation}
     \btau_j=h_j\,T_j\cos\gamma_j\begin{pmatrix}\tan\beta_j&\tan\alpha_j&0\end{pmatrix}^\top.
 \end{equation}
-
+\newpage
 \section{Control Model}
 \subsection{Comparison with the Quadrotor}
 Assuming small tilt angles and writing $T_l=\|{}^b\mathbf F_l\|$, $T_u=\|{}^b\mathbf F_u\|$ (so that $\cos\gamma_j\simeq1$), we obtain\begin{align}
@@ -2697,4 +2697,197 @@ which is Equation \eqref{traslational_dynamic} (and the rotational dynamics) wit
 \end{equation}
 that is: the thrusts are aligned with the vertical axis and balance the weight, and the reaction torques of the two counter-rotating rotors cancel, so that no yaw torque is produced.
 \part{Underactuated Systems}
+\chapter{Dynamic Models}
+\section{Introduction}
+\todo{}
+\section{Energy and Work}
+Before going through some examples of real systems, we recap the general method to derive the dynamic model. We use an \textbf{energy-based} approach: a robot can be seen as a series of rigid links connected at the joints. For a generic link $i$, let $\mathbf r_{ci}(\q)$ be its center of mass, $\bomega_i$ its angular velocity and $I_{ci}$ its inertia matrix expressed in the same reference frame as the angular velocity. The kinetic and potential energy of a robot with $m$ links are:\begin{equation}
+    \mathcal T = \sum_{i=1}^m\left(\frac{1}{2}m_i\|\dot{\mathbf{r}}_{ci}\|^2+\frac{1}{2}\bomega_i^\top I_{ci}\bomega_i\right),\quad 
+    \mathcal V = \sum_{i=1}^m m_igz_{ci}
+\end{equation}
+where $z_{ci}$ is the $z$-component of $\mathbf r_{ci}$ and $g$ is the gravity constant. The Lagrangian of the robot is defined as:\begin{equation}
+    \mathcal L = \mathcal T - \mathcal V.
+\end{equation}
+The Euler-Lagrange equations provide the dynamic model of the robot:\begin{equation}
+    \frac{d}{dt}\frac{\partial\mathcal L}{\partial \dot q_i}-\frac{\partial\mathcal L}{\partial q_i}=Q_i 
+\end{equation} 
+where $Q_i$ is the applied nonconservative generalized force acting on $q_i$; it usually comes from the actuators or from an external wrench applied to the mechanism. Let $\delta\q$ be an infinitesimal displacement in $\q$, the resulting \textit{virtual work} is\begin{equation}
+    \delta W_{\text{act}}=\sum_{i=1}^mQ_{\text{act},i}\delta q_i = \mathbf Q_{\text{act}}^\top \delta\q.
+\end{equation}
+We want to express this work from the actuator perspective. We introduce the \textit{actuator displacement function} $\mathbf{s}(\q) \in \mathbb{R}^p$, a kinematic mapping that takes the robot's overall configuration (the generalized coordinates $\q$) and outputs the position, angle, or extension of each actuator. Let $\mathbf u\in\R^p$ be the input vector:\begin{equation}
+    \delta W_{\text{act}}=\mathbf u^\top\delta\mathbf s=\mathbf u^\top\frac{\partial \mathbf s}{\partial \q}\delta\q
+\end{equation}
+so:\begin{equation}
+    \boxed{
+        \mathbf Q_{\text{act}}=B(\q)\mathbf u, \qquad 
+        B(\q)=\left(\frac{\partial \mathbf s}{\partial \q}\right)^\top \in \R^{m\times p}
+    }.
+\end{equation}
+In the dynamic model the matrix $B$ relates the inputs $\mathbf u$ to the coordinates on which they produce work. For example, in a two-link pendulum with a single actuated joint, the elbow, $B=\begin{pmatrix}
+    0&1
+\end{pmatrix}^\top$; usually for a fully actuated robot we have $B=I$.\bigskip 
+
+The generalized force produced by an external wrench $\mathbf w_k\in \R^6$ is given by the geometric Jacobian $J_k(\q)$, computed from the base to the point of application of the wrench:\begin{equation}
+     \boxed{\mathbf Q_{\text{ext},k}=J_k(\q)^\top\mathbf w_k}.
+\end{equation}
+The Euler-Lagrange equations in standard form have the following structure:\begin{equation}
+    M(\q)\ddq+\mathbf h(\q,\dq)+\mathbf G(\q)=B(\q)\mathbf u+\underbrace{\sum_{k=1}^{N_w}J_k(\q)^\top\mathbf w_k}_{\text{external wrenches}}
+\end{equation}
+where $M(\q)$ is the (symmetric, positive definite) inertia matrix, defined by\begin{equation}
+\mathcal T = \frac{1}{2}\dq^\top M(\q)\dq,
+\end{equation}and $\mathbf G(\q)=\frac{\partial \mathcal V}{\partial \q}$. The vector $\mathbf h(\q,\dq)$ contains the centrifugal and Coriolis terms; we know that it is computed by differentiating $M$:\begin{equation}
+    h_i=\sum_{k=1}^{m}\sum_{j=1}^{m}\left(\frac{\partial M_{ij}}{\partial q_k}-\frac{1}{2}\frac{\partial M_{jk}}{\partial q_i}\right)\dot q_j\dot q_k
+\end{equation}
+and can be rewritten as:\begin{equation}
+    \mathbf h(\q,\dq)=C(\q,\dq)\dq.
+\end{equation}
+For all the following examples we will neglect dissipative forces and external wrenches:\begin{equation}
+      M(\q)\ddq+\underbrace{\mathbf h(\q,\dq)+\mathbf G(\q)}_{\mathbf n(\q,\dq)}=B(\q)\mathbf u.
+\end{equation}
+\begin{boxproposition}{}{}
+    The derivative of the mechanical energy $E=\mathcal T+\mathcal V$ satisfies the following identity:\begin{equation}
+        \dot E = \dq^\top B(\q)\mathbf u+\sum_{k=1}^{N_w}\mathbf w_k^\top J_k(\q)\dq.
+    \end{equation}
+\end{boxproposition}
+\noindent Without external wrenches we have $ \dot E = \dq^\top B(\q)\mathbf u$. Notice how the gravity and the centrifugal/Coriolis terms do not appear in the derivative of $E$: they do not add energy to the system, but only account for the internal exchange between potential and kinetic energy.
+\begin{boxproposition}{}{}
+    Consider the generalized momentum $\mathbf p = M(\q)\dq$:\begin{equation}
+        p_i=\frac{\partial \mathcal L}{\partial\dot q_i}=\sum_{j=1}^{m}M_{ij}(\q)\dot q_j.
+    \end{equation} 
+    Its time derivative is equal to the partial derivative of the Lagrangian with respect to $q_i$ plus the generalized force:\begin{equation}
+        \dot p_i=\frac{\partial\mathcal L}{\partial q_i}+Q_i.
+    \end{equation}
+\end{boxproposition}
+\noindent We say that a coordinate $q_i$ is \textbf{cyclic} if it does not appear in the Lagrangian; if so, we have:\begin{equation}
+     \dot p_i=Q_i.
+\end{equation}
+\subsection{Linearization}
+\begin{boxdefinition}{Equilibrium}{}
+    An \textbf{equilibrium} is a pair $(\q_e,\mathbf u_e)$ such that, if the system is at rest in configuration $\q_e$ (i.e.\ $\dq=\mathbf 0$) with constant input $\mathbf u_e$ and no external wrenches, it stays there ($\ddq=\mathbf 0$). This happens if and only if\begin{equation}
+        \mathbf G(\q_e)=B(\q_e)\mathbf u_e.
+    \end{equation}
+\end{boxdefinition}
+An equilibrium is said to be \textit{natural} or \textit{unforced} if $\mathbf u_e=\mathbf 0$; it is given by the stationary points of the potential energy:\begin{equation}
+    \mathbf G(\q_e)=\frac{\partial\mathcal V}{\partial \q}\Big|_{\q=\q_e}=\mathbf 0.
+\end{equation}
+In the forced equilibria the weight is held by the motors. If $B$ is square and invertible (e.g.\ $p=m$ and $B=I$), any configuration can be held. If $p<m$, only a subset of the configuration space can be an equilibrium.
+
+We recall how to linearize the model about an equilibrium $(\q_e,\mathbf u_e)$. Consider small displacements $\delta\q, \ \delta\mathbf u $ in the configuration and input
+$$\q=\q_e+\delta\q, \quad \mathbf u=\mathbf u_e+\delta\mathbf u$$
+and assume that the matrix $B$ is constant. The linearized model about the equilibrium is given by the first-order Taylor expansion. The inertial term is 
+\begin{equation}
+    M(\mathbf{q}_e + \delta\mathbf{q})\delta\ddot{\mathbf{q}} \approx \left( M(\mathbf{q}_e) + \frac{\partial M}{\partial \mathbf{q}}\Big\vert{}_{\q=\mathbf{q}_e}\delta\mathbf{q} \right)\delta\ddot{\mathbf{q}} \approx \underbrace{M(\mathbf{q}_e)}_{M_e}\delta\ddot{\mathbf{q}}
+\end{equation}
+since the neglected term is of second order in the displacements. The Coriolis and centrifugal term $\mathbf h$ is quadratic in $\dq$, hence its first-order expansion about $\dq=\mathbf 0$ vanishes. The gravitational term is:\begin{equation}
+    \mathbf{G}(\mathbf{q}_e + \delta\mathbf{q}) \approx \mathbf{G}(\mathbf{q}_e) + \underbrace{\frac{\partial \mathbf{G}}{\partial \mathbf{q}}\Big\vert{}_{\q=\q_e}}_{K_e}\delta\mathbf{q}
+\end{equation}
+where $K_e$ is the Hessian of the potential energy. The input term is:\begin{equation}
+    B\,(\mathbf{u}_e + \delta\mathbf{u}) = B\mathbf{u}_e + B\delta\mathbf{u}.
+\end{equation}
+By assembling all these terms we get:
+\begin{equation}
+    M_e\delta\ddq+\mathbf G(\q_e)+K_e\delta\q=B\mathbf u_e+B\delta\mathbf u 
+\end{equation}
+and, by definition of equilibrium, $\mathbf G(\q_e)=B\mathbf u_e$, hence the linearized model is:
+\begin{equation}
+   \boxed{M_e\delta\ddq+K_e\delta\q=B\delta\mathbf u }.
+\end{equation}
+The linearized model can be used to observe the behavior of a mechanical system when 
+it is left free to move near an equilibrium point. Let $\delta\mathbf u=\mathbf 0$:\begin{equation}
+    M_e\delta\ddq+K_e\delta\q=\mathbf 0.
+\end{equation}
+This is a linear system of differential equations. We look for an exponential solution for $\delta \q(t)$:\begin{equation}
+    \delta\mathbf{q}(t) = \mathbf{v} e^{st}
+\end{equation}
+where $\mathbf{v}$ is a direction in the configuration space and $s$ determines the time trend. The second derivative of our solution is $s^2\mathbf{v} e^{st}$; by substituting into the equation and dividing by $e^{st}$:
+\begin{align}
+    &M_e\delta\ddq+K_e\delta\q=\mathbf 0\\
+\implies & M_e(s^2\mathbf{v} e^{st})+K_e(\mathbf{v} e^{st})=\mathbf 0\\
+\implies & s^2 M_e \mathbf{v} + K_e \mathbf{v} = \mathbf{0}\\
+\implies &K_e \mathbf{v} = (-s^2) M_e \mathbf{v}.
+\end{align}
+By denoting $\mu=-s^2$, we obtain the generalized eigenvalue problem:\begin{align}
+   &K_e \mathbf{v} = \mu M_e \mathbf{v}\implies \\ 
+   &(K_e - \mu M_e)\mathbf{v} = \mathbf{0}.
+\end{align}
+For there to be a non-zero direction $\mathbf{v}$ (i.e.\ real motion), the determinant of the matrix in parentheses must be zero:\begin{equation}
+    \det(K_e - \mu M_e) = 0.
+\end{equation}
+We solve this equation for $\mu$, finding $m$ real values $\mu_1,\dots,\mu_m$ (they are real because $K_e$ is symmetric and $M_e$ is symmetric positive definite). For each of them we solve $(K_e - \mu_i M_e)\mathbf{v}_i = \mathbf{0}$ and obtain the vector $\mathbf{v}_i$. 
+
+Now we use the equation $s^2 = -\mu_i$ to find the two roots $s = \pm\sqrt{-\mu_i}$ for each natural mode:
+\begin{itemize}
+    \item If all $\mu_i > 0$: all $s$ are imaginary ($s = \pm j\sqrt{\mu_i}$). The system oscillates around the equilibrium without ever running away (marginally stable).
+    \item If at least one $\mu_i < 0$: we get a positive real $s$ ($s = +\sqrt{-\mu_i}$). Along the corresponding $\mathbf{v}_i$ direction, the system diverges exponentially (unstable).
+    \item If no $\mu_i<0$ but some $\mu_i = 0$: we get $s = 0$ (double root). Along the $\mathbf{v}_i$ direction, the system drifts away at constant speed, because there is no force pulling it back.
+\end{itemize}
+\begin{boxproposition}{}{}
+The signs of the characteristic values $\mu_i$ determine the stability properties of the undamped linearized system.
+\end{boxproposition}
+\section{Examples of Mechanical Systems}
+\subsection{Pendulum}
+This is the simplest model we can think of: a rigid body of mass $m_p$ on a fixed horizontal axis, with the center of mass at distance $l_c$ from the axis and inertia about the axis $I_h=I+m_pl^2_c$, where $I$ is the inertia about the center of mass. Its configuration is described by a single coordinate $\theta$, the angle between the pendulum and the downward vertical axis. A motor produces a torque $\tau$ exactly on the joint on which the pendulum is hinged.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.2\textwidth]{images/pendulum.eps}
+\end{figure}
+\noindent The kinetic and potential energy are:\begin{equation}
+    \mathcal T = \frac{1}{2}I_h\dot\theta^2,\qquad 
+    \mathcal V = -m_pgl_c\cos\theta.  
+\end{equation}
+By following the Lagrangian formulation we end up with the following model:\begin{equation}
+    I_h\ddot\theta+m_pgl_c\sin\theta=\tau.
+\end{equation}
+One important constant is the \textbf{natural frequency}:\begin{equation}
+    \omega_0=\sqrt{\frac{m_pgl_c}{I_h}},
+\end{equation}
+which is the angular frequency with which the pendulum oscillates spontaneously (for small amplitudes) around its stable equilibrium position ($\theta = 0$) when it is slightly moved and left free, without friction and without any external intervention from the motor ($\tau = 0$). This system has one coordinate and one motor ($m=p=1$), hence it is \textit{fully actuated}.
+
+It is interesting to plot the level curves of the energy in the \textit{phase plane} ($\theta,\dot\theta$). With $\tau=0$ and the normalized energy $\hat E=E/(I_h\omega_0^2)=\frac{1}{2}\left(\frac{\dot\theta}{\omega_0}\right)^2-\cos\theta$, the level curves are:
+\begin{center}
+    \begin{tikzpicture}
+\begin{axis}[width=11cm,height=7cm,axis lines=middle,xlabel={$\theta$},ylabel={$\frac{\dot{\theta}}{\omega_0}$},xmin=-6.6,xmax=6.6,ymin=-3.2,ymax=3.2,xtick={-6.283,-3.142,0,3.142,6.283},xticklabels={$-2\pi$,$-\pi$,$0$,$\pi$,$2\pi$},ytick={-2,-1,1,2},samples=150,smooth,clip=true]
+\foreach \E in {-0.75,-0.25,0.4,0.8}{
+  \pgfmathsetmacro{\xm}{rad(acos(-\E))}
+  \foreach \c in {-2*pi,0,2*pi}{
+    \addplot[blue!70!black,thick,domain=\c-\xm:\c+\xm]{sqrt(2*(\E+cos(deg(x))))};
+    \addplot[blue!70!black,thick,domain=\c-\xm:\c+\xm]{-sqrt(2*(\E+cos(deg(x))))};
+  }
+}
+\addplot[red,very thick,dashed,domain=-2.1*pi:2.1*pi,samples=300]{sqrt(max(0,2*(1+cos(deg(x)))))};
+\addplot[red,very thick,dashed,domain=-2.1*pi:2.1*pi,samples=300]{-sqrt(max(0,2*(1+cos(deg(x)))))};
+\foreach \E in {1.5,2.5,3.8}{
+  \addplot[green,thick,domain=-2.1*pi:2.1*pi]{sqrt(2*(\E+cos(deg(x))))};
+  \addplot[green,thick,domain=-2.1*pi:2.1*pi]{-sqrt(2*(\E+cos(deg(x))))};
+}
+\addplot[only marks,mark=*,mark size=1.5pt] coordinates {(-6.283,0)(0,0)(6.283,0)};
+\addplot[only marks,mark=o,mark size=2pt,red] coordinates {(-3.142,0)(3.142,0)};
+\node[anchor=north east,font=\footnotesize] at (rel axis cs:0.98,0.96) {$\omega_0=4.95$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Since the mechanical energy $E$ is conserved, any motion follows a level curve of $E$ as shown in the plot. There are oscillations (blue, $\hat E<1$) and rotations (green, $\hat E>1$), separated by the \textbf{separatrix} ($\hat E=1$) defined by $\dot\theta=\pm 2\omega_0\cos(\nicefrac{\theta}{2})$. \begin{figure}[H]
+    \centering
+\begin{tikzpicture}[scale=0.8]
+\begin{axis}[width=11cm,height=8cm,view={35}{30},xlabel={$\theta$},ylabel={$\frac{\dot{\theta}}{\omega_0}$},zlabel={$\hat E$},xmin=-6.3,xmax=6.3,ymin=-3,ymax=3,zmin=-1,zmax=5.5,xtick={-6.283,-3.142,0,3.142,6.283},xticklabels={$-2\pi$,$-\pi$,$0$,$\pi$,$2\pi$},ytick={-2,0,2},ztick={-1,1,3,5},colormap/viridis,samples=45,samples y=35,domain=-6.3:6.3,y domain=-3:3]
+\addplot3[surf,shader=faceted interp,faceted color=black!30,opacity=0.85]{0.5*y^2-cos(deg(x))};
+\addplot3[red,very thick,samples=120,samples y=0,domain=-6.3:6.3]({x},{sqrt(max(0,2*(1+cos(deg(x)))))},{1});
+\addplot3[red,very thick,samples=120,samples y=0,domain=-6.3:6.3]({x},{-sqrt(max(0,2*(1+cos(deg(x)))))},{1});
+\end{axis}
+\end{tikzpicture}
+\caption{Normalized energy surface $\hat E(\theta,\dot\theta/\omega_0)$ and separatrix (red).}
+\end{figure}
+By linearizing the pendulum model we get:\begin{equation}
+    M_e=I_h,\quad K_e=m_pgl_c\cos\theta_e.
+\end{equation}
+By solving $\det(K_e-\mu M_e)=0$ we get the (only) characteristic value\begin{equation}
+    \mu=\omega_0^2\cos\theta_e.
+\end{equation}
+There are two natural equilibria ($\tau_e=0$):\begin{itemize}
+    \item $\theta_e=0\implies \mu = \omega_0^2$, so $s=\pm j\omega_0$: the equilibrium is (marginally) stable.
+    \item $\theta_e=\pi\implies \mu = -\omega_0^2$, so $s=\pm\omega_0$, one root being positive: the equilibrium is unstable.
+\end{itemize}
+Another quantity to remember for a pendulum is $m_pgl_c$, the largest gravity torque: to hold the pendulum at any angle the motor must be able to provide at least this torque, otherwise some angles cannot be held.
+\subsection{Cart-Pendulum}
+\todo{slide 30}
 \end{document}
