@@ -2814,7 +2814,6 @@ For there to be a non-zero direction $\mathbf{v}$ (i.e.\ real motion), the deter
     \det(K_e - \mu M_e) = 0.
 \end{equation}
 We solve this equation for $\mu$, finding $m$ real values $\mu_1,\dots,\mu_m$ (they are real because $K_e$ is symmetric and $M_e$ is symmetric positive definite). For each of them we solve $(K_e - \mu_i M_e)\mathbf{v}_i = \mathbf{0}$ and obtain the vector $\mathbf{v}_i$. 
-
 Now we use the equation $s^2 = -\mu_i$ to find the two roots $s = \pm\sqrt{-\mu_i}$ for each natural mode:
 \begin{itemize}
     \item If all $\mu_i > 0$: all $s$ are imaginary ($s = \pm j\sqrt{\mu_i}$). The system oscillates around the equilibrium without ever running away (marginally stable).
@@ -2838,7 +2837,7 @@ This is the simplest model we can think of: a rigid body of mass $m_p$ on a fixe
 By following the Lagrangian formulation we end up with the following model:\begin{equation}
     I_h\ddot\theta+m_pgl_c\sin\theta=\tau.
 \end{equation}
-One important constant is the \textbf{natural frequency}:\begin{equation}
+One important constant is the \textbf{natural frequency}:\begin{equation}\label{pend_nat_freq}
     \omega_0=\sqrt{\frac{m_pgl_c}{I_h}},
 \end{equation}
 which is the angular frequency with which the pendulum oscillates spontaneously (for small amplitudes) around its stable equilibrium position ($\theta = 0$) when it is slightly moved and left free, without friction and without any external intervention from the motor ($\tau = 0$). This system has one coordinate and one motor ($m=p=1$), hence it is \textit{fully actuated}.
@@ -2889,5 +2888,172 @@ There are two natural equilibria ($\tau_e=0$):\begin{itemize}
 \end{itemize}
 Another quantity to remember for a pendulum is $m_pgl_c$, the largest gravity torque: to hold the pendulum at any angle the motor must be able to provide at least this torque, otherwise some angles cannot be held.
 \subsection{Cart-Pendulum}
-\todo{slide 30}
+This is a classical example of an underactuated system: a pendulum is hinged to a moving cart that can slide only along the $x$ direction, while the pendulum rotates about the $y$ axis. Its configuration is defined by $\q=(x \ \theta)^\top$, with $\theta$ measured clockwise from the upward vertical direction.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/cart_pendulum.eps}
+\end{figure}
+
+\noindent Let $M$ be the mass of the cart, $m_p$ the mass of the pole, $\ell_c$ the distance between the hinge and the center of mass (CoM) of the pole, and $I_h$ the moment of inertia of the pole about the hinge. The CoM of the pole, which is hinged at height $z_0$, is
+\begin{equation}
+    \mathbf r_G=\begin{pmatrix}
+        x+\ell_c\sin\theta & 0 & z_0+\ell_c\cos\theta
+    \end{pmatrix}^\top.
+\end{equation}
+The kinetic and potential energy of the system (the latter up to an additive constant) are
+\begin{align}
+    \mathcal T &= \frac{1}{2}(M+m_p)\dot x^2+
+    m_p\ell_c\cos\theta\,\dot x\dot\theta+\frac{1}{2}I_h\dot\theta^2,\\
+    \mathcal V &= m_pg\ell_c\cos\theta.
+\end{align}
+The external force produced by the actuator acts only on $x$, so the generalized force is
+\begin{equation}
+    \mathbf Q = \begin{pmatrix}
+        F\\ 0
+    \end{pmatrix}
+\end{equation}
+and, from Lagrange's equations, the dynamic model is
+\begin{equation}
+    \begin{pmatrix}
+        M+m_p&m_p\ell_c\cos\theta\\m_p\ell_c\cos\theta& I_h
+    \end{pmatrix}\begin{pmatrix}
+       \ddot x\\\ddot\theta
+    \end{pmatrix}+\begin{pmatrix}
+        -m_p\ell_c\sin\theta\,\dot\theta^2\\
+        -m_pg\ell_c\sin\theta
+    \end{pmatrix}= \begin{pmatrix}
+        F\\ 0
+    \end{pmatrix}.
+\end{equation}
+Even though $\theta$ is not directly actuated, the force acts on it through $\ddot x$:
+\begin{equation}
+    \ddot\theta=\frac{m_p\ell_c}{I_h}(g\sin\theta-\ddot x\cos\theta).
+\end{equation}
+The time derivative of the total energy $E=\mathcal T+\mathcal V$ is
+\begin{equation}
+    \dot E = F\dot x,
+\end{equation}
+hence the force changes the energy only while the cart is moving. The variable $x$ is cyclic (it does not appear in the Lagrangian $\mathcal L=\mathcal T-\mathcal V$), hence the generalized momentum conjugate to $x$ is
+\begin{equation}
+    p_x=(M+m_p)\dot x+m_p\ell_c\cos\theta\,\dot\theta=(M+m_p)\dot x_G\qquad\Longrightarrow\qquad\dot p_x=F,
+\end{equation}
+where $x_G$ is the horizontal coordinate of the center of mass of the whole system (cart and pole):
+\begin{equation}
+    x_G=x+\frac{m_p\ell_c}{M+m_p}\sin\theta.
+\end{equation}
+If $F=0$ (unforced) and the system starts at rest, then $p_x=0$ and the overall center of mass $x_G$ remains fixed, hence the time evolution of the cart position is
+\begin{equation}
+    x(t)=x_G-\frac{m_p\ell_c}{M+m_p}\sin\left(\theta(t)\right).
+\end{equation}
+If the pole falls to the right, the cart moves to the left and vice versa.
+
+Let us study the equilibria. At an equilibrium $\dot{\mathbf q}=\ddot{\mathbf q}=0$, so we must solve
+\begin{equation}
+    \begin{pmatrix}
+        0\\ -m_pg\ell_c\sin\theta
+    \end{pmatrix}=\begin{pmatrix}
+        F\\ 0
+    \end{pmatrix}.
+\end{equation}
+All the equilibria have $F=0$, $\theta$ can be $0$ or $\pi$ (modulo $2\pi$), and the $x$ position can be arbitrary:
+\begin{equation}
+    \left\{(x,\theta,F) \ : \ x\in \R,\quad \theta\in\{0,\pi\},\quad F=0\right\}.
+\end{equation}
+The pole cannot be kept at rest at any other angle. To keep a constant angle $\bar\theta$, the cart must accelerate, i.e.\ a constant horizontal force can maintain a constant pole inclination only if the cart accelerates continuously. This can be easily shown: if $\theta(t)=\bar\theta$, then $\dot\theta=\ddot\theta=0$ and the second equation of the model becomes
+\begin{equation}
+    m_p \ell_c \cos \bar{\theta} \, \ddot{x} - m_p g \ell_c \sin \bar{\theta} = 0,
+\end{equation}
+therefore, for $\bar\theta\ne\pm\frac{\pi}{2}$,
+\begin{equation}
+    \ddot x = g\tan\bar\theta.
+\end{equation}
+Substituting into the first equation, this requires a constant force
+\begin{equation}
+    F=(M+m_p)g\tan\bar\theta.
+\end{equation}
+What is the \textbf{physical interpretation}? In the frame of the accelerating cart, the inertial force balances the gravitational torque on the inclined pole.
+This is not an equilibrium, since the cart accelerates continuously. It is a
+particular forced trajectory, useful for motion planning.
+
+If $F=0$ (unforced cart), the cart is in general still accelerating (it recoils as the pole moves). Eliminating $\ddot x$ from the first equation, we can write the evolution of the pendulum as a single differential equation:
+\begin{equation}
+    \left( I_h - \frac{m_p^2 \ell_c^2 \cos^2 \theta}{M + m_p} \right) \ddot{\theta} + \frac{m_p^2 \ell_c^2}{M + m_p} \sin \theta \cos \theta \, \dot{\theta}^2 - m_p g \ell_c \sin \theta = 0.
+\end{equation}
+Also, if the cart moves at constant velocity, the pendulum can be held in one of the two vertical positions (relative equilibria):
+\begin{equation}
+    x(t)=x_0+v_0t,\quad \theta(t)=\theta_e\in\{0,\pi\}, \quad F=0.
+\end{equation}
+Now let us linearize the system for small changes around an equilibrium $(\theta_e\in\{0,\pi\},\ F=0)$, i.e.\ $M_e\,\delta\ddot{\mathbf q}+K_e\,\delta\mathbf q=\delta\mathbf Q$. The matrices of the linearized system are
+\begin{equation}
+    M_e=\begin{pmatrix}
+        M+m_p& \pm m_p\ell_c\\ \pm m_p\ell_c&I_h
+    \end{pmatrix},\qquad K_e=\begin{pmatrix}
+        0&0\\
+        0&-m_pg\ell_c\cos\theta_e
+    \end{pmatrix},
+\end{equation}
+where the upper sign refers to $\theta_e=0$ (pole up) and the lower sign to $\theta_e=\pi$ (pole down). Denote $\Delta_0=\det M_e=(M+m_p)I_h-m_p^2\ell_c^2>0$. The characteristic equation $\det(M_e s^2+K_e)=0$ gives $s^2\left(\Delta_0 s^2-(M+m_p)m_pg\ell_c\cos\theta_e\right)=0$, so besides the double root $s^2=0$ we have $s^2=\mu$ with
+\begin{align}
+    \mu_1&=+\frac{1}{\Delta_0}(M+m_p)m_pg\ell_c& \text{ (pole up)}&\\
+    \mu_2&=-\frac{1}{\Delta_0}(M+m_p)m_pg\ell_c& \text{ (pole down)}&
+\end{align}
+Let
+\begin{equation}
+    \lambda = \sqrt{\frac{(M+m_p)m_pg\ell_c}{\Delta_0}}>0 .
+\end{equation}
+Then:
+\begin{itemize}
+    \item pole up: since $\mu_1>0$ the equilibrium is unstable, the poles are $s=\pm\lambda$, and $\lambda$ is the divergence rate, that is, the exponential rapidity with which the pendulum moves away from the vertical position.
+    \item pole down: since $\mu_2<0$ the poles are $s=\pm j\lambda$, with the same expression of $\lambda$, which now represents the angular frequency (pulsation) of the small oscillations around the rest position.
+\end{itemize}
+We recall the natural frequency of the pendulum on a fixed pin in Equation \eqref{pend_nat_freq}, $\omega_0=\sqrt{m_pg\ell_c/I_h}$. Notice that $\lambda$ can be rewritten as
+\begin{equation}
+    \lambda = \sqrt{\frac{(M + m_p) m_p g \ell_c}{\Delta_0}} = \omega_0 \sqrt{\frac{(M + m_p) I_h}{\Delta_0}} > \omega_0 ,
+\end{equation}
+since $(M+m_p)I_h>\Delta_0$. Hence $\lambda$ is always greater than $\omega_0$. Physically, this means that on a free cart the pendulum falls (or oscillates) faster than on a fixed pin, because the cart recoils (``gives way'') under it:
+\begin{itemize}
+    \item The lighter the cart ($M$), the more $\lambda$ increases (the pendulum falls even faster).
+    \item The heavier the cart ($M \to \infty$), the more the system behaves like a fixed pivot and $\lambda$ tends to $\omega_0$.
+\end{itemize}
+Let us see the linearized model around $\theta_e=0$ (pole up):
+\begin{align}
+\delta \ddot{x} &= \frac{I_h \, \delta F - m_p^2 \ell_c^2 g \, \delta \theta}{\Delta_0},\\
+\delta \ddot{\theta} &= \frac{(M + m_p) m_p g \ell_c \, \delta \theta - m_p \ell_c \, \delta F}{\Delta_0}.
+\end{align}
+With some algebraic steps, we can eliminate $\delta\theta$ between the two linear equations and write the transfer function between the input force and $\delta x$:
+\begin{equation}
+    \frac{\delta x(s)}{\delta F(s)} = \frac{I_h s^2 - m_p g \ell_c}{s^2 \big(\Delta_0 s^2 - (M + m_p) m_p g \ell_c\big)}.
+\end{equation}
+The system has four poles:
+\begin{itemize}
+    \item $s^2=0$: two poles at the origin, representing the free drift of the cart. Being on a frictionless track, if the cart receives a push it continues to move at constant speed.
+    \item $s=\pm\lambda$: they are the poles linked to the instability of the inverted pendulum on a moving cart. The positive pole ($+\lambda$) indicates that, if perturbed, the pendulum falls exponentially with rate $\lambda$.
+\end{itemize}
+Let us find the zeros of the transfer function:
+\begin{equation}
+    I_h s^2 - m_p g \ell_c = 0 \implies s = \pm \sqrt{\frac{m_p g \ell_c}{I_h}} = \pm \omega_0 .
+\end{equation}
+The zeros are exactly the characteristic rates ($\pm \omega_0$) that the pole would have if it were mounted on a fixed pin. One of the zeros has a strictly positive real part, hence the system is \textbf{non-minimum phase}.\bigskip
+
+Now we see a numerical example, with (in SI units) $M+m_p=1.2$, $m_p\ell_c=0.06$, $I_h=0.024$ and $g=9.81$. The linearized model is
+\begin{align}
+\delta \ddot{x} &= \frac{I_h \, \delta F - m_p^2 \ell_c^2 g \, \delta \theta}{\Delta_0} = 0.952 \, \delta F - 1.40 \, \delta \theta, \\
+\delta \ddot{\theta} &= \frac{(M + m_p) m_p g \ell_c \, \delta \theta - m_p \ell_c \, \delta F}{\Delta_0} = 28 \, \delta \theta - 2.38 \, \delta F.
+\end{align}
+We release the pendulum from rest at $5^\circ$, without imposing any force ($F=0$), and observe the profile of $\theta$ until the pole becomes horizontal (from $5^\circ$ to $90^\circ$).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/cart_pole_numericalExample.png}
+\end{figure}
+In the first $0.25$ seconds, the angle goes from $5^\circ$ to $10^\circ$; then the motion becomes abrupt and it takes a total of $0.7$ seconds to reach the horizontal position.
+As for the evolution of the cart position, there is a recoil of $4.6$ cm to the left, while the center of mass stays where it was. The linear model is reasonably accurate: when the true angle is $60^\circ$, it gives $63.6^\circ$.\bigskip
+
+\noindent Let us summarize four important facts about the cart-pendulum system:
+\begin{itemize}
+    \item The pole equation contains no explicit input: the pole feels the force only through the acceleration of the cart.
+    \item The horizontal momentum is changed only by the force: without force, the cart recoils as the pole falls.
+    \item It can rest only with the pole vertical, up or down, with the cart anywhere.
+    \item The upright pole diverges at rate $\lambda\approx5.3\text{ s}^{-1}$, faster than on a fixed pivot.
+\end{itemize}
+\subsection{The Two-Link Pendulum}
 \end{document}
