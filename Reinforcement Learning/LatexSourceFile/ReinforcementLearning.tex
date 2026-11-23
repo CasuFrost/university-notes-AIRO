@@ -1424,230 +1424,225 @@ with $\hat V_H=g_H$ when the window reaches the end of the horizon. Only the fir
 \end{algorithm}
 \noindent This is in practice a Model Predictive Controller with an iLQR solver.
 \chapter{Approximate Policy Iteration}
-From now on we will discuss real reinforcement learning problems, where the transition function is unknown and the state space is too large to be enumerated; the previous chapters were more about planning rather than reinforcement learning. We recall the \textbf{policy iteration} procedure, that at each iteration provides a policy $\pi_t$:\begin{enumerate}
-    \item Start with a random guess $\pi_0$.
-    \item For $t=0,\dots, T$:\begin{enumerate}
-        \item Perform policy evaluation and compute $Q^{\pi_t}$ for all the state-action pairs $(s,a)$.
-        \item Perform policy improvement: $\displaystyle\pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}Q^{\pi_t}(s,a)$ for all $s\in S$.
-    \end{enumerate}
-\end{enumerate}
-If the state space is large (or uncountable), this algorithm becomes infeasible: we can't iterate over all the states, hence we can't perform policy evaluation. We have to \textit{approximate} $Q^\pi$. The policy improvement step is still feasible since we only have to iterate over the actions, which we assume to be countable (we can still enumerate them or at least discretize them). The policy evaluation instead relies on the following relation:\begin{equation}
-    Q^\pi(s,a)=r(s,a)+\gamma\VA_{s'\sim p(\cdot\mid s,a)}[V^\pi(s')]=
-    r(s,a)+\gamma\sum_{s'}p(s'\mid s,a)V^\pi(s')
-\end{equation}
-instead of doing so we will use an \textit{approximation} denoted $\hat Q^\pi$:\begin{equation}
-    \hat Q^\pi(s,a)=r(s,a)+\gamma\VA_{s'\sim p(\cdot\mid s,a)}[\hat V^\pi(s')]
-\end{equation}
-that uses an approximation of the value function $\hat V^\pi$. Our goal is to \textbf{build an approximation} $\hat V^\pi$ sufficiently close to the real value function, in order to obtain a policy that is close to the optimal one. We use a function approximator, such as linear approximators, neural networks and others. Instead of approximating $V$ we will approximate directly $Q$; by doing so, we won't need to know the transition probabilities, hence it will not be required to know exactly the MDP.
-\begin{boxobservation}{The MDP is Unknown}{}
-    In real scenarios, the transition probabilities are unknown, hence from now on \textbf{we will drop the assumption of knowing the MDP}. Real reinforcement learning starts here.
-\end{boxobservation}
-\section{Supervised Learning}
-In order to approximate $Q$ we need a dataset:\begin{equation}
-    \mathcal D = \{(s_i,a_i,y_i)\}_{i=1}^N
-\end{equation}
-with $s_i,a_i$ being the inputs of $Q$ and $y_i$ the labels (the values of the action value function). We assume the rewards to be in $[0,1]$, hence the action value function takes values in $\left[0,\nicefrac{1}{1-\gamma}\right]$. We are interested in the family of functions that maps $S\times A$ to $\left[0,\nicefrac{1}{1-\gamma}\right]\subset\R$, we denote the set of these functions $\mathcal Q$:\begin{equation}
-    \mathcal Q = \{f \ : \ f:S\times A\to \left[0,\nicefrac{1}{1-\gamma}\right]\}.
-\end{equation}
-One way to find such a function is through \textbf{Least Squares Regression} over the dataset: we have to solve the following minimization problem:\begin{equation}
-    \hat Q=\operatorname*{arg\,min}_{Q\in \mathcal Q}\sum_{i=1}^{N}(Q(s_i,a_i)-y_i)^2.
-\end{equation}
-This problem is numerically tractable and has generalization bounds. Let's see what a general regression problem for supervised learning is.\begin{boxdefinition}{Empirical Risk Minimizer}{}
-    Given a data distribution $D$ from which we sample $N$ points and labels $(x_i,y_i)$ with $y_i=f(x_i)+\epsilon_i$, where $\epsilon_i$ is a bounded noise sampled from a zero-mean distribution, we want to approximate $f$ using a finite set of data as follows:\begin{align}
-         &\operatorname*{arg\,min}_{\hat f\in \mathcal F}\sum_{i=1}^{N}(\hat f(x_i)-y_i)^2\\
-         &\mathcal F\subseteq\{\hat f \ : \ \hat f :X\rightarrow \R\}
-    \end{align}
-    where $\mathcal F$ is the chosen class of approximators.
-\end{boxdefinition}
-The points of the dataset $x_i$ are sampled from a distribution $D$, the resulting solution $\hat f$ of the minimization problem will satisfy (with high probability) the following inequality:\begin{equation}
-    \VA_{x\sim D}\left[(\hat f(x)-f(x))^2\right]\le \delta
-\end{equation}
-with $\delta$ being a small number. The expected value is bounded if the points $x$ on which we are testing our approximator are sampled from the same distribution $D$ that we used to create the dataset. If we use a different distribution $D'\ne D$ the expected value \begin{equation}
-    \VA_{x\sim D'}\left[(\hat f(x)-f(x))^2\right]
-\end{equation}
-might be much larger than $\delta$, since the approximator is constructed on a different set of points, hence it didn't ``learn'' appropriately how to behave on the other distribution.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{images/distribution_change.eps} 
-    \caption{Approximator trained on a subset of $X$.}
-    \label{distribution_change}
-\end{figure}
-
-\noindent Observe the example in Figure \ref{distribution_change}: the approximator (green line) is close to the real function (dotted line) over the set colored in green, that is the set where we sampled the points to build the approximator; on other areas of $X$, like the red area, the approximator provides values far from the real function.
-
-In the context of \emph{Approximate Policy Iteration} (API), the function approximator is trained by minimizing the empirical error solely over the state-action distribution induced by the current policy, $d^{\pi_t}$ (formally defined in the next subsection). In unexplored regions of the state space, the generalization error can become arbitrarily large; consequently, the \emph{policy improvement} step may select greedy actions guided by unreliable, overestimated values. The resulting updated policy $\pi_{t+1}$ shifts the sampling trajectories toward these unfamiliar regions, degrading performance over the previous distribution and triggering a destructive cycle of \emph{policy oscillation} that undermines monotonic convergence. To theoretically mitigate this distribution shift, standard analysis introduces the \emph{Strong Coverage Assumption}, which asserts the existence of a finite concentrability coefficient, i.e. a distribution $\rho$ over $S\times A$ and a constant $C<\infty$ such that $d^\pi(s,a)\le C\rho(s,a)$ for all the pairs $(s,a)$ and every policy $\pi$ that the algorithm might produce.
-\section{Data Generation}
-To perform an approximate policy iteration, first we need our dataset $\mathcal D = \{(s_i,a_i,y_i)\}_{i=1}^N$; the generation is divided into two steps, \textbf{roll-in} and \textbf{roll-out}:
+In this chapter we \textit{drop the assumption} of knowing the Markov decision process; this approach is \textbf{model free}, i.e. the transition function is not known and the states can't be enumerated.
+\begin{quote}
+    \textbf{Example}: Consider a quadruped robot learning to walk on uneven terrain (gravel, ice, slopes), where states $s \in S$ are continuous sensor readings and actions $a \in A$ are motor torques. The MDP is unknown because unpredictable ground friction and slipping make it impossible to model the exact transition probabilities $p(s' \mid s, a)$ or the reward function $r(s, a)$ in advance.
+\end{quote}
+In the standard version of policy iteration, we update the policy in a greedy fashion with respect to the action-value function:
 \begin{itemize}
-    \item \textbf{Roll-In}: The procedure of sampling the state-action pairs $(s_i,a_i)$.
-    \item \textbf{Roll-Out}: The procedure of assigning a target value $y_i$ to the previously sampled state-action pairs $(s_i,a_i)$.
+    \item let $\pi_t$ be the policy at time step $t$,
+    \item $Q^{\pi_t}$ is computed on all the state-action pairs $(s,a)$:
+    \begin{equation}
+        Q^\pi(s,a)=r(s,a)+\gamma\VA_{s'\sim p(\cdot\mid s,a)}[V^\pi(s')]=
+        r(s,a)+\gamma\sum_{s'}p(s'\mid s,a)V^\pi(s')
+    \end{equation}
+    \item the policy is improved by changing its behavior on each state $s$:
+    \begin{equation}
+        \pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}Q^{\pi_t}(s,a)
+    \end{equation}
 \end{itemize}
-After having constructed $\mathcal D$ in this way, we can approximate $Q$ through fitting procedures.
-\begin{boxclaim}{}{}
-    How we roll out to estimate $y_i \approx Q^\pi(s_i, a_i)$ \textbf{determines the RL algorithm} we are using.
-\end{boxclaim}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{images/API.eps}
-    \caption{The Approximate Policy Iteration (API) is a meta-algorithm/family of methods that uses an approximation of $Q^\pi$ defined by the data generated by the roll-in and roll-out phases. The way we estimate $Q^\pi(s_i, a_i)$ during the roll-out phase \textbf{specifies} the specific algorithm.}
-\end{figure}
-\subsection{The Roll-In Phase}
-The roll-in phase is shared among all the methods of the API family.
-Let $\pi$ be a given policy, the \textbf{discounted visit distribution} $d_{s_0}^\pi$ describes the probability (weighted in time) that the agent is in state $s$ and performs action $a$ during its trajectory with the policy $\pi$, starting from $s_0$:\begin{equation}
-    d^\pi_{s_0}(s, a) = (1 - \gamma) \sum_{h=0}^\infty \gamma^h \mathbb{P}^\pi_h(s, a\mid s_0)
+This method requires iterating over all the states and knowing the model, so it can't be applied in a model-free setting. We will use \textbf{function approximators}:
+\begin{equation}
+    \boxed{Q(s,a)\simeq \hat Q(s,a;\mathbf w)}
 \end{equation}
-with $\mathbb{P}^\pi_h(s, a\mid s_0)$ being the exact probability of being in the pair $(s, a)$ at time step $h$, starting from $s_0$ and choosing the actions according to the policy $\pi$. When the initial state is sampled from $\mu_0$, the distribution becomes $d^\pi(s,a)=\VA_{s_0\sim\mu_0}\left[d^\pi_{s_0}(s,a)\right]$, which is the ideal distribution from which to sample the training data.
-\subsubsection{Sampling from $d^\pi$}
+$\hat Q$ is a parametrized function defined by the vector of weights $\mathbf w$; $\hat Q$ can be a linear regressor as well as a neural network. The methods that we will see explore the environment and dynamically update the weights $\mathbf w$ of the approximate function; since the policy is chosen to be greedy with respect to $\hat Q$, updating the weights means updating the policy. There are two main categories of methods that work in a model-free setting: Monte-Carlo methods and Temporal Difference methods.
+\begin{boxobservation}{About the State Space}{}
+    Both methods also work with a discrete state space; in such a case the approximation of the action-value function is simply a table that associates a value to each state-action pair. We will see how these methods work with both discrete and uncountable state spaces.
+\end{boxobservation}
+If the state space is discrete but huge (e.g. Chess), a function approximator is used due to the impossibility of keeping such a large table in memory.
+\section{Monte-Carlo Method}
+The general idea of this method is to make the agent explore the environment by using the current policy (defined by the current approximation of $Q$) for a whole episode, then use the cumulative reward to update the action-value function approximation. In particular, the agent explores the environment in order to build a dataset of the following structure:
+\begin{equation}
+    \mathcal D = \{((s_i,a_i),y_i)\}_{i=1}^N
+\end{equation}
+where the data points $(s_i,a_i)$ are state-action pairs and the labels $y_i$ are estimates of the action-value function.
+The procedure samples state-action pairs and runs $M$ episodes starting from each of them; by averaging the cumulative rewards, it obtains an estimate of the action-value function for the current policy.
+\subsection{Sampling}\label{MC_sampling}
+During the Monte-Carlo method, at each iteration $t$ with a policy $\pi_t(s) = \operatorname*{arg\,max}_{a \in A} \hat{Q}(s,a; \mathbf{w}_t)$, we have to sample state-action pairs properly. Sampling uniformly at random wouldn't make any sense, since a specific pair $(s,a)$ might be unreachable in the environment (or under $\pi_t$).
+We will sample the pairs using the \textbf{discounted visit distribution} $d_{s_0}^\pi$.
+\begin{boxdefinition}{}{}
+    Let $s_0$ be a state and $\pi$ a policy. The discounted visit distribution assigns to each state-action pair the (discounted) probability of being visited, starting from $s_0$ and applying $\pi$:
+    \begin{equation}
+        d^\pi_{s_0}(s, a) = (1 - \gamma) \sum_{h=0}^\infty \gamma^h \mathbb{P}^\pi_h(s, a\mid s_0)
+    \end{equation}
+    where $\mathbb{P}^\pi_h(s, a\mid s_0)$ is the exact probability of being in the pair $( s, a )$ at time step $h$, starting from
+    $s_0 $ and choosing the actions according to $\pi$.
+\end{boxdefinition}
+If $\mu_0$ is the initial state distribution, the general discounted visit distribution (that does not consider a fixed initial state) is
+$d^\pi(s, a) = \VA_{s_0\sim\mu_0}[d^\pi_{s_0}(s, a) ]$.
+We can sample a pair from $d^\pi(s, a)$ in the following way:
 \begin{itemize}
     \item We \blueText{ sample } an integer $h\ge0$ from a geometric distribution with parameter $(1-\gamma)$, i.e. $\Prob(h=k)=(1-\gamma)\gamma^k$.
     \item We make the agent perform $h$ steps by using the policy $\pi$, starting from $s_0\sim \mu_0$.
     \item Once the agent reaches the $h$-th step, it is in the state $\tilde{s} = s_h$; we select the action $\tilde{a} \sim \pi(\cdot \mid s_h)$, then add the pair $(\tilde s,\tilde a)$ to the dataset. In this way $(\tilde s,\tilde a)$ is distributed exactly according to the theoretical distribution $d^\pi(s, a)$.
 \end{itemize}
-\noindent\blueText{\textbf{How to sample $h$}? } In practice, we sample a random number $u$ from a uniform distribution in $[0,1)$, and select:\begin{equation}
+\noindent\blueText{\textbf{How to sample $h$}? } In practice, we sample a random number $u$ from a uniform distribution in $[0,1)$, and select:
+\begin{equation}
     h = \left\lfloor \frac{\ln(1 - u)}{\ln(\gamma)} \right\rfloor.
 \end{equation}
-\noindent The roll-in sample generation procedure is described in Algorithm \ref{alg:roll-in}.
-\begin{algorithm}[H]
-\caption{Roll-In of one sample}\label{alg:roll-in}
-\begin{algorithmic}[1]
-        \State $u\sim \text{Unif}[0,1)$
-        \State $h=\left\lfloor \nicefrac{\ln(1 - u)}{\ln(\gamma)} \right\rfloor$
-        \State $s_0\sim \mu_0$
-        \For{$j=0,\dots, h-1$}
-            \State $a_j\sim \pi(\cdot\mid s_j)$
-            \State $s_{j+1}\sim p(\cdot \mid s_j,a_j)$
-        \EndFor
-        \State $a_h\sim \pi(\cdot\mid s_h)$
-        \State \Return $(s_h,a_h)$
-\end{algorithmic}
-\end{algorithm}
-\section{Roll-Out Methods}
-\subsection{Monte-Carlo Method}
-Let's see a method to perform the roll-out phase and estimate the labels: after having the sample $(\tilde s,\tilde a)$, we should find the label $y\approx Q^\pi(\tilde s,\tilde a)$. To get an unbiased estimation of $Q^\pi$, we sample many trajectories starting from the state-action pair $(\tilde s,\tilde a)$, collect the cumulative rewards of these trajectories and compute the average. The horizon is infinite, hence we use $\gamma$ again to randomly choose a horizon in the following way: at each time step, we terminate the current trajectory with probability $1-\gamma$.
-
-\begin{itemize}
-    \item Perform the following inner cycle for $j=1,\dots, M$.
+\subsection{The Algorithm in Continuous State Space}
+Having fixed two hyperparameters $N$ and $M$ (natural numbers), the method is the following:
+\begin{enumerate}
+    \item Let $\hat Q(s,a ; \mathbf w_t)$ be the current estimate with weights $\mathbf w_t$, which defines a policy $$\pi_t(s)=\operatorname*{arg\,max}_{a\in A}\hat Q(s,a; \mathbf w_t).$$
+    \item $N$ state-action pairs $\{(s_i,a_i)\}_{i=1}^N$ are sampled according to the method of Subsection \ref{MC_sampling}.
+    \item For each pair $(s_i,a_i)$, we make the agent start from it and then execute the current policy $\pi_t(s)$; this is done $M$ times. $M$ episodes are executed, and the $j$-th episode produces a trajectory:
+    \begin{equation}
+        \tau_j=\{s_i,a_i,r_{j0},s_{j1},a_{j1},r_{j1},
+        s_{j2},a_{j2},r_{j2},\dots,s_{jk},a_{jk},r_{jk}\}
+    \end{equation}
+    where $k$ is the duration of the episode. The cumulative discounted reward of the $j$-th episode is:
+    \begin{equation}
+        G^{(j)}=r_{j0}+\gamma r_{j1} + \gamma^2r_{j2}+\dots + \gamma^kr_{jk}.
+    \end{equation}
+    \item The label $y_i$ for the pair $(s_i,a_i)$ is the average of the cumulative rewards of the $M$ episodes:
+    \begin{equation}
+        y_i = \frac{1}{M} \sum_{j=1}^M G^{(j)}
+    \end{equation}
+    so at the end of this procedure, called \textbf{Roll-Out}, we have a labeled dataset $\mathcal D = \{((s_i,a_i),y_i)\}_{i=1}^N$.
+    \item Now we want to solve the following minimization problem:
+    \begin{equation}
+        \boxed{\mathbf w^*= \operatorname*{arg\,min}_{\mathbf{w}} \sum_{i=1}^N \big(\hat{Q}(s_i, a_i; \mathbf{w}) - y_i\big)^2}
+    \end{equation}
+    The solution of this problem depends on the structure of the function approximator $\hat Q$:
     \begin{itemize}
-    \item Starting from $\tilde s$, apply $\tilde a$ and collect the reward $r_0=R(\tilde s,\tilde a)$.
-    \item Get $s'\sim p(\cdot\mid \tilde s,\tilde a)$.\begin{itemize}
-    \item Continue by applying $\pi$ and collect the rewards $r_h$, for $h\ge1$.
-    \item At each step, terminate with probability $1-\gamma$.\end{itemize}
-    \item When the execution is terminated, $y_j=\sum_h r_h$ is collected (cumulative reward of the $j$-th execution).
+        \item If $\hat Q(s,a;\mathbf w)=\mathbf w^\top\boldsymbol\phi(s,a)$ is a linear regressor with feature vector $\boldsymbol\phi$, the solution is given in closed form:
+        \begin{equation}
+            \mathbf{w}^* = \left( \sum_{i=1}^N \boldsymbol{\phi}(s_i, a_i)\boldsymbol{\phi}(s_i, a_i)^\top \right)^{-1} \sum_{i=1}^N \boldsymbol{\phi}(s_i, a_i) y_i
+        \end{equation}
+        \item If $\hat Q$ is a nonlinear model (such as a neural network) we update the weights iteratively via gradient descent for several epochs on the collected dataset $\mathcal{D}$:
+        \begin{equation}
+            \mathbf{w} \leftarrow \mathbf{w} + \alpha \Big[ y_i - \hat{Q}(s_i, a_i; \mathbf{w}) \Big] \nabla_{\mathbf{w}} \hat{Q}(s_i, a_i; \mathbf{w})
+        \end{equation}
+        with $\alpha$ a positive step size. This update is repeated until convergence.
     \end{itemize}
-    \item Return the approximation $y=\frac{1}{M}\sum_{j=1}^My_j$.
-\end{itemize}
-$M$ is the number of trajectories/episodes that we use to compute the average cumulative reward.
-Each time we execute the MDP, the step $h$ is reached with probability $\gamma^h$, hence $\VA[y_j]=\sum_{h=0}^\infty\gamma^h\VA[r_h]=Q^\pi(\tilde s,\tilde a)$. The roll-out procedure with the Monte-Carlo method is described in Algorithm \ref{alg:roll-out-MC}.
-
-\begin{algorithm}[H]
-\caption{Roll-Out (Monte-Carlo)}\label{alg:roll-out-MC}
-\begin{algorithmic}[1]
-    \State \blueText{\textbf{Roll-Out}}
-    \State $\tilde y=0$
-    \For{$j=1,\dots,M$}
-        \State $s'\sim p(\cdot\mid \tilde s,\tilde a)$
-        \State $r=R(\tilde s, \tilde a)$
-        \While{true}
-            \State with probability $1-\gamma$ exit the while loop.
-            \State $a\sim \pi(\cdot\mid s')$
-            \State $r=r+R(s', a)$
-            \State $s' \sim p(\cdot\mid s',a)$
-        \EndWhile
-        \State $\tilde y=\tilde y+\frac{r}{M}$
-    \EndFor
-    \State\Return $\tilde y$
-\end{algorithmic}
-\end{algorithm}
-\subsection{Temporal Difference Method}
-Let's switch back to the assumption that the \textbf{state space is enumerable}; if the state space is not huge, why should we do approximation if we can rely on a table? We want to compute our estimate as a mean and update it with new data coming from the
-agent's experience. 
-
-The standard formulation of a mean:\begin{equation}
-    \mu_k=\frac{1}{k}\sum_{j=1}^{k}x_j 
-\end{equation}
-can be rewritten with the \textbf{moving average}  formulation:\begin{align}
-     \mu_k&=\frac{1}{k}\left(x_k+\sum_{j=1}^{k-1}x_j \right)=\frac{1}{k}\left(x_k+(k-1)\mu_{k-1} \right)\\ &=\mu_{k-1}+\frac{1}{k}(x_k-\mu_{k-1}).
-\end{align}
-In tabular form, we can update the current estimation of $Q$ as follows:
-\begin{equation}
-    \text{new estimation}\leftarrow \text{old estimation}+\alpha(\text{target}-\text{old estimation})
-\end{equation}\begin{equation}
-    Q(s,a)\leftarrow Q(s,a)+\alpha(y-Q(s,a)).
-\end{equation}
-In the Monte-Carlo (MC) method, the target is the real cumulative reward (so we have to wait for the end of the episode), whereas in the Temporal Difference (TD) method we exploit the Markov property and bootstrapping (i.e. we use an estimate to update another estimate). Instead of waiting for the end, the target is composed of the immediate reward $r$ plus the discounted estimated value of the next state $\gamma Q(s', \cdot)$.\begin{align}
-    Q(s,a)& \leftarrow Q(s,a) + \alpha ( \underbrace{r + \gamma Q(s', \cdot) - Q(s,a)}_{\delta} )\\
-    Q(s,a)& \leftarrow Q(s,a) + \alpha\delta.
-\end{align}
-The term denoted $\delta$ inside the brackets is called \textbf{TD error}:\begin{itemize}
-    \item $r + \gamma Q(s', \cdot)$ (The Target): It is what we ``discover'' happened (the immediate reward obtained $r$ plus the discounted value of the next state based on our current knowledge).
-    \item $Q(s,a)$ (The Prediction): It is what we expected to obtain by being in that state and performing that action.
-    \item $\delta$ (The Error): It represents the surprise or discrepancy between the observed reality and our prediction.
-\end{itemize}
-When an agent uses the moving average update TD approach, it runs this loop at every single timestep (without having to end the episode):\begin{enumerate}
-    \item The agent is in state $s$, selects and executes action $a$.
-    \item The environment returns a reward $r$ and transitions the agent to the new state $s'$.
-    \item The agent looks up in its table the current estimated value for the initial pair, namely $Q(s, a)$.
-    \item The agent looks up the estimated value in the new state, namely $Q(s', \cdot)$.
-    \item The agent computes the TD error ($\delta$) by comparing the old estimate with the new information ($r + \gamma Q(s', \cdot)$).
-    \item The agent updates the entry $Q(s, a)$ in the table by shifting it by a small fraction $\alpha$ in the direction of the error.
+    \item By setting $\mathbf w_{t+1}=\mathbf w^*$ we update the weights; the new policy $\pi_{t+1}(s)=\operatorname*{arg\,max}_{a\in A}\hat Q(s,a; \mathbf w_{t+1})$ will be used for the next iteration.
 \end{enumerate}
 \begin{boxobservation}{}{}
-    The dot ($\cdot$) inside $Q(s', \cdot)$ represents a generic action in the next state $s'$. In simple words, $Q(s', \cdot)$ indicates the value of the function $Q$ calculated in the state in which the agent will find itself immediately after ($s'$). The real fundamental question, however, is: what action do we choose in state $s'$ to calculate that value? The specific choice of action to consider \textbf{defines the specific reinforcement learning algorithm} we are using (for example, SARSA or Q-Learning).
+    The method presented assumes that we can start $M$ episodes from a given starting pair. This is possible if we have a simulator of the environment, but not in real scenarios (online).
 \end{boxobservation}
-\section{Q-Learning and SARSA}
-Up to now we have seen how the approximate policy iteration defines a family of methods, which are then specified by the way the roll-out is performed. In detail, if the state space $S$ is huge or not countable we can use the Monte-Carlo method to estimate $Q$, but if $S$ is countable and not huge we can use a tabular format and perform the updates with the temporal difference method. For the latter case, the way in which the generic action for $Q(s',\cdot)$ is selected defines two algorithms, Q-Learning and SARSA.
-\subsection{$\epsilon$-Greedy Exploration}
-In the next section we will describe the difference between Q-Learning and SARSA, essentially in one algorithm the next action to be performed depends on the current estimate of $Q$, while in another it depends on the current policy $\pi$. In both cases, rather than selecting the best action (according to one of the two criteria), it is possible to make the agent select a random action with a certain probability. Let $\epsilon\in (0,1)$\begin{itemize}
-    \item With probability $1-\epsilon$ we choose the greedy action (the best action).
-    \item With probability $\epsilon$ we choose a random action.
-\end{itemize}
-This handles the exploration-exploitation trade-off. Suppose there are $m$ actions and we are using a stochastic policy, the $\epsilon$-greedy policy is defined as follows:\begin{equation}
-    \pi(a\mid s)=\begin{cases}
-        \nicefrac{\epsilon}{m}+1-\epsilon &\text{if }a=\operatorname*{arg\,max}_{a_j}Q(s,a_j)\\
-        \nicefrac{\epsilon}{m} &\text{otherwise}.
-    \end{cases}
+To use this method in a real scenario where we can't start from the same pair $M$ times, we proceed as follows:
+\begin{enumerate}
+    \item Starting from an initial state $s_0$, we execute the policy for a whole episode, obtaining a trajectory:
+    \begin{equation}
+        \tau=\{s_0,a_0,r_{0},s_{1},a_{1},r_{1},
+        s_{2},a_{2},r_{2},\dots,s_{k},a_{k},r_{k}\}
+    \end{equation}
+    \item each state-action pair visited will be a data point:
+    \begin{equation}
+        (s_0,a_0), \ (s_1,a_1), \ (s_2,a_2),\dots,(s_k,a_k)
+    \end{equation}
+    \item The label is the discounted cumulative reward collected from that state-action pair up to the end of the episode:
+    \begin{align}
+        &y_0= r_0+\gamma r_1+\gamma^2 r_2+\dots + \gamma^k r_k = G_0\\
+        &y_1= r_1+\gamma r_2+\dots + \gamma^{k-1} r_k= G_1\\
+        &y_2= r_2+\dots + \gamma^{k-2} r_k= G_2\\
+        &\vdots \\ &y_k=r_k= G_k.
+    \end{align}
+    \item In this case the dataset $\mathcal D = \{((s_i,a_i),y_i)\}_{i=0}^k$ is obtained, and the fitting procedure can be carried out.
+\end{enumerate}
+\begin{boxobservation}{}{}
+    If the MDP has an infinite horizon, we need a termination condition for an episode.
+\end{boxobservation}
+\subsection{Discrete State Space Case}
+How is the Monte-Carlo method performed if the state space can be enumerated? In such a case, the action-value approximation is a table $\hat Q(s,a)$. The exploration procedure is done in the same way as in the continuous case; after having sampled the dataset
+\begin{equation}
+    \mathcal D = \{((s_i,a_i),y_i)\}_{i=1}^N
 \end{equation}
-What we do, is using a variable $\epsilon$, at each time step $h$ we set $\epsilon=\frac{1}{h}$, in this way, with $k\rightarrow\infty$ we visit all state-action pairs infinitely many times, and the policy converges to a greedy policy.
-\subsection{Off-Policy and On-Policy}
-\noindent How do we select the action in $Q(s',\cdot)$?
+the table entries for each $(s_i,a_i)$ present in $\mathcal D$ are updated in the following way:
+\begin{equation}
+    \boxed{\hat Q(s_i, a_i) \leftarrow \hat Q(s_i, a_i) + \alpha \big[ y_i - \hat Q(s_i, a_i) \big]}
+\end{equation}
+where $\alpha$ is a fixed value in $(0,1)$; this rule is called \textbf{moving average update}. Furthermore:
 \begin{itemize}
-    \item \textbf{Q-Learning} (Off-Policy): The target action is greedy with respect to $Q$, hence it is selected differently from the policy we execute.
-    \item \textbf{SARSA} (On-Policy): The target action is selected according to $\pi$ (which can be $\epsilon$-greedy with respect to $Q$), i.e. it is the action that the agent will actually execute.
+    \item In an offline/simulation setting $y_i$ is the average of the cumulative discounted rewards of $M$ episodes.
+    \item In an online setting $y_i=G_i$ is the discounted cumulative reward collected from the state-action pair $(s_i,a_i)$ up to the end of the episode.
 \end{itemize}
-The complete procedures of the two methods are reported in Algorithm \ref{alg:Q-Learning} and Algorithm \ref{alg:SARSA}.
+\section{Temporal Difference}
+In the Monte-Carlo method, to know how much a move $(s, a)$ is worth, you have to play the entire episode to the end and collect the real return $G$. This creates two practical problems:
+\begin{itemize}
+    \item The final result depends on thousands of future random events (high variance).
+    \item If a game lasts $10000$ moves (or never ends), you never update your estimate.
+\end{itemize}
+Temporal Difference solves both problems by combining real experience with bootstrapping (using an existing estimate to update another estimate):
+\begin{quote}
+   Instead of waiting for the end of the episode, the agent takes a single step into the real world, considers the immediate reward $r$ and the next state $s'$, and uses the current estimate at $s'$ to guess the rest of the future.
+\end{quote}
+\subsection{Discrete State Space Case}
+The update rule of the Temporal Difference method in its base form is denoted $TD(0)$; it considers only the next step and has the same moving average structure as Monte Carlo:
+\begin{itemize}
+    \item Let $\hat Q$ be the current table at time step $t$; the agent is in the state $s$ and uses the policy $\pi_t$ to choose an action $a$.
+    \item The agent executes $a$, ends up in $s'$ and observes a reward $r$.
+    \item It updates the entry $\hat Q(s,a)$ as follows:
+    \begin{equation}\label{TD}
+        \boxed{
+            \hat Q(s,a) \leftarrow \hat Q(s,a) + \alpha
+            \underbrace{\left[
+                r + \gamma \hat Q(s', \cdot) - \hat Q(s,a)
+            \right]}_{\delta}
+        }.
+    \end{equation}
+\end{itemize}
+The term $\delta$ is called \textbf{TD error}:
+\begin{itemize}
+    \item If $\delta > 0$: the move went better than expected $\rightarrow$ increase $\hat Q(s,a)$.
+    \item If $\delta < 0$: the move went worse than expected $\rightarrow$ decrease $\hat Q(s,a)$.
+    \item If $\delta = 0$: the entry is not updated (the previous estimate was correct).
+\end{itemize}
+\begin{boxobservation}{}{}
+    In Equation \eqref{TD} there is an ambiguous term $\hat Q(s', \cdot)$: the action considered in the next state $s'$ is not specified and is replaced with a dot. The way we choose that action determines two different algorithms.
+\end{boxobservation}
+\subsection{Continuous State Space Case}
+In this case, instead of having a table $\hat Q(s,a)$ we have (at time step $t$) the weights $\mathbf w_t$ that define the approximation $\hat Q(s,a;\mathbf w_t)$. The application of the TD algorithm to this case is straightforward; we take a step in the gradient direction:
+\begin{itemize}
+    \item The agent is in the state $s$ and uses the policy $\pi_t$ (defined by $\mathbf w_t$) to choose an action $a$.
+    \item The agent executes $a$, ends up in $s'$ and observes a reward $r$.
+    \item It updates the weights as follows:
+    \begin{equation}
+        \boxed{
+            \mathbf{w}_{t+1} \leftarrow \mathbf{w}_t + \alpha \Big[ r + \gamma \hat{Q}(s', \cdot; \mathbf{w}_t) - \hat{Q}(s, a; \mathbf{w}_t) \Big] \nabla_{\mathbf{w}_t} \hat{Q}(s, a; \mathbf{w}_t)
+        }.
+    \end{equation}
+\end{itemize}
+Also in this case, the term $\hat{Q}(s', \cdot; \mathbf{w}_t)$ does not have a specified action; the choice depends on the specific algorithm.
+\subsection{Q-Learning and SARSA}
+As mentioned, the choice of the next action in the TD update determines the algorithm. Q-Learning and SARSA are two TD algorithms that choose the action in $\hat Q(s', \cdot)$ differently.
 
+Both algorithms work in real time during the exploration of the environment: the agent executes a step and the $Q$ function is updated according to the Temporal Difference rule after observing the reward.
+\begin{boxobservation}{}{}
+    Both methods choose the action to execute according to an $\epsilon$-greedy policy (exploration vs exploitation).
+\end{boxobservation}
+\noindent How do these two algorithms differ from each other?
+\begin{itemize}
+    \item \textbf{Q-Learning} (Off-Policy): it always uses the best action in $s'$ relative to $\hat Q$, regardless of the action the agent will actually take next.
+    \item \textbf{SARSA} (On-Policy): it uses the action $a'$ that the agent will actually choose in the next step following the current policy.
+\end{itemize}
+\noindent In practice they differ in the update rule:
 \begin{algorithm}[H]
 \caption{Q-Learning}\label{alg:Q-Learning}
 \begin{algorithmic}[1]
     \State initialize $Q(s,a)$ for each state-action pair arbitrarily. Let $Q(s^*,a)=0$ for all $a\in A$ if $s^*$ is a terminal state.
     \ForAll{episodes}
-    \State choose an initial state  $s$
+    \State choose an initial state $s$
     \While{$s$ is not a terminal state}
-    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
+    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g. $\epsilon$-greedy)}
     \State perform $a$ on $s$ and observe $r=R(s,a)$ and the next state $s'$
-    \State $Q(s,a)\leftarrow Q(s,a)+\alpha[
-        r+\gamma\max_{a'} Q(s',a')-Q(s,a)
-    ]$
+    \State $Q(s,a)\leftarrow Q(s,a)+\alpha\left[r+\gamma\max_{a'} Q(s',a')-Q(s,a)\right]$
     \State $s\leftarrow s'$
     \EndWhile
     \EndFor
 \end{algorithmic}
 \end{algorithm}
-
 \begin{algorithm}[H]
 \caption{SARSA}\label{alg:SARSA}
 \begin{algorithmic}[1]
     \State initialize $Q(s,a)$ for each state-action pair arbitrarily. Let $Q(s^*,a)=0$ for all $a\in A$ if $s^*$ is a terminal state.
     \ForAll{episodes}
-    \State choose an initial state  $s$
-    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
+    \State choose an initial state $s$
+    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g. $\epsilon$-greedy)}
     \While{$s$ is not a terminal state}
     \State perform $a$ on $s$ and observe $r=R(s,a)$ and the next state $s'$
-    \State choose the next action $a'$ for $s'$ using the policy derived from the current $Q$ \quad\greenText{(e.g $\epsilon$-greedy)}
-    \State $Q(s,a)\leftarrow Q(s,a)+\alpha[
-        r+\gamma Q(s',a')-Q(s,a)
-    ]$
+    \State choose the next action $a'$ for $s'$ using the policy derived from the current $Q$ \quad\greenText{(e.g. $\epsilon$-greedy)}
+    \State $Q(s,a)\leftarrow Q(s,a)+\alpha\left[r+\gamma Q(s',a')-Q(s,a)\right]$
     \State $s\leftarrow s'$
     \State $a\leftarrow a'$
     \EndWhile

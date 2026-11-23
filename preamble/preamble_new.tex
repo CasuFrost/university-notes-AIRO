@@ -10,7 +10,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 1. PACKAGES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % --- Encoding, language and fonts ---------------------------------------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -36,6 +35,11 @@
 \usepackage{nicefrac, xfrac}
 \usepackage{euscript}
 
+% --- Colors and colored boxes ---------------------------------------------
+\usepackage[table,xcdraw]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+
 % --- Graphics and TikZ -----------------------------------------------------
 \usepackage{graphicx}          % Required for inserting images
 \usepackage[export]{adjustbox}
@@ -47,10 +51,8 @@
 \usepackage{pgf-pie}
 \usetikzlibrary{positioning}
 
-% --- Colors and colored boxes ---------------------------------------------
-\usepackage[table,xcdraw]{xcolor}
-\usepackage[most]{tcolorbox}
-\tcbuselibrary{theorems}
+
+
 
 % --- Lists, layout helpers and decorations --------------------------------
 \usepackage[shortlabels]{enumitem}
