@@ -1649,5 +1649,131 @@ Both algorithms work in real time during the exploration of the environment: the
     \EndFor
 \end{algorithmic}
 \end{algorithm}
+\section{n-Step Bootstrapping}
+In the domain of \textit{Statistics}, with \textbf{Bootstrapping} we mean the process of inferring a result for a population, from a result found on a collection of smaller random samples from that population.
+\begin{boxobservation}{}{}
+    The following section assumes that the state space is discrete ($\hat V$ and $\hat Q$ are tables).
+\end{boxobservation}
+The Temporal Difference method and the Monte-Carlo method have a similar structure: the latter considers the discounted cumulative rewards up to the end of the episode, while the former considers only the immediate reward. The $n$-step bootstrapping is a generalization of the Temporal Difference that considers the cumulative reward of the subsequent $n$ steps.
+For example, if we are in a discrete setting and we have an estimation of $\hat V(s)$ for each state $s$, during an episode of $k$ steps the $n$-step bootstrapping (assume we are at time $t$) computes the estimated value as follows:
+\begin{align}
+    &n=1,\qquad y=r_t+\gamma \hat V(s_{t+1}) \\
+    &n=2,\qquad y=r_t+\gamma r_{t+1}+\gamma^2 \hat V(s_{t+2}) \\
+    &n=3,\qquad y=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3\hat V(s_{t+3}) \\\vdots\\ 
+    &n=\infty,\qquad y=G_t=\sum_{i=0}^{T-t-1}\gamma^i r_{t+1+i} \ \text{ (Monte-Carlo)}
+\end{align}
+by applying the current policy, then, after having computed $y$, the update of $\hat V$ is performed as follows:\begin{equation}
+    \hat V(s_t)\leftarrow\hat V(s_t)+\alpha\left(y-\hat V(s_t)\right)
+\end{equation}
+in case we are estimating the state-action value function, the target $y$ must use $\hat{Q}$ as the bootstrap term (e.g., $y = \sum_{i=0}^{n-1}\gamma^i r_{t+i} + \gamma^n \hat{Q}(s_{t+n}, a_{t+n})$ for $n$-step SARSA, or $y = \sum_{i=0}^{n-1}\gamma^i r_{t+i} + \gamma^n \max_{a}\hat{Q}(s_{t+n}, a)$ for $n$-step Q-Learning), and the update is:\begin{equation}
+    \hat{Q}(s_t, a_t) \leftarrow \hat{Q}(s_t, a_t) + \alpha \left( y - \hat{Q}(s_t, a_t) \right).
+\end{equation}
+\begin{algorithm}[H]
+\caption{$n$-step TD for estimating $V \approx v_\pi$}\label{alg:nstepTD}
+\begin{algorithmic}[1]
+    \Require a policy $\pi$, step size $\alpha \in (0, 1]$, a positive integer $n$, discount factor $\gamma \in [0, 1]$
+    \State initialize $V(s)$ for each state arbitrarily. Let $V(s^*)=0$ if $s^*$ is a terminal state.
+    \State \greenText{(all store and access operations for $s_t$ and $r_t$ can take their index $\bmod\ n+1$)}
+    \ForAll{episodes}
+        \State choose and store an initial non-terminal state $s_0$
+        \State $T \leftarrow \infty$
+        \State $t \leftarrow 0$
+        \Repeat
+            \If{$t < T$}
+                \State select an action $a_t$ for $s_t$ according to $\pi(\cdot \mid s_t)$
+                \State perform $a_t$ on $s_t$ and observe $r_{t+1}=R(s_t,a_t)$ and the next state $s_{t+1}$
+                \State store $r_{t+1}$ and $s_{t+1}$
+                \If{$s_{t+1}$ is a terminal state ($s^*$)}
+                    \State $T \leftarrow t + 1$
+                \EndIf
+            \EndIf
+            \State $\tau \leftarrow t - n + 1$ \quad\greenText{($\tau$ is the time whose state's estimate is being updated)}
+            \If{$\tau \ge 0$}
+                \State $G \leftarrow \sum_{i=\tau+1}^{\min(\tau+n, T)} \gamma^{i-\tau-1} r_i$
+                \If{$\tau + n < T$}
+                    \State $G \leftarrow G + \gamma^n V(s_{\tau+n})$
+                \EndIf
+                \State $V(s_\tau) \leftarrow V(s_\tau) + \alpha \left[G - V(s_\tau)\right]$
+            \EndIf
+            \State $t \leftarrow t + 1$
+        \Until{$\tau = T - 1$}
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+How should we choose $n$? In practice, it is observed that intermediate values for $n$ perform better than the extremes (TD and Monte-Carlo), observe Figure \ref{nstepboot}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{images/nstepboot.png}
+    \caption{RMS over 19 states for different values of $n$.}
+    \label{nstepboot}
+\end{figure}
+On the vertical axis there is the root mean square error over 19 states between the real value function and the estimation through the n-step bootstrapping, on the horizontal axis different values for $\alpha$, each curve represents a different value for $n$. Notice how the best results are obtained with $n=2$, $n=4$ and $n=8$.
+Both SARSA and Q-Learning can be modified by using the $n$ subsequent steps instead of only the first one.
 
+\subsection{$\lambda$-Return}
+In a practical scenario, how can we know that a certain value of $n$ is the best choice? An idea is to consider different values of $n$ and average the return, using that as the label $y$:
+\begin{align}
+    &n=2,\qquad G^{(2)}=r_t+\gamma r_{t+1}+\gamma^2 \hat V(s_{t+2}) \\
+    &n=4,\qquad G^{(4)}=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3r_{t+3}+\gamma^4\hat V(s_{t+4})\\
+    &y=\frac{1}{2}\left(G^{(2)}+G^{(4)}\right).
+\end{align}
+The $\lambda$-return method averages the returns for all the values of $n$, theoretically from $n=1$ to $n=\infty$. After having chosen a constant $\lambda\in[0,1]$ we compute the weighted average as:\begin{equation}
+    \boxed{y = G_t^\lambda = (1-\lambda)\sum_{n=1}^{\infty} \lambda^{n-1} G_t^{(n)}}
+\end{equation}
+Each return $G_t^{(n)}$ is multiplied by the weight $(1-\lambda)\lambda^{n-1}$. As you move to the right in the diagram (increasing $n$, i.e., looking further into the future), the weight decreases by a factor of $\lambda$ at each step. Factor $(1-\lambda)$ is needed to normalize the geometric series, ensuring the weights sum to $1$; note that the return $y = G_t^\lambda$ can take arbitrary real values, not necessarily in $[0,1]$.\bigskip 
+
+In a finite episode terminating at step $k$, all returns with $n \ge k-t$ coincide with the full Monte-Carlo return. To ensure the weights still sum to $1$, all the remaining weight in the tail is assigned to the final term (the one reaching the terminal state), which in fact equals $\lambda^{k-t-1}$.\begin{itemize}
+    \item If $\lambda =0$, we obtain exactly the Temporal Difference method $TD(0)$.
+    \item If $\lambda=1$, we obtain the full Monte-Carlo method.
+\end{itemize}
+This formulation of the $\lambda$-return method is called \textbf{forward-view}; to compute the label we need the weighted average of all the $n$-step returns within the current episode, looking forward to the terminal state. This cannot be applied online, since to update the value function we would need to wait until the end of the episode.
+\subsection{Backward-View and Eligibility Traces}
+During the execution of an episode, instead of waiting the end to update $\hat V(s_t)$, we compute the immediate temporal difference error $\delta=r_t+\gamma \hat V(s_{t+1})-\hat V(s_{t})$  and we \textbf{propagate it backwards}, to the states visited in the previous time steps.
+
+Before explaining how this is done we introduce the \textbf{Eligibility Traces}, this is a function $E_t(s)$ (to be updated at every time step) that assign a credit to each state.\begin{boxdefinition}{Eligibility Traces}{}
+   $E_t(s)$ measures how ``eligible'' the state $s$ is to receive an update: the more recent it is and the more times it has been visited, the higher its trace.
+   \begin{equation}
+    E_t(s)=\begin{cases}
+        \gamma\lambda E_{t-1}(s)+1&\text{if }s=s_t\\
+        \gamma\lambda E_{t-1}(s)&\text{if }s\neq s_t
+    \end{cases}.
+   \end{equation}
+   Can be rewritten using the indicator function:\begin{equation}
+     E_t(s)=\gamma\lambda E_{t-1}(s)+I(s=s_t)
+   \end{equation}
+\end{boxdefinition}
+The eligibility trace of all states decays exponentially over time with the factor $\gamma\lambda$, except for the currently visited state, which is incremented by 1. 
+
+The $n$-step bootstrapping is modified by using these eligibility traces, at each time step, instead of updating only the value of $\hat V$ on the current state, we update the value for all the states using as weight the respective eligibility trace:\begin{equation}
+    \boxed{\hat V(s)\leftarrow \hat V(s)+\alpha\underbrace{\left(
+     r_t+\gamma \hat V(s_{t+1})-\hat V(s_{t})   
+    \right)}_{\delta_t}E_t(s), \qquad \forall s\in S}
+\end{equation}
+the eligibility trace of state $s$ acts as a weight that decides how much responsibility to attribute to state $s$ for the mistake it just made: the more recently (and frequently) you visited $s$, the larger $E_t(s)$ is and the larger the correction will be.
+The eligibility traces takes into account both the \textbf{recency} and \textbf{frequency}.  This is also called \textbf{backward-view} of the $n$-step bootstrapping.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/Eligibility.png}
+    \caption{The graph above shows the visits over time to the state, the graph below the evolution over time of its eligibility trace.}
+\end{figure}
+\noindent At the beginning, all the states are initialized as $E_t(s)=0$.\begin{itemize}
+    \item If $\lambda=0$ the decay term $\gamma\lambda E_{t-1}(s)$ vanishes completely. Only the indicator function $I(s_t = s)$ remains. Since the eligibility trace is non-zero (and equal to $1$) only for the current state $s_t$, the global update of $TD(\lambda)$ only modifies $\hat V(s_t)$, the method reduced to the classical $TD(0)$.
+    \item If $\lambda=1$ the $TD(1)$ algorithm becomes the online equivalent of the Monte-Carlo method:
+    \begin{align}
+&\sum_{i=t}^{k-1} \gamma^{i-t} \delta_i = \delta_t + \gamma\delta_{t+1} + \gamma^2\delta_{t+2} + \dots + \gamma^{k-1-t}\delta_{k-1} \nonumber \\
+&= \big(r_t + \gamma \hat{V}(s_{t+1}) - \hat{V}(s_t)\big) + \gamma\big(r_{t+1} + \gamma \hat{V}(s_{t+2}) - \hat{V}(s_{t+1})\big) + \dots + \gamma^{k-1-t}\big(r_{k-1} + \gamma \hat{V}(s_k) - \hat{V}(s_{k-1})\big) \nonumber \\
+&= r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \dots + \gamma^{k-1-t} r_{k-1} - \hat{V}(s_t) \nonumber \\
+&= G_t - \hat{V}(s_t).
+\end{align}
+\end{itemize}
+The backward-view of the $n$-step bootstrapping can be used in practice instead of the forward-view? Are the two methods equivalent?
+\begin{boxtheorem}{Forward and Backward View Equivalence}{}
+    For any state $s$, the total sum of corrections calculated over an entire episode (from $t=0$ to $k-1$) is identical in the two methods: 
+    \begin{equation}
+    \sum_{t=0}^{k-1} \alpha \delta_t E_t(s) = \sum_{t=0}^{k-1} \alpha \big(G_t^\lambda - \hat V(s_t)\big) I(s_t = s)\end{equation}\begin{itemize}
+        \item left member: At each step $t$, the local TD error $\delta_t$ is multiplied by the eligibility trace $E_t(s)$ and accumulated.
+        \item right member: Every time the state $s$ is visited (condition verified by the indicator function $I(s_t = s)$), the difference between the theoretical return $\lambda$-return ($G_t^\lambda$) and the current estimate $\hat V(s_t)$ is calculated. 
+    \end{itemize}
+\end{boxtheorem}
+\todo{slide L09 pagina 70}
 \end{document}
