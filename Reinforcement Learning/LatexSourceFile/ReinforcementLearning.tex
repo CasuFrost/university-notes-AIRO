@@ -1775,5 +1775,79 @@ The backward-view of the $n$-step bootstrapping can be used in practice instead 
         \item right member: Every time the state $s$ is visited (condition verified by the indicator function $I(s_t = s)$), the difference between the theoretical return $\lambda$-return ($G_t^\lambda$) and the current estimate $\hat V(s_t)$ is calculated. 
     \end{itemize}
 \end{boxtheorem}
-\todo{slide L09 pagina 70}
+\noindent\textit{Proof}:\begin{align}
+&\sum_{t=0}^{k-1} \alpha \left( G_t^\lambda - \hat{V}(s_t) \right) I(s_t = s)\\ 
+=\alpha & \sum_{t=0}^{k-1} I(s_t = s) \left[ (1 - \lambda) \sum_{n=1}^{k-t-1} \lambda^{n-1} \left( G_t^{(n)} - \hat{V}(s_t) \right) + \lambda^{k-t-1} \left( G_t - \hat{V}(s_t) \right) \right] \\
+=\alpha & \sum_{t=0}^{k-1} I(s_t = s) \left[ (1 - \lambda) \sum_{n=1}^{k-t-1} \lambda^{n-1} \sum_{m=t}^{t+n-1} \gamma^{m-t} \delta_m + \lambda^{k-t-1} \sum_{m=t}^{k-1} \gamma^{m-t} \delta_m \right] \\
+=\alpha & \sum_{t=0}^{k-1} I(s_t = s) \sum_{m=t}^{k-1} \gamma^{m-t} \delta_m \left[ (1 - \lambda) \sum_{n=m-t+1}^{k-t-1} \lambda^{n-1} + \lambda^{k-t-1} \right] \\
+=\alpha & \sum_{t=0}^{k-1} I(s_t = s) \sum_{m=t}^{k-1} \gamma^{m-t} \delta_m \left[ \left( \lambda^{m-t} - \lambda^{k-t-1} \right) + \lambda^{k-t-1} \right] \\
+=\alpha & \sum_{t=0}^{k-1} I(s_t = s) \sum_{m=t}^{k-1} (\gamma \lambda)^{m-t} \delta_m 
+= \alpha \sum_{m=0}^{k-1} \delta_m \sum_{t=0}^{m} (\gamma \lambda)^{m-t} I(s_t = s) \\
+=\alpha & \sum_{m=0}^{k-1} \delta_m E_m(s) 
+= \sum_{t=0}^{k-1} \alpha \delta_t E_t(s)
+\end{align}
+\hfill$\blacksquare$\bigskip
+
+\noindent Algorithm \ref{alg:SARSA_lambda} report the procedure of the SARSA algorithm modified with the backward-view of the $\lambda$-return  procedure.
+\begin{algorithm}[H]
+\caption{SARSA($\lambda$)}\label{alg:SARSA_lambda}
+\begin{algorithmic}[1]
+    \State initialize $\hat{Q}(s,a)$ for each state-action pair arbitrarily. Let $\hat{Q}(s^*,a)=0$ for all $a\in A$ if $s^*$ is a terminal state.
+    \ForAll{episodes}
+    \State initialize $E(s,a)=0$ for each state-action pair
+    \State choose an initial state $s$
+    \State select an action $a$ for $s$ using the policy derived from the current $Q$ \quad\greenText{(e.g. $\epsilon$-greedy)}
+    \While{$s$ is not a terminal state}
+    \State perform $a$ on $s$ and observe $r=R(s,a)$ and the next state $s'$
+    \State choose the next action $a'$ for $s'$ using the policy derived from the current $Q$ \quad\greenText{(e.g. $\epsilon$-greedy)}
+    \State $\delta \leftarrow r + \gamma \hat{Q}(s',a') - \hat{Q}(s,a)$
+    \State $E(s,a) \leftarrow E(s,a) + 1$
+    \ForAll{state-action pairs $(\tilde{s},\tilde{a})$}
+    \State $\hat{Q}(\tilde{s},\tilde{a}) \leftarrow \hat{Q}(\tilde{s},\tilde{a}) + \alpha \delta E(\tilde{s},\tilde{a})$
+    \State $E(\tilde{s},\tilde{a}) \leftarrow \gamma\lambda E(\tilde{s},\tilde{a})$
+    \EndFor
+    \State $s\leftarrow s'$
+    \State $a\leftarrow a'$
+    \EndWhile
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/sarsa.png}
+\end{figure}
+\section{Expected Updates}
+Temporal difference and Monte Carlo methods differ in the ``depth'' of the trajectory considered for the update; instead of going deeper, we can go ``wider''. This method is called \textbf{Expected Updates}. It is computationally heavier and \textit{requires} knowledge of the policy distribution $\pi(a\mid s)$. It is an extension of $n$-step bootstrapping for the state-action value function: at the last step, instead of using the previous value of $\hat Q$ for a single sampled action, we consider the expected value over all actions. The standard bootstrapped target is:
+\begin{equation}
+y_{t:t+n}=r_t+\gamma r_{t+1}+\dots+\gamma^{n-1}r_{t+n-1}+\gamma^n\hat Q(s_{t+n},a_{t+n}),
+\end{equation}
+while the target with \textbf{expected updates} is:
+\begin{equation}
+\boxed{
+y_{t:t+n}=r_t+\gamma r_{t+1}+\dots+\gamma^{n-1}r_{t+n-1}+\gamma^n\sum_{a\in A}\pi(a\mid s_{t+n}) \hat Q(s_{t+n},a).}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/nstep_expected_sarsa.eps}
+    \caption{$n$-step expected SARSA.}
+\end{figure}
+In $n$-step expected SARSA, all intermediate transitions are sampled and the expectation is taken only at the last step. Conversely, the \textbf{Tree Backup} algorithm takes an expectation over all actions at every step along the trajectory: the sampled action $a_{t+1}$ is used only to continue the path, while the remaining actions are weighted by their policy probabilities. Its recursive $n$-step target is defined as:
+\begin{equation}
+y_{t:t+n} = r_t + \gamma \sum_{a \neq a_{t+1}} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) + \gamma \pi(a_{t+1} \mid s_{t+1})\, y_{t+1:t+n},
+\end{equation}
+with base case
+\[
+y_{t:t+1} = r_t + \gamma \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a).
+\]
+
+To unify full sampling ($n$-step SARSA), pure expectation (Tree Backup), and hybrid approaches ($n$-step expected SARSA), we can introduce a parameter $\sigma_t \in [0, 1]$ controlling the degree of sampling at each timestep ($\sigma_t = 1$ for full sampling, $\sigma_t = 0$ for full expectation). The resulting \textbf{$Q(\sigma)$} algorithm uses the per-step TD error:
+\begin{equation}
+\delta_t = r_t + \gamma \left( \sigma_t \hat{Q}(s_{t+1}, a_{t+1}) + (1 - \sigma_t) \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) \right) - \hat{Q}(s_t, a_t).
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/nstep_tree_backup.eps}
+\end{figure}
+\section{Linear Value Function Approximation}
 \end{document}
+\todo{slide L09 pagina 70}
