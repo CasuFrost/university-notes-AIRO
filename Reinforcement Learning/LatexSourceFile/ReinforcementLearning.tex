@@ -1659,21 +1659,22 @@ For example, if we are in a discrete setting and we have an estimation of $\hat 
 \begin{align}
     &n=1,\qquad y=r_t+\gamma \hat V(s_{t+1}) \\
     &n=2,\qquad y=r_t+\gamma r_{t+1}+\gamma^2 \hat V(s_{t+2}) \\
-    &n=3,\qquad y=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3\hat V(s_{t+3}) \\\vdots\\ 
-    &n=\infty,\qquad y=G_t=\sum_{i=0}^{T-t-1}\gamma^i r_{t+1+i} \ \text{ (Monte-Carlo)}
+    &n=3,\qquad y=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3\hat V(s_{t+3}) \\
+    &\vdots \nonumber \\
+    &n=\infty,\qquad y=G_t=\sum_{i=0}^{k-t-1}\gamma^i r_{t+i} \ \text{ (Monte-Carlo)}
 \end{align}
-by applying the current policy, then, after having computed $y$, the update of $\hat V$ is performed as follows:\begin{equation}
+by applying the current policy (if the episode terminates at step $k \le t+n$, the target truncates to the Monte-Carlo return $G_t$ with no bootstrap term). After having computed $y$, the update of $\hat V$ is performed as follows:\begin{equation}
     \hat V(s_t)\leftarrow\hat V(s_t)+\alpha\left(y-\hat V(s_t)\right)
 \end{equation}
-in case we are estimating the state-action value function, the target $y$ must use $\hat{Q}$ as the bootstrap term (e.g., $y = \sum_{i=0}^{n-1}\gamma^i r_{t+i} + \gamma^n \hat{Q}(s_{t+n}, a_{t+n})$ for $n$-step SARSA, or $y = \sum_{i=0}^{n-1}\gamma^i r_{t+i} + \gamma^n \max_{a}\hat{Q}(s_{t+n}, a)$ for $n$-step Q-Learning), and the update is:\begin{equation}
+in case we are estimating the state-action value function, the target $y$ must use $\hat{Q}$ as the bootstrap term (e.g., $y = \sum_{i=0}^{n-1}\gamma^i r_{t+i} + \gamma^n \hat{Q}(s_{t+n}, a_{t+n})$ for on-policy $n$-step SARSA; note that extending Q-Learning to $n > 1$ steps off-policy requires importance sampling or expected/tree-backup targets, since intermediate actions follow the behavior policy rather than the greedy policy), and the update is:\begin{equation}
     \hat{Q}(s_t, a_t) \leftarrow \hat{Q}(s_t, a_t) + \alpha \left( y - \hat{Q}(s_t, a_t) \right).
 \end{equation}
 \begin{algorithm}[H]
-\caption{$n$-step TD for estimating $V \approx v_\pi$}\label{alg:nstepTD}
+\caption{$n$-step TD for estimating $\hat V \approx v_\pi$}\label{alg:nstepTD}
 \begin{algorithmic}[1]
     \Require a policy $\pi$, step size $\alpha \in (0, 1]$, a positive integer $n$, discount factor $\gamma \in [0, 1]$
-    \State initialize $V(s)$ for each state arbitrarily. Let $V(s^*)=0$ if $s^*$ is a terminal state.
-    \State \greenText{(all store and access operations for $s_t$ and $r_t$ can take their index $\bmod\ n+1$)}
+    \State initialize $\hat V(s)$ for each state arbitrarily. Let $\hat V(s^*)=0$ if $s^*$ is a terminal state.
+    \State \greenText{(all store and access operations for $s_t$ and $r_t$ can take their index $\bmod\ (n+1)$; note that here rewards are 1-indexed, i.e., $r_{t+1}=R(s_t,a_t)$)}
     \ForAll{episodes}
         \State choose and store an initial non-terminal state $s_0$
         \State $T \leftarrow \infty$
@@ -1691,9 +1692,9 @@ in case we are estimating the state-action value function, the target $y$ must u
             \If{$\tau \ge 0$}
                 \State $G \leftarrow \sum_{i=\tau+1}^{\min(\tau+n, T)} \gamma^{i-\tau-1} r_i$
                 \If{$\tau + n < T$}
-                    \State $G \leftarrow G + \gamma^n V(s_{\tau+n})$
+                    \State $G \leftarrow G + \gamma^n \hat V(s_{\tau+n})$
                 \EndIf
-                \State $V(s_\tau) \leftarrow V(s_\tau) + \alpha \left[G - V(s_\tau)\right]$
+                \State $\hat V(s_\tau) \leftarrow \hat V(s_\tau) + \alpha \left[G - \hat V(s_\tau)\right]$
             \EndIf
             \State $t \leftarrow t + 1$
         \Until{$\tau = T - 1$}
@@ -1708,14 +1709,14 @@ How should we choose $n$? In practice, it is observed that intermediate values f
     \label{nstepboot}
 \end{figure}
 On the vertical axis there is the root mean square error over 19 states between the real value function and the estimation through the n-step bootstrapping, on the horizontal axis different values for $\alpha$, each curve represents a different value for $n$. Notice how the best results are obtained with $n=2$, $n=4$ and $n=8$.
-Both SARSA and Q-Learning can be modified by using the $n$ subsequent steps instead of only the first one.
+SARSA can be directly modified by using the $n$ subsequent steps instead of only the first one; extending Q-Learning to $n > 1$ steps off-policy requires importance sampling or expected/tree-backup targets (see the next section).
 
 \subsection{$\lambda$-Return}
 In a practical scenario, how can we know that a certain value of $n$ is the best choice? An idea is to consider different values of $n$ and average the return, using that as the label $y$:
 \begin{align}
-    &n=2,\qquad G^{(2)}=r_t+\gamma r_{t+1}+\gamma^2 \hat V(s_{t+2}) \\
-    &n=4,\qquad G^{(4)}=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3r_{t+3}+\gamma^4\hat V(s_{t+4})\\
-    &y=\frac{1}{2}\left(G^{(2)}+G^{(4)}\right).
+    &n=2,\qquad G_t^{(2)}=r_t+\gamma r_{t+1}+\gamma^2 \hat V(s_{t+2}) \\
+    &n=4,\qquad G_t^{(4)}=r_t+\gamma r_{t+1}+\gamma^2 r_{t+2}+\gamma^3r_{t+3}+\gamma^4\hat V(s_{t+4})\\
+    &y=\frac{1}{2}\left(G_t^{(2)}+G_t^{(4)}\right).
 \end{align}
 The $\lambda$-return method averages the returns for all the values of $n$, theoretically from $n=1$ to $n=\infty$. After having chosen a constant $\lambda\in[0,1]$ we compute the weighted average as:\begin{equation}
     \boxed{y = G_t^\lambda = (1-\lambda)\sum_{n=1}^{\infty} \lambda^{n-1} G_t^{(n)}}
@@ -1724,11 +1725,11 @@ Each return $G_t^{(n)}$ is multiplied by the weight $(1-\lambda)\lambda^{n-1}$. 
 
 In a finite episode terminating at step $k$, all returns with $n \ge k-t$ coincide with the full Monte-Carlo return. To ensure the weights still sum to $1$, all the remaining weight in the tail is assigned to the final term (the one reaching the terminal state), which in fact equals $\lambda^{k-t-1}$.\begin{itemize}
     \item If $\lambda =0$, we obtain exactly the Temporal Difference method $TD(0)$.
-    \item If $\lambda=1$, we obtain the full Monte-Carlo method.
+    \item If $\lambda=1$, we obtain the full Monte-Carlo method (in the finite-episode form, where the terminal weight $\lambda^{k-t-1} = 1$, or as $\lim_{\lambda \to 1^-}$).
 \end{itemize}
 This formulation of the $\lambda$-return method is called \textbf{forward-view}; to compute the label we need the weighted average of all the $n$-step returns within the current episode, looking forward to the terminal state. This cannot be applied online, since to update the value function we would need to wait until the end of the episode.
 \subsection{Backward-View and Eligibility Traces}
-During the execution of an episode, instead of waiting the end to update $\hat V(s_t)$, we compute the immediate temporal difference error $\delta=r_t+\gamma \hat V(s_{t+1})-\hat V(s_{t})$  and we \textbf{propagate it backwards}, to the states visited in the previous time steps.
+During the execution of an episode, instead of waiting the end to update $\hat V(s_t)$, we compute the immediate temporal difference error $\delta_t=r_t+\gamma \hat V(s_{t+1})-\hat V(s_{t})$  and we \textbf{propagate it backwards}, to the states visited in the previous time steps.
 
 Before explaining how this is done we introduce the \textbf{Eligibility Traces}, this is a function $E_t(s)$ (to be updated at every time step) that assign a credit to each state.\begin{boxdefinition}{Eligibility Traces}{}
    $E_t(s)$ measures how ``eligible'' the state $s$ is to receive an update: the more recent it is and the more times it has been visited, the higher its trace.
@@ -1756,9 +1757,9 @@ The eligibility traces takes into account both the \textbf{recency} and \textbf{
     \includegraphics[width=0.6\textwidth]{images/Eligibility.png}
     \caption{The graph above shows the visits over time to the state, the graph below the evolution over time of its eligibility trace.}
 \end{figure}
-\noindent At the beginning, all the states are initialized as $E_t(s)=0$.\begin{itemize}
+\noindent At the beginning, all the states are initialized as $E_{-1}(s)=0$.\begin{itemize}
     \item If $\lambda=0$ the decay term $\gamma\lambda E_{t-1}(s)$ vanishes completely. Only the indicator function $I(s_t = s)$ remains. Since the eligibility trace is non-zero (and equal to $1$) only for the current state $s_t$, the global update of $TD(\lambda)$ only modifies $\hat V(s_t)$, the method reduced to the classical $TD(0)$.
-    \item If $\lambda=1$ the $TD(1)$ algorithm becomes the online equivalent of the Monte-Carlo method:
+    \item If $\lambda=1$ and $\hat{V}$ is held fixed during the episode (offline updates, with $\hat{V}(s_k)=0$ at the terminal state $s_k$), the sum of discounted TD errors equals the Monte-Carlo error:
     \begin{align}
 &\sum_{i=t}^{k-1} \gamma^{i-t} \delta_i = \delta_t + \gamma\delta_{t+1} + \gamma^2\delta_{t+2} + \dots + \gamma^{k-1-t}\delta_{k-1} \nonumber \\
 &= \big(r_t + \gamma \hat{V}(s_{t+1}) - \hat{V}(s_t)\big) + \gamma\big(r_{t+1} + \gamma \hat{V}(s_{t+2}) - \hat{V}(s_{t+1})\big) + \dots + \gamma^{k-1-t}\big(r_{k-1} + \gamma \hat{V}(s_k) - \hat{V}(s_{k-1})\big) \nonumber \\
@@ -1768,7 +1769,7 @@ The eligibility traces takes into account both the \textbf{recency} and \textbf{
 \end{itemize}
 The backward-view of the $n$-step bootstrapping can be used in practice instead of the forward-view? Are the two methods equivalent?
 \begin{boxtheorem}{Forward and Backward View Equivalence}{}
-    For any state $s$, the total sum of corrections calculated over an entire episode (from $t=0$ to $k-1$) is identical in the two methods: 
+    For any state $s$, when $\hat{V}$ is held fixed during the episode (offline updates, with $\hat{V}(s_k)=0$ at the terminal state $s_k$), the total sum of corrections calculated over an entire episode (from $t=0$ to $k-1$) is identical in the two methods (for online updates, the equivalence holds approximately for small $\alpha$): 
     \begin{equation}
     \sum_{t=0}^{k-1} \alpha \delta_t E_t(s) = \sum_{t=0}^{k-1} \alpha \big(G_t^\lambda - \hat V(s_t)\big) I(s_t = s)\end{equation}\begin{itemize}
         \item left member: At each step $t$, the local TD error $\delta_t$ is multiplied by the eligibility trace $E_t(s)$ and accumulated.
@@ -1788,7 +1789,7 @@ The backward-view of the $n$-step bootstrapping can be used in practice instead 
 \end{align}
 \hfill$\blacksquare$\bigskip
 
-\noindent Algorithm \ref{alg:SARSA_lambda} report the procedure of the SARSA algorithm modified with the backward-view of the $\lambda$-return  procedure.
+\noindent Algorithm \ref{alg:SARSA_lambda} reports the procedure of the SARSA algorithm modified with the backward-view of the $\lambda$-return  procedure.
 \begin{algorithm}[H]
 \caption{SARSA($\lambda$)}\label{alg:SARSA_lambda}
 \begin{algorithmic}[1]
@@ -1824,8 +1825,9 @@ y_{t:t+n}=r_t+\gamma r_{t+1}+\dots+\gamma^{n-1}r_{t+n-1}+\gamma^n\hat Q(s_{t+n},
 while the target with \textbf{expected updates} is:
 \begin{equation}
 \boxed{
-y_{t:t+n}=r_t+\gamma r_{t+1}+\dots+\gamma^{n-1}r_{t+n-1}+\gamma^n\sum_{a\in A}\pi(a\mid s_{t+n}) \hat Q(s_{t+n},a).}
+y_{t:t+n}=r_t+\gamma r_{t+1}+\dots+\gamma^{n-1}r_{t+n-1}+\gamma^n\sum_{a\in A}\pi(a\mid s_{t+n}) \hat Q(s_{t+n},a),}
 \end{equation}
+where $\hat Q(s_T, a) = 0$ if the episode terminates at step $T \le t+n$ (so the target truncates at $T$).
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{images/nstep_expected_sarsa.eps}
@@ -1837,13 +1839,19 @@ y_{t:t+n} = r_t + \gamma \sum_{a \neq a_{t+1}} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+
 \end{equation}
 with base case
 \[
-y_{t:t+1} = r_t + \gamma \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a).
+y_{t:t+1} = r_t + \gamma \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a),
 \]
+and terminal boundary $y_{T-1:T+n-1} = r_{T-1}$ when $s_T$ is a terminal state.
 
-To unify full sampling ($n$-step SARSA), pure expectation (Tree Backup), and hybrid approaches ($n$-step expected SARSA), we can introduce a parameter $\sigma_t \in [0, 1]$ controlling the degree of sampling at each timestep ($\sigma_t = 1$ for full sampling, $\sigma_t = 0$ for full expectation). The resulting \textbf{$Q(\sigma)$} algorithm uses the per-step TD error:
+To unify full sampling ($n$-step SARSA), pure expectation (Tree Backup), and hybrid approaches ($n$-step expected SARSA), we can introduce a parameter $\sigma_t \in [0, 1]$ controlling the degree of sampling at each timestep ($\sigma_t = 1$ for full sampling, $\sigma_t = 0$ for full expectation). The resulting \textbf{$Q(\sigma)$} algorithm uses the per-step TD error (for 1-step updates, or as the building block of the $n$-step target):
 \begin{equation}
-\delta_t = r_t + \gamma \left( \sigma_t \hat{Q}(s_{t+1}, a_{t+1}) + (1 - \sigma_t) \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) \right) - \hat{Q}(s_t, a_t).
+\delta_t = r_t + \gamma \left( \sigma_{t+1} \hat{Q}(s_{t+1}, a_{t+1}) + (1 - \sigma_{t+1}) \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) \right) - \hat{Q}(s_t, a_t),
 \end{equation}
+and defines the recursive (on-policy) $n$-step target as:
+\begin{equation}
+y_{t:t+n} = r_t + \gamma \sum_{a \neq a_{t+1}} (1-\sigma_{t+1})\pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) + \gamma \Big(\sigma_{t+1} + (1-\sigma_{t+1})\pi(a_{t+1} \mid s_{t+1})\Big)\, y_{t+1:t+n},
+\end{equation}
+with base case $y_{t:t+1} = r_t + \gamma \left( \sigma_{t+1} \hat{Q}(s_{t+1}, a_{t+1}) + (1 - \sigma_{t+1}) \sum_{a \in A} \pi(a \mid s_{t+1}) \hat{Q}(s_{t+1}, a) \right)$ (and $y_{T-1:T+n-1} = r_{T-1}$ at a terminal state $s_T$).
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/nstep_tree_backup.eps}
