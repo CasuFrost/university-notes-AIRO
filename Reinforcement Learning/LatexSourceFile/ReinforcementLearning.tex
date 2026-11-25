@@ -1063,19 +1063,19 @@ by reasoning backwards in this way we can compute the optimal policy for all the
 \chapter{Control Theory and Reinforcement Learning}
 In this chapter we briefly discuss the bridge between optimal control and reinforcement learning. In control theory we denote by $\mathbf x\in \R^d$ the state and by $\mathbf u\in\R^k$ the input (action) that we can perform. The goal is to find a control policy $\pi$, which selects the input $\mathbf u$ at each time step, that minimizes the integral over time (the sum, in discrete time) of a given cost function $c(\mathbf x,\mathbf u)$.
 
-In our domain the state $\mathbf x$ is denoted $s$, while the control input $\mathbf u$ is denoted $a$. In this chapter we keep the notation of control theory, and we remark that, differently from the previous chapters, state and input are \textbf{continuous} vectors and not elements of a discrete set. In RL we want to maximize the reward, which is equivalent to minimizing a cost function (the cost is the opposite of the reward). In our context, we formalize an optimal control problem as follows\begin{align}
+In our domain the state $\mathbf x$ is denoted $s$, while the control input $\mathbf u$ is denoted $a$. In this chapter we keep the notation of control theory, and we remark that, unlike in the previous chapters, state and input are \textbf{continuous} vectors and not elements of a discrete set. In RL we want to maximize the reward, which is equivalent to minimizing a cost function (the cost is the opposite of the reward). In our context, we formalize an optimal control problem as follows:\begin{align}
     \min_\pi&\quad c_H(\mathbf x_H)+\sum_{h=0}^{H-1}c_h(\mathbf x_h,\pi_h(\mathbf x_h))\\ 
-    \text{where }&\mathbf x_0\sim\mu_0
+    \text{for a given }&\mathbf x_0.
 \end{align}
-the state trajectory that is implicit here is\begin{equation}
-    (\mathbf x_0,\mathbf u_0,\dots,\mathbf x_h,\underbrace{\mathbf u_h}_{\pi_h(\mathbf x_h)},\dots,\mathbf x_{H-1},\mathbf u_{H-1},\mathbf x_H)
+The state trajectory that is implicit here is\begin{equation}
+    (\mathbf x_0,\mathbf u_0,\dots,\mathbf x_h,\underbrace{\mathbf u_h}_{\pi_h(\mathbf x_h)},\dots,\mathbf x_{H-1},\mathbf u_{H-1},\mathbf x_H),
 \end{equation}
-that is defined by the transition dynamics\begin{equation}
-    \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h)
+which is defined by the transition dynamics\begin{equation}
+    \mathbf x_{h+1}=f(\mathbf x_h,\mathbf u_h).
 \end{equation}
-furthermore: \begin{itemize}
-    \item $c_h$ is the cost function at the time step $h$, hence we are assuming that the cost might depend not only on the pair state-action, but also on the time.
-    \item $c_H$ is the cost function at the final step, it does not depend on the input since the execution ends here.
+Furthermore: \begin{itemize}
+    \item $c_h$ is the cost function at time step $h$, hence we are assuming that the cost might depend not only on the state-action pair, but also on time.
+    \item $c_H$ is the cost function at the final step; it does not depend on the input since the execution ends here.
 \end{itemize}
 \noindent We take into account that the transition dynamics $f$, the cost function or the policy might be stochastic, so we consider the expected value:
 \begin{align}
@@ -1084,10 +1084,10 @@ furthermore: \begin{itemize}
 \end{align}
 
 \section{Optimal Control as a Finite-Horizon MDP}
-In the previous chapter state and action spaces were finite, hence the functions $V_h^*$ and $Q_h^*$ could be stored in a table. A typical control problem is instead the \textbf{cartpole}: a pole is hinged on a cart that can slide along a rail, and we can push the cart left or right. The state collects the linear position and velocity of the cart and the angular position and velocity of the pole:\begin{equation}
+In the previous chapter, state and action spaces were finite, hence the functions $V_h^*$ and $Q_h^*$ could be stored in a table. A typical control problem is instead the \textbf{cartpole}: a pole is hinged on a cart that can slide along a rail, and we can push the cart left or right. The state collects the linear position and velocity of the cart and the angular position and velocity of the pole:\begin{equation}
     \mathbf x=(\xi,\dot\xi,\theta,\dot\theta)^\top\in\R^4
 \end{equation}
-where $\xi$ is the position of the cart along the rail and $\theta$ is the angle of the pole with respect to the vertical. The control input is the force applied on the cart, $u\in\R$ (so $k=1$). The goal is to find the control policy which minimizes the long-term cost $c$ (for instance, a cost that is small when the pole is upright and the cart is close to the center of the rail).
+where $\xi$ is the position of the cart along the rail and $\theta$ is the angle of the pole with respect to the vertical. The control input is the force applied to the cart, $u\in\R$ (so $k=1$). The goal is to find the control policy that minimizes the long-term cost $c$ (for instance, a cost that is small when the pole is upright and the cart is close to the center of the rail).
 
 An optimal control problem is exactly a finite-horizon MDP: the state is $\mathbf x$, the action is $\mathbf u$, and the reward is $-c$. Since we minimize a cost, the Bellman optimality equation of the finite-horizon MDP is written with a $\min$ instead of a $\max$:\begin{align}
     V_H^*(\mathbf x)&=c_H(\mathbf x)\\
@@ -1106,23 +1106,23 @@ For the cartpole with $\epsilon=0.1$ ($d=4$, $k=1$) we already have $10^5$ pairs
 We will show how the problem of finding an optimal policy can be solved with LQR. We will give a general discussion about linear systems with quadratic cost, and then show how it fits the optimal policy search. A discrete-time linear system is defined as follows:\begin{equation}\label{dynamics}
     \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t
 \end{equation}
-with $F_x$ being a $d\times d$ matrix and $F_u$ a $d\times k$ matrix. The dynamics is linear both in the state and in the control input, this is our transition function. We will consider only \textbf{quadratic} cost functions:\begin{equation}
+with $F_x$ being a $d\times d$ matrix and $F_u$ a $d\times k$ matrix. The dynamics is linear both in the state and in the control input; this is our transition function. We will consider only \textbf{quadratic} cost functions:\begin{equation}
     c(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u
 \end{equation}
-with $C_x$ being a positive semidefinite matrix and $C_u$ a positive definite matrix (both symmetric, of size $d\times d$ and $k\times k$ respectively). The cost is a ``bowl'' with its minimum in the origin: if $C_x$ is positive definite, any non-zero state has a strictly positive cost even with an all-zero control input, hence the policy has to drive the state towards the origin, which plays the role of the goal. (If $C_x$ is only semidefinite, some directions of the state are not penalized.)
+with $C_x$ being a positive semidefinite matrix and $C_u$ a positive definite matrix (both symmetric, of size $d\times d$ and $k\times k$ respectively). The cost is a ``bowl'' with its minimum at the origin: if $C_x$ is positive definite, any non-zero state has a strictly positive cost even with an all-zero control input, hence the policy has to drive the state towards the origin, which plays the role of the goal. (If $C_x$ is only semidefinite, some directions of the state are not penalized.)
 
 Let $V^*_h$ be the value function, with $h<H$ the current time step, i.e. the minimum cost that can be obtained from the state $\mathbf x$ at time $h$ onwards (the \textbf{cost-to-go}). We define the state-action value by using the cost instead of the reward:\begin{equation}
     Q_h^*(\mathbf x,\mathbf u)=c(\mathbf x,\mathbf u)+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]=
-    c(\mathbf x,\mathbf u)+\sum_{\mathbf x'}V_{h+1}^*(\mathbf x')p(
+    c(\mathbf x,\mathbf u)+\int_{\R^d}V_{h+1}^*(\mathbf x')p(
         \mathbf x'\mid\mathbf x,\mathbf u
-    )
+    )\,d\mathbf x'.
 \end{equation}
-by expanding the cost we get:\begin{equation}
+By expanding the cost, we get:\begin{equation}
      Q_h^*(\mathbf x,\mathbf u)=\mathbf x^\top C_x\mathbf x+
-    \mathbf u^\top C_u\mathbf u+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right]
+    \mathbf u^\top C_u\mathbf u+\VA_{\mathbf x'\sim p(\cdot\mid\mathbf x,\mathbf u)}\left[V_{h+1}^*(\mathbf x')\right].
 \end{equation}
-we have the assumption (for now) that the dynamics is deterministic, defined in Equation \eqref{dynamics}, so:\begin{align}
+We assume (for now) that the dynamics is deterministic, as defined in Equation \eqref{dynamics}, so:\begin{align}
      Q_h^*(\mathbf x,\mathbf u)&=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u+V_{h+1}^*(\blueText{\mathbf x'})\\
     &=\mathbf x^\top C_x\mathbf x+
@@ -1138,34 +1138,34 @@ So, we can write $V_{h+1}^*(\mathbf x)=\mathbf x^\top P_{h+1}\mathbf x$, with $P
  &=\mathbf x^\top C_x\mathbf x+
     \mathbf u^\top C_u\mathbf u+\blueText{(F_x\mathbf x+F_u\mathbf u)^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)}\label{Q_h_star}
 \end{align}
-we don't know yet how $P_h$ is constructed, we are just assuming that the value at the next step is a quadratic form. Now that we have an analytic formulation of $Q_h^*(\mathbf x,\mathbf u)$, we know that we can express the best policy (at the time step $h$) as:\begin{equation}
-    \pi_h^*(\mathbf x)=\operatorname*{arg\,min}_{\mathbf u}Q_h^*(\mathbf x,\mathbf u)
+We don't know yet how $P_h$ is constructed; we are just assuming that the value at the next step is a quadratic form. Now that we have an analytic formulation of $Q_h^*(\mathbf x,\mathbf u)$, we know that we can express the best policy (at the time step $h$) as:\begin{equation}
+    \pi_h^*(\mathbf x)=\operatorname*{arg\,min}_{\mathbf u}Q_h^*(\mathbf x,\mathbf u).
 \end{equation}
-notice how we are minimizing and not maximizing since we have a cost instead of a reward (but the two formulations are equivalent). Since $C_u+F_u^\top P_{h+1}F_u$ is positive definite, $Q_h^*(\mathbf x,\cdot)$ is strictly convex in $\mathbf u$, hence to find its minimum we can set the gradient to zero:\begin{equation}\label{grad}
+Notice how we are minimizing and not maximizing since we have a cost instead of a reward (but the two formulations are equivalent). Since $C_u+F_u^\top P_{h+1}F_u$ is positive definite, $Q_h^*(\mathbf x,\cdot)$ is strictly convex in $\mathbf u$, hence to find its minimum we can set the gradient to zero:\begin{equation}\label{grad}
     \nabla_u Q_h^*(\mathbf x,\mathbf u)=\mathbf 0.
 \end{equation}
 The gradient is:
 \begin{equation}
      \nabla_u Q_h^*(\mathbf x,\mathbf u)=
-     2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)
+     2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u).
 \end{equation}
-now we solve Equation \eqref{grad} for $\mathbf u$:
+Now we solve Equation \eqref{grad} for $\mathbf u$:
 \begin{align}
     & 2C_u\mathbf u+2F_u^\top P_{h+1}(F_x\mathbf x+F_u\mathbf u)=\mathbf 0 \\ 
-     \implies&\mathbf u = -(C_u+F_u^\top P_{h+1}F_u)^{-1}F_u^\top P_{h+1}F_x\mathbf x=K_h^* \mathbf x
+     \implies&\mathbf u = -(C_u+F_u^\top P_{h+1}F_u)^{-1}F_u^\top P_{h+1}F_x\mathbf x=K_h^* \mathbf x.
 \end{align}
-we have denoted $K_h^* $ that $k\times d$ matrix, in this way we have found the optimal policy at time $h$:\begin{equation}
-    \pi_h^*(\mathbf x)=K_h^* \mathbf x
+We denote that $k\times d$ matrix by $K_h^*$; in this way, we have found the optimal policy at time $h$:\begin{equation}
+    \pi_h^*(\mathbf x)=K_h^* \mathbf x.
 \end{equation}
-Now we can replace $\mathbf u =K_h^* \mathbf x $ in Equation \eqref{Q_h_star}, by definition, this is exactly the value function:\begin{align} Q_h^*(\mathbf x,\pi_h^*(\mathbf x))=V^*_h(\mathbf x)=&\,
+Now we can substitute $\mathbf u =K_h^* \mathbf x $ into Equation \eqref{Q_h_star}; by definition, this is exactly the value function:\begin{align} Q_h^*(\mathbf x,\pi_h^*(\mathbf x))=V^*_h(\mathbf x)=&\,
     \mathbf x^\top C_x\mathbf x+
     (K_h^* \mathbf x)^\top C_u(K_h^* \mathbf x)+\blueText{(F_x\mathbf x+F_uK_h^* \mathbf x)^\top P_{h+1}(F_x\mathbf x+F_uK_h^* \mathbf x)}\\
 &=\mathbf x^\top(
     C_x+(K_h^*)^\top C_u K_h^* + 
     (F_x+F_uK_h^*)^\top  P_{h+1} (F_x+F_uK_h^*)
-)\mathbf x\\ &=\mathbf x^\top P_h\mathbf x
+)\mathbf x\\ &=\mathbf x^\top P_h\mathbf x,
 \end{align}
-and is exactly a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumption made at the beginning was correct and the inductive step is complete. Notice how $P_h$ can be computed when $P_{h+1}$ is known: due to the finite horizon, we are able to compute in closed form the cost at the final step, hence $P_H$ can be initialized according to the final cost $c_H$ (for instance $P_H=C_x$ if $c_H(\mathbf x)=\mathbf x^\top C_x\mathbf x$, or $P_H=\mathcal O$ if there is no final cost), then we can reconstruct $P_h$ for all $h$ backwards.
+which is a quadratic form ($\mathbf x^\top P_h\mathbf x$), so the assumption made at the beginning was correct and the inductive step is complete. Notice how $P_h$ can be computed when $P_{h+1}$ is known: due to the finite horizon, we are able to compute in closed form the cost at the final step, hence $P_H$ can be initialized according to the final cost $c_H$ (for instance $P_H=C_x$ if $c_H(\mathbf x)=\mathbf x^\top C_x\mathbf x$, or $P_H=\mathcal O$ if there is no final cost); then we can reconstruct $P_h$ for all $h$ backwards.
 \begin{algorithm}[H]
 \caption{Value Iteration as LQR}\label{alg:value_iteration_LQR}
 \begin{algorithmic}[1]
@@ -1188,7 +1188,7 @@ Notice how the best action at a given state is a term proportional to that state
 \end{boxobservation}
 
 \subsection{Extensions}
-The first assumption that we drop is that the system is time invariant: consider dynamics that depend also on the time $t$:\begin{equation}
+The first assumption that we drop is that the system is time-invariant: consider dynamics that depend also on the time $t$:\begin{equation}
      \mathbf x_{t+1}=F_{x,t}\mathbf x_t+F_{u,t}\mathbf u_t
 \end{equation}
 with a cost that also depends on $t$:\begin{equation}
@@ -1201,7 +1201,7 @@ This is a \textbf{linear time-varying} (LTV) system. Algorithm \ref{alg:value_it
 \end{align}
 and the optimal policy is $\pi_h^*(\mathbf x)=K_h^*\mathbf x$, with $V_h^*(\mathbf x)=\mathbf x^\top P_h\mathbf x$.\bigskip
 
-\noindent Let us switch back to time invariant systems, and consider a system that is not linear but \textit{affine}:\begin{equation}
+\noindent Let us switch back to time-invariant systems, and consider a system that is not linear but \textit{affine}:\begin{equation}
     \mathbf x_{t+1}=F_x\mathbf x_t+F_u\mathbf u_t +\mathbf c
 \end{equation}
 with $\mathbf c\in\R^d$ being a constant vector. We can still apply Algorithm \ref{alg:value_iteration_LQR} by transforming the system into a linear system through the change of coordinates $\mathbf z = \begin{pmatrix}
@@ -1282,7 +1282,7 @@ Now we consider a general non-linear system with the dynamics expressed through 
 Let $\mathbf x^*$ be a forced equilibrium:\begin{equation}
     f(\mathbf x^*,\mathbf u^*)=\mathbf x^*
 \end{equation}
-with $\mathbf u^*$ being the required input: this is the goal, and we want to stabilize the system around it. For instance, in the cartpole the configuration with the pole upright, the cart at rest and zero applied force ($\mathbf u^*=0$) is an equilibrium (an unstable one, so feedback is needed to keep the system there). We linearize the system around that equilibrium using a first order Taylor expansion:\begin{equation}
+with $\mathbf u^*$ being the required input: this is the goal, and we want to stabilize the system around it. For instance, in the cartpole the configuration with the pole upright, the cart at rest and zero applied force ($\mathbf u^*=\mathbf 0$) is an equilibrium (an unstable one, so feedback is needed to keep the system there). We linearize the system around that equilibrium using a first-order Taylor expansion:\begin{equation}
     \mathbf x_{t+1}\approx f(\mathbf x^*,\mathbf u^*)+\nabla_x f(\mathbf x^*,\mathbf u^*)(\mathbf x_t-\mathbf x^* )+\nabla_u f(\mathbf x^*,\mathbf u^*)(\mathbf u_t-\mathbf u^* )
 \end{equation}
 with $\nabla_x f(\mathbf x^*,\mathbf u^*)\in\R^{d\times d}$ and $\nabla_u f(\mathbf x^*,\mathbf u^*)\in\R^{d\times k}$ being the Jacobian matrices (with respect to $\mathbf x$ and $\mathbf u$, i.e. the entries are the partial derivatives $\partial f_i/\partial x_j$ and $\partial f_i/\partial u_j$ of the components of $f$) evaluated at the equilibrium. We denote by $A$ and $B$ the Jacobian matrices, by $\mathbf z_t=\mathbf x_t-\mathbf x^*$ the variation in the state with respect to the equilibrium and by $\mathbf v_t=\mathbf u_t-\mathbf u^*$ the variation in the input:
@@ -1296,10 +1296,10 @@ We have a linear system; clearly, to reach the equilibrium we should bring the n
 The usual way to define the control action is with a proportional controller:\begin{equation}
     \mathbf v_t=K\mathbf z_t\implies \mathbf u_t=\mathbf u^*+K(\mathbf x_t-\mathbf x^*)
 \end{equation}
-where $K$ is computed with Algorithm \ref{alg:value_iteration_LQR} applied to the pair $(A,B)$. If the cost is not quadratic, it can be approximated with a quadratic function through a second order Taylor expansion, as shown below.
+where $K$ is computed with Algorithm \ref{alg:value_iteration_LQR} applied to the pair $(A,B)$. If the cost is not quadratic, it can be approximated with a quadratic function through a second-order Taylor expansion, as shown below.
 
 \subsection{Quadratic Approximation of the Cost}
-Let $g(\mathbf x,\mathbf u)$ be a general (twice differentiable) cost. We expand it with a second order Taylor expansion around $(\mathbf x^*,\mathbf u^*)$, in terms of the deviations $\mathbf z=\mathbf x-\mathbf x^*$ and $\mathbf v=\mathbf u-\mathbf u^*$ (all the derivatives are evaluated at $(\mathbf x^*,\mathbf u^*)$):\begin{align}
+Let $g(\mathbf x,\mathbf u)$ be a general (twice differentiable) cost. We expand it with a second-order Taylor expansion around $(\mathbf x^*,\mathbf u^*)$, in terms of the deviations $\mathbf z=\mathbf x-\mathbf x^*$ and $\mathbf v=\mathbf u-\mathbf u^*$ (all the derivatives are evaluated at $(\mathbf x^*,\mathbf u^*)$):\begin{align}
     g(\mathbf x^*+\mathbf z,\mathbf u^*+\mathbf v)\approx\;& g(\mathbf x^*,\mathbf u^*)+(\nabla_x g)^\top\mathbf z+(\nabla_u g)^\top\mathbf v\nonumber\\
     &+\tfrac12\mathbf z^\top\nabla_{xx}^2 g\,\mathbf z+\tfrac12\mathbf v^\top\nabla_{uu}^2 g\,\mathbf v+\mathbf v^\top\nabla_{ux}^2 g\,\mathbf z
 \end{align}
@@ -1319,7 +1319,7 @@ with $C_x=\frac12\nabla^2_{xx}g$, $C_u=\frac12\nabla^2_{uu}g$, $M=\nabla^2_{ux}g
 Now we want to define a controller that performs trajectory tracking while minimizing the cost function (for instance, a mobile robot controlled with linear velocity and angular velocity that has to follow a reference trajectory in the plane). The desired trajectory is \begin{equation}
     \mathbf x_0^*,\mathbf x_1^*,\dots, \mathbf x_H^*.
 \end{equation}
-Each single transition of the trajectory is a forced equilibrium\begin{equation}
+Each transition along the trajectory satisfies the dynamics\begin{equation}
     f( \mathbf x_t^*,\mathbf u_t^*)= \mathbf x_{t+1}^*
 \end{equation}
 (we assume that the reference trajectory is feasible, i.e. that the inputs $\mathbf u_t^*$ realizing it exist and are known). In other words, we are trying to find a control input for each time step\begin{equation}
@@ -1347,9 +1347,9 @@ by iteratively approximating it with an LQ problem (linear dynamics, quadratic c
 \begin{algorithmic}[1]
     \State Initialize a control policy $\pi^{(0)}$ (or a state-input sequence $\{\mathbf x_t^{(0)},\mathbf u_t^{(0)}\}$).
     \For{$i=0,1,\dots, I$}
-    \State Execute $\pi^{(i)}$ and collect the state-input trajectory $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ for $t=0,\dots, H$.
-    \State Obtain an LQ approximation of this problem by linearizing around $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ with first order Taylor expansion for the dynamics and second order Taylor expansion for the cost.
-    \State Compute $\pi^{(i+1)}$ with the LQR formulation for linear time variant systems.
+    \State Execute $\pi^{(i)}$ and collect the state-input trajectory $\{\mathbf x_t^{(i)}\}_{t=0}^H$, $\{\mathbf u_t^{(i)}\}_{t=0}^{H-1}$.
+    \State Obtain an LQ approximation of this problem by linearizing around $\{\mathbf x_t^{(i)},\mathbf u_t^{(i)}\}$ with a first-order Taylor expansion for the dynamics and a second-order Taylor expansion for the cost.
+    \State Compute $\pi^{(i+1)}$ with the LQR formulation for linear time-varying systems.
     \EndFor
 \end{algorithmic}
 \end{algorithm}
@@ -1383,7 +1383,7 @@ For the cost, let $g_t=g_t(\mathbf x_t^{(i)},\mathbf u_t^{(i)})$ and let all the
         \frac12(\nabla_ug_t)^\top
     \end{pmatrix}.
 \end{equation}
-Indeed, expanding the quadratic form with $\mathbf z_t=(\mathbf x_t-\mathbf x_t^{(i)},1)$ gives exactly the constant, linear, and quadratic terms of the Taylor expansion. When the cost is separable, $g(\mathbf x,\mathbf u)=g(\mathbf x)+g(\mathbf u)$, the mixed term is zero ($\nabla^2_{xu}g_t=\mathcal O$) and the first block of $N_t$ vanishes. At the final step, $P_H=C_{x,H}$ is built in the same way from $g_H(\mathbf x_H)$.
+Indeed, expanding the quadratic form with $\mathbf z_t=((\mathbf x_t-\mathbf x_t^{(i)})^\top,1)^\top$ gives exactly the constant, linear, and quadratic terms of the Taylor expansion. When the cost is separable, $g(\mathbf x,\mathbf u)=g(\mathbf x)+g(\mathbf u)$, the mixed term is zero ($\nabla^2_{xu}g_t=\mathcal O$) and the first block of $N_t$ vanishes. At the final step, $P_H=C_{x,H}$ is built in the same way from $g_H(\mathbf x_H)$.
 
 Applying the LQR recursion with cross term (previous section) to this LTV system we obtain gains $K_t\in\R^{k\times(d+1)}$. Splitting $K_t=\begin{pmatrix}K_t^{x}&\mathbf k_t\end{pmatrix}$, with $K_t^{x}\in\R^{k\times d}$ and $\mathbf k_t\in\R^k$ the last column, the new policy is the time-varying affine feedback\begin{equation}
     \pi^{(i+1)}_t(\mathbf x)=\mathbf u_t^{(i)}+K_t^{x}(\mathbf x-\mathbf x_t^{(i)})+\mathbf k_t
@@ -1391,10 +1391,10 @@ Applying the LQR recursion with cross term (previous section) to this LTV system
 where $\mathbf k_t$ is a feedforward correction.
 
 \subsection{Convergence}
-As it is, the algorithm might not converge, because the optimal policy for the LQ approximation might end up not staying close to the linearization points, where the approximation is not valid anymore. A solution is to modify the cost at iteration $i$ as\begin{equation}
+As it is, the algorithm might not converge, because the optimal policy for the LQ approximation might end up moving too far from the linearization points, where the approximation is no longer valid. A solution is to modify the cost at iteration $i$ as\begin{equation}
     (1-\alpha)g(\mathbf x_t,\mathbf u_t)+\alpha\left(\|\mathbf x_t-\mathbf x_t^{(i)}\|_2^2+\|\mathbf u_t-\mathbf u_t^{(i)}\|_2^2\right)
 \end{equation}
-with $\alpha\in(0,1)$. The second term penalizes the deviation from the linearization points: if $g$ is bounded and $\alpha$ is close enough to $1$, the second term dominates and ensures that the linearizations are good approximations of the solution trajectory. In terms of the LQ approximation, this simply multiplies the derivatives of $g$ by $(1-\alpha)$ and adds $\alpha I$ to $C_{x,t}$ (on the block of the state deviation) and to $C_{u,t}$. The price to pay is a smaller progress at each iteration.
+with $\alpha\in(0,1)$. The second term penalizes the deviation from the linearization points: if $g$ is bounded and $\alpha$ is close enough to $1$, the second term dominates and ensures that the linearizations are good approximations of the solution trajectory. In terms of the LQ approximation, this simply multiplies the derivatives of $g$ by $(1-\alpha)$ and adds $\alpha I$ to $C_{x,t}$ (on the block of the state deviation) and to $C_{u,t}$. The price to pay is less progress at each iteration.
 
 \subsection{Practical Tricks}
 \begin{itemize}
@@ -1403,7 +1403,7 @@ with $\alpha\in(0,1)$. The second term penalizes the deviation from the lineariz
 \end{itemize}
 
 \section{Model Predictive Control}
-At iLQR convergence, the system could execute the policy and not be at the expected trajectory, for instance due to inaccurate dynamics, noise, etc. The idea is to \textbf{replan}: at every time step $t$, starting from the state $\mathbf x_t$ that is actually measured, we solve again the problem from $t$ to $H$ and we apply the first input. This is called \textbf{receding horizon control}, or \textbf{Model Predictive Control} (MPC).
+At iLQR convergence, the system could execute the policy and deviate from the expected trajectory, for instance due to inaccurate dynamics, noise, etc. The idea is to \textbf{replan}: at every time step $t$, starting from the state $\mathbf x_t$ that is actually measured, we solve again the problem from $t$ to $H$ and we apply the first input. This is called \textbf{receding horizon control}, or \textbf{Model Predictive Control} (MPC).
 
 Replanning until $H$ at every time step is typically too costly. The practical solution is to replan over a shorter horizon of $L$ steps (with $L\le H-t$), and to account for what happens after the end of the window with a terminal cost $\hat V_{t+L}$, which is an approximation of the cost-to-go from the state $\mathbf x_{t+L}$ (for instance the quadratic form $\mathbf x^\top P\mathbf x$ obtained from an LQR on the linearized system). At time $t$ we solve\begin{align}
     &\operatorname*{\min}_{ \mathbf u_t,\dots,\mathbf u_{t+L-1}}\quad \sum_{h=t}^{t+L-1}g_h(\mathbf x_h,\mathbf u_h)+\hat V_{t+L}(\mathbf x_{t+L})\\ 
@@ -1857,47 +1857,46 @@ with base case $y_{t:t+1} = r_t + \gamma \left( \sigma_{t+1} \hat{Q}(s_{t+1}, a_
     \includegraphics[width=\textwidth]{images/nstep_tree_backup.eps}
 \end{figure}
 \section{Linear Value Function Approximation}   
-\subsection{Features Vector}
-As already mentioned, if the state space is continuous or too large, a tabular representation of the functions $V$ and $Q$ is infeasible, and it is necessary to use a function approximator. Furthermore, each row of the table is completely independent from the others. If the agent learns that a state is dangerous, it does not transfer this knowledge to a nearly identical state. \bigskip 
+\subsection{Feature Vector}
+As already mentioned, if the state space is continuous or too large, a tabular representation of the functions $V$ and $Q$ is infeasible, and it is necessary to use a function approximator. Furthermore, each row of the table is completely independent of the others. If the agent learns that a state is dangerous, it does not transfer this knowledge to a nearly identical state. \bigskip 
 
 \noindent In this section we will focus on function approximators that are linear in the weights, i.e.:$$
-    \hat Q(s,a;\mathbf w)=\mathbf w^\top\boldsymbol{\phi}(s,a)=\sum w_i\phi_i(s,a).
+    \hat Q(s,a;\mathbf w)=\mathbf w^\top\boldsymbol{\phi}(s,a)=\sum_i w_i\phi_i(s,a).
 $$
-The approximator uses a set of \textbf{features} $\boldsymbol{\phi}(s,a)$, that are nonlinear functions of the current state (or state+action ) which define a representation of the current state.
+The approximator uses a set of \textbf{features} $\boldsymbol{\phi}(s,a)$, which are nonlinear functions of the current state (or state-action pair) that define its representation.
 \begin{quotation}
-    \textbf{Example}: In tetris, the state is given by the configuration of the blocks on the grid, a useful feature can be the number of holes in the grid, or the height of the highest block.
+    \textbf{Example}: In Tetris, the state is given by the configuration of the blocks on the grid; a useful feature can be the number of holes in the grid, or the height of the highest block.
 \end{quotation}
 The design choice lies in defining a set of features that coherently describe the state of the system.\bigskip
 
 
-Let's take in example a continuous system, a simple pendulum, its state is given by the angular position $\theta$ and velocity $\omega$:\begin{equation}
+Let's take as an example a continuous system, a simple pendulum; its state is given by the angular position $\theta$ and velocity $\omega$:\begin{equation}
     \mathbf x  = \begin{pmatrix}
         \theta\\\omega
-    \end{pmatrix}
+    \end{pmatrix}.
 \end{equation}
-notice how we are denoting $\mathbf x$ the state and non $s$ as usual (usually $\mathbf x$ is preferred for continuous systems, while $s$ for discrete state space systems).
+Notice how we are denoting the state by $\mathbf x$ and not $s$ as usual (usually $\mathbf x$ is preferred for continuous systems, while $s$ is used for discrete state-space systems).
 
-One common choice of features is called \textbf{tile coding}, we divide the state space of the system in a grid of $n\times n$ cells, for a total of $n^2$ cells:
+One common choice of features is called \textbf{tile coding}; we divide the state space of the system into a grid of $n\times n$ cells, for a total of $n^2$ cells:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{images/tile_coding.eps} 
 \end{figure}
-The state space of the pendulum is $SO(2)\times SO(2)$, but is useful to represent it as $[0,2\pi]\times [0,2\pi]$. Clearly if the state space is $d$-dimensional, to discretize it in a grid we divide it in $n^d$ hypercubes.
+The state space of the pendulum is $SO(2)\times \R$, but it is useful to represent it as $[0,2\pi)\times [\omega_{\min},\omega_{\max}]$ (bounding $\omega$ to a finite interval for discretization). Clearly, if the state space is $d$-dimensional, to discretize it in a grid we divide it into $n^d$ hypercubes.
 
-For the pendulum there will be a feature for each cell, hence $n^2$ features, the feature $i$ associated to the $i$-th cell is 1 if the state is contained in that cell, 0 if not, hence for each state all the features will be zero except for one:\begin{equation}
+For the pendulum there will be a feature for each cell, hence $n^2$ features. The feature $\phi_i$ associated with the $i$-th cell is $1$ if the state is contained in that cell and $0$ otherwise; hence, for each state, all features will be zero except for one:\begin{equation}
     \phi_i(\mathbf x )=\begin{cases}
-        1&\text{if }\mathbf x\text{ is in $i$-th cell}\\
-        0&\text{instead }
+        1&\text{if }\mathbf x\text{ is in the $i$-th cell}\\
+        0&\text{otherwise.}
     \end{cases}
 \end{equation}
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/tile_coding2.eps} 
-    \caption{Example with $n=2$, 4 cells in total$\implies$4-dimensional features vector.}
+    \caption{Example with $n=2$, 4 cells in total$\implies$4-dimensional feature vector.}
 \end{figure}
-This is a binary encoding,
-if $n$ is small, very different states will be mapped in the same features vector, increasing $n$ let the number of features to grows quadratically.
-In order to increase the ``resolution'' of the discretization without increasing $n$, is to use two different grids, skewed and overlapped, as shown in Figure \ref{overlapped_grids}. A generalization of the tile coding is \textbf{coarse coding}, where instead of using squares/cubes as cells, circles/spheres are used, as shown in Figure \ref{coarse_grid}.
+This is a binary encoding. If $n$ is small, very different states will be mapped to the same feature vector; increasing $n$ causes the number of features to grow quadratically.
+A way to increase the ``resolution'' of the discretization without increasing $n$ is to use two different grids, skewed and overlapped, as shown in Figure \ref{overlapped_grids}. A generalization of tile coding is \textbf{coarse coding}, where instead of using squares/cubes as cells, circles/spheres are used, as shown in Figure \ref{coarse_grid}.
 \begin{figure}[H]
     \centering
     \begin{minipage}[t]{0.48\textwidth}
@@ -1935,20 +1934,124 @@ Let's switch back to the notation $s$ for the states instead of $\mathbf x$.
         \frac{-\|s-c_i\|^2}{2\sigma_i^2}
     \right)
 \end{equation}
-So the feature associated to the state $c_i$ will be higher to states $s$ that are closer to $c_i$.
+So the feature associated with the state $c_i$ will be higher for states $s$ that are closer to $c_i$.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{images/RBF.png}
 \end{figure}
 \subsection{Value Function Approximators}
-Now that we defined how a features vector $\boldsymbol{\phi}(s)$ may be constructed, we talk about the actual approximator, that depends on a set of weights $\mathbf w$:\begin{align}
+Now that we have defined how a feature vector $\boldsymbol{\phi}(s)$ may be constructed, we discuss the actual approximator, which depends on a set of weights $\mathbf w$:\begin{align}
     &V(s)\approx \hat V(s;\mathbf w)\\
-    &Q(s,a)\approx \hat Q(s,a;\mathbf w)
+    &Q(s,a)\approx \hat Q(s,a;\mathbf w).
 \end{align}
-these approximators can be a linear function of $\mathbf w$, a neural network, a decision tree or a $K$-nearest neighbors model. 
+These approximators can be a linear function of $\mathbf w$, a neural network, a decision tree or a $K$-nearest neighbors model. 
 
-Consider the value function, after having defined the structure $\hat V(s;\mathbf w)$, and having a dataset $\mathcal D=\{(s_i,y_i)\}_{i=1}^n$, we want to find the weights that minimize the mean squared error:\begin{equation}
-    \text{MSVE}(\mathbf w)=
+Consider the value function: after defining the structure $\hat V(s;\mathbf w)$ and given a dataset $\mathcal D=\{(s_i,y_i)\}_{i=1}^n$, we want to find the weights that minimize the mean squared error:\begin{equation}
+    J(\mathbf w)=\sum_{i=1}^n d(s_i)\left(
+        y_i-\hat V(s_i;\mathbf w)
+    \right)^2
 \end{equation}
-\todo{slide L10 pagina 32}
+where $d(s)$ is a distribution over the states. Similarly, for the function $Q$, given $\mathcal D=\{(s_i,a_i,y_i)\}_{i=1}^n$:
+    \begin{equation}\label{MSE}
+    J(\mathbf w)=\sum_{i=1}^n d(s_i,a_i)\left(
+        y_i-\hat Q(s_i,a_i;\mathbf w)
+    \right)^2
+\end{equation}
+we seek $\mathbf w^*$ such that $J(\mathbf w^*)\le J(\mathbf w)$ for all $\mathbf w$. This is a \textit{supervised learning} problem, and a sub-optimal solution can be found iteratively with gradient descent:\begin{equation}
+    \mathbf w_{t+1}=\mathbf w_t-\alpha\nabla_{\mathbf w}J(\mathbf w_t)
+\end{equation}
+with $\alpha$ being a step size.
+\begin{boxobservation}{}{}
+    The mean squared error in Equation \eqref{MSE} is considered over a set of samples. During online training, the error is considered only on one sample, i.e. the current state-action pair $(s_t,a_t)$, with the label sampled as seen in previous sections.
+\end{boxobservation}
+Since our $J$ is the mean squared error, the explicit expression of the gradient step when we are in state $s_t$ and have chosen action $a_t$ is\begin{equation}
+    \mathbf w_{t+1}= \mathbf w_t+\alpha\left(
+        y_t-\hat Q(s_t,a_t;\mathbf w_t)
+    \right)\nabla_{\mathbf w}\hat Q(s_t,a_t;\mathbf w_t).
+\end{equation}
+Here $y_t$ is the target label; since the true value is not available, it is estimated via the $\lambda$-return (backward view with eligibility traces), $n$-step bootstrapping, or the total cumulative discounted reward up to the end of the episode as in the Monte-Carlo method (as seen in the previous sections).\bigskip 
+
+Now let's see in detail the expression of $\hat Q$. A linear function approximator is a linear combination of weights and features; we represent the feature vector as:\begin{equation}
+   \boldsymbol{\phi}(s,a)=\begin{pmatrix}
+    \phi_1(s,a)\\\vdots\\\phi_n(s,a)
+   \end{pmatrix}.
+\end{equation}
+The parametric $\hat Q$ is\begin{equation}
+    \hat Q(s,a;\mathbf w)=\mathbf w^\top\boldsymbol{\phi}(s,a),
+\end{equation}
+and the error function at time $t$ with the current set of weights $\mathbf w_t$, being in $s_t$ and having chosen action $a_t$, is\begin{equation}
+   \boxed{J(\mathbf w_t)=\frac{1}{2}\left(
+        y_t-\mathbf w_t^\top\boldsymbol{\phi}(s_t,a_t)
+    \right)^2}.
+\end{equation}
+The gradient step is\begin{equation}\label{gradient_step}
+    \boxed{\mathbf w_{t+1}=\mathbf w_t+\alpha\left(
+        y_t-\mathbf w_t^\top\boldsymbol{\phi}(s_t,a_t)
+    \right)\boldsymbol{\phi}(s_t,a_t)}.
+\end{equation}
+\textbf{Note}: In Equation \eqref{gradient_step} there is a plus sign $(+)$. Gradient Descent minimizes a cost function $J(\mathbf w)$ by moving in the direction opposite to the gradient, so the general rule has a minus sign; the $+$ in the specific formula for a linear approximator is the result of algebraic steps, and it does not mean that we are moving in the direction that maximizes $J$. As already mentioned, we recall that\begin{itemize}
+    \item for the Monte-Carlo method, $y_t$ is the cumulative return $G_t$,
+    \item for $TD(0)$, $y_t$ is $r_t+\gamma\hat Q(s_{t+1},\cdot;\mathbf w)$ (the specific action depends on whether we are using Q-Learning or SARSA),
+    \item etc. for the other methods like $TD(\lambda)$.
+\end{itemize}
+\subsection{Batch Methods}
+The incremental gradient descent method updates the weights by using one single sample state-action-return $(s_t,a_t,y_t)$. It is simple to implement, but \textit{batch methods} seek to find the best fitting function over multiple samples, like in supervised learning. Here we use the original definition of the mean squared error over a set of samples:
+\begin{equation}
+    J(\mathbf w)=\sum_{i=1}^N \left(
+        y_i-\hat Q(s_i,a_i;\mathbf w)
+    \right)^2.
+\end{equation}
+So a dataset is needed; in practice, stochastic gradient descent is used: we take a random subset of the samples on which we compute $J$. As we know, the $\mathbf w^*$ that minimizes $J$ for a linear approximator can be found in closed form. Given a dataset $\mathcal D=\{(s_i,a_i,y_i)\}_{i=1}^N$, let\begin{equation}
+    \Phi=\begin{pmatrix}
+        \phi_1(s_1,a_1)&\phi_2(s_1,a_1)&\dots & \phi_n(s_1,a_1)\\
+        \phi_1(s_2,a_2)&\phi_2(s_2,a_2)&\dots & \phi_n(s_2,a_2)\\
+        \vdots&\vdots&\ddots&\vdots\\ 
+        \phi_1(s_N,a_N)&\phi_2(s_N,a_N)&\dots & \phi_n(s_N,a_N)
+    \end{pmatrix}\in \R^{N\times n}.
+\end{equation}
+Notice that $n$ is the number of features while $N$ is the number of samples. Let \begin{equation}
+    \mathbf y = \begin{pmatrix}
+        y_1\\\vdots\\y_N
+    \end{pmatrix}\in\R^N
+\end{equation}
+be the labels; the optimal value for $\mathbf w$ is\begin{equation}
+    \boxed{\mathbf w^*=
+    (\Phi^\top\Phi)^{-1}\Phi^\top\mathbf y
+    }
+\end{equation}
+$\Phi^\# = (\Phi^\top \Phi)^{-1} \Phi^\top$ is the left pseudo-inverse of $\Phi$ (for full column-rank matrices); as known from robotics, it provides the exact least-squares solution to an overdetermined linear system by minimizing a convex quadratic objective.
+\section{Off-Policy Training}
+We mainly talked about \textit{On-Policy} methods (like SARSA), which, during exploration, update the estimate of $Q$ with each new explored state. Off-Policy methods, on the other hand, use generated trajectories to update the estimate: they first create a dataset and then solve an error minimization problem on it:\begin{quote}
+    An example could be to use a particularly exploratory policy to obtain state-action-label samples, and then fit a function on these samples.
+\end{quote}
+Off-Policy methods have particular advantages:\begin{itemize}
+    \item Observational learning: You can train the agent from demonstrations collected from humans, pre-existing controllers, or other agents. \item Experience Replay: $(s_t, a_t, r_{t+1}, s_{t+1})$ transitions can be saved in a replay buffer and resampled multiple times to update the target policy, greatly increasing data efficiency. \item Exploration decoupled from optimality: The agent can follow a highly exploratory behavior policy without contaminating the estimate of the value of the greedy optimal policy. \item Multi-policy learning in parallel: From a single stream of experience generated by $\mu$, the agent can simultaneously update multiple target policies $\pi_1, \pi_2, \dots$ associated with different tasks or objectives.
+\end{itemize}
+\subsection{Importance Sampling}
+We recall a probability result.
+\begin{boxproposition}{Importance Sampling Identity}{}
+    Let $X$ be a discrete random variable taking values in a countable support $\mathcal{X}$, and let $f: \mathcal{X} \to \mathbb{R}$ be a real-valued function. Let $P$ and $Q$ be two probability distributions over $\mathcal{X}$ such that $Q(x) > 0$ whenever $P(x) > 0$ (i.e., $P$ is absolutely continuous with respect to $Q$). Then:
+    \begin{align}
+        \VA_{X \sim P}[f(X)] &= \sum_{x \in \mathcal{X}} P(x)f(x) \\
+        &= \sum_{x \in \mathcal{X}} Q(x)\frac{P(x)}{Q(x)}f(x) \\
+        &= \VA_{X \sim Q}\left[\frac{P(X)}{Q(X)}f(X)\right].
+    \end{align}
+\end{boxproposition}
+When we fit our function $\hat Q$ over a dataset $\mathcal D$, it is essential that the samples used during training come from the same distribution as the state-action pairs whose value we will have to estimate. If we train the function on a certain distribution of states and then use it to evaluate others from a different distribution, its predictions will be unreliable.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/distribution_change.eps}
+\end{figure}
+In off-policy Reinforcement Learning, Importance Sampling is applied to correct the mismatch between the distribution of the trajectories generated by the behavior policy ($\mu$, used for sampling) and that of the target policy ($\pi$) that we actually want to evaluate.
+
+Consider the Monte-Carlo method: we assume that, using a behavior policy $\mu$, we have obtained an observed return $G_t$, but we want to estimate the expected value for another policy $\pi$. Since the return $G_t$ depends on the entire sequence of actions chosen from time $t$ until the end of the episode, to correct the distribution of the entire trajectory one must multiply the individual probability ratios step by step (the so-called importance sampling ratio $\rho_{t:T}$):\begin{equation}
+    G_t^{\pi/\mu} =
+     \frac{\pi(a_t \mid s_t)}{\mu(a_t \mid s_t)}\dots\frac{\pi(a_T \mid s_T)}{\mu(a_T \mid s_T)}G_t
+    =\underbrace{\left( \prod_{k=t}^{T} \frac{\pi(a_k \mid s_k)}{\mu(a_k \mid s_k)} \right)}_{\rho_{t:T}} G_t.
+\end{equation}
+There are two main limitations to this approach:\begin{itemize}
+    \item Very high variance: Multiplying dozens or hundreds of ratios throughout an entire episode causes the product to fluctuate enormously (a few steps in which $\pi(a_k\mid s_k) > \mu(a_k\mid s_k)$ are enough to make the weight explode, or vice versa).
+    \item Data waste with deterministic target policies: If $\pi$ is greedy (deterministic), it assigns probability $1$ to only one action and $0$ to all others. As soon as $\mu$ performs even a single exploratory action different from the one that $\pi$ would choose, the factor $\pi(a_k \mid s_k) = 0$ resets the entire product $G_t^{\pi/\mu}$, making the entire collected episode unusable.
+\end{itemize}
+\todo{from lecture L11 page 19}
 \end{document}
