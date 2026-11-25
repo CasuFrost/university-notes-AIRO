@@ -1856,6 +1856,99 @@ with base case $y_{t:t+1} = r_t + \gamma \left( \sigma_{t+1} \hat{Q}(s_{t+1}, a_
     \centering
     \includegraphics[width=\textwidth]{images/nstep_tree_backup.eps}
 \end{figure}
-\section{Linear Value Function Approximation}
+\section{Linear Value Function Approximation}   
+\subsection{Features Vector}
+As already mentioned, if the state space is continuous or too large, a tabular representation of the functions $V$ and $Q$ is infeasible, and it is necessary to use a function approximator. Furthermore, each row of the table is completely independent from the others. If the agent learns that a state is dangerous, it does not transfer this knowledge to a nearly identical state. \bigskip 
+
+\noindent In this section we will focus on function approximators that are linear in the weights, i.e.:$$
+    \hat Q(s,a;\mathbf w)=\mathbf w^\top\boldsymbol{\phi}(s,a)=\sum w_i\phi_i(s,a).
+$$
+The approximator uses a set of \textbf{features} $\boldsymbol{\phi}(s,a)$, that are nonlinear functions of the current state (or state+action ) which define a representation of the current state.
+\begin{quotation}
+    \textbf{Example}: In tetris, the state is given by the configuration of the blocks on the grid, a useful feature can be the number of holes in the grid, or the height of the highest block.
+\end{quotation}
+The design choice lies in defining a set of features that coherently describe the state of the system.\bigskip
+
+
+Let's take in example a continuous system, a simple pendulum, its state is given by the angular position $\theta$ and velocity $\omega$:\begin{equation}
+    \mathbf x  = \begin{pmatrix}
+        \theta\\\omega
+    \end{pmatrix}
+\end{equation}
+notice how we are denoting $\mathbf x$ the state and non $s$ as usual (usually $\mathbf x$ is preferred for continuous systems, while $s$ for discrete state space systems).
+
+One common choice of features is called \textbf{tile coding}, we divide the state space of the system in a grid of $n\times n$ cells, for a total of $n^2$ cells:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{images/tile_coding.eps} 
+\end{figure}
+The state space of the pendulum is $SO(2)\times SO(2)$, but is useful to represent it as $[0,2\pi]\times [0,2\pi]$. Clearly if the state space is $d$-dimensional, to discretize it in a grid we divide it in $n^d$ hypercubes.
+
+For the pendulum there will be a feature for each cell, hence $n^2$ features, the feature $i$ associated to the $i$-th cell is 1 if the state is contained in that cell, 0 if not, hence for each state all the features will be zero except for one:\begin{equation}
+    \phi_i(\mathbf x )=\begin{cases}
+        1&\text{if }\mathbf x\text{ is in $i$-th cell}\\
+        0&\text{instead }
+    \end{cases}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/tile_coding2.eps} 
+    \caption{Example with $n=2$, 4 cells in total$\implies$4-dimensional features vector.}
+\end{figure}
+This is a binary encoding,
+if $n$ is small, very different states will be mapped in the same features vector, increasing $n$ let the number of features to grows quadratically.
+In order to increase the ``resolution'' of the discretization without increasing $n$, is to use two different grids, skewed and overlapped, as shown in Figure \ref{overlapped_grids}. A generalization of the tile coding is \textbf{coarse coding}, where instead of using squares/cubes as cells, circles/spheres are used, as shown in Figure \ref{coarse_grid}.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/tile_coding3.eps}
+        \caption{Overlapped grids for the pendulum.}
+        \label{overlapped_grids}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/coarse.png}
+        \caption{Coarse coding}
+        \label{coarse_grid}
+    \end{minipage}
+\end{figure}
+In coarse coding, the circles/spheres (called \textbf{receptive fields}) can have different shapes (becoming ellipsoids) and sizes, and they affect both training and generalization:
+% Effect on generalization
+\begin{itemize}
+    \item \textbf{Narrow generalization:} Small receptive fields restrict weight updates to a tight neighborhood around the visited state, enabling high local precision at the cost of requiring more samples to cover the state space.
+    \item \textbf{Broad generalization:} Large receptive fields propagate updates across a wide region of the state space, accelerating initial learning while smoothing out fine-grained variations.
+    \item \textbf{Asymmetric generalization:} Elongated receptive fields generalize more strongly along specific state dimensions than others, which is useful when state variables differ in scale or sensitivity.
+\end{itemize}
+\begin{itemize}
+    \item \textbf{Early training:} Feature width strongly impacts initial learning speed; broad features rapidly capture the coarse shape of the target function from few samples, whereas narrow features produce jagged estimates confined to visited states.
+    \item \textbf{Asymptotic performance:} Given sufficient training samples, feature width has little effect on final approximation accuracy, as ultimate resolution is governed by the total number and density of overlapping features rather than their individual size.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/coarse_2.png}
+\end{figure}
+Let's switch back to the notation $s$ for the states instead of $\mathbf x$.
+\textbf{Radial Basis Functions (RBF)} are the natural extension of Coarse Coding to the continuous case: instead of using binary features (0 or 1) with hard edges, each feature $\phi_i(s)$ takes continuous values in the interval $(0, 1]$, measuring how close the current state $s$ is to a specific prototype state $ c_i$.\begin{equation}
+    \phi_i(s)=\exp\left(
+        \frac{-\|s-c_i\|^2}{2\sigma_i^2}
+    \right)
+\end{equation}
+So the feature associated to the state $c_i$ will be higher to states $s$ that are closer to $c_i$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/RBF.png}
+\end{figure}
+\subsection{Value Function Approximators}
+Now that we defined how a features vector $\boldsymbol{\phi}(s)$ may be constructed, we talk about the actual approximator, that depends on a set of weights $\mathbf w$:\begin{align}
+    &V(s)\approx \hat V(s;\mathbf w)\\
+    &Q(s,a)\approx \hat Q(s,a;\mathbf w)
+\end{align}
+these approximators can be a linear function of $\mathbf w$, a neural network, a decision tree or a $K$-nearest neighbors model. 
+
+Consider the value function, after having defined the structure $\hat V(s;\mathbf w)$, and having a dataset $\mathcal D=\{(s_i,y_i)\}_{i=1}^n$, we want to find the weights that minimize the mean squared error:\begin{equation}
+    \text{MSVE}(\mathbf w)=
+\end{equation}
+\todo{slide L10 pagina 32}
 \end{document}
-\todo{slide L09 pagina 70}
