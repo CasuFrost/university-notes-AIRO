@@ -2151,5 +2151,158 @@ The training procedure is explained in detail in Algorithm \ref{alg:DQN}.
 \end{algorithmic}
 \end{algorithm}
 \subsection{Double Deep Q-Learning}
-\todo{from lecture L11 page 47}
+In Q-learning, both greedy (or $\epsilon$-greedy) action selection and the TD target update involve a maximization step over estimated $Q$-values. When the values of $Q$ are estimated from noisy samples, this can lead to a \textbf{positive bias} (overestimation). Consider the following \textit{example}:\begin{itemize}
+    \item Suppose we are in a state $s$ in which all available actions have the same true expected value of zero: $Q^*(s, a) = 0$ for each $a$.
+    \item During learning, the estimates $\hat{Q}(s, a)$ are affected by statistical uncertainty: some will be slightly negative and others slightly positive around zero.
+    \item While the maximum of the true values is $0$, the maximum of the estimates $\max_a \hat{Q}(s, a)$ will pick up the action that received the highest positive estimate due to pure statistical noise, thus resulting in $\max_a \hat{Q}(s, a) > 0$.
+\end{itemize}
+In formal terms, the expected value of the maximum is greater than or equal to the maximum of the expected values: \begin{equation}
+    \VA[\max_a \hat{Q}(s,a)] \ge \max_a \VA[\hat{Q}(s,a)].
+\end{equation}
+The problem arises from the fact that the same estimate (based on the same samples) is used both to choose which is the best action ($\arg\max_a \hat{Q}$) and to evaluate its value. To eliminate this bias, the two operations are decoupled by maintaining two independent estimates, $\hat Q_1$ and $\hat Q_2$, trained on different subsets of the experience:\begin{itemize}
+    \item \textbf{Action selection}: We use the first estimate $\hat Q_1$ to select the action: $a^* = \arg\max_a\hat Q_1(s', a)$.
+    \item \textbf{Action evaluation}: We use the second estimate $\hat{Q}_2$ to evaluate that action in the target: \begin{equation}
+        y=r+\gamma \hat{Q}_2(s',\arg\max_a\hat{Q}_1(s', a)).
+    \end{equation}
+     Since $\hat Q_2$ has statistical errors independent of $\hat Q_1$, on average it will not overestimate the value of $a^*$: \[\VA[\hat Q_2(s', a^*) \mid a^*] = Q^*(s', a^*).\]
+     \item At each step (or episode), only one of the two estimates is randomly updated (with probability $50\%$), exchanging the roles of $\hat Q_1$ and $\hat Q_2$.
+\end{itemize}
+This method is called \textbf{Double Q-Learning}, and it is described in detail in Algorithm \ref{alg:DQL}.
+\begin{algorithm}[H]
+\caption{Double Q-Learning}\label{alg:DQL}
+\begin{algorithmic}[1]
+    \State \textbf{Input:} step size $\alpha \in (0, 1]$, discount factor $\gamma \in [0, 1)$, small $\epsilon > 0$
+    \State Initialize $\hat{Q}_1(s, a)$ and $\hat{Q}_2(s, a)$ for all $s \in S, a \in A$, such that $\hat{Q}_1(\text{terminal}, \cdot) = \hat{Q}_2(\text{terminal}, \cdot) = 0$
+    \For{each episode}
+        \State Initialize state $s$
+        \Repeat
+            \State Choose action $a$ in state $s$ using an $\epsilon$-greedy policy derived from $\hat{Q}_1(s, \cdot) + \hat{Q}_2(s, \cdot)$
+            \State Execute $a$, observe reward $r$ and next state $s'$
+            \If{with probability $0.5$}
+                \State $\hat{Q}_1(s, a) \leftarrow \hat{Q}_1(s, a) + \alpha \Big( r + \gamma \hat{Q}_2\big(s', \arg\max_{a'} \hat{Q}_1(s', a')\big) - \hat{Q}_1(s, a) \Big)$
+            \Else
+                \State $\hat{Q}_2(s, a) \leftarrow \hat{Q}_2(s, a) + \alpha \Big( r + \gamma \hat{Q}_1\big(s', \arg\max_{a'} \hat{Q}_2(s', a')\big) - \hat{Q}_2(s, a) \Big)$
+            \EndIf
+            \State $s \leftarrow s'$
+        \Until{$s$ is terminal}
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+It introduces a computational compromise: maintaining two value functions doubles the memory occupation (two tables or two networks), but leaves the computational cost per single step practically unchanged, since at each iteration only one of the two estimates is updated.\bigskip
+
+It easy straightforward to extend deep Q-learning to DQN, defining \textbf{Double Deep Q-Network (DDQN)}, recall that in deep Q-network there are two set of weights, $\mathbf w$ and $\mathbf w^-$, these two define the two estimation of $Q$ that are used in double Q-learning, the update of the weights is given by:\begin{equation}
+   \boxed{\Delta \mathbf{w} = \alpha \Big( r + \gamma \overbrace{\hat{Q}\big( s', \underbrace{\arg\max_{a'} \hat{Q}(s', a'; \mathbf{w})}_{\text{Action selection: } \mathbf{w}}; \mathbf{w}^- \big)}^{\text{Action evaluation: } \mathbf{w}^-} - \hat{Q}(s, a; \mathbf{w}) \Big) \nabla_{\mathbf{w}} \hat{Q}(s, a; \mathbf{w})}.
+\end{equation}
+\subsection{Prioritized Experience Replay}
+In classical DQN, all transitions in the buffer have the same probability of being extracted. However, some transitions are much more informative than others (e.g. rare states or events where the network's prediction was completely wrong). Prioritized Experience Replay (PER) proposes to more frequently sample transitions from which the agent can learn the most, measuring this potential via the magnitude of their TD (Temporal-Difference) error:\begin{equation}
+    \vert{}\delta_i\vert{} = \left\vert{} r_{i+1} + \gamma \max_{a'} \hat{Q}(s_{i+1}, a'; \mathbf{w}^-) - \hat{Q}(s_i, a_i; \mathbf{w}) \right\vert{}.
+\end{equation}
+This approach has two problems:\begin{itemize}
+    \item \textbf{Loss of diversity}: Transitions that have a low TD error on the first pass are at risk of never being resampled again (even when the network weights change and those transitions would become useful); furthermore, in stochastic environments, a single noisy outlier with very high TD error would be continuously replayed, leading to overfitting. To overcome this, a stochastic prioritization is used, which guarantees a non-zero probability even for transitions with low error by interpolating between uniform sampling and greedy sampling; the probability of extracting sample $i$ is:
+    $$P(i) = \frac{p_i^{\alpha_{\text{per}}}}{\sum_k p_k^{\alpha_{\text{per}}}}$$where the priority $p_i$ can be proportional to the error ($p_i = \vert{}\delta_i\vert{} + \epsilon$, with $\epsilon > 0$ small to avoid zero probability) or based on the rank ($p_i = \frac{1}{\text{rank}(i)}$), and $\alpha_{\text{per}} \in [0, 1]$ controls how much priority to apply ($\alpha_{\text{per}} = 0$ corresponds to the uniform case).
+    \item \textbf{Bias}: Stochastic gradient descent assumes that samples are drawn according to the same distribution with which they were generated; altering the sampling probabilities from uniform to $P(i)$ changes the expected value of the updates and introduces a bias in the convergence. As a solution, we correct the updates by multiplying the gradient of each transition by an Importance Sampling weight:$$\omega_i = \left( \frac{1}{N} \cdot \frac{1}{P(i)} \right)^\beta$$
+    where $N$ is the size of the replay buffer and $\beta \in [0, 1]$ is typically grown linearly towards $1$ during training (since bias correction is crucial especially in the final convergence phase); in practice, these weights are normalized by $\max_k \omega_k$ for stability.
+\end{itemize}
+The detailed procedure of DDQN with PER is described in Algorithm \ref{alg:PER}.
+\begin{algorithm}[H]
+\caption{Double DQN with PER}\label{alg:PER}
+\begin{algorithmic}[1]
+    \State \textbf{Input:} mini-batch size $k$, learning rate $\alpha$, replay period $K$, buffer size $N$, exponents $\alpha_{\text{per}}$ and $\beta$, budget $T$
+    \State Initialize replay buffer $\mathcal{D} = \emptyset$, $\Delta \mathbf{w} = \mathbf{0}$, $p_1 = 1$, online weights $\mathbf{w}$, target weights $\mathbf{w}^- = \mathbf{w}$
+    \State Observe $s_0$ and choose $a_0 \sim \pi_{\mathbf{w}}(s_0)$
+    \For{$t = 1$ to $T$}
+        \State Observe $s_t, r_t, \gamma_t$
+        \State Store transition $(s_{t-1}, a_{t-1}, r_t, \gamma_t, s_t)$ in $\mathcal{D}$ with maximal priority $p_t = \max_{i < t} p_i$
+        \If{$t \equiv 0 \pmod{K}$}
+            \For{$j = 1$ to $k$}
+                \State Sample transition $j \sim P(j) = \dfrac{p_j^{\alpha_{\text{per}}}}{\sum_i p_i^{\alpha_{\text{per}}}}$
+                \State Compute importance-sampling weight $\omega_j = \dfrac{(N \cdot P(j))^{-\beta}}{\max_i \omega_i}$
+                \State Compute TD-error $\delta_j = r_j + \gamma_j \hat{Q}\Big(s_j, \arg\max_{a'} \hat{Q}(s_j, a'; \mathbf{w}); \mathbf{w}^-\Big) - \hat{Q}(s_{j-1}, a_{j-1}; \mathbf{w})$
+                \State Update transition priority $p_j \leftarrow |\delta_j|$
+                \State Accumulate weight-change $\Delta \mathbf{w} \leftarrow \Delta \mathbf{w} + \omega_j \cdot \delta_j \cdot \nabla_{\mathbf{w}} \hat{Q}(s_{j-1}, a_{j-1}; \mathbf{w})$
+            \EndFor
+            \State Update weights $\mathbf{w} \leftarrow \mathbf{w} + \alpha \Delta \mathbf{w}$, reset $\Delta \mathbf{w} = \mathbf{0}$
+            \State Periodically copy weights into target network $\mathbf{w}^- \leftarrow \mathbf{w}$
+        \EndIf
+        \State Choose action $a_t \sim \pi_{\mathbf{w}}(s_t)$
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+\noindent Here $\pi_{\mathbf w}$ denotes an $\epsilon$-greedy policy derived from $\hat Q(s,a;\mathbf w)$.
+\subsection{Exploration Challenges and Entropy Regularization}
+
+Standard exploration strategies such as $\epsilon$-greedy rely on uncorrelated random perturbations, which often fail in complex environments characterized by \emph{sparse rewards} and long horizons (e.g., \emph{Montezuma's Revenge}). In such settings, discovering a positive reward requires executing a long, coordinated sequence of actions; without encountering a reward signal, temporal-difference updates yield zero gradients and prevent the agent from learning meaningful value estimates.
+
+To promote sustained exploration and avoid premature convergence to deterministic sub-optimal policies, an \textbf{entropy regularization} term can be added to the training objective:
+\begin{equation}
+    H\big(\pi(\cdot \mid s)\big) = -\sum_{a \in \mathcal{A}} \pi(a \mid s) \log \pi(a \mid s).
+\end{equation}
+
+Incorporating an entropy bonus into the objective function encourages the policy $\pi$ to remain ``less committed'' to a single action, preserving action diversity across states and facilitating broader exploration of the state-action space.\bigskip
+
+Another effective approach to tackle sparse-reward environments is \textbf{count-based exploration}, which encourages the agent to visit unfamiliar states by augmenting the environment's \emph{extrinsic} reward $r_e$ with a novelty-driven \emph{intrinsic} reward bonus $r_i$:
+\begin{equation}
+    r = r_e + r_i.
+\end{equation}
+In tabular settings, the agent tracks the visitation count $N(s)$ of each state $s$ and assigns a higher intrinsic reward to low-count states (typically $r_i(s) \propto \frac{1}{\sqrt{N(s)}}$), incentivizing exploration of less-visited regions of the state space.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/montenuma.jpeg} 
+    \caption{Montezuma's Revenge, a famous platform video game from the 80s.}
+\end{figure}
+In high-dimensional or continuous state spaces where exact state counts are intractable (as nearly every state is visited at most once), $N(s)$ must be replaced by an approximate \emph{pseudo-count} derived from density models or learned state representations. Combining DQN with such novelty-based intrinsic rewards enables the agent to systematically explore complex, long-horizon tasks such as \emph{Montezuma's Revenge}.
+\subsection{Curiosity-Driven Exploration}
+
+Curiosity-driven exploration encourages the agent to visit unfamiliar regions of the state space by generating an intrinsic reward proportional to its prediction error about environment dynamics. To avoid being distracted by irrelevant stochasticity in raw sensory observations, the \textbf{Intrinsic Curiosity Module (ICM)} operates in a learned latent feature space $\phi(s)$ trained via two self-supervised components:
+\begin{itemize}
+    \item \textbf{Inverse Model:} Given consecutive encoded states $\phi(s_t)$ and $\phi(s_{t+1})$, it predicts the action $\hat{a}_t$ taken by the agent, ensuring that $\phi(s)$ captures only environment features controllable by or relevant to the agent.
+    \item \textbf{Forward Model:} Given $\phi(s_t)$ and $a_t$, it predicts the next state representation $\hat{\phi}(s_{t+1})$.
+\end{itemize}
+The intrinsic reward is defined as the prediction error in feature space:
+\[
+    r_t^i \propto \big\| \hat{\phi}(s_{t+1}) - \phi(s_{t+1}) \big\|_2^2,
+\]
+and the policy is trained to maximize the total reward $r_t = r_t^e + r_t^i$.
+
+\subsection{Thompson Sampling and Bootstrapped DQN}
+
+Rather than relying on myopic, step-by-step random perturbations, \textbf{Thompson Sampling} maintains a posterior belief over value functions, sampling a single hypothesis at each episode and acting greedily with respect to it.
+
+In \textbf{Bootstrapped DQN}, this posterior is approximated using a network with a shared feature-extraction backbone and $K$ distinct output heads $\{\hat{Q}_k(s, a; \mathbf{w}_k)\}_{k=1}^K$. To ensure diversity across heads without maintaining separate replay buffers, transitions are augmented with a random binary \emph{bootstrap mask} $\mathbf{m}_t \in \{0, 1\}^K$ drawn from a masking distribution $M$ (e.g., independent Bernoulli draws), so that tuples $(s_t, a_t, r_{t+1}, s_{t+1}, \mathbf{m}_t)$ are stored in the replay buffer $\mathcal{D}$ and each head $k$ is trained only on transitions where $m_{t,k} = 1$. At the beginning of each episode, a single head $k \sim \text{Uniform}\{1, \dots, K\}$ is sampled and followed greedily ($a_t \in \arg\max_{a'} \hat{Q}_k(s_t, a'; \mathbf{w}_k)$) throughout the entire episode, enabling temporally extended and coherent exploration.
+
+\begin{algorithm}[H]
+\caption{Bootstrapped DQN}
+\begin{algorithmic}[1]
+    \State \textbf{Input:} $K$ value function heads $\{\hat{Q}_k(\cdot, \cdot; \mathbf{w}_k)\}_{k=1}^K$, masking distribution $M$, replay buffer $\mathcal{D} = \emptyset$
+    \For{each episode}
+        \State Observe initial state $s_0$
+        \State Sample active head $k \sim \text{Uniform}\{1, \dots, K\}$
+        \For{step $t = 0, 1, \dots$ until end of episode}
+            \State Select greedy action $a_t \in \arg\max_{a'} \hat{Q}_k(s_t, a'; \mathbf{w}_k)$
+            \State Execute $a_t$, observe reward $r_{t+1}$ and next state $s_{t+1}$
+            \State Sample bootstrap mask $\mathbf{m}_t \sim M$
+            \State Store $(s_t, a_t, r_{t+1}, s_{t+1}, \mathbf{m}_t)$ in replay buffer $\mathcal{D}$
+        \EndFor
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+\subsection{Random Network Distillation and Never Give Up}
+
+To overcome the limitations of forward dynamics models in stochastic environments, \textbf{Random Network Distillation (RND)} measures state novelty without predicting environment transitions. Instead, it employs two neural networks taking the next state $s_{t+1}$ as input:
+\begin{itemize}
+    \item \textbf{Target Network $f$:} A fixed, randomly initialized neural network whose parameters are never updated, mapping states to deterministic feature representations $f(s_{t+1})$.
+    \item \textbf{Predictor Network $\hat{f}$:} A trainable neural network optimized via gradient descent to minimize the prediction error against the target network's output on visited states.
+\end{itemize}
+The intrinsic exploration bonus is defined as the squared $L_2$ prediction error:
+\[
+    r_t^i = \big\| \hat{f}(s_{t+1}) - f(s_{t+1}) \big\|_2^2.
+\]
+As a state $s_{t+1}$ is visited more frequently, $\hat{f}$ accurately distills $f(s_{t+1})$ and the intrinsic bonus decays, naturally steering the agent toward unvisited regions of the state space.
+
+Building upon this idea, \textbf{Never Give Up (NGU)} combines multi-timescale novelty signals into a single intrinsic reward $r_t^i$ so that exploration persists even within individual episodes:
+\begin{itemize}
+    \item \textbf{Episodic Novelty Module:} At each step, a controllable state embedding $\phi(s_t)$ (trained via an inverse dynamics model) is stored in an episodic memory buffer $\mathcal{M}$ (reset at the end of every episode). An episodic bonus $r_t^{\text{episodic}}$ is computed by comparing $\phi(s_t)$ to its $k$-nearest neighbors in $\mathcal{M}$, yielding a larger bonus when the current observation differs significantly from states already visited during the same episode.
+    \item \textbf{Life-Long Novelty Module:} An RND module tracks global novelty across all training episodes, producing a modulation factor $\alpha_t$ that scales the episodic bonus multiplicatively ($r_t^i = r_t^{\text{episodic}} \cdot \alpha_t$), preventing the agent from repeatedly revisiting familiar states across episodes while maintaining strong within-episode exploration.
+\end{itemize}
+\chapter{Model-Based Reinforcement Learning}
 \end{document}
