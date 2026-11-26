@@ -2071,5 +2071,85 @@ This drastically reduces the variance compared to Monte Carlo, because in each u
     $a_t$ is no longer there, because $a$ is already a fixed argument of the function. Once the state $s$ and the action $a$ have been fixed, the only random thing that remains in the step $(s, a) \to (r_{t+1}, s_{t+1})$ is the dynamics of the environment $P$, which is identical whether it was $\pi$ or $\mu$ that pressed the button.
 \end{itemize}
 \subsection{Replay Buffer}
-\todo{from lecture L11 page 23}
+In off-policy it is possible to save the past transitions $(s_t, a_t, r_{t+1}, s_{t+1})$ in a memory (the replay buffer) and extract random mini-batches during training. In Deep RL (as in DQN), Experience Replay is fundamental not only to save interactions with the environment, but also to break the temporal correlation between consecutive samples, stabilizing the training of neural networks.
+
+The \textbf{replay buffer} is a set of previous trajectories saved; it stores previous transitions experienced by the agent, later used for training. This provides an efficient use of previous experience, and provides better convergence for function approximators.
+To approximate $Q$, the replay buffer is the dataset:\begin{equation}
+    \mathcal D= \{(s_1,a_1,Q_1^\pi),
+    (s_2,a_2,Q_2^\pi),\dots,
+     (s_n,a_n,Q_n^\pi)\}
+\end{equation}
+notice that we are using $Q_i^\pi$ for the labels instead of $y_i$. In the \textit{stochastic gradient descent}, at each iteration a sample from $\mathcal D$ is extracted randomly, and used to update the weights of the approximator:\begin{align}
+&(s_i,a_i,Q_i^\pi)\sim\mathcal D\\
+&\Delta\mathbf w_t = \alpha\left(
+    Q^\pi_i-\hat Q(s_i,a_i;\mathbf w_t)
+\right)\nabla_{\mathbf w}\hat Q(s_i,a_i;\mathbf w_t)\\
+&\mathbf w_{t+1}=\mathbf w_t+\Delta\mathbf w_t.
+\end{align}
+\section{Deep Q-Network}
+Let's summarize what we have seen until now:\begin{itemize}
+    \item When the state space is continuous or too large, we cannot compute the value function directly.
+    \item What we do is define function approximators, which are parametrized by a set of weights $\mathbf w$.
+    \item We solve an optimization problem, trying to find the best set of weights.
+    \item This can be done online, while the agent explores the state space, or offline, using acquired data (replay buffer).
+    \item A good choice of approximators are functions that are linear in the weights.
+\end{itemize}
+\subsection{Neural Networks}
+One of the most common choices for nonlinear approximators are \textbf{deep neural networks}. A neural network consists of a composition of multiple layers, combining linear and nonlinear transformations. The weights can be optimized since we can propagate the errors with the chain rule. Why should one prefer a deep neural network to a linear approximator?
+\begin{itemize}
+    \item \textbf{Distributed representations:} Deep Neural Networks (DNNs) learn distributed representations rather than relying on local representations (such as kernels in SVMs, tile coding, or RBFs), enabling better generalization across high-dimensional state spaces without manual feature engineering.
+    \item \textbf{Universal function approximators:} Given sufficient capacity, neural networks can approximate any continuous function to arbitrary accuracy.
+    \item \textbf{Parameter efficiency:} Deep architectures can potentially require exponentially fewer nodes and parameters than shallow networks to represent the same complex function.
+    \item \textbf{End-to-end optimization:} Network parameters can be learned directly from data using Stochastic Gradient Descent (SGD) and backpropagation.
+\end{itemize}
+Convolutional neural networks are very popular in reinforcement learning; the reasons are:\begin{itemize}
+    \item The same weights and bias are used for each of the hidden neurons.
+    \item All the neurons in the first hidden layer detect exactly the same feature, just at different locations in the input image.
+\end{itemize}
+The agent that tries to learn a policy for ATARI games uses as state $s$ directly the pixels of the screen (more precisely, a stack of the screen pixels of the last four frames), processed through a convolutional neural network, producing an estimation of $Q(s,a)$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/CNN.png}
+\end{figure}
+For example, the deep neural network can take this stack as input, and produce $k$ real numbers as output, each output being the estimated state-action value function for each of the $k$ actions.\bigskip
+
+To stabilize Q-learning with deep neural networks, Deep Q-Networks (DQN) combine two core mechanisms:
+\begin{itemize}
+    \item \textbf{Experience Replay:} Transition tuples $(s_t, a_t, r_{t+1}, s_{t+1})$ collected via an $\epsilon$-greedy policy are stored in a replay buffer. During training, random mini-batches $(s, a, r, s')$ are uniformly sampled to break temporal correlations between consecutive steps and reuse past experience.
+    \item \textbf{Target Network:} To prevent oscillations from a shifting target, the update target \[y = r + \gamma \max_{a'} Q(s', a'; \mathbf w^-)\] is computed using a separate target network with frozen parameters $\mathbf w^-$. While the online policy network $Q(s, a;\mathbf  w)$ is updated at every step to minimize $\frac{1}{2}\big(y - Q(s, a;\mathbf w)\big)^2$, the target weights are only periodically synchronized ($\mathbf w^- \leftarrow \mathbf w$).
+\end{itemize}
+
+The training procedure is explained in detail in Algorithm \ref{alg:DQN}.
+
+\begin{algorithm}[H]
+\caption{Deep Q-Network (DQN)}\label{alg:DQN}
+\begin{algorithmic}[1]
+    \State \textbf{Input:} target update frequency $C$, learning rate $\alpha$, replay buffer $\mathcal{D} = \emptyset$
+    \State Initialize online network weights $\mathbf{w}$, target network weights $\mathbf{w}^- = \mathbf{w}$, step counter $t = 0$
+    \State Observe initial state $s_0$
+    \Loop
+        \State Sample action $a_t$ using an $\epsilon$-greedy policy derived from $Q(s_t, a; \mathbf{w})$
+        \State Execute $a_t$, observe reward $r_{t+1}$ and next state $s_{t+1}$
+        \State Store transition $(s_t, a_t, r_{t+1}, s_{t+1})$ in replay buffer $\mathcal{D}$
+        \State Sample a random mini-batch of transitions $(s_i, a_i, r_{i+1}, s_{i+1})$ from $\mathcal{D}$
+        \For{each transition $(s_i, a_i, r_{i+1}, s_{i+1})$ in mini-batch}
+            \If{episode terminated at step $i+1$}
+                \State $y_i = r_{i+1}$
+            \Else
+                \State $y_i = r_{i+1} + \gamma \max_{a'} Q(s_{i+1}, a'; \mathbf{w}^-)$
+            \EndIf
+            \State Perform gradient descent step on $\frac{1}{2}\big(y_i - Q(s_i, a_i; \mathbf{w})\big)^2$:
+            \[
+                \mathbf{w} \leftarrow \mathbf{w} + \alpha \big(y_i - Q(s_i, a_i; \mathbf{w})\big) \nabla_{\mathbf{w}} Q(s_i, a_i; \mathbf{w})
+            \]
+        \EndFor
+        \State $t \leftarrow t + 1$
+        \If{$t \bmod C = 0$}
+            \State $\mathbf{w}^- \leftarrow \mathbf{w}$
+        \EndIf
+    \EndLoop
+\end{algorithmic}
+\end{algorithm}
+\subsection{Double Deep Q-Learning}
+\todo{from lecture L11 page 47}
 \end{document}
