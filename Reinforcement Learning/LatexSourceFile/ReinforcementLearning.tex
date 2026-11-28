@@ -1423,7 +1423,7 @@ with $\hat V_H=g_H$ when the window reaches the end of the horizon. Only the fir
 \end{algorithmic}
 \end{algorithm}
 \noindent This is in practice a Model Predictive Controller with an iLQR solver.
-\chapter{Approximate Policy Iteration}
+\chapter{Approximate Policy Iteration}\label{chap:API}
 In this chapter we \textit{drop the assumption} of knowing the Markov decision process; this approach is \textbf{model free}, i.e. the transition function is not known and the states can't be enumerated.
 \begin{quote}
     \textbf{Example}: Consider a quadruped robot learning to walk on uneven terrain (gravel, ice, slopes), where states $s \in S$ are continuous sensor readings and actions $a \in A$ are motor torques. The MDP is unknown because unpredictable ground friction and slipping make it impossible to model the exact transition probabilities $p(s' \mid s, a)$ or the reward function $r(s, a)$ in advance.
@@ -2305,4 +2305,274 @@ Building upon this idea, \textbf{Never Give Up (NGU)} combines multi-timescale n
     \item \textbf{Life-Long Novelty Module:} An RND module tracks global novelty across all training episodes, producing a modulation factor $\alpha_t$ that scales the episodic bonus multiplicatively ($r_t^i = r_t^{\text{episodic}} \cdot \alpha_t$), preventing the agent from repeatedly revisiting familiar states across episodes while maintaining strong within-episode exploration.
 \end{itemize}
 \chapter{Model-Based Reinforcement Learning}
+In real systems, like biped robots, it is almost impossible to write out the exact equations that describe the motion of the system (the transition function in an MDP), however, we can make the robot interact with the environment, collect data from its experiences, and train a model (e.g. a neural network) to predict how the world reacts.\bigskip 
+
+A model of a system is an internal representation that allows the agent to predict what will happen after an action, without having to execute the action in the real world. There are two types of models:\begin{itemize}
+    \item \textit{Distribution models}: They return the entire conditional probability distribution on the next state and on the reward:\begin{equation}
+        p(s',r\mid s,a).
+    \end{equation}
+    \item \textit{Sample models}: They do not provide the probability formula, but act as a generative function from which to sample a single realization:\begin{equation}
+        (s',r)\sim p(\cdot\mid s,a).
+    \end{equation}
+\end{itemize}
+The general procedure to learn and use a world model is the following:\begin{enumerate}
+    \item We execute a policy (e.g. a random policy) to explore the real environment and collect a dataset of transitions:\begin{equation}
+        \mathcal D=\{(s_t,a_t,r_{t+1},s_{t+1})\}_{t=1}^N.
+    \end{equation}
+    \item Given a parametrized model\footnote{
+        In previous chapters, the parameters were in the argument of the approximators, now they are denoted in the subscript. The two notations are equivalent.  Also, we denoted $\w$ the parameters/weights of the learned value function, here we are denoting $\btheta$ the parameters of the learned model.
+    } $\hat p_\btheta(s'\mid s,a)$, we use $\mathcal{ D}$ to fit:\begin{itemize}
+        \item if the model is deterministic ($\hat f_\btheta$), we minimize over $\btheta$ the squared error: $$\sum_{t=1}^N\|s_{t+1} - \hat f_\btheta(s_t,a_t)\|^2$$
+        \item if the model is stochastic, we maximize over $\btheta$ the log likelihood of the observed data:$$
+        \sum_{t=1}^N \ln \hat{p}_\btheta(s_{t+1} \mid s_t, a_t).
+        $$
+    \end{itemize}
+    \item We treat the learned model ($\hat p_\btheta$, or $\hat f_\btheta$ if deterministic) as the real model, and we learn a policy on that (using policy iteration, value iteration or LQR).
+\end{enumerate}
+\begin{boxdefinition}{Model-Based RL}{}
+    While \emph{model-free} methods directly approximate value functions or policies from experience without explicitly modeling the environment (as seen in Chapter \ref{chap:API}), \textbf{Model-Based Reinforcement Learning} bridges the gap between planning and learning in an initially unknown MDP. Specifically, this chapter covers how an agent uses collected interactions to learn an approximate model of the transition dynamics  and reward function, and subsequently leverages this learned model for planning, simulated experience generation, and policy optimization.
+\end{boxdefinition}
+\section{The Simulation Lemma}
+A learned model is trained on sampled transitions; it is never an exact replica of the real model, there are always some approximation errors. Assume that we find a policy that behaves perfectly on the learned world, we need a way to quantify how it will behave on the real world.\begin{quote}
+    \textit{``If my policy works great in the simulator, how much can I trust it to work just as well in the real world?''}
+\end{quote}
+Let $\pi$ be a policy, we can define the value of the policy in the learned world (also called \textit{simulator}):\begin{equation}
+    \hat V^\pi(s_0)=\VA\left[
+        \sum_{h=0}^\infty \gamma^hr(s_h,a_h)\mid s_0,\ a_h\sim\pi(\cdot\mid s_h),\ s_{h+1}\sim\hat f_\btheta(\cdot\mid s_h,a_h)
+    \right]
+\end{equation}
+with $s_0$ being a common initial state.
+The $\hat{}$ symbol on $\hat V$ denotes that it is an approximation of a value function, because it uses the approximated transition function $\hat f_\btheta$. The real value of the policy is\begin{equation}\label{sim_diff}
+     V^\pi(s_0)=\VA\left[
+        \sum_{h=0}^\infty \gamma^hr(s_h,a_h)\mid s_0,\ a_h\sim\pi(\cdot\mid s_h),\ s_{h+1}\sim f(\cdot\mid s_h,a_h)
+    \right]
+\end{equation}
+with $f$ being the exact and unknown transition function of the model. In the stochastic case $f(\cdot\mid s,a)$ and $\hat f_\btheta(\cdot\mid s,a)$ are the distributions that we denoted $p(\cdot\mid s,a)$ and $\hat p_\btheta(\cdot\mid s,a)$ in the previous chapters. The difference between the value function in the simulated world with respect to the real is:\begin{equation}
+     \hat V^\pi(s_0)-  V^\pi(s_0)
+\end{equation}
+how we define more specifically this difference? It is very hard to compute it for all the trajectories from $h=0$ up to infinity, we can do this one step at a time:\begin{itemize}
+    \item we execute the action in the real world,
+    \item we execute the action in the simulator,
+    \item we compute the difference for that transition.
+\end{itemize}
+\begin{boxtheorem}{Simulation Lemma}{}
+    Assume that the rewards are known (the same in the simulator and in the real world) and that $r(s,a)\in[0,1]$. The simulation difference is bounded by the expected $L_1$ norm of the difference between the real and trained model, where the expectation is taken over the discounted state-action distribution of $\pi$ under the real dynamics $f$:\begin{equation}
+        \hat V^\pi(s_0)-  V^\pi(s_0)\le \frac{\gamma}{(1-\gamma)^2}\VA_{s,a\sim d_{s_0}^\pi}\left[\|
+    \hat f_\btheta (\cdot\mid s,a)-f (\cdot\mid s,a)
+    \|_1\right].
+    \end{equation}
+\end{boxtheorem}
+\noindent\textit{Proof}: Since the reward function is exact in the simulation, we estimated just the transition function denoted $\hat f_\btheta$. Starting from a generic state $s$, the distribution over the actions $a \sim \pi(\cdot \mid s)$ is identical in the simulator and in the real world, let's expand the two value functions by isolating the first step (the terms $r(s_0,a_0)$ cancel, since the action distribution and the reward are the same):\begin{equation}
+     \hat V^\pi(s_0)-  V^\pi(s_0)=
+     \underbrace{\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}}_{\text{same distr.}}\left[
+        \VA_{s_1\sim\hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)-
+        \VA_{s_1\sim f(\cdot\mid s_0,a_0)} V^\pi(s_1)
+     \right]
+\end{equation}
+we add and subtract a mixed term:\begin{align}
+    &{\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}}\left[
+        \VA_{s_1\sim\hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)-
+        \VA_{s_1\sim f(\cdot\mid s_0,a_0)} V^\pi(s_1)
+     \right]\\[1.5ex]
+     &={\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}}\left[
+        \VA_{s_1\sim\hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+        \blueText{-\VA_{s_1\sim f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+        +\VA_{s_1\sim f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)}-
+        \VA_{s_1\sim f(\cdot\mid s_0,a_0)} V^\pi(s_1)
+     \right]\\[1.5ex]
+     &={\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}}\left[
+        \VA_{s_1\sim\hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+        -\VA_{s_1\sim f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+        +\underbrace{{\VA_{s_1\sim f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)}-
+        \VA_{s_1\sim f(\cdot\mid s_0,a_0)} V^\pi(s_1)}_{\text{we group this}}
+     \right]\\[1.5ex]
+     &=\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}\left[
+        \VA_{s_1\sim \hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)-
+        \VA_{s_1\sim  f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+     \right]+
+     \gamma\VA_{a_0\sim\pi(\cdot\mid s_0), s_1\sim f(\cdot\mid s_0,a_0)}\left[
+        \hat V^\pi(s_1)-V^\pi(s_1)
+     \right]
+\end{align}
+Notice how we ended up in a recursive definition:\begin{align}
+    &\blueText{\hat V^\pi(s_0)-  V^\pi(s_0)}=\\ &\gamma\VA_{a_0\sim\pi(\cdot\mid s_0)}\left[
+        \VA_{s_1\sim \hat f_\btheta(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)-
+        \VA_{s_1\sim  f(\cdot\mid s_0,a_0)}\hat V^\pi(s_1)
+     \right]+
+     \gamma\VA_{a_0\sim\pi(\cdot\mid s_0), s_1\sim f(\cdot\mid s_0,a_0)}\left[
+        \blueText{\hat V^\pi(s_1)-V^\pi(s_1)}
+     \right]
+\end{align}
+by unrolling the recursion over all the time steps (the term at step $h$ is weighted by $\gamma^{h+1}$ and is evaluated under the true state-action distribution at time $h$; the remainder vanishes since $\gamma<1$ and the values are bounded), and recalling that $d_{s_0}^\pi=(1-\gamma)\sum_{h=0}^\infty\gamma^h\Prob^\pi_h(\cdot,\cdot\mid s_0)$, we get to the following result:\begin{equation}\label{eq:sim_diff}
+    \boxed{
+        \hat V^\pi(s_0)-  V^\pi(s_0)=\frac{\gamma}{1-\gamma}
+        \VA_{s,a\sim d_{s_0}^\pi}\left[
+            \grayText{\VA_{s'\sim \hat f_\btheta(\cdot\mid s,a)}\hat V^\pi(s')-
+            \VA_{s'\sim  f(\cdot\mid s,a)} \hat V^\pi(s')}
+        \right]
+    }.
+\end{equation}
+$d_{s_0}^\pi$ is the discounted distribution of the state and action $s,a$ under the given policy $\pi$ and the true dynamics $f$. 
+The term$$\grayText{\VA_{s'\sim \hat f_\btheta(\cdot\mid s,a)}\hat V^\pi(s')-
+            \VA_{s'\sim  f(\cdot\mid s,a)} \hat V^\pi(s')}$$
+is the difference between the expected value of $\hat V^\pi$ under the model and under the real dynamics. If $P$ and $Q$ are two different distributions and $g$ a bounded real-valued function, the following inequality holds:\begin{equation}
+    \left|
+        \VA_{x\sim P}g(x)-\VA_{x\sim Q}g(x)
+    \right|\le\sup_x|g(x)|\cdot\|P-Q\|_1
+\end{equation}
+we use this in Equation \eqref{eq:sim_diff}, with $g=\hat V^\pi$:\begin{align}
+    &\hat V^\pi(s_0)-  V^\pi(s_0)=\frac{\gamma}{1-\gamma}
+        \VA_{s,a\sim d_{s_0}^\pi}\left[
+            {\VA_{s'\sim \hat f_\btheta(\cdot\mid s,a)}\hat V^\pi(s')-
+            \VA_{s'\sim  f(\cdot\mid s,a)} \hat V^\pi(s')}
+        \right]\le\\[1.5ex]
+    &\frac{\gamma}{1-\gamma}\underbrace{\sup_{s'}|\hat V^\pi(s')|}_{\le\nicefrac{1}{1-\gamma}}\VA_{s,a\sim d_{s_0}^\pi}\left[\|
+    \hat f_\btheta (\cdot\mid s,a)-f (\cdot\mid s,a)
+    \|_1\right]\le\\ 
+    &\frac{\gamma}{(1-\gamma)^2}\VA_{s,a\sim d_{s_0}^\pi}\left[\|
+    \hat f_\btheta (\cdot\mid s,a)-f (\cdot\mid s,a)
+    \|_1\right].
+\end{align}\hfill$\blacksquare$\bigskip
+
+\noindent The sup of $\hat V^\pi$ is at most $\nicefrac{1}{1-\gamma}$ since the rewards are assumed to be in $[0,1]$. Since the same argument applies to $V^\pi-\hat V^\pi$, the bound holds also for the absolute difference. We can bound the policy performance difference by the expected model disagreement measured along the
+trajectories that $\pi$ actually generates in the real world. We have to train the model on the \textbf{data distribution of the current policy} ($d_{s_0}^\pi$): The simulator does not need to be perfect everywhere in the state space, but it must have very low $L_1$ error $$\|
+\hat f_\btheta (\cdot\mid s,a)-f (\cdot\mid s,a)
+\|_1$$
+in the state-action pairs that $\pi$ actually visits (weighted by $d_{s_0}^\pi$).
+The full model-based RL loop is shown in Figure \ref{RL_loop}.
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      >={Triangle[length=4mm,width=3.5mm]},
+      every node/.style={font=\sffamily},
+      big/.style={font=\sffamily\bfseries\Large},
+      arr/.style={->, line width=1.6pt},
+      scale=0.8
+    ]
+
+    % Nodi principali
+    \node[big] (vp)  at (0,3.2)    {value/policy};
+    \node[big] (exp) at (3.6,-1.2) {experience};
+    \node[big] (mod) at (-3.6,-1.2){model};
+
+    % Acting: value/policy -> experience
+    \draw[arr] (1.9,3.1) to[bend left=40] (3.9,-0.5);
+    \node at (4.3,1.8) {acting};
+
+    % Model learning: experience -> model
+    \draw[arr] (2.6,-1.9) to[bend left=40] (-2.2,-1.9);
+    \node[align=center] at (0,-3.5) {model\\learning};
+
+    % Planning: model -> value/policy
+    \draw[arr] (-3.9,-0.5) to[bend left=40] (-1.9,3.1);
+    \node at (-4.5,1.8) {planning};
+
+    % Direct RL: experience -> value/policy
+    \draw[arr] (2.6,-0.7) to[bend right=35] (0,2.6);
+    \node[align=center] at (0.7,1.1) {direct\\RL};
+
+  \end{tikzpicture}
+  \caption{Reinforcement Learning cycle: interaction between value/policy, experience and model.}
+  \label{RL_loop}
+\end{figure}
+\begin{itemize}
+    \item \textbf{Acting ($\text{Environment} \leftrightarrow \text{Real experience}$):} The agent uses the current policy to interact with the real environment, generating real transitions $(s, a, r, s')$.
+    \item \textbf{Direct RL ($\text{Real experience} \rightarrow \text{Policy/value functions}$):} Real experience can be used directly to update the policy or value function via \emph{model-free} algorithms (e.g., Q-learning, Actor-Critic).
+    \item \textbf{Model Learning ($\text{Real experience} \rightarrow \text{Model}$):} The same real transitions are used as a supervised dataset to train and refine the model $\hat f_\btheta$ (and $\hat{r}$).
+    \item \textbf{Planning / Search Control ($\text{Model} \rightarrow \text{Simulated experience} \rightarrow \text{Policy/value functions}$):} The agent queries the learned model (selecting starting states and actions via \emph{search control}), generates simulated trajectories, and uses them to perform additional updates (\emph{planning updates}) to the policy/value function.
+\end{itemize}
+\section{Planning}
+How can we fit the model $\hat f_\btheta$ given the dataset $\mathcal D$? For a stochastic transition function, with $N$ datapoints we can estimate the dynamics as follows:\begin{equation}\label{estimated_indicator}
+    \hat f_\btheta(s'\mid s,a)=\frac{
+        \sum_{t=1}^{N}\mathbb 1\{s_t=s,a_t=a,s_{t+1}=s'\}
+    }{
+        \sum_{t=1}^{N}\mathbb 1\{s_t=s,a_t=a\}
+    }
+\end{equation}
+$\mathbb 1$ is the indicator function (maps true sentences to 1 and false sentences to 0); this is the maximum likelihood estimate in a finite MDP, defined for the pairs $(s,a)$ visited at least once in $\mathcal D$. If every pair $(s,a)$ is visited infinitely often, with $N\rightarrow+\infty$ Equation \eqref{estimated_indicator} converges to the real transition probability (by the law of large numbers).\bigskip
+
+Once we have a model of the environment (a simulator) in hand, how do we use it to decide the best actions? In addition to the classical methods seen above, there are also two approaches based on sampling: instead of updating the entire state space all at once (which would be impossible if there are millions of states), we use the model to simulate single transitions or entire trees of future moves starting from where we are.
+\subsection{Dyna-Q}
+Dyna-Q is an architecture that merges Q-learning (a model-free algorithm) and planning (model-based) together within the same learning cycle. 
+The basic idea is to make the most of every single interaction with the real world, using it for three purposes simultaneously:\begin{itemize}
+    \item Learning directly from real experience (Direct RL): The agent performs an action in the world, observes the result and immediately updates its estimate of how good that action is (the $\hat Q$ table).
+    \item Building a mind map (Model Learning): The agent stores that transition in an internal model.
+    \item Mentally train between steps (Planning): Immediately after every single real step, the agent stops and does $n$ ``mental simulations''. It randomly fishes out situations that its model has already experienced in the past, simulates what would happen and updates the $Q$ table exactly as if it were experiencing those experiences at that moment.
+\end{itemize}
+\noindent The detailed procedure of Dyna-Q for \textit{deterministic environment} is described in Algorithm \ref{alg:dynaq}.
+\begin{algorithm}[H]
+\caption{Dyna-Q}\label{alg:dynaq}
+\begin{algorithmic}[1]
+    \State \textbf{Input:} step-size $\alpha \in (0, 1]$, exploration rate $\varepsilon > 0$, planning steps $n \in \mathbb{N}$
+    \State \textbf{Initialize:} $Q(s, a)$ and $\text{Model}(s, a)$ for all $s \in S$ and $a \in A$
+    \For{each episode}
+        \State Observe initial state $s_0$
+        \For{step $t = 0, 1, \dots$ until end of episode}
+            \State Select action $a_t \leftarrow \varepsilon\text{-greedy}(s_t, Q)$
+            \State Execute $a_t$, observe reward $r_{t+1}$ and next state $s_{t+1}$
+            \State $Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t) \right]$
+            \State $\text{Model}(s_t, a_t) \leftarrow (r_{t+1}, s_{t+1})$ \quad\greenText{model fitting}
+            \For{planning step $i = 1, \dots, n$}\quad\greenText{Q-Planning}
+                \State Sample random previously observed state $\tilde{s}$
+                \State Sample random action $\tilde{a}$ previously taken in $\tilde{s}$
+                \State Query model $(\tilde{r}, \tilde{s}') \leftarrow \text{Model}(\tilde{s}, \tilde{a})$
+                \State $Q(\tilde{s}, \tilde{a}) \leftarrow Q(\tilde{s}, \tilde{a}) + \alpha \left[ \tilde{r} + \gamma \max_{a'} Q(\tilde{s}', a') - Q(\tilde{s}, \tilde{a}) \right]$
+            \EndFor
+        \EndFor
+    \EndFor
+\end{algorithmic}
+\end{algorithm}
+\subsection{Rollout Planning}
+Dyna-Q is a background planning algorithm: it is not focused on the current state, it generally improves the policy on the basis of simulated experience, and the planning stage is not tied to the selection of a specific action. A \textbf{decision-time algorithm} begins planning after encountering each new state: when the system is in a state $s_t$, it evaluates the different possible actions $a$ by simulating the trajectories and the future states they lead to through the model. It uses the simulated experience exclusively to choose the best action at that time.\bigskip 
+
+The two paradigms are complementary and the most powerful algorithms blend them. The perfect example is \textit{AlphaZero}: it uses decision-time planning (Monte-Carlo Tree Search) to choose moves during the game, but uses a neural network (trained in the background on simulated games) to guide the search in the tree and evaluate the leaves without having to simulate until the end of the game.\bigskip
+
+
+\noindent One simple example of a decision-time algorithm is the \textbf{Rollout Planning}, which selects the action to execute in the real world as follows:\begin{itemize}
+    \item Given the current state $s_t$, we have a fixed policy $\pi_{\text{rollout}}$ (a simple and fast policy to execute, usually a heuristic).
+    \item For each action $a\in A$, we simulate $K$ trajectories using the trained model $\hat f_\btheta$:\begin{enumerate}
+        \item the first step is induced by the trained model:\begin{equation}
+            (s^{(k)}_{t+1},r^{(k)}_{t+1})\sim \hat f_\btheta(\cdot\mid s_t,a)
+        \end{equation}
+        \item from step $t+1$ up to the end (or up to a fixed horizon $T$), the actions are chosen by the rollout fixed policy, $a^{(k)}_\tau\sim\pi_\text{rollout}(\cdot\mid s^{(k)}_\tau)$, and the next states and rewards are still sampled from the trained model $\hat f_\btheta$.
+    \end{enumerate}
+    \item These $K$ trajectories will have different evolutions, we recall that we are trying each action $K$ times, so we are trying $K\cdot |A|$ trajectories. We compute an estimate of the state-action value function of the rollout policy by averaging the discounted returns:\begin{equation}
+        \widehat Q^{\pi_\text{rollout}}(s_t,a)=\frac{1}{K}\sum_{k=1}^{K}\left(
+            r_{t+1}^{(k)}+\sum_{\tau=t+1}^{T}\gamma^{\tau-t}r_{\tau+1}^{(k)}
+        \right)
+    \end{equation}
+    \item In the real execution we select the action that has the highest estimate:\begin{equation}
+        a_t=\operatorname*{arg\,max}_{a\in A}\widehat Q^{\pi_\text{rollout}}(s_t,a).
+    \end{equation}
+\end{itemize}
+Throughout the Rollout Planning phase, the agent never interacts with the real environment: it sits still in the current state $s_t$ and runs $K$ simulated trajectories (for each action) using the model $\hat f_\btheta$.
+\subsection{Monte-Carlo Tree Search}
+Rollout Planning calculates the values only for the actions of the current state $s_t$ and only with respect to the fixed rollout policy (it does not look for the global optimum at the next step, but is content to do a single local Policy Improvement step). Despite its simplicity, by the Monotonic Improvement proposition, if the estimates were exact (i.e. a perfect model and $K\to\infty$) the resulting greedy policy would be better than or equal to $\pi_{\text{rollout}}$ (with finite $K$ and an imperfect model this holds only approximately), and this algorithm constitutes exactly the fundamental building block from which Monte-Carlo Tree Search (MCTS) is born (where the tree is expanded on multiple levels instead of stopping at the first fork).\bigskip
+
+In MCTS, a search tree is built in memory starting from the current state and accumulates the value estimates in the visited nodes. In this way, as it runs new simulations, it concentrates computational effort only on the most promising branches, quickly ignoring clearly losing moves. The four phases of the algorithm are the following:
+\begin{enumerate}
+    \item \textbf{Selection:} Starting from the root node (the current real state), traverse down the existing tree by selecting child nodes according to the \emph{tree policy} (typically the UCB1 formula) until reaching a leaf node or a node with unexplored actions.
+    \item \textbf{Expansion:} From the selected leaf node, generate one (or more) new child nodes using the model $\hat{f}_\btheta$ and add them to the search tree.
+    \item \textbf{Simulation:} From the newly expanded node, simulate a trajectory until the end of the episode (or a predefined horizon) using the model $\hat{f}_\btheta$ and a fast \emph{rollout policy} (e.g., random or heuristic) to obtain a return $z$.
+    \item \textbf{Backpropagation (Backup):} Propagate the simulated outcome $z$ backward along all nodes visited during the selection and expansion phases up to the root, updating their visit counts and mean value estimates.
+\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/MCTS.png} 
+\end{figure}
+When the time or iteration budget expires, the agent looks at the direct children of the root and chooses to execute the action corresponding to the most visited node (or with the highest average value $\bar{x}_i$) in the real environment. MCTS thus transforms a simple simulator (even a purely generative sample model) into a very powerful planner that grows the tree asymmetrically, dedicating calculation depth only to the truly relevant game lines.
+
+To balance \textbf{exploitation} (focusing on moves that have yielded high scores so far) and \textbf{exploration} (trying rarely visited branches that might hide promising outcomes), the \emph{Tree Policy} selects the child node $i$ that maximizes the \textbf{UCB} (\emph{Upper Confidence Bound}) index:
+\[
+    \mathrm{UCB}(\mathrm{node}_i) = \bar{x}_i + c \sqrt{\frac{\ln N}{n_i}}
+\]
+where:
+\begin{itemize}
+    \item $\bar{x}_i$: empirical mean value accumulated by node $i$ in previous simulations (\emph{exploitation}).
+    \item $n_i$: number of times node $i$ has been visited.
+    \item $N$: total number of visits of the parent node.
+    \item $c$: exploration constant; the smaller $n_i$ is relative to $\ln N$, the larger the second term grows, encouraging the algorithm to explore that node (a child with $n_i=0$ is conventionally selected first).
+\end{itemize}
+\todo{L12 slide 58/81}
 \end{document}
+%``
